@@ -1,8 +1,29 @@
 import { useState } from 'react';
-import { Button, Checkbox, ColorPicker, Drawer, Form, Input, InputNumber, Select, Slider, Space, Steps, Tag, Typography } from 'antd';
+import {
+  Button,
+  Checkbox,
+  ColorPicker,
+  Drawer,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Slider,
+  Space,
+  Steps,
+  Tag,
+  Typography,
+} from 'antd';
 import { CheckOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { skills } from '../data/mockData';
-import { MODELS, AGENT_ICONS, TEAMS_LIST, WORKSPACES_LIST, CREATE_STEPS, SKILL_TYPE_MAP } from '../define';
+import {
+  MODELS,
+  AGENT_ICONS,
+  TEAMS_LIST,
+  WORKSPACES_LIST,
+  CREATE_STEPS,
+  SKILL_TYPE_MAP,
+} from '../define';
 
 const { Text } = Typography;
 
@@ -15,7 +36,14 @@ const SKILL_OPTIONS = skills.map((s) => ({
   label: (
     <span className="inline-flex items-center gap-1.5">
       {s.name}
-      <Tag style={{ background: `${SKILL_TYPE_MAP[s.type].color}0d`, color: SKILL_TYPE_MAP[s.type].color, border: 'none', fontSize: 10 }}>
+      <Tag
+        style={{
+          background: `${SKILL_TYPE_MAP[s.type].color}0d`,
+          color: SKILL_TYPE_MAP[s.type].color,
+          border: 'none',
+          fontSize: 10,
+        }}
+      >
         {SKILL_TYPE_MAP[s.type].label}
       </Tag>
     </span>
@@ -106,10 +134,18 @@ export function AddAgentDrawer({ open, onClose }: AddAgentDrawerProps) {
         </div>
       }
     >
-      <Form form={form} layout="vertical" initialValues={{ temperature: 0.7, maxTokens: 4096, icon: '🤖' }}>
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{ temperature: 0.7, maxTokens: 4096, icon: '🤖' }}
+      >
         {current === 0 && (
           <>
-            <Form.Item name="name" label="Agent 名称" rules={[{ required: true, message: '请输入名称' }]}>
+            <Form.Item
+              name="name"
+              label="Agent 名称"
+              rules={[{ required: true, message: '请输入名称' }]}
+            >
               <Input placeholder="例如：数据分析助手" />
             </Form.Item>
             <Form.Item name="desc" label="描述">
@@ -122,7 +158,10 @@ export function AddAgentDrawer({ open, onClose }: AddAgentDrawerProps) {
               <ColorPicker showText format="hex" defaultValue="#fe6e00" />
             </Form.Item>
             <Form.Item name="workspace" label="工作空间">
-              <Select options={WORKSPACES_LIST.map((w) => ({ label: w, value: w }))} placeholder="选择运行环境" />
+              <Select
+                options={WORKSPACES_LIST.map((w) => ({ label: w, value: w }))}
+                placeholder="选择运行环境"
+              />
             </Form.Item>
             <Form.Item name="team" label="所属团队">
               <Select
@@ -136,8 +175,15 @@ export function AddAgentDrawer({ open, onClose }: AddAgentDrawerProps) {
 
         {current === 1 && (
           <>
-            <Form.Item name="model" label="模型" rules={[{ required: true, message: '请选择模型' }]}>
-              <Select options={MODELS.map((m) => ({ label: m, value: m }))} placeholder="选择 LLM" />
+            <Form.Item
+              name="model"
+              label="模型"
+              rules={[{ required: true, message: '请选择模型' }]}
+            >
+              <Select
+                options={MODELS.map((m) => ({ label: m, value: m }))}
+                placeholder="选择 LLM"
+              />
             </Form.Item>
             <Form.Item name="temperature" label="Temperature">
               <Slider min={0} max={2} step={0.1} marks={{ 0: '0', 0.7: '0.7', 2: '2' }} />
@@ -186,7 +232,9 @@ export function AddAgentDrawer({ open, onClose }: AddAgentDrawerProps) {
                 key={item.label}
                 className="flex justify-between items-start py-2.5 border-b border-canvas"
               >
-                <Text type="secondary" className="text-[13px]">{item.label}</Text>
+                <Text type="secondary" className="text-[13px]">
+                  {item.label}
+                </Text>
                 <Text className="text-[13px] max-w-[300px] text-right break-words">
                   {String(item.value ?? '—')}
                 </Text>

@@ -46,17 +46,22 @@ export const PAGE_TITLES: Record<PageKey, { title: string; subtitle: string }> =
   config: { title: '配置', subtitle: '模型、MCP 服务、AG-UI 协议与外观设置' },
 };
 
-export const NAV_ITEMS: { key: PageKey; label: string; icon: React.ReactNode; section: string }[] = [
-  { key: 'workspace', label: '工作空间', icon: <AppstoreOutlined />, section: '导航' },
-  { key: 'agent', label: 'Agent', icon: <RobotOutlined />, section: '导航' },
-  { key: 'team', label: 'Agent 团队', icon: <TeamOutlined />, section: '导航' },
-  { key: 'skills', label: '技能库', icon: <ThunderboltOutlined />, section: '导航' },
-  { key: 'monitor', label: '监控', icon: <MonitorOutlined />, section: '导航' },
-  { key: 'config', label: '配置', icon: <SettingOutlined />, section: '系统' },
-];
+export const NAV_ITEMS: { key: PageKey; label: string; icon: React.ReactNode; section: string }[] =
+  [
+    { key: 'workspace', label: '工作空间', icon: <AppstoreOutlined />, section: '导航' },
+    { key: 'agent', label: 'Agent', icon: <RobotOutlined />, section: '导航' },
+    { key: 'team', label: 'Agent 团队', icon: <TeamOutlined />, section: '导航' },
+    { key: 'skills', label: '技能库', icon: <ThunderboltOutlined />, section: '导航' },
+    { key: 'monitor', label: '监控', icon: <MonitorOutlined />, section: '导航' },
+    { key: 'config', label: '配置', icon: <SettingOutlined />, section: '系统' },
+  ];
 
 export const MODELS = ['GPT-4o', 'GPT-4o mini', 'Claude 3.5 Sonnet', 'DeepSeek V3', 'Qwen Max'];
 export const AGENT_ICONS = ['📊', '🔍', '💬', '📄', '🛡️', '⚙️', '🌐', '🧪'];
 export const TEAMS_LIST = ['工程效能', '数据洞察', '客户成功', '安全合规'];
-export const WORKSPACES_LIST = ['本地开发环境 (localhost:8080)', '阿里云 ECS (8.219.xx.xx)', 'AWS EC2 (离线)'];
+export const WORKSPACES_LIST = [
+  '本地开发环境 (localhost:8080)',
+  '阿里云 ECS (8.219.xx.xx)',
+  'AWS EC2 (离线)',
+];
 export const CREATE_STEPS = ['基本信息', '模型配置', '技能加载', '工具配置', '确认创建'];

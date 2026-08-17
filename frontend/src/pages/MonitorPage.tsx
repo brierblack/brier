@@ -11,9 +11,27 @@ export function MonitorPage() {
   const stats = useMemo(
     () => [
       { key: 'total', value: agents.length, label: 'Agent 总数', icon: '🤖', color: '#fe6e00' },
-      { key: 'online', value: agents.filter((a) => a.status === 'online').length, label: '在线', icon: '✅', color: '#00c758' },
-      { key: 'runs', value: agents.reduce((s, a) => s + a.runs, 0), label: '总调用', icon: '📊', color: '#f99c00' },
-      { key: 'ws', value: `${workspaces.filter((w) => w.status === 'online').length}/${workspaces.length}`, label: '工作空间', icon: '🖥️', color: '#8d54ff' },
+      {
+        key: 'online',
+        value: agents.filter((a) => a.status === 'online').length,
+        label: '在线',
+        icon: '✅',
+        color: '#00c758',
+      },
+      {
+        key: 'runs',
+        value: agents.reduce((s, a) => s + a.runs, 0),
+        label: '总调用',
+        icon: '📊',
+        color: '#f99c00',
+      },
+      {
+        key: 'ws',
+        value: `${workspaces.filter((w) => w.status === 'online').length}/${workspaces.length}`,
+        label: '工作空间',
+        icon: '🖥️',
+        color: '#8d54ff',
+      },
     ],
     [],
   );
@@ -43,7 +61,11 @@ export function MonitorPage() {
       {
         title: '模型',
         dataIndex: 'model',
-        render: (m: string) => <Tag color="orange" className="font-mono">{m}</Tag>,
+        render: (m: string) => (
+          <Tag color="orange" className="font-mono">
+            {m}
+          </Tag>
+        ),
       },
       {
         title: '调用次数',
@@ -78,7 +100,9 @@ export function MonitorPage() {
               {s.icon}
             </div>
             <div>
-              <div className="font-mono tabular-nums text-[22px] font-bold leading-none">{s.value}</div>
+              <div className="font-mono tabular-nums text-[22px] font-bold leading-none">
+                {s.value}
+              </div>
               <div className="text-[11px] text-faint mt-[3px]">{s.label}</div>
             </div>
           </div>

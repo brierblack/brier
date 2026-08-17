@@ -11,7 +11,11 @@ const sections = [...new Set(NAV_ITEMS.map((item) => item.section))];
 
 const menuItems = sections.map((section) => ({
   type: 'group' as const,
-  label: <span className="text-[10px] font-semibold tracking-[1.5px] uppercase text-faint">{section}</span>,
+  label: (
+    <span className="text-[10px] font-semibold tracking-[1.5px] uppercase text-faint">
+      {section}
+    </span>
+  ),
   children: NAV_ITEMS.filter((item) => item.section === section).map((item) => ({
     key: item.key,
     icon: item.icon,
@@ -26,7 +30,9 @@ export function Sidebar({ activePage, onNavigate }: SidebarProps) {
         <div className="size-9 rounded-md bg-[linear-gradient(135deg,#fe6e00,#f05100)] flex items-center justify-center text-white font-extrabold text-lg shadow-[0_2px_8px_rgba(254,110,0,0.3)] shrink-0">
           H
         </div>
-        <span className="text-[19px] font-bold text-ink tracking-tight whitespace-nowrap">Hive</span>
+        <span className="text-[19px] font-bold text-ink tracking-tight whitespace-nowrap">
+          Hive
+        </span>
       </div>
 
       <Menu

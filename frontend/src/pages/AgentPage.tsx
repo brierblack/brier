@@ -13,9 +13,27 @@ interface AgentPageProps {
 
 const STATS = [
   { key: 'total', value: agents.length, label: 'Agent 总数', icon: '🤖', color: '#fe6e00' },
-  { key: 'online', value: agents.filter((a) => a.status === 'online').length, label: '在线运行', icon: '✅', color: '#00c758' },
-  { key: 'teams', value: new Set(agents.map((a) => a.team).filter(Boolean)).size, label: '所属团队', icon: '👥', color: '#8d54ff' },
-  { key: 'runs', value: agents.reduce((s, a) => s + a.runs, 0), label: '累计调用', icon: '📊', color: '#f99c00' },
+  {
+    key: 'online',
+    value: agents.filter((a) => a.status === 'online').length,
+    label: '在线运行',
+    icon: '✅',
+    color: '#00c758',
+  },
+  {
+    key: 'teams',
+    value: new Set(agents.map((a) => a.team).filter(Boolean)).size,
+    label: '所属团队',
+    icon: '👥',
+    color: '#8d54ff',
+  },
+  {
+    key: 'runs',
+    value: agents.reduce((s, a) => s + a.runs, 0),
+    label: '累计调用',
+    icon: '📊',
+    color: '#f99c00',
+  },
 ] as const;
 
 export function AgentPage({ onAddAgent }: AgentPageProps) {
@@ -79,7 +97,9 @@ export function AgentPage({ onAddAgent }: AgentPageProps) {
       {
         title: '调用',
         dataIndex: 'runs',
-        render: (r: number) => <span className="font-mono tabular-nums text-faint">{r.toLocaleString()}</span>,
+        render: (r: number) => (
+          <span className="font-mono tabular-nums text-faint">{r.toLocaleString()}</span>
+        ),
       },
       {
         title: '状态',
@@ -113,7 +133,9 @@ export function AgentPage({ onAddAgent }: AgentPageProps) {
               {s.icon}
             </div>
             <div>
-              <div className="font-mono tabular-nums text-[22px] font-bold leading-none">{s.value.toLocaleString()}</div>
+              <div className="font-mono tabular-nums text-[22px] font-bold leading-none">
+                {s.value.toLocaleString()}
+              </div>
               <div className="text-[11px] text-faint mt-[3px]">{s.label}</div>
             </div>
           </div>
@@ -142,7 +164,13 @@ export function AgentPage({ onAddAgent }: AgentPageProps) {
         />
       </Space>
 
-      <Table columns={columns} dataSource={filteredAgents} rowKey="id" pagination={false} size="middle" />
+      <Table
+        columns={columns}
+        dataSource={filteredAgents}
+        rowKey="id"
+        pagination={false}
+        size="middle"
+      />
     </PageCard>
   );
 }

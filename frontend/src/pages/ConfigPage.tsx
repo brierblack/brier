@@ -3,8 +3,18 @@ import { PageCard } from '../components/PageCard';
 import { StatusBadge } from '../components/StatusBadge';
 
 const MODEL_PROVIDERS = [
-  { provider: 'OpenAI', key: 'sk-••••••••••••abcd', models: ['GPT-4o', 'GPT-4o mini'], enabled: true },
-  { provider: 'Anthropic', key: 'sk-ant-••••••••efgh', models: ['Claude 3.5 Sonnet'], enabled: true },
+  {
+    provider: 'OpenAI',
+    key: 'sk-••••••••••••abcd',
+    models: ['GPT-4o', 'GPT-4o mini'],
+    enabled: true,
+  },
+  {
+    provider: 'Anthropic',
+    key: 'sk-ant-••••••••efgh',
+    models: ['Claude 3.5 Sonnet'],
+    enabled: true,
+  },
   { provider: 'DeepSeek', key: '未配置', models: ['DeepSeek V3'], enabled: false },
 ];
 
@@ -103,13 +113,20 @@ export function ConfigPage() {
             label: 'AG-UI 协议',
             children: (
               <div className="max-w-[600px]">
-                <Card size="small" className="mb-3.5" style={{ background: '#f8fafc', borderRadius: 8 }}>
+                <Card
+                  size="small"
+                  className="mb-3.5"
+                  style={{ background: '#f8fafc', borderRadius: 8 }}
+                >
                   <div className="font-semibold mb-4">传输配置</div>
                   {CONFIG_ROWS.map((row, i) => (
                     <div
                       key={row.label}
                       className="flex justify-between items-center py-2"
-                      style={{ borderBottom: i < CONFIG_ROWS.length - 1 ? '1px solid var(--color-canvas)' : 'none' }}
+                      style={{
+                        borderBottom:
+                          i < CONFIG_ROWS.length - 1 ? '1px solid var(--color-canvas)' : 'none',
+                      }}
                     >
                       <span className="text-faint text-[13px]">{row.label}</span>
                       <span
@@ -144,7 +161,10 @@ export function ConfigPage() {
                     </div>
                     <div className="flex-1 ml-3">
                       <div className="font-medium text-[13px]">
-                        极简白 <Tag color="success" className="ml-2">当前</Tag>
+                        极简白{' '}
+                        <Tag color="success" className="ml-2">
+                          当前
+                        </Tag>
                       </div>
                       <div className="text-[11px] text-faint">纯白 + 橙色</div>
                     </div>

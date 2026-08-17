@@ -31,7 +31,11 @@ export function WorkspacePage() {
         dataIndex: 'type',
         render: (t: Workspace['type']) => {
           const cfg = WS_TYPE_MAP[t];
-          return <Tag style={{ background: `${cfg.color}0d`, color: cfg.color, border: 'none' }}>{cfg.label}</Tag>;
+          return (
+            <Tag style={{ background: `${cfg.color}0d`, color: cfg.color, border: 'none' }}>
+              {cfg.label}
+            </Tag>
+          );
         },
       },
       {
@@ -49,7 +53,12 @@ export function WorkspacePage() {
         dataIndex: 'cpu',
         render: (cpu: number) => (
           <div className="flex items-center gap-1.5 min-w-[100px]">
-            <Progress percent={cpu} size="small" strokeColor={cpu > 80 ? '#fb2c36' : '#fe6e00'} style={{ flex: 1 }} />
+            <Progress
+              percent={cpu}
+              size="small"
+              strokeColor={cpu > 80 ? '#fb2c36' : '#fe6e00'}
+              style={{ flex: 1 }}
+            />
             <span
               className="font-mono tabular-nums text-[11px]"
               style={{ color: cpu > 80 ? '#fb2c36' : '#62748e' }}
@@ -64,7 +73,12 @@ export function WorkspacePage() {
         dataIndex: 'mem',
         render: (mem: number) => (
           <div className="flex items-center gap-1.5 min-w-[100px]">
-            <Progress percent={mem} size="small" strokeColor={mem > 80 ? '#fb2c36' : '#8d54ff'} style={{ flex: 1 }} />
+            <Progress
+              percent={mem}
+              size="small"
+              strokeColor={mem > 80 ? '#fb2c36' : '#8d54ff'}
+              style={{ flex: 1 }}
+            />
             <span
               className="font-mono tabular-nums text-[11px]"
               style={{ color: mem > 80 ? '#fb2c36' : '#62748e' }}
@@ -93,12 +107,22 @@ export function WorkspacePage() {
       title="工作空间"
       subtitle="连接本地电脑或云主机作为 Agent 运行环境"
       extra={
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('连接工作空间功能开发中')}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => message.info('连接工作空间功能开发中')}
+        >
           连接工作空间
         </Button>
       }
     >
-      <Table columns={columns} dataSource={workspaces} rowKey="id" pagination={false} size="middle" />
+      <Table
+        columns={columns}
+        dataSource={workspaces}
+        rowKey="id"
+        pagination={false}
+        size="middle"
+      />
     </PageCard>
   );
 }

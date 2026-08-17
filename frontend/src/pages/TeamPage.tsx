@@ -34,7 +34,11 @@ export function TeamPage() {
         dataIndex: 'mode',
         render: (m: Team['mode']) => {
           const cfg = MODE_MAP[m];
-          return <Tag style={{ background: `${cfg.color}0d`, color: cfg.color, border: 'none' }}>{cfg.label}</Tag>;
+          return (
+            <Tag style={{ background: `${cfg.color}0d`, color: cfg.color, border: 'none' }}>
+              {cfg.label}
+            </Tag>
+          );
         },
       },
       {
@@ -47,7 +51,13 @@ export function TeamPage() {
                 <Avatar
                   key={i}
                   size={28}
-                  style={{ background: `${m.color}0d`, border: `1px solid ${m.color}22`, color: m.color, fontSize: 14, borderRadius: 6 }}
+                  style={{
+                    background: `${m.color}0d`,
+                    border: `1px solid ${m.color}22`,
+                    color: m.color,
+                    fontSize: 14,
+                    borderRadius: 6,
+                  }}
                 >
                   {m.icon}
                 </Avatar>
@@ -76,7 +86,11 @@ export function TeamPage() {
       title="Agent 团队"
       subtitle="编排多 Agent 协作，实现复杂工作流"
       extra={
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('团队编排器开发中')}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => message.info('团队编排器开发中')}
+        >
           新建团队
         </Button>
       }

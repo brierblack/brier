@@ -20,7 +20,11 @@ export function SkillsPage() {
       title="技能库"
       subtitle="内置工具、MCP 服务与自定义技能"
       extra={
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('技能注册开发中')}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => message.info('技能注册开发中')}
+        >
           注册技能
         </Button>
       }
@@ -41,7 +45,9 @@ export function SkillsPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 font-medium text-sm">
                     {item.name}
-                    <Tag style={{ background: `${cfg.color}0d`, color: cfg.color, border: 'none' }}>{cfg.label}</Tag>
+                    <Tag style={{ background: `${cfg.color}0d`, color: cfg.color, border: 'none' }}>
+                      {cfg.label}
+                    </Tag>
                   </div>
                   <div className="text-xs text-faint mt-0.5">{item.desc}</div>
                 </div>
