@@ -1,6 +1,6 @@
 import { Card, Switch, Tabs, Tag } from 'antd';
 import { Page } from '@/components/Page';
-import { StatusBadge } from '../components/StatusBadge';
+import { StatusBadge } from '../../components/StatusBadge';
 
 const MODEL_PROVIDERS = [
   {
@@ -31,7 +31,7 @@ const CONFIG_ROWS = [
   { label: '心跳间隔', value: '15s', accent: true },
 ];
 
-export function ConfigPage() {
+export function Config() {
   return (
     <Page title="配置" subtitle="模型、MCP 服务、AG-UI 协议与外观设置">
       <Tabs

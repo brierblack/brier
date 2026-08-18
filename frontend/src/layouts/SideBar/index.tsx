@@ -17,7 +17,7 @@ export function Sidebar() {
   const selectedKey = location.pathname.slice(1);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col pr-2">
       <div className=" px-1 flex items-center gap-1 shrink-0">
         <Logo className="w-14 h-10 shrink-0" />
         <Wordmark className="text-[20px] tracking-tight whitespace-nowrap" />
@@ -35,7 +35,7 @@ export function Sidebar() {
           onClick={(e) => navigate(`/${e.key}`)}
           classNames={{
             root: ' !border-none !grid !gap-1',
-            item: ' !px-2 !m-0 !h-8 !leading-8 !text-sm',
+            item: ' !px-2 !m-0 !h-8 !leading-8 !text-sm !w-full',
           }}
         />
       </div>

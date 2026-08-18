@@ -6,10 +6,10 @@ import { themeConfig } from './theme';
 import { Layout } from './layouts';
 import { AddAgentDrawer } from './components/AddAgentDrawer';
 import { Agents } from './pages/Agents';
-import { TeamPage } from './pages/TeamPage';
-import { SkillsPage } from './pages/SkillsPage';
-import { MonitorPage } from './pages/MonitorPage';
-import { ConfigPage } from './pages/ConfigPage';
+import { Team } from './pages/Team';
+import { Skills } from './pages/Skills';
+import { Monitor } from './pages/Monitor';
+import { Config } from './pages/Config';
 import { UIContext } from './ui-context';
 
 export default function App() {
@@ -23,10 +23,10 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Layout />}>
                 <Route path="agents" element={<Agents />} />
-                <Route path="team" element={<TeamPage />} />
-                <Route path="skills" element={<SkillsPage />} />
-                <Route path="monitor" element={<MonitorPage />} />
-                <Route path="config" element={<ConfigPage />} />
+                <Route path="team" element={<Team />} />
+                <Route path="skills" element={<Skills />} />
+                <Route path="monitor" element={<Monitor />} />
+                <Route path="config" element={<Config />} />
               </Route>
             </Routes>
           </BrowserRouter>

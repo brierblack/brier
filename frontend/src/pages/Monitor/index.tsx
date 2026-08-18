@@ -3,12 +3,12 @@ import { Table, Tag } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
-import { StatusBadge } from '../components/StatusBadge';
-import { agents, workspaces } from '../data/mockData';
-import type { Agent } from '../types';
+import { StatusBadge } from '../../components/StatusBadge';
+import { agents, workspaces } from '../../data/mockData';
+import type { Agent } from '../../types';
 import { Button } from '@/components/Button';
 
-export function MonitorPage() {
+export function Monitor() {
   const stats = useMemo(
     () => [
       { key: 'total', value: agents.length, label: 'Agent 总数', icon: '🤖', color: '#fe6e00' },

@@ -4,13 +4,13 @@ import { PlusOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
-import { StatusBadge } from '../components/StatusBadge';
-import { teams } from '../data/mockData';
-import { MODE_MAP } from '../define';
-import type { Team } from '../types';
+import { StatusBadge } from '../../components/StatusBadge';
+import { teams } from '../../data/mockData';
+import { MODE_MAP } from '../../define';
+import type { Team } from '../../types';
 import { Button } from '@/components/Button';
 
-export function TeamPage() {
+export function Team() {
   const { message } = App.useApp();
 
   const columns: ColumnsType<Team> = useMemo(

@@ -2,9 +2,9 @@ import { List, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import { Page } from '@/components/Page';
-import { skills } from '../data/mockData';
-import { SKILL_TYPE_MAP } from '../define';
-import type { Skill } from '../types';
+import { skills } from '../../data/mockData';
+import { SKILL_TYPE_MAP } from '../../define';
+import type { Skill } from '../../types';
 import { Button } from '@/components/Button';
 
 const SKILL_ICONS: Record<Skill['type'], string> = {
@@ -13,7 +13,7 @@ const SKILL_ICONS: Record<Skill['type'], string> = {
   custom: '⚡',
 };
 
-export function SkillsPage() {
+export function Skills() {
   const { message } = App.useApp();
 
   return (
