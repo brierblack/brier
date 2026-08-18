@@ -13,9 +13,9 @@ export function PageCard({ title, subtitle, extra, children }: PageCardProps) {
     <Card
       className="m-5"
       style={{
-        borderRadius: 8,
-        border: '1px solid var(--color-line)',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.04)',
+        //borderRadius: 8,
+        //border: '1px solid var(--color-line)',
+        //boxShadow: '0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.04)',
       }}
       styles={{ body: { padding: 28 } }}
     >

@@ -53,7 +53,7 @@ export const NAV_ITEMS: { key: PageKey; label: string; icon: React.ReactNode; se
     { key: 'team', label: 'Agent 团队', icon: <TeamOutlined />, section: '导航' },
     { key: 'skills', label: '技能库', icon: <ThunderboltOutlined />, section: '导航' },
     { key: 'monitor', label: '监控', icon: <MonitorOutlined />, section: '导航' },
-    { key: 'config', label: '配置', icon: <SettingOutlined />, section: '系统' },
+    { key: 'config', label: '配置', icon: <SettingOutlined />, section: '导航' },
   ];
 
 export const MODELS = ['GPT-4o', 'GPT-4o mini', 'Claude 3.5 Sonnet', 'DeepSeek V3', 'Qwen Max'];

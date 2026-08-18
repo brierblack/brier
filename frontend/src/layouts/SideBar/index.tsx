@@ -1,21 +1,12 @@
 import { Avatar, Menu } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { NAV_ITEMS } from '../define';
+import { NAV_ITEMS } from '../../define';
+import { Logo, Wordmark } from '../../components/Logo';
 
-const sections = [...new Set(NAV_ITEMS.map((item) => item.section))];
-
-const menuItems = sections.map((section) => ({
-  type: 'group' as const,
-  label: (
-    <span className="text-[10px] font-semibold tracking-[1.5px] uppercase text-faint">
-      {section}
-    </span>
-  ),
-  children: NAV_ITEMS.filter((item) => item.section === section).map((item) => ({
-    key: item.key,
-    icon: item.icon,
-    label: item.label,
-  })),
+const menuItems = NAV_ITEMS.map((item) => ({
+  key: item.key,
+  icon: item.icon,
+  label: item.label,
 }));
 
 export function Sidebar() {
@@ -26,13 +17,9 @@ export function Sidebar() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="pt-5 px-5 pb-3 flex items-center gap-2.5 shrink-0">
-        <div className="size-9 rounded-md bg-[linear-gradient(135deg,#fe6e00,#f05100)] flex items-center justify-center text-white font-extrabold text-lg shadow-[0_2px_8px_rgba(254,110,0,0.3)] shrink-0">
-          H
-        </div>
-        <span className="text-[19px] font-bold text-ink tracking-tight whitespace-nowrap">
-          Hive
-        </span>
+      <div className=" px-1 flex items-center gap-1 shrink-0">
+        <Logo className="w-14 h-10 shrink-0" />
+        <Wordmark className="text-[20px] tracking-tight whitespace-nowrap" />
       </div>
 
       <Menu
