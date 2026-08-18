@@ -3,17 +3,21 @@ import { memo, type ReactNode } from 'react';
 interface PageProps {
   children: ReactNode;
   title: ReactNode | string;
+  subtitle?: ReactNode | string;
   extra?: ReactNode | string;
 }
 
-export const Page = memo(({ children, title, extra }: PageProps) => {
+export const Page = memo(({ children, title, subtitle, extra }: PageProps) => {
   return (
-    <div className=" h-full flex flex-col justify-start bg-[#fbfbfb]">
-      <div className=" h-12 px-4 flex items-center justify-between border-b border-[#e9e9e9]">
-        <div>{title}</div>
+    <div className="h-full flex flex-col bg-[#fbfbfb]">
+      <div className="h-14 px-5 flex items-center justify-between border-b border-[#e9e9e9] shrink-0">
+        <div className="flex items-baseline gap-2">
+          <h1 className="m-0 font-bold tracking-tight text-sm text-ink leading-tight">{title}</h1>
+          {subtitle && <span className="text-xs text-faint">{subtitle}</span>}
+        </div>
         {extra && <div>{extra}</div>}
       </div>
-      <div className=" flex-1 overflow-auto">{children}</div>
+      <div className="flex-1 overflow-auto p-5">{children}</div>
     </div>
   );
 });

@@ -1,5 +1,5 @@
-import type { Workspace } from "@/types";
-import { memo } from "react";
+import type { Workspace } from '@/types';
+import { memo } from 'react';
 
 const workspaceColors: Record<string, string> = {
   local: 'linear-gradient(135deg, #fe6e00, #f05100)',

@@ -38,8 +38,7 @@ export const WS_TYPE_MAP = {
 } as const;
 
 export const PAGE_TITLES: Record<PageKey, { title: string; subtitle: string }> = {
-  agent: { title: 'Agent', subtitle: '管理所有 AI Agent，配置模型、技能与工具' },
-  workspace: { title: '工作空间', subtitle: '连接本地电脑或云主机作为 Agent 运行环境' },
+  agents: { title: 'Agents', subtitle: '管理所有 AI Agent，配置模型、技能与工具' },
   team: { title: 'Agent 团队', subtitle: '编排多 Agent 协作，实现复杂工作流' },
   skills: { title: '技能库', subtitle: '内置工具、MCP 服务与自定义技能' },
   monitor: { title: '监控', subtitle: 'Agent 运行状态与调用统计' },
@@ -48,8 +47,7 @@ export const PAGE_TITLES: Record<PageKey, { title: string; subtitle: string }> =
 
 export const NAV_ITEMS: { key: PageKey; label: string; icon: React.ReactNode; section: string }[] =
   [
-    { key: 'workspace', label: '工作空间', icon: <AppstoreOutlined />, section: '导航' },
-    { key: 'agent', label: 'Agent', icon: <RobotOutlined />, section: '导航' },
+    { key: 'agents', label: 'Agents', icon: <RobotOutlined />, section: '导航' },
     { key: 'team', label: 'Agent 团队', icon: <TeamOutlined />, section: '导航' },
     { key: 'skills', label: '技能库', icon: <ThunderboltOutlined />, section: '导航' },
     { key: 'monitor', label: '监控', icon: <MonitorOutlined />, section: '导航' },

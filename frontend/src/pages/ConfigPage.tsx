@@ -1,5 +1,5 @@
 import { Card, Switch, Tabs, Tag } from 'antd';
-import { PageCard } from '../components/PageCard';
+import { Page } from '@/components/Page';
 import { StatusBadge } from '../components/StatusBadge';
 
 const MODEL_PROVIDERS = [
@@ -33,7 +33,7 @@ const CONFIG_ROWS = [
 
 export function ConfigPage() {
   return (
-    <PageCard title="配置" subtitle="模型、MCP 服务、AG-UI 协议与外观设置">
+    <Page title="配置" subtitle="模型、MCP 服务、AG-UI 协议与外观设置">
       <Tabs
         defaultActiveKey="model"
         items={[
@@ -186,6 +186,6 @@ export function ConfigPage() {
           },
         ]}
       />
-    </PageCard>
+    </Page>
   );
 }

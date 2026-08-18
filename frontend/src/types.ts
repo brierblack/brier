@@ -5,7 +5,7 @@ export type WorkspaceType = 'local' | 'ssh' | 'cloud';
 export type TeamMode = 'coordinator' | 'sequential' | 'graph';
 export type SkillType = 'builtin' | 'mcp' | 'custom';
 export type EntityStatus = AgentStatus | WorkspaceStatus | TeamStatus;
-export type PageKey = 'agent' | 'workspace' | 'team' | 'skills' | 'monitor' | 'config';
+export type PageKey = 'agents' | 'team' | 'skills' | 'monitor' | 'config';
 
 export interface Agent {
   id: number;

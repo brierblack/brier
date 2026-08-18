@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
-import { Button, Table, Tag } from 'antd';
+import { Table, Tag } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { PageCard } from '../components/PageCard';
+import { Page } from '@/components/Page';
 import { StatusBadge } from '../components/StatusBadge';
 import { agents, workspaces } from '../data/mockData';
 import type { Agent } from '../types';
+import { Button } from '@/components/Button';
 
 export function MonitorPage() {
   const stats = useMemo(
@@ -82,7 +83,7 @@ export function MonitorPage() {
   );
 
   return (
-    <PageCard
+    <Page
       title="监控"
       subtitle="Agent 运行状态与调用统计"
       extra={<Button icon={<ReloadOutlined />}>刷新</Button>}
@@ -110,6 +111,6 @@ export function MonitorPage() {
       </div>
 
       <Table columns={columns} dataSource={agents} rowKey="id" pagination={false} size="middle" />
-    </PageCard>
+    </Page>
   );
 }

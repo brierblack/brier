@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
-import { Avatar, Button, Table, Tag } from 'antd';
+import { Avatar, Table, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PageCard } from '../components/PageCard';
+import { Page } from '@/components/Page';
 import { StatusBadge } from '../components/StatusBadge';
 import { teams } from '../data/mockData';
 import { MODE_MAP } from '../define';
 import type { Team } from '../types';
+import { Button } from '@/components/Button';
 
 export function TeamPage() {
   const { message } = App.useApp();
@@ -82,7 +83,7 @@ export function TeamPage() {
   );
 
   return (
-    <PageCard
+    <Page
       title="Agent 团队"
       subtitle="编排多 Agent 协作，实现复杂工作流"
       extra={
@@ -96,6 +97,6 @@ export function TeamPage() {
       }
     >
       <Table columns={columns} dataSource={teams} rowKey="id" pagination={false} size="middle" />
-    </PageCard>
+    </Page>
   );
 }
