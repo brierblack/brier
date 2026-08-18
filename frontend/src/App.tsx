@@ -13,7 +13,7 @@ import { MonitorPage } from './pages/MonitorPage';
 import { ConfigPage } from './pages/ConfigPage';
 import { UIContext } from './ui-context';
 
-const Agents = lazy(()=> import('./pages/Agents'));
+const Agents = lazy(() => import('./pages/Agents'));
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);

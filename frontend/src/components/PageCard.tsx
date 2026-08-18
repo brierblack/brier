@@ -12,11 +12,13 @@ export function PageCard({ title, subtitle, extra, children }: PageCardProps) {
   return (
     <Card
       className="m-5"
-      style={{
-        //borderRadius: 8,
-        //border: '1px solid var(--color-line)',
-        //boxShadow: '0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.04)',
-      }}
+      style={
+        {
+          //borderRadius: 8,
+          //border: '1px solid var(--color-line)',
+          //boxShadow: '0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.04)',
+        }
+      }
       styles={{ body: { padding: 28 } }}
     >
       <div className="flex items-end justify-between pb-5 mb-6 border-b border-line">

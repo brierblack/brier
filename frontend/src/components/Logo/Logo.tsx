@@ -5,13 +5,25 @@ export interface LogoProps {
   style?: CSSProperties;
 }
 
-export const Logo = memo(({ className, style }: LogoProps) =>{
+export const Logo = memo(({ className, style }: LogoProps) => {
   const gradientId = useId();
 
   return (
-    <svg viewBox="16 26 68 42" className={className} style={style} xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="16 26 68 42"
+      className={className}
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id={gradientId}
+          x1="0"
+          y1="0"
+          x2="100"
+          y2="100"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop offset="0%" stopColor="#ffb060" />
           <stop offset="20%" stopColor="#fe6e00" />
           <stop offset="50%" stopColor="#ff5e7a" />
@@ -47,4 +59,4 @@ export const Logo = memo(({ className, style }: LogoProps) =>{
       <circle cx="50" cy="47" r="1.7" fill={`url(#${gradientId})`} />
     </svg>
   );
-})
+});

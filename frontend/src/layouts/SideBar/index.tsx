@@ -2,6 +2,7 @@ import { Avatar, Menu } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '../../define';
 import { Logo, Wordmark } from '../../components/Logo';
+import { Workspace } from '../../components/Workspace';
 
 const menuItems = NAV_ITEMS.map((item) => ({
   key: item.key,
@@ -22,13 +23,22 @@ export function Sidebar() {
         <Wordmark className="text-[20px] tracking-tight whitespace-nowrap" />
       </div>
 
-      <Menu
-        mode="inline"
-        selectedKeys={[selectedKey]}
-        items={menuItems}
-        onClick={(e) => navigate(`/${e.key}`)}
-        style={{ flex: 1, borderInlineEnd: 'none', background: 'transparent', paddingInline: 10 }}
-      />
+      <div className="px-1 py-2 shrink-0">
+        <Workspace />
+      </div>
+
+      <div className=" px-1 flex-1">
+        <Menu
+          mode="vertical"
+          selectedKeys={[selectedKey]}
+          items={menuItems}
+          onClick={(e) => navigate(`/${e.key}`)}
+          classNames={{
+            root: ' !border-none !grid !gap-1',
+            item: ' !px-2 !m-0 !h-8 !leading-8 !text-sm',
+          }}
+        />
+      </div>
 
       <div className="flex items-center gap-2.5 px-4 py-3 shrink-0">
         <Avatar

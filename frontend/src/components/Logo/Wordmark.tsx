@@ -5,7 +5,7 @@ export interface WordmarkProps {
   style?: CSSProperties;
 }
 
-export const Wordmark = memo(({ className, style }: WordmarkProps) =>{
+export const Wordmark = memo(({ className, style }: WordmarkProps) => {
   return (
     <span
       className={className}
@@ -24,4 +24,4 @@ export const Wordmark = memo(({ className, style }: WordmarkProps) =>{
       Hive
     </span>
   );
-})
+});
