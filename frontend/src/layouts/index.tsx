@@ -1,15 +1,20 @@
-// import type { ReactNode } from "react";
-// import { Splitter } from "antd";
+import { Outlet } from 'react-router-dom';
+import { Sidebar } from '../components/Sidebar';
+import { Resizable, DragLine } from '@/components/Resizable';
 
-// export const Layout = ({ children }: { children: ReactNode }) => {
-//     return (
-//         <Splitter className=" h-screen">
-//             <Splitter.Panel defaultSize="40%" min="20%" max="70%">
-//                 <Desc text="First" />
-//             </Splitter.Panel>
-//             <Splitter.Panel>
-//                 <Desc text="Second" />
-//             </Splitter.Panel>
-//         </Splitter>
-//     );
-// }
+export const Layout = () => {
+  return (
+    <Resizable>
+      <div className="h-screen overflow-hidden flex bg-[#f4f4f4] p-2">
+        <DragLine defaultWidth={288} minWidth={200} maxWidth={480}>
+          <aside className=" h-full overflow-hidden">
+            <Sidebar />
+          </aside>
+        </DragLine>
+        <main className=" flex-1 h-full overflow-hidden min-w-0">
+          <Outlet />
+        </main>
+      </div>
+    </Resizable>
+  );
+};

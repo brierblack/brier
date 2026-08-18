@@ -4,12 +4,9 @@ import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { PageCard } from '../components/PageCard';
 import { StatusBadge } from '../components/StatusBadge';
+import { useUI } from '../ui-context';
 import { agents } from '../data/mockData';
 import type { Agent, AgentStatus } from '../types';
-
-interface AgentPageProps {
-  onAddAgent?: () => void;
-}
 
 const STATS = [
   { key: 'total', value: agents.length, label: 'Agent 总数', icon: '🤖', color: '#fe6e00' },
@@ -36,7 +33,8 @@ const STATS = [
   },
 ] as const;
 
-export function AgentPage({ onAddAgent }: AgentPageProps) {
+export function AgentPage() {
+  const { openDrawer } = useUI();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
@@ -115,7 +113,7 @@ export function AgentPage({ onAddAgent }: AgentPageProps) {
       title="Agent"
       subtitle="管理所有 AI Agent，配置模型、技能与工具"
       extra={
-        <Button type="primary" icon={<PlusOutlined />} onClick={onAddAgent}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={openDrawer}>
           新增 Agent
         </Button>
       }

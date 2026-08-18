@@ -1,11 +1,6 @@
 import { Avatar, Menu } from 'antd';
-import type { PageKey } from '../types';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '../define';
-
-interface SidebarProps {
-  activePage: PageKey;
-  onNavigate: (page: PageKey) => void;
-}
 
 const sections = [...new Set(NAV_ITEMS.map((item) => item.section))];
 
@@ -23,7 +18,12 @@ const menuItems = sections.map((section) => ({
   })),
 }));
 
-export function Sidebar({ activePage, onNavigate }: SidebarProps) {
+export function Sidebar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const selectedKey = location.pathname.slice(1);
+
   return (
     <div className="h-full flex flex-col">
       <div className="pt-5 px-5 pb-3 flex items-center gap-2.5 shrink-0">
@@ -37,9 +37,9 @@ export function Sidebar({ activePage, onNavigate }: SidebarProps) {
 
       <Menu
         mode="inline"
-        selectedKeys={[activePage]}
+        selectedKeys={[selectedKey]}
         items={menuItems}
-        onClick={(e) => onNavigate(e.key as PageKey)}
+        onClick={(e) => navigate(`/${e.key}`)}
         style={{ flex: 1, borderInlineEnd: 'none', background: 'transparent', paddingInline: 10 }}
       />
 
