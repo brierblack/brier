@@ -7,13 +7,13 @@ export const theme: ThemeConfig = {
     borderRadius: 6,
     fontFamily: "'Inter Variable', -apple-system, sans-serif",
     fontSize: 13,
+    colorBgElevated: '#fbfbfb',
   },
   components: {
-    Menu: {
-    },
     Table: {
       headerBg: '#f8f8f8',
-      borderColor: "#e3e3e3",
+      borderColor: '#e2e2e2',
+      colorBorder: '#e2e2e2',
       cellPaddingBlock: 12,
       cellPaddingInline: 16,
     },

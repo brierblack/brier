@@ -11,7 +11,8 @@ export const Table: TableComponent = memo((props) => {
   const cn = useMemo(() => {
     if(bordered) {
       return {
-        root: " !bg-transparent !border-t !border-x !border-[#e3e3e3] rounded-t-md",
+        root: " !bg-transparent !border-t !border-x !border-[#e2e2e2] rounded-t-md",
+        headerWrapper: " !bg-[#f8f8f8]",
         ...classNames,
       }
     }

@@ -48,18 +48,19 @@ export const WorkSpace = memo(() => {
   const contentStyle: React.CSSProperties = {
     backgroundColor: token.colorBgElevated,
     borderRadius: token.borderRadiusLG,
-    boxShadow: token.boxShadowSecondary,
+    boxShadow: 'none',
+    border: '1px solid #e3e3e3',
   };
 
   const menuStyle: React.CSSProperties = {
     backgroundColor: token.colorBgElevated,
-    borderRadius: token.borderRadiusLG,
-    boxShadow: token.boxShadowSecondary,
+    borderRadius: 'none',
+    boxShadow: 'none',
   };
 
   const dropdownContent = (menu) => (
     <div style={contentStyle}>
-      <div className="p-2">
+      <div className="border-b border-[#e2e8f0]">
         <Input
           placeholder="搜索工作空间"
           prefix={<SearchOutlined className="text-faint" />}
@@ -67,6 +68,8 @@ export const WorkSpace = memo(() => {
           onChange={(e) => setSearch(e.target.value)}
           allowClear
           variant="filled"
+          classNames={{root: " !bg-[#fbfbfb]"}}
+          className="!border-transparent"
         />
       </div>
 
@@ -81,7 +84,7 @@ export const WorkSpace = memo(() => {
           block
           type="text"
           onClick={handleCreate}
-          className=" rounded-none w-full flex items-center gap-2 px-3 h-9 text-faint hover:bg-black/[0.04] transition-colors cursor-pointer"
+          className=" bg-[#fbfbfb] rounded-none w-full flex items-center gap-2 px-3 h-9 text-faint transition-colors cursor-pointer"
         >
           <PlusOutlined className="text-xs" />
           新建工作空间
