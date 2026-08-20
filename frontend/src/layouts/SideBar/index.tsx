@@ -34,7 +34,7 @@ export function Sidebar() {
           items={menuItems}
           onClick={(e) => navigate(`/${e.key}`)}
           classNames={{
-            root: ' !border-none !grid !gap-1',
+            root: ' !border-none !grid !gap-1 !bg-transparent',
             item: ' !px-2 !m-0 !h-8 !leading-8 !text-sm !w-full',
           }}
         />

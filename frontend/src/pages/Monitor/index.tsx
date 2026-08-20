@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { Table, Tag, Button } from 'antd';
+import { Tag, Button } from 'antd';
+import { Table } from '@/components/Table';
 import { ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
@@ -109,7 +110,7 @@ export function Monitor() {
         ))}
       </div>
 
-      <Table columns={columns} dataSource={agents} rowKey="id" pagination={false} size="middle" />
+      <Table bordered columns={columns} dataSource={agents} rowKey="id" pagination={false} size="middle" />
     </Page>
   );
 }

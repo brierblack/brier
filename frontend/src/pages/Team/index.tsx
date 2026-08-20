@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { Avatar, Table, Tag, Button } from 'antd';
+import { Avatar, Tag, Button } from 'antd';
+import { Table } from '@/components/Table';
 import { PlusOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
@@ -95,7 +96,7 @@ export function Team() {
         </Button>
       }
     >
-      <Table columns={columns} dataSource={teams} rowKey="id" pagination={false} size="middle" />
+      <Table bordered columns={columns} dataSource={teams} rowKey="id" pagination={false} size="middle" />
     </Page>
   );
 }

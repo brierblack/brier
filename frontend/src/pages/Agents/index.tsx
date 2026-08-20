@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Input, Select, Space, Table, Tag, Button } from 'antd';
+import { Input, Select, Space, Tag, Button } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
@@ -7,6 +7,7 @@ import { StatusBadge } from '../../components/StatusBadge';
 import { useUI } from '../../ui-context';
 import { agents } from '../../data/mockData';
 import type { Agent, AgentStatus } from '../../types';
+import { Table } from '@/components/Table';
 
 export const Agents = () => {
   const { openDrawer } = useUI();
@@ -116,12 +117,11 @@ export const Agents = () => {
       </Space>
 
       <Table
+        bordered
         columns={columns}
         dataSource={filteredAgents}
         rowKey="id"
         pagination={false}
-        size="middle"
-        bordered
       />
     </Page>
   );

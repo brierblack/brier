@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useState } from 'react';
-import { Button, Dropdown, Input,  theme} from 'antd';
-import { PlusOutlined,SwapOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Input, theme } from 'antd';
+import { PlusOutlined, SwapOutlined, SearchOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { workspaces as initialWorkspaces } from '../../data/mockData';
 import { Avatar } from './Avatar';
@@ -29,7 +29,7 @@ export const WorkSpace = memo(() => {
           <div className="flex items-center gap-2 py-0.5">
             <Avatar workspace={w} />
             <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-medium truncate">{w.name}</div>
+              <div className="font-medium truncate">{w.name}</div>
             </div>
           </div>
         ),
@@ -57,8 +57,6 @@ export const WorkSpace = memo(() => {
     boxShadow: token.boxShadowSecondary,
   };
 
-
-
   const dropdownContent = (menu) => (
     <div style={contentStyle}>
       <div className="p-2">
@@ -72,18 +70,18 @@ export const WorkSpace = memo(() => {
         />
       </div>
 
-          {React.cloneElement(
-            menu as React.ReactElement<{
-              style: React.CSSProperties;
-            }>,
-            { style: menuStyle },
-          )}
+      {React.cloneElement(
+        menu as React.ReactElement<{
+          style: React.CSSProperties;
+        }>,
+        { style: menuStyle },
+      )}
       <div className="border-t border-[#e2e8f0]">
         <Button
           block
           type="text"
           onClick={handleCreate}
-          className=" rounded-none w-full flex items-center gap-2 px-3 h-9 text-[13px] text-faint hover:bg-black/[0.04] transition-colors cursor-pointer"
+          className=" rounded-none w-full flex items-center gap-2 px-3 h-9 text-faint hover:bg-black/[0.04] transition-colors cursor-pointer"
         >
           <PlusOutlined className="text-xs" />
           新建工作空间
@@ -105,16 +103,16 @@ export const WorkSpace = memo(() => {
         block
         type="text"
         classNames={{
-          root: " !border-[#e2e2e2]"
+          root: ' !border-[#e2e2e2]',
         }}
       >
         <Avatar workspace={current} />
         <div className="flex-1 min-w-0 text-left">
-          <div className="text-[13px] font-medium text-ink truncate">{current.name}</div>
+          <div className=" font-medium text-ink truncate">{current.name}</div>
         </div>
         <span className="flex items-center gap-0.5 text-faint text-[12px] shrink-0">
           切换
-          <SwapOutlined  />
+          <SwapOutlined />
         </span>
       </Button>
     </Dropdown>
