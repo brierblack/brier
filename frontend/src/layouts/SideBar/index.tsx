@@ -2,7 +2,7 @@ import { Avatar, Menu } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '../../define';
 import { Logo, Wordmark } from '../../components/Logo';
-import { Workspace } from '../../components/Workspace';
+import { WorkSpace } from '../../components/WorkSpace';
 
 const menuItems = NAV_ITEMS.map((item) => ({
   key: item.key,
@@ -24,7 +24,7 @@ export function Sidebar() {
       </div>
 
       <div className="px-1 py-2 shrink-0">
-        <Workspace />
+        <WorkSpace />
       </div>
 
       <div className=" px-1 flex-1">

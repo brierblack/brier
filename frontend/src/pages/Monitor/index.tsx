@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
-import { Table, Tag } from 'antd';
+import { Table, Tag, Button } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
 import { StatusBadge } from '../../components/StatusBadge';
 import { agents, workspaces } from '../../data/mockData';
 import type { Agent } from '../../types';
-import { Button } from '@/components/Button';
 
 export function Monitor() {
   const stats = useMemo(

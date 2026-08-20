@@ -1,6 +1,6 @@
 import type { ThemeConfig } from 'antd';
 
-export const themeConfig: ThemeConfig = {
+export const theme: ThemeConfig = {
   token: {
     colorPrimary: '#fe6e00',
     colorBgLayout: '#f1f5f9',
@@ -36,20 +36,17 @@ export const themeConfig: ThemeConfig = {
       cellPaddingBlock: 12,
       cellPaddingInline: 16,
     },
-    Card: {
-      borderRadiusLG: 8,
-    },
     Button: {
       borderRadius: 6,
-      controlHeight: 40,
+      controlHeight: 32,
     },
     Input: {
       borderRadius: 6,
-      controlHeight: 38,
+      controlHeight: 32,
     },
     Select: {
       borderRadius: 6,
-      controlHeight: 38,
+      controlHeight: 32,
     },
     Tag: {
       borderRadiusSM: 4,

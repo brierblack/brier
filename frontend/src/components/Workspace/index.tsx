@@ -1,11 +1,11 @@
 import { memo, useMemo, useState } from 'react';
-import { Dropdown, Input, Menu } from 'antd';
-import { DownOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Input, Menu } from 'antd';
+import { PlusOutlined,SwapOutlined, SearchOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { workspaces as initialWorkspaces } from '../../data/mockData';
 import { Avatar } from './Avatar';
 
-export const Workspace = memo(() => {
+export const WorkSpace = memo(() => {
   const [workspaces] = useState(initialWorkspaces);
   const [currentId, setCurrentId] = useState(initialWorkspaces[0].id);
   const [search, setSearch] = useState('');
@@ -88,16 +88,20 @@ export const Workspace = memo(() => {
       open={open}
       onOpenChange={setOpen}
     >
-      <button
-        type="button"
-        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg bg-transparent border border-[#e2e8f0] hover:border-[#fe6e00] transition-colors cursor-pointer"
+      <Button
+        block
+        ghost
+        variant="filled"
       >
         <Avatar workspace={current} />
         <div className="flex-1 min-w-0 text-left">
           <div className="text-[13px] font-medium text-ink truncate">{current.name}</div>
         </div>
-        <DownOutlined className="text-faint text-[10px] shrink-0" />
-      </button>
+        <span className="flex items-center gap-0.5 text-faint text-[12px] shrink-0">
+          切换
+          <SwapOutlined  />
+        </span>
+      </Button>
     </Dropdown>
   );
 });

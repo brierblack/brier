@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { App as AntApp, ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { themeConfig } from './theme';
+import { theme } from './config/theme';
 import { Layout } from './layouts';
 import { AddAgentDrawer } from './components/AddAgentDrawer';
 import { Agents } from './pages/Agents';
@@ -16,7 +16,7 @@ export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <ConfigProvider locale={zhCN} theme={themeConfig}>
+    <ConfigProvider locale={zhCN} theme={theme} wave={{ disabled: true }}>
       <AntApp>
         <UIContext.Provider value={{ openDrawer: () => setDrawerOpen(true) }}>
           <BrowserRouter>

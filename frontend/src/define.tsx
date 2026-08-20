@@ -1,5 +1,4 @@
 import {
-  AppstoreOutlined,
   RobotOutlined,
   TeamOutlined,
   ThunderboltOutlined,
