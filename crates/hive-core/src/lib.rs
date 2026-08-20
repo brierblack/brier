@@ -1,6 +1,10 @@
 pub use hive_error::{HiveError, Result};
+use serde::{Deserialize, Serialize};
 
 pub mod auth {
+    use super::{Deserialize, Serialize};
+
+    #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct UserInfo {
         pub id: u64,
         pub login: String,

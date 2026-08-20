@@ -2,6 +2,7 @@ use hive_config::GithubConfig;
 use hive_core::auth::{AuthProvider, UserInfo};
 use hive_error::{HiveError, Result};
 
+#[derive(Clone)]
 pub struct GithubAuth {
     config: GithubConfig,
     client: reqwest::Client,

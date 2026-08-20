@@ -5,3 +5,4 @@ edition.workspace = true
 
 [dependencies]
 hive-error.workspace = true
+serde = { version = "1", features = ["derive"] }

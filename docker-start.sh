@@ -117,8 +117,8 @@ show_status() {
   docker compose ps
   echo ""
   local web_port
-  web_port=$(grep -E '^WEB_PORT=' .env 2>/dev/null | cut -d= -f2 || echo "8080")
-  web_port="${web_port:-8080}"
+  web_port=$(grep -E '^PORT=' .env 2>/dev/null | cut -d= -f2 || echo "8090")
+  web_port="${web_port:-8090}"
   echo -e "${GREEN}访问地址:${NC} http://localhost:${web_port}"
   echo -e "${CYAN}====================================${NC}"
   echo ""

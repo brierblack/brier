@@ -1,16 +1,25 @@
 use hive_error::Result;
-use serde::Deserialize;
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Clone)]
 pub struct GithubConfig {
     pub client_id: String,
     pub client_secret: String,
     pub redirect_uri: String,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Clone)]
+pub struct ServerConfig {
+    pub host: String,
+    pub port: u16,
+    pub jwt_secret: String,
+    pub frontend_dir: String,
+    pub frontend_url: Option<String>,
+}
+
+#[derive(Debug, Clone)]
 pub struct AppConfig {
     pub github: GithubConfig,
+    pub server: ServerConfig,
 }
 
 impl AppConfig {
@@ -23,6 +32,23 @@ impl AppConfig {
             redirect_uri: std::env::var("GITHUB_REDIRECT_URI")
                 .map_err(|e| hive_error::HiveError::Config(e.to_string()))?,
         };
-        Ok(Self { github })
+
+        let port: u16 = std::env::var("PORT")
+            .map_err(|e| hive_error::HiveError::Config(e.to_string()))?
+            .parse()
+            .map_err(|e| hive_error::HiveError::Config(format!("invalid PORT: {}", e)))?;
+
+        let server = ServerConfig {
+            host: std::env::var("HOST")
+                .map_err(|e| hive_error::HiveError::Config(e.to_string()))?,
+            port,
+            jwt_secret: std::env::var("JWT_SECRET")
+                .map_err(|e| hive_error::HiveError::Config(e.to_string()))?,
+            frontend_dir: std::env::var("FRONTEND_DIR")
+                .map_err(|e| hive_error::HiveError::Config(e.to_string()))?,
+            frontend_url: std::env::var("FRONTEND_URL").ok().filter(|s| !s.is_empty()),
+        };
+
+        Ok(Self { github, server })
     }
 }

@@ -1,29 +1,29 @@
 services:
-  web:
+  hive:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: hive-web
+    container_name: hive-app
     restart: unless-stopped
     env_file:
       - path: .env
         required: false
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8090
+      - FRONTEND_DIR=/app/frontend/dist
     ports:
-      - "127.0.0.1:${WEB_PORT:-8080}:80"
+      - "127.0.0.1:${PORT:-8090}:8090"
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost/ || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8090/ || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 15s
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    cap_add:
-      - CHOWN
-      - SETUID
-      - SETGID
     logging:
       driver: json-file
       options:

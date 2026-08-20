@@ -13,6 +13,12 @@ pub enum HiveError {
     #[error("github api error: {0}")]
     GithubApi(String),
 
+    #[error("jwt error: {0}")]
+    Jwt(String),
+
+    #[error("server error: {0}")]
+    Server(String),
+
     #[error(transparent)]
     Io(#[from] std::io::Error),
 }
