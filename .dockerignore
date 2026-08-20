@@ -1,7 +1,7 @@
 # Build artifacts
 target/
-frontend/dist/
-frontend/node_modules/
+apps/web/dist/
+**/node_modules/
 
 # pnpm store
 .pnpm-store/

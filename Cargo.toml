@@ -1,10 +1,6 @@
-[package]
-name = "hive"
-version = "0.1.0"
-edition = "2021"
-
 [workspace]
 members = [
+    "apps/server",
     "crates/hive-core",
     "crates/hive-error",
     "crates/hive-config",
@@ -21,12 +17,6 @@ hive-core = { path = "crates/hive-core" }
 hive-error = { path = "crates/hive-error" }
 hive-config = { path = "crates/hive-config" }
 hive-github-auth = { path = "crates/hive-github-auth" }
-
-[dependencies]
-hive-core.workspace = true
-hive-error.workspace = true
-hive-config.workspace = true
-hive-github-auth.workspace = true
 axum = "0.8"
 tokio = { version = "1", features = ["full"] }
 tower = "0.5"

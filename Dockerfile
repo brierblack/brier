@@ -8,17 +8,21 @@
 # ---- Stage 1: Build Frontend ----
 FROM node:22-alpine AS frontend-builder
 
-WORKDIR /frontend
+WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@11.22.0 --activate
 
-COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
+# Copy workspace root files for dependency install
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY apps/web/package.json apps/web/
 
 RUN pnpm config set fetch-timeout 300000 && \
     pnpm config set fetch-retries 5 && \
     pnpm install --frozen-lockfile
 
-COPY frontend/ ./
+# Copy shared config and app source
+COPY eslint.config.js .prettierrc.json .prettierignore tsconfig.json ./
+COPY apps/web/ apps/web/
 
 RUN pnpm run lint && pnpm run format:check
 
@@ -32,7 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libssl-dev pkg-
 WORKDIR /app
 
 COPY Cargo.toml ./
-COPY src/ src/
+COPY apps/server/ apps/server/
 COPY crates/ crates/
 
 RUN cargo build --release
@@ -45,7 +49,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 WORKDIR /app
 
 COPY --from=backend-builder /app/target/release/hive /app/hive
-COPY --from=frontend-builder /frontend/dist /app/frontend/dist
+COPY --from=frontend-builder /app/apps/web/dist /app/frontend/dist
 
 ENV HOST=0.0.0.0
 ENV PORT=8090

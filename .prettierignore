@@ -1,5 +1,6 @@
-dist
-node_modules
+**/dist
+**/node_modules
+**/target
 package-lock.json
 pnpm-lock.yaml
 *.svg
