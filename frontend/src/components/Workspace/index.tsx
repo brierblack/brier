@@ -60,7 +60,7 @@ export const WorkSpace = memo(() => {
 
   const dropdownContent = (menu) => (
     <div style={contentStyle}>
-      <div className="border-b border-[#e2e8f0]">
+      <div className="border-b border-[#e2e2e2]">
         <Input
           placeholder="搜索工作空间"
           prefix={<SearchOutlined className="text-faint" />}
@@ -79,7 +79,7 @@ export const WorkSpace = memo(() => {
         }>,
         { style: menuStyle },
       )}
-      <div className="border-t border-[#e2e8f0]">
+      <div className="border-t border-[#e2e2e2]">
         <Button
           block
           type="text"
