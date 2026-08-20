@@ -1,5 +1,5 @@
-import { memo, useMemo, useState } from 'react';
-import { Button, Dropdown, Input, Menu } from 'antd';
+import React, { memo, useMemo, useState } from 'react';
+import { Button, Dropdown, Input,  theme} from 'antd';
 import { PlusOutlined,SwapOutlined, SearchOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { workspaces as initialWorkspaces } from '../../data/mockData';
@@ -9,7 +9,7 @@ export const WorkSpace = memo(() => {
   const [workspaces] = useState(initialWorkspaces);
   const [currentId, setCurrentId] = useState(initialWorkspaces[0].id);
   const [search, setSearch] = useState('');
-  const [open, setOpen] = useState(false);
+  const { token } = theme.useToken();
 
   const current = workspaces.find((w) => w.id === currentId) ?? workspaces[0];
 
@@ -39,16 +39,28 @@ export const WorkSpace = memo(() => {
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     setCurrentId(Number(key));
-    setOpen(false);
   };
 
   const handleCreate = () => {
     setSearch('');
-    setOpen(false);
   };
 
-  const dropdownContent = (
-    <div className="rounded-lg bg-white shadow-lg border border-[#e2e8f0] overflow-hidden">
+  const contentStyle: React.CSSProperties = {
+    backgroundColor: token.colorBgElevated,
+    borderRadius: token.borderRadiusLG,
+    boxShadow: token.boxShadowSecondary,
+  };
+
+  const menuStyle: React.CSSProperties = {
+    backgroundColor: token.colorBgElevated,
+    borderRadius: token.borderRadiusLG,
+    boxShadow: token.boxShadowSecondary,
+  };
+
+
+
+  const dropdownContent = (menu) => (
+    <div style={contentStyle}>
       <div className="p-2">
         <Input
           placeholder="搜索工作空间"
@@ -56,42 +68,45 @@ export const WorkSpace = memo(() => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           allowClear
-          size="small"
           variant="filled"
         />
       </div>
-      <Menu
-        mode="vertical"
-        selectedKeys={[String(currentId)]}
-        items={menuItems}
-        onClick={handleMenuClick}
-        className="!border-none !bg-transparent max-h-[280px] overflow-auto"
-        style={{ paddingInline: 4 }}
-      />
+
+          {React.cloneElement(
+            menu as React.ReactElement<{
+              style: React.CSSProperties;
+            }>,
+            { style: menuStyle },
+          )}
       <div className="border-t border-[#e2e8f0]">
-        <button
-          type="button"
+        <Button
+          block
+          type="text"
           onClick={handleCreate}
-          className="w-full flex items-center gap-2 px-3 h-9 text-[13px] text-faint hover:bg-black/[0.04] transition-colors cursor-pointer"
+          className=" rounded-none w-full flex items-center gap-2 px-3 h-9 text-[13px] text-faint hover:bg-black/[0.04] transition-colors cursor-pointer"
         >
           <PlusOutlined className="text-xs" />
           新建工作空间
-        </button>
+        </Button>
       </div>
     </div>
   );
 
   return (
     <Dropdown
-      dropdownRender={() => dropdownContent}
+      menu={{
+        items: menuItems,
+        onClick: handleMenuClick,
+      }}
+      popupRender={(menu) => dropdownContent(menu)}
       trigger={['click']}
-      open={open}
-      onOpenChange={setOpen}
     >
       <Button
         block
-        ghost
-        variant="filled"
+        type="text"
+        classNames={{
+          root: " !border-[#e2e2e2]"
+        }}
       >
         <Avatar workspace={current} />
         <div className="flex-1 min-w-0 text-left">
