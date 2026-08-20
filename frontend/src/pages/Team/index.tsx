@@ -96,7 +96,14 @@ export function Team() {
         </Button>
       }
     >
-      <Table bordered columns={columns} dataSource={teams} rowKey="id" pagination={false} size="middle" />
+      <Table
+        bordered
+        columns={columns}
+        dataSource={teams}
+        rowKey="id"
+        pagination={false}
+        size="middle"
+      />
     </Page>
   );
 }

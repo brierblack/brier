@@ -9,19 +9,14 @@ type TableComponent = <T extends object = any>(props: TableProps<T>) => React.Re
 export const Table: TableComponent = memo((props) => {
   const { bordered, classNames, ...args } = props;
   const cn = useMemo(() => {
-    if(bordered) {
+    if (bordered) {
       return {
-        root: " !bg-transparent !border-t !border-x !border-[#e2e2e2] rounded-t-md",
-        headerWrapper: " !bg-[#f8f8f8]",
+        root: ' !bg-transparent !border-t !border-x !border-[#e2e2e2] rounded-t-md',
+        headerWrapper: ' !bg-[#f8f8f8]',
         ...classNames,
-      }
+      };
     }
-    return classNames
-  }, [classNames, bordered])
-  return (
-    <AntdTable
-      classNames={cn}
-      {...args}
-    />
-  );
+    return classNames;
+  }, [classNames, bordered]);
+  return <AntdTable classNames={cn} {...args} />;
 });

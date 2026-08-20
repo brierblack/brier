@@ -110,7 +110,14 @@ export function Monitor() {
         ))}
       </div>
 
-      <Table bordered columns={columns} dataSource={agents} rowKey="id" pagination={false} size="middle" />
+      <Table
+        bordered
+        columns={columns}
+        dataSource={agents}
+        rowKey="id"
+        pagination={false}
+        size="middle"
+      />
     </Page>
   );
 }

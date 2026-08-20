@@ -68,7 +68,7 @@ export const WorkSpace = memo(() => {
           onChange={(e) => setSearch(e.target.value)}
           allowClear
           variant="filled"
-          classNames={{root: " !bg-[#fbfbfb]"}}
+          classNames={{ root: ' !bg-[#fbfbfb]' }}
           className="!border-transparent"
         />
       </div>
