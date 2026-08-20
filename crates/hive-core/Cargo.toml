@@ -1,0 +1,7 @@
+[package]
+name = "hive-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+hive-error.workspace = true

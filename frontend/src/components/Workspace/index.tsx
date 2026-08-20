@@ -58,7 +58,7 @@ export const WorkSpace = memo(() => {
     boxShadow: 'none',
   };
 
-  const dropdownContent = (menu) => (
+  const dropdownContent = (menu: React.ReactNode) => (
     <div style={contentStyle}>
       <div className="border-b border-[#e2e2e2]">
         <Input

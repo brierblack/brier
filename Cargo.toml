@@ -1,0 +1,29 @@
+[package]
+name = "hive"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = [
+    "crates/hive-core",
+    "crates/hive-error",
+    "crates/hive-config",
+    "crates/hive-github-auth",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+hive-core = { path = "crates/hive-core" }
+hive-error = { path = "crates/hive-error" }
+hive-config = { path = "crates/hive-config" }
+hive-github-auth = { path = "crates/hive-github-auth" }
+
+[dependencies]
+hive-core.workspace = true
+hive-error.workspace = true
+hive-config.workspace = true
+hive-github-auth.workspace = true

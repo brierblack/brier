@@ -1,0 +1,60 @@
+# Build artifacts
+target/
+frontend/dist/
+frontend/node_modules/
+
+# pnpm store
+.pnpm-store/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Version control
+.git
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Documentation
+docs/
+*.md
+LICENSE
+
+# Docker files (not needed inside image)
+Dockerfile
+docker-compose*.yml
+docker-start.sh
+.dockerignore
+
+# CI/CD & scripts
+.github/
+scripts/
+
+# Test artifacts
+tests/
+coverage/
+*.tmp
+
+# Rust config
+clippy.toml
+
+# Archives & misc
+*.tar.gz
+*.zip
+*.tgz
+*.pid
+*.bak
+.eslintcache
