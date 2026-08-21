@@ -1,6 +1,18 @@
 import { useMemo, useState } from 'react';
 import { Input, Select, Space, Button, Dropdown, type MenuProps } from 'antd';
-import { PlusOutlined, SearchOutlined, ReloadOutlined, DesktopOutlined, EllipsisOutlined, EyeOutlined, StarOutlined, CopyOutlined, DeleteOutlined, LockOutlined, GlobalOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  SearchOutlined,
+  ReloadOutlined,
+  DesktopOutlined,
+  EllipsisOutlined,
+  EyeOutlined,
+  StarOutlined,
+  CopyOutlined,
+  DeleteOutlined,
+  LockOutlined,
+  GlobalOutlined,
+} from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
 import { StatusBadge } from '../../components/StatusBadge';
@@ -87,12 +99,16 @@ export const Agents = () => {
       {
         title: '工作电脑',
         dataIndex: 'workComputer',
-        render: (w: string) => <span className="font-mono text-xs font-medium text-muted">{w}</span>,
+        render: (w: string) => (
+          <span className="font-mono text-xs font-medium text-muted">{w}</span>
+        ),
       },
       {
         title: 'Runtime',
         dataIndex: 'runtime',
-        render: (r: string) => <span className="font-mono text-xs font-medium text-muted">{r}</span>,
+        render: (r: string) => (
+          <span className="font-mono text-xs font-medium text-muted">{r}</span>
+        ),
       },
       {
         title: '最近活跃',

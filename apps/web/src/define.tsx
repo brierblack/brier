@@ -42,12 +42,12 @@ export const PAGE_TITLES: Record<PageKey, { title: string; subtitle: string }> =
 };
 
 export const NAV_ITEMS: { key: PageKey; label: string; icon: React.ReactNode; section: string }[] =
- [
- { key: 'agents', label: 'Agents', icon: <RobotOutlined />, section: '导航' },
- { key: 'team', label: 'Agent 团队', icon: <TeamOutlined />, section: '导航' },
- { key: 'skills', label: 'Skills', icon: <ThunderboltOutlined />, section: '导航' },
- { key: 'config', label: '配置', icon: <SettingOutlined />, section: '导航' },
- ];
+  [
+    { key: 'agents', label: 'Agents', icon: <RobotOutlined />, section: '导航' },
+    { key: 'team', label: 'Agent 团队', icon: <TeamOutlined />, section: '导航' },
+    { key: 'skills', label: 'Skills', icon: <ThunderboltOutlined />, section: '导航' },
+    { key: 'config', label: '配置', icon: <SettingOutlined />, section: '导航' },
+  ];
 
 export const MODELS = ['GPT-4o', 'GPT-4o mini', 'Claude 3.5 Sonnet', 'DeepSeek V3', 'Qwen Max'];
 export const AGENT_ICONS = ['📊', '🔍', '💬', '📄', '🛡️', '⚙️', '🌐', '🧪'];

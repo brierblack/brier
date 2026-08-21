@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { Avatar, Button, Dropdown, Menu, type MenuProps } from 'antd';
-import { GithubOutlined, LogoutOutlined, MessageOutlined, ControlOutlined, CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
+import {
+  GithubOutlined,
+  LogoutOutlined,
+  MessageOutlined,
+  ControlOutlined,
+  CaretDownOutlined,
+  CaretRightOutlined,
+} from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '../../define';
 import { Logo, Wordmark } from '../../components/Logo';
@@ -98,7 +105,11 @@ export function Sidebar() {
         >
           最近 7 天
           <span className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-            {recentExpanded ? <CaretDownOutlined className="text-[10px]" /> : <CaretRightOutlined className="text-[10px]" />}
+            {recentExpanded ? (
+              <CaretDownOutlined className="text-[10px]" />
+            ) : (
+              <CaretRightOutlined className="text-[10px]" />
+            )}
           </span>
         </div>
         {recentExpanded && (
@@ -117,7 +128,11 @@ export function Sidebar() {
         >
           更早
           <span className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-            {olderExpanded ? <CaretDownOutlined className="text-[10px]" /> : <CaretRightOutlined className="text-[10px]" />}
+            {olderExpanded ? (
+              <CaretDownOutlined className="text-[10px]" />
+            ) : (
+              <CaretRightOutlined className="text-[10px]" />
+            )}
           </span>
         </div>
         {olderExpanded && (

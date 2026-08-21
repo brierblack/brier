@@ -26,9 +26,9 @@ export default function App() {
                 <Route path="/spaces/new" element={<CreateSpace />} />
                 <Route path="/" element={<Layout />}>
                   <Route path="agents" element={<Agents />} />
-          <Route path="team" element={<Team />} />
-          <Route path="skills" element={<Skills />} />
-          <Route path="config" element={<Config />} />
+                  <Route path="team" element={<Team />} />
+                  <Route path="skills" element={<Skills />} />
+                  <Route path="config" element={<Config />} />
                 </Route>
               </Routes>
             </BrowserRouter>

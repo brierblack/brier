@@ -6,7 +6,7 @@ import {
   ExclamationCircleOutlined,
   CheckCircleOutlined,
   PauseCircleOutlined,
-  DisconnectOutlined
+  DisconnectOutlined,
 } from '@ant-design/icons';
 import { STATUS_MAP } from '../define';
 import type { EntityStatus } from '../types';
