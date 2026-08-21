@@ -1,6 +1,5 @@
 import type {
   Agent,
-  Workspace,
   Team,
   Skill,
   WorkComputer,
@@ -158,42 +157,6 @@ export const agents: Agent[] = [
     workComputer: 'MacBook-Pro-M3',
     runtime: 'Codex CLI',
     lastActive: '30 分钟前',
-  },
-];
-
-export const workspaces: Workspace[] = [
-  {
-    id: 1,
-    name: '本地开发环境',
-    type: 'local',
-    status: 'online',
-    agents: 4,
-    cpu: 32,
-    mem: 58,
-    host: 'localhost:8080',
-    os: 'macOS 15.4',
-  },
-  {
-    id: 2,
-    name: '阿里云 ECS',
-    type: 'ssh',
-    status: 'online',
-    agents: 3,
-    cpu: 45,
-    mem: 62,
-    host: '8.219.xx.xx',
-    os: 'Ubuntu 22.04',
-  },
-  {
-    id: 3,
-    name: 'AWS EC2',
-    type: 'cloud',
-    status: 'offline',
-    agents: 0,
-    cpu: 0,
-    mem: 0,
-    host: 'ec2-xx.compute.amazonaws.com',
-    os: 'Amazon Linux 2',
   },
 ];
 

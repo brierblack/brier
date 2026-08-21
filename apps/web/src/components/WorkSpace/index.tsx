@@ -1,15 +1,25 @@
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { Button, Dropdown, Input, theme } from 'antd';
 import { PlusOutlined, SwapOutlined, SearchOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import type { MenuProps } from 'antd';
-import { workspaces as initialWorkspaces } from '../../data/mockData';
+import type { Workspace } from '@/types';
+import { fetchWorkspaces } from '../../services/workspace';
 import { Avatar } from './Avatar';
 
 export const WorkSpace = memo(() => {
-  const [workspaces] = useState(initialWorkspaces);
-  const [currentId, setCurrentId] = useState(initialWorkspaces[0].id);
+  const navigate = useNavigate();
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [currentId, setCurrentId] = useState<string>('');
   const [search, setSearch] = useState('');
   const { token } = theme.useToken();
+
+  useEffect(() => {
+    fetchWorkspaces().then((data) => {
+      setWorkspaces(data);
+      setCurrentId(data[0]?.id ?? '');
+    });
+  }, []);
 
   const current = workspaces.find((w) => w.id === currentId) ?? workspaces[0];
 
@@ -17,14 +27,14 @@ export const WorkSpace = memo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return workspaces;
     return workspaces.filter(
-      (w) => w.name.toLowerCase().includes(q) || w.host.toLowerCase().includes(q),
+      (w) => w.name.toLowerCase().includes(q) || w.slug.toLowerCase().includes(q),
     );
   }, [workspaces, search]);
 
   const menuItems: MenuProps['items'] = useMemo(
     () =>
       filtered.map((w) => ({
-        key: String(w.id),
+        key: w.id,
         label: (
           <div className="flex items-center gap-2 py-0.5">
             <Avatar workspace={w} />
@@ -38,11 +48,12 @@ export const WorkSpace = memo(() => {
   );
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
-    setCurrentId(Number(key));
+    setCurrentId(key);
   };
 
   const handleCreate = () => {
     setSearch('');
+    navigate('/spaces/new');
   };
 
   const contentStyle: React.CSSProperties = {
@@ -92,6 +103,20 @@ export const WorkSpace = memo(() => {
       </div>
     </div>
   );
+
+  if (!current) {
+    return (
+      <Button
+        block
+        type="text"
+        onClick={handleCreate}
+        classNames={{ root: ' !border-[#e2e2e2] !px-2' }}
+      >
+        <PlusOutlined className="text-sm" />
+        <span className="flex-1 text-left text-faint">新建工作空间</span>
+      </Button>
+    );
+  }
 
   return (
     <Dropdown

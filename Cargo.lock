@@ -941,6 +941,7 @@ name = "hive-api"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "chrono",
  "cookie",
  "hive-config",
  "hive-core",

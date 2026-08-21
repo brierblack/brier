@@ -18,6 +18,14 @@ fn enum_to_string<T: serde::Serialize>(value: &T) -> String {
         .to_string()
 }
 
+fn json_to_vec(v: &serde_json::Value) -> Vec<String> {
+    serde_json::from_value(v.clone()).unwrap_or_default()
+}
+
+fn vec_to_json(v: &[String]) -> serde_json::Value {
+    serde_json::to_value(v).unwrap_or_default()
+}
+
 // --- User ---
 
 impl From<user::Model> for User {
@@ -61,6 +69,14 @@ impl From<workspace::Model> for Workspace {
             slug: m.slug,
             description: m.description,
             avatar: m.avatar,
+            instructions: m.instructions,
+            repositories: m
+                .repositories
+                .as_ref()
+                .map(|v| json_to_vec(v))
+                .unwrap_or_default(),
+            auto_pr_review: m.auto_pr_review,
+            auto_issue_assign: m.auto_issue_assign,
             created_at: m.created_at,
             updated_at: m.updated_at,
         }
@@ -76,6 +92,10 @@ impl From<Workspace> for workspace::ActiveModel {
             slug: sea_orm::Set(w.slug),
             description: sea_orm::Set(w.description),
             avatar: sea_orm::Set(w.avatar),
+            instructions: sea_orm::Set(w.instructions),
+            repositories: sea_orm::Set(Some(vec_to_json(&w.repositories))),
+            auto_pr_review: sea_orm::Set(w.auto_pr_review),
+            auto_issue_assign: sea_orm::Set(w.auto_issue_assign),
             created_at: sea_orm::Set(w.created_at),
             updated_at: sea_orm::Set(w.updated_at),
         }

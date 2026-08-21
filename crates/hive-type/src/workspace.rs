@@ -10,6 +10,10 @@ pub struct Workspace {
     pub slug: String,
     pub description: Option<String>,
     pub avatar: Option<String>,
+    pub instructions: Option<String>,
+    pub repositories: Vec<String>,
+    pub auto_pr_review: bool,
+    pub auto_issue_assign: bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

@@ -17,3 +17,4 @@ cookie.workspace = true
 jsonwebtoken.workspace = true
 tracing.workspace = true
 sea-orm.workspace = true
+chrono.workspace = true

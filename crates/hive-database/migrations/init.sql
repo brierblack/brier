@@ -19,14 +19,18 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS workspaces (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    creator_id  UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    name        TEXT NOT NULL,
-    slug        TEXT NOT NULL UNIQUE,
-    description TEXT,
-    avatar      TEXT,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    creator_id       UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name             TEXT NOT NULL,
+    slug             TEXT NOT NULL UNIQUE,
+    description      TEXT,
+    avatar           TEXT,
+    instructions     TEXT,
+    repositories     JSONB NOT NULL DEFAULT '[]'::jsonb,
+    auto_pr_review   BOOLEAN NOT NULL DEFAULT false,
+    auto_issue_assign BOOLEAN NOT NULL DEFAULT false,
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS work_computers (

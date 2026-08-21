@@ -11,6 +11,10 @@ pub struct Model {
     pub slug: String,
     pub description: Option<String>,
     pub avatar: Option<String>,
+    pub instructions: Option<String>,
+    pub repositories: Option<Json>,
+    pub auto_pr_review: bool,
+    pub auto_issue_assign: bool,
     pub created_at: DateTimeUtc,
     pub updated_at: DateTimeUtc,
 }

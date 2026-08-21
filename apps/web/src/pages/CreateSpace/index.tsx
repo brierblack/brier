@@ -1,16 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Button,
-  Steps,
-  Form,
-  Input,
-  Upload,
-  Select,
-  Divider,
-  Switch,
-  type UploadProps,
-} from 'antd';
+import { App, Button, Steps, Form, Input, Upload, Select, Divider, Switch, type UploadProps } from 'antd';
 import {
   ArrowLeftOutlined,
   PlusOutlined,
@@ -18,6 +8,7 @@ import {
   BugOutlined,
   CheckOutlined,
 } from '@ant-design/icons';
+import { createWorkspace } from '../../services/workspace';
 
 const STEPS = [{ title: '基础信息' }, { title: '指令' }, { title: '自动化' }];
 
@@ -44,9 +35,11 @@ const normFile = (e: { fileList?: unknown[] } | unknown[]) => {
 
 export const CreateSpace = () => {
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
   const [avatarUrl, setAvatarUrl] = useState<string>('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleBack = () => navigate(-1);
 
@@ -60,12 +53,31 @@ export const CreateSpace = () => {
 
   const handleNext = async () => {
     try {
-      await form.validateFields();
+      const values = await form.validateFields();
       if (currentStep < STEPS.length - 1) {
         setCurrentStep(currentStep + 1);
+        return;
       }
-    } catch {
-      // validation error — Ant Design displays field messages automatically
+
+      setSubmitting(true);
+      await createWorkspace({
+        name: values.name,
+        slug: values.identifier,
+        description: values.description ?? null,
+        avatar: avatarUrl || null,
+        instructions: values.instructions ?? null,
+        repositories: values.repositories ?? [],
+        auto_pr_review: values.autoPrReview ?? false,
+        auto_issue_assign: values.autoIssueAssign ?? false,
+      });
+      message.success('空间创建成功');
+      navigate(-1);
+    } catch (err) {
+      if (err instanceof Error) {
+        message.error(err.message);
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -293,7 +305,12 @@ export const CreateSpace = () => {
             下一步
           </Button>
         ) : (
-          <Button type="primary" icon={<CheckOutlined />} onClick={handleNext}>
+          <Button
+            type="primary"
+            icon={<CheckOutlined />}
+            onClick={handleNext}
+            loading={submitting}
+          >
             完成创建
           </Button>
         )}

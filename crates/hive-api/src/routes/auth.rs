@@ -33,7 +33,7 @@ fn clear_cookie_header() -> String {
         .to_string()
 }
 
-fn get_token_from_headers(headers: &HeaderMap) -> Option<String> {
+pub(crate) fn get_token_from_headers(headers: &HeaderMap) -> Option<String> {
     let header = headers.get(header::COOKIE)?;
     let header_str = header.to_str().ok()?;
     Cookie::split_parse(header_str)
@@ -61,6 +61,17 @@ async fn github_callback(
 ) -> Result<impl IntoResponse, ApiError> {
     let access_token = state.github_auth.exchange_code(&params.code).await?;
     let user = state.github_auth.get_user(&access_token).await?;
+
+    hive_database::repository::upsert_user_by_github_id(
+        &state.db,
+        user.id as i64,
+        &user.login,
+        user.name.as_deref(),
+        user.email.as_deref(),
+        user.avatar_url.as_deref(),
+    )
+    .await?;
+
     let jwt = jwt::create_token(&user, &state.jwt_secret)?;
 
     let redirect_url = state

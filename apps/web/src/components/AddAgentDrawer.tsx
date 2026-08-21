@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
@@ -20,10 +20,10 @@ import {
   MODELS,
   AGENT_ICONS,
   TEAMS_LIST,
-  WORKSPACES_LIST,
   CREATE_STEPS,
   SKILL_TYPE_MAP,
 } from '../define';
+import { fetchWorkspaces } from '../services/workspace';
 
 const { Text } = Typography;
 
@@ -67,6 +67,13 @@ export function AddAgentDrawer({ open, onClose }: AddAgentDrawerProps) {
   const [form] = Form.useForm();
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
+  const [workspaceOptions, setWorkspaceOptions] = useState<{ label: string; value: string }[]>([]);
+
+  useEffect(() => {
+    fetchWorkspaces().then((data) =>
+      setWorkspaceOptions(data.map((w) => ({ label: w.name, value: w.id }))),
+    );
+  }, []);
 
   const handleReset = () => {
     setCurrent(0);
@@ -159,7 +166,7 @@ export function AddAgentDrawer({ open, onClose }: AddAgentDrawerProps) {
             </Form.Item>
             <Form.Item name="workspace" label="工作空间">
               <Select
-                options={WORKSPACES_LIST.map((w) => ({ label: w, value: w }))}
+                options={workspaceOptions}
                 placeholder="选择运行环境"
               />
             </Form.Item>

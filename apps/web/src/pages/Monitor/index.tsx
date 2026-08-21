@@ -6,7 +6,7 @@ import { ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
 import { StatusBadge } from '../../components/StatusBadge';
-import { agents, workspaces } from '../../data/mockData';
+import { agents } from '../../data/mockData';
 import type { Agent } from '../../types';
 
 export function Monitor() {
@@ -29,7 +29,7 @@ export function Monitor() {
       },
       {
         key: 'ws',
-        value: `${workspaces.filter((w) => w.status === 'online').length}/${workspaces.length}`,
+        value: '0/0',
         label: '工作空间',
         icon: '🖥️',
         color: '#8d54ff',

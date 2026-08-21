@@ -32,15 +32,18 @@ export interface Agent {
 }
 
 export interface Workspace {
-  id: number;
+  id: string;
+  creator_id: string;
   name: string;
-  type: WorkspaceType;
-  status: WorkspaceStatus;
-  agents: number;
-  cpu: number;
-  mem: number;
-  host: string;
-  os: string;
+  slug: string;
+  description: string | null;
+  avatar: string | null;
+  instructions: string | null;
+  repositories: string[];
+  auto_pr_review: boolean;
+  auto_issue_assign: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface TeamMember {

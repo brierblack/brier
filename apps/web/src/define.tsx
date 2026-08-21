@@ -52,9 +52,4 @@ export const NAV_ITEMS: { key: PageKey; label: string; icon: React.ReactNode; se
 export const MODELS = ['GPT-4o', 'GPT-4o mini', 'Claude 3.5 Sonnet', 'DeepSeek V3', 'Qwen Max'];
 export const AGENT_ICONS = ['📊', '🔍', '💬', '📄', '🛡️', '⚙️', '🌐', '🧪'];
 export const TEAMS_LIST = ['工程效能', '数据洞察', '客户成功', '安全合规'];
-export const WORKSPACES_LIST = [
-  '本地开发环境 (localhost:8080)',
-  '阿里云 ECS (8.219.xx.xx)',
-  'AWS EC2 (离线)',
-];
 export const CREATE_STEPS = ['基本信息', '模型配置', '技能加载', '工具配置', '确认创建'];
