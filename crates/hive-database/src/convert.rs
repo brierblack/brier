@@ -1,7 +1,6 @@
 use hive_error::{HiveError, Result};
 use hive_type::id::*;
 use hive_type::*;
-use sea_orm::entity::prelude::*;
 
 use crate::entity::{
     agent, agent_team, agent_team_member, user, work_computer, workspace, workspace_member,

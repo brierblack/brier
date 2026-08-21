@@ -27,14 +27,14 @@ pub enum Relation {
 }
 
 impl Related<super::workspace::Entity> for Entity {
-    fn to_relation() -> Relation {
-        Relation::Workspace
+    fn to() -> RelationDef {
+        Relation::Workspace.def()
     }
 }
 
 impl Related<super::user::Entity> for Entity {
-    fn to_relation() -> Relation {
-        Relation::User
+    fn to() -> RelationDef {
+        Relation::User.def()
     }
 }
 

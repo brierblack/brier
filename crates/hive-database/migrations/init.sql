@@ -1,11 +1,10 @@
-use async_trait::async_trait;
-use sea_orm::{ConnectionTrait, Statement};
-use sea_orm_migration::{DbErr, DeriveMigrationName, MigrationTrait, SchemaManager};
+-- ============================================================
+-- Hive 初始数据库 Schema
+-- 数据库: PostgreSQL 16+
+-- ID 策略: UUID v4 (gen_random_uuid)
+-- 枚举策略: TEXT + CHECK 约束
+-- ============================================================
 
-#[derive(DeriveMigrationName)]
-pub struct Migration;
-
-const UP_SQL: &str = r#"
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE IF NOT EXISTS users (
@@ -90,44 +89,8 @@ CREATE TABLE IF NOT EXISTS agent_team_members (
 CREATE INDEX idx_workspaces_creator_id        ON workspaces(creator_id);
 CREATE INDEX idx_work_computers_user_id       ON work_computers(user_id);
 CREATE INDEX idx_agents_workspace_id          ON agents(workspace_id);
-CREATE INDEX idx_agents_creator_id           ON agents(creator_id);
-CREATE INDEX idx_agents_work_computer_id     ON agents(work_computer_id);
+CREATE INDEX idx_agents_creator_id            ON agents(creator_id);
+CREATE INDEX idx_agents_work_computer_id      ON agents(work_computer_id);
 CREATE INDEX idx_agent_teams_workspace_id     ON agent_teams(workspace_id);
 CREATE INDEX idx_agent_teams_creator_id       ON agent_teams(creator_id);
 CREATE INDEX idx_agent_teams_primary_agent_id ON agent_teams(primary_agent_id);
-"#;
-
-const DOWN_SQL: &str = r#"
-DROP TABLE IF EXISTS agent_team_members;
-DROP TABLE IF EXISTS workspace_members;
-DROP TABLE IF EXISTS agent_teams;
-DROP TABLE IF EXISTS agents;
-DROP TABLE IF EXISTS work_computers;
-DROP TABLE IF EXISTS workspaces;
-DROP TABLE IF EXISTS users;
-"#;
-
-#[async_trait]
-impl MigrationTrait for Migration {
-    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .get_connection()
-            .execute(Statement::from_string(
-                manager.get_database_backend(),
-                UP_SQL,
-            ))
-            .await?;
-        Ok(())
-    }
-
-    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .get_connection()
-            .execute(Statement::from_string(
-                manager.get_database_backend(),
-                DOWN_SQL,
-            ))
-            .await?;
-        Ok(())
-    }
-}

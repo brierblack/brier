@@ -28,26 +28,26 @@ pub enum Relation {
 }
 
 impl Related<super::workspace::Entity> for Entity {
-    fn to_relation() -> Relation {
-        Relation::Workspace
+    fn to() -> RelationDef {
+        Relation::Workspace.def()
     }
 }
 
 impl Related<super::work_computer::Entity> for Entity {
-    fn to_relation() -> Relation {
-        Relation::WorkComputer
+    fn to() -> RelationDef {
+        Relation::WorkComputer.def()
     }
 }
 
 impl Related<super::agent::Entity> for Entity {
-    fn to_relation() -> Relation {
-        Relation::Agent
+    fn to() -> RelationDef {
+        Relation::Agent.def()
     }
 }
 
 impl Related<super::agent_team::Entity> for Entity {
-    fn to_relation() -> Relation {
-        Relation::AgentTeam
+    fn to() -> RelationDef {
+        Relation::AgentTeam.def()
     }
 }
 

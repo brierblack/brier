@@ -116,9 +116,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
                 <DesktopOutlined className="text-base text-muted shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium truncate">{computer.name}</div>
-                  <div className="text-xs text-faint">
-                    {computer.agentCount} 个 Agent
-                  </div>
+                  <div className="text-xs text-faint">{computer.agentCount} 个 Agent</div>
                 </div>
                 <span
                   className="w-2 h-2 rounded-full shrink-0"
@@ -148,15 +146,11 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
           <div className="grid grid-cols-3 gap-4 mb-5 p-4 bg-[#f8f8f8] rounded-lg">
             <div>
               <div className="text-xs text-faint mb-1">最后心跳</div>
-              <div className="text-sm font-medium font-mono">
-                {selectedComputer.lastHeartbeat}
-              </div>
+              <div className="text-sm font-medium font-mono">{selectedComputer.lastHeartbeat}</div>
             </div>
             <div>
               <div className="text-xs text-faint mb-1">电脑名</div>
-              <div className="text-sm font-medium font-mono">
-                {selectedComputer.hostname}
-              </div>
+              <div className="text-sm font-medium font-mono">{selectedComputer.hostname}</div>
             </div>
             <div>
               <div className="text-xs text-faint mb-1">系统</div>
@@ -177,9 +171,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
                 </div>
                 <div>
                   <div className="text-xs text-faint mb-1">最后心跳</div>
-                  <div className="text-sm font-medium">
-                    {selectedService?.lastHeartbeat ?? '—'}
-                  </div>
+                  <div className="text-sm font-medium">{selectedService?.lastHeartbeat ?? '—'}</div>
                 </div>
                 <div>
                   <div className="text-xs text-faint mb-1">Agents</div>
@@ -189,9 +181,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
                 </div>
                 <div>
                   <div className="text-xs text-faint mb-1">Runtime</div>
-                  <div className="text-sm font-medium">
-                    {selectedService?.runtime ?? '—'}
-                  </div>
+                  <div className="text-sm font-medium">{selectedService?.runtime ?? '—'}</div>
                 </div>
               </div>
             </SectionCard>
@@ -275,9 +265,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
                     <span className="text-sm font-medium flex-1">{agent.name}</span>
                     <StatusBadge status={agent.status} />
                     <span className="text-xs font-mono text-muted">{agent.runtime}</span>
-                    <span className="text-xs text-faint w-20 text-right">
-                      {agent.lastActive}
-                    </span>
+                    <span className="text-xs text-faint w-20 text-right">{agent.lastActive}</span>
                   </div>
                 ))}
               </div>
@@ -289,9 +277,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
                 <div>
                   <div className="text-xs text-faint mb-1">连接命令</div>
                   <div className="flex items-center gap-2 bg-[#f5f5f5] rounded px-3 py-2">
-                    <code className="flex-1 text-sm font-mono text-ink">
-                      {connectionCommand}
-                    </code>
+                    <code className="flex-1 text-sm font-mono text-ink">{connectionCommand}</code>
                     <Button
                       type="text"
                       size="small"
@@ -315,8 +301,8 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
                   <div>
                     <div className="text-sm font-medium">删除Agent工作电脑</div>
                     <div className="text-xs text-muted mt-1">
-                      该Agent工作电脑上还有 {selectedComputer.agentCount} 个
-                      Agent，请先归档所有 Agent 再删除。
+                      该Agent工作电脑上还有 {selectedComputer.agentCount} 个 Agent，请先归档所有
+                      Agent 再删除。
                     </div>
                   </div>
                 </div>

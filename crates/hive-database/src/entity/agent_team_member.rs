@@ -27,14 +27,14 @@ pub enum Relation {
 }
 
 impl Related<super::agent_team::Entity> for Entity {
-    fn to_relation() -> Relation {
-        Relation::Team
+    fn to() -> RelationDef {
+        Relation::Team.def()
     }
 }
 
 impl Related<super::agent::Entity> for Entity {
-    fn to_relation() -> Relation {
-        Relation::Agent
+    fn to() -> RelationDef {
+        Relation::Agent.def()
     }
 }
 

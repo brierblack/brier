@@ -1,6 +1,13 @@
 import { useMemo } from 'react';
 import { App, Button, Dropdown, type MenuProps } from 'antd';
-import { PlusOutlined, EllipsisOutlined, EyeOutlined, DesktopOutlined, UserOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  EllipsisOutlined,
+  EyeOutlined,
+  DesktopOutlined,
+  UserOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
 import { Table } from '@/components/Table';
@@ -44,12 +51,16 @@ export function Team() {
       {
         title: '工作电脑',
         dataIndex: 'workComputer',
-        render: (w: string) => <span className="font-mono text-xs font-medium text-muted">{w}</span>,
+        render: (w: string) => (
+          <span className="font-mono text-xs font-medium text-muted">{w}</span>
+        ),
       },
       {
         title: 'Runtime',
         dataIndex: 'runtime',
-        render: (r: string) => <span className="font-mono text-xs font-medium text-muted">{r}</span>,
+        render: (r: string) => (
+          <span className="font-mono text-xs font-medium text-muted">{r}</span>
+        ),
       },
       {
         title: '创建者',

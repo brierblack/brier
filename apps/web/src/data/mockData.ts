@@ -1,4 +1,12 @@
-import type { Agent, Workspace, Team, Skill, WorkComputer, BackendService, ComputerAgent } from '../types';
+import type {
+  Agent,
+  Workspace,
+  Team,
+  Skill,
+  WorkComputer,
+  BackendService,
+  ComputerAgent,
+} from '../types';
 
 export const agents: Agent[] = [
   {
@@ -316,12 +324,68 @@ export const backendServices: BackendService[] = [
 ];
 
 export const computerAgents: ComputerAgent[] = [
-  { id: 1, name: '数据分析助手', status: 'online', runtime: 'Claude Code', lastActive: '3 分钟前', computerId: 1 },
-  { id: 2, name: '客服小助手', status: 'connecting', runtime: 'GPT-4o CLI', lastActive: '刚刚', computerId: 1 },
-  { id: 3, name: '运维管家', status: 'online', runtime: 'Claude Code', lastActive: '1 小时前', computerId: 1 },
-  { id: 4, name: '测试工程师', status: 'connecting', runtime: 'Codex CLI', lastActive: '30 分钟前', computerId: 1 },
-  { id: 5, name: '代码审查员', status: 'online', runtime: 'Codex CLI', lastActive: '12 分钟前', computerId: 2 },
-  { id: 6, name: '安全扫描员', status: 'offline', runtime: 'Codex CLI', lastActive: '5 小时前', computerId: 2 },
-  { id: 7, name: '文档生成器', status: 'offline', runtime: 'Claude Code', lastActive: '2 小时前', computerId: 3 },
-  { id: 8, name: '翻译专家', status: 'offline', runtime: 'Gemini CLI', lastActive: '昨天', computerId: 3 },
+  {
+    id: 1,
+    name: '数据分析助手',
+    status: 'online',
+    runtime: 'Claude Code',
+    lastActive: '3 分钟前',
+    computerId: 1,
+  },
+  {
+    id: 2,
+    name: '客服小助手',
+    status: 'connecting',
+    runtime: 'GPT-4o CLI',
+    lastActive: '刚刚',
+    computerId: 1,
+  },
+  {
+    id: 3,
+    name: '运维管家',
+    status: 'online',
+    runtime: 'Claude Code',
+    lastActive: '1 小时前',
+    computerId: 1,
+  },
+  {
+    id: 4,
+    name: '测试工程师',
+    status: 'connecting',
+    runtime: 'Codex CLI',
+    lastActive: '30 分钟前',
+    computerId: 1,
+  },
+  {
+    id: 5,
+    name: '代码审查员',
+    status: 'online',
+    runtime: 'Codex CLI',
+    lastActive: '12 分钟前',
+    computerId: 2,
+  },
+  {
+    id: 6,
+    name: '安全扫描员',
+    status: 'offline',
+    runtime: 'Codex CLI',
+    lastActive: '5 小时前',
+    computerId: 2,
+  },
+  {
+    id: 7,
+    name: '文档生成器',
+    status: 'offline',
+    runtime: 'Claude Code',
+    lastActive: '2 小时前',
+    computerId: 3,
+  },
+  {
+    id: 8,
+    name: '翻译专家',
+    status: 'offline',
+    runtime: 'Gemini CLI',
+    lastActive: '昨天',
+    computerId: 3,
+  },
 ];
