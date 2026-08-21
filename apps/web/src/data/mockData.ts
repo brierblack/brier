@@ -1,4 +1,4 @@
-import type { Agent, Workspace, Team, Skill } from '../types';
+import type { Agent, Workspace, Team, Skill, WorkComputer, BackendService, ComputerAgent } from '../types';
 
 export const agents: Agent[] = [
   {
@@ -250,4 +250,78 @@ export const skills: Skill[] = [
   { name: '飞书消息', type: 'mcp', desc: 'MCP：发送飞书消息和文档', agents: 1 },
   { name: '图像生成', type: 'custom', desc: '调用 DALL-E 3 生成图像', agents: 1 },
   { name: '语音转文字', type: 'custom', desc: 'Whisper 语音识别', agents: 0 },
+];
+
+export const workComputers: WorkComputer[] = [
+  {
+    id: 1,
+    name: 'MacBook-Pro-M3',
+    hostname: 'MacBook-Pro-M3.local',
+    status: 'online',
+    os: 'macOS 15.4',
+    lastHeartbeat: '2 分钟前',
+    agentCount: 4,
+    runtime: 'Claude Code',
+  },
+  {
+    id: 2,
+    name: 'Dell-Precision',
+    hostname: 'DELL-PRECISION-5570',
+    status: 'online',
+    os: 'Ubuntu 22.04 LTS',
+    lastHeartbeat: '5 分钟前',
+    agentCount: 2,
+    runtime: 'Codex CLI',
+  },
+  {
+    id: 3,
+    name: 'ThinkPad-X1',
+    hostname: 'ThinkPad-X1-Carbon',
+    status: 'offline',
+    os: 'Windows 11 Pro',
+    lastHeartbeat: '2 小时前',
+    agentCount: 2,
+    runtime: 'Gemini CLI',
+  },
+];
+
+export const backendServices: BackendService[] = [
+  {
+    computerId: 1,
+    version: '0.8.2',
+    latestVersion: '0.8.2',
+    lastHeartbeat: '2 分钟前',
+    agentCount: 4,
+    runtime: 'Claude Code',
+    status: 'online',
+  },
+  {
+    computerId: 2,
+    version: '0.7.1',
+    latestVersion: '0.8.2',
+    lastHeartbeat: '5 分钟前',
+    agentCount: 2,
+    runtime: 'Codex CLI',
+    status: 'online',
+  },
+  {
+    computerId: 3,
+    version: '0.8.2',
+    latestVersion: '0.8.2',
+    lastHeartbeat: '2 小时前',
+    agentCount: 2,
+    runtime: 'Gemini CLI',
+    status: 'error',
+  },
+];
+
+export const computerAgents: ComputerAgent[] = [
+  { id: 1, name: '数据分析助手', status: 'online', runtime: 'Claude Code', lastActive: '3 分钟前', computerId: 1 },
+  { id: 2, name: '客服小助手', status: 'connecting', runtime: 'GPT-4o CLI', lastActive: '刚刚', computerId: 1 },
+  { id: 3, name: '运维管家', status: 'online', runtime: 'Claude Code', lastActive: '1 小时前', computerId: 1 },
+  { id: 4, name: '测试工程师', status: 'connecting', runtime: 'Codex CLI', lastActive: '30 分钟前', computerId: 1 },
+  { id: 5, name: '代码审查员', status: 'online', runtime: 'Codex CLI', lastActive: '12 分钟前', computerId: 2 },
+  { id: 6, name: '安全扫描员', status: 'offline', runtime: 'Codex CLI', lastActive: '5 小时前', computerId: 2 },
+  { id: 7, name: '文档生成器', status: 'offline', runtime: 'Claude Code', lastActive: '2 小时前', computerId: 3 },
+  { id: 8, name: '翻译专家', status: 'offline', runtime: 'Gemini CLI', lastActive: '昨天', computerId: 3 },
 ];

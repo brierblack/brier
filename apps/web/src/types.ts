@@ -83,3 +83,33 @@ export interface NavItem {
   label: string;
   icon: React.ReactNode;
 }
+
+export interface WorkComputer {
+  id: number;
+  name: string;
+  hostname: string;
+  status: WorkspaceStatus;
+  os: string;
+  lastHeartbeat: string;
+  agentCount: number;
+  runtime: string;
+}
+
+export interface BackendService {
+  computerId: number;
+  version: string;
+  latestVersion: string;
+  lastHeartbeat: string;
+  agentCount: number;
+  runtime: string;
+  status: ServiceStatus;
+}
+
+export interface ComputerAgent {
+  id: number;
+  name: string;
+  status: AgentStatus;
+  runtime: string;
+  lastActive: string;
+  computerId: number;
+}

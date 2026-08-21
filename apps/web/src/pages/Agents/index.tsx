@@ -16,8 +16,9 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
 import { StatusBadge } from '../../components/StatusBadge';
+import { WorkComputerDrawer } from '../../components/WorkComputerDrawer';
 import { useUI } from '../../ui-context';
-import { agents } from '../../data/mockData';
+import { agents, workComputers } from '../../data/mockData';
 import type { Agent, AgentStatus, AgentVisibility, PublicScope } from '../../types';
 import { Table } from '@/components/Table';
 
@@ -35,6 +36,7 @@ export const Agents = () => {
   const { openDrawer } = useUI();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [computerDrawerOpen, setComputerDrawerOpen] = useState(false);
 
   const filteredAgents = useMemo(
     () =>
@@ -136,8 +138,8 @@ export const Agents = () => {
       extra={
         <div className="flex items-center gap-3">
           <Button icon={<ReloadOutlined />}>刷新</Button>
-          <Button icon={<DesktopOutlined />}>
-            工作电脑 <span className="font-mono tabular-nums">3</span>
+          <Button icon={<DesktopOutlined />} onClick={() => setComputerDrawerOpen(true)}>
+            工作电脑 <span className="font-mono tabular-nums">{workComputers.length}</span>
           </Button>
           <Button type="primary" icon={<PlusOutlined />} onClick={openDrawer}>
             新增 Agent
@@ -173,6 +175,8 @@ export const Agents = () => {
         rowKey="id"
         pagination={false}
       />
+
+      <WorkComputerDrawer open={computerDrawerOpen} onClose={() => setComputerDrawerOpen(false)} />
     </Page>
   );
 };
