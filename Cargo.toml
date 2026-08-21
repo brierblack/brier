@@ -3,6 +3,8 @@ members = [
     "apps/server",
     "crates/hive-core",
     "crates/hive-error",
+    "crates/hive-type",
+    "crates/hive-database",
     "crates/hive-config",
     "crates/hive-github-auth",
 ]
@@ -15,6 +17,8 @@ edition = "2021"
 [workspace.dependencies]
 hive-core = { path = "crates/hive-core" }
 hive-error = { path = "crates/hive-error" }
+hive-type = { path = "crates/hive-type" }
+hive-database = { path = "crates/hive-database" }
 hive-config = { path = "crates/hive-config" }
 hive-github-auth = { path = "crates/hive-github-auth" }
 axum = "0.8"
@@ -28,3 +32,8 @@ cookie = "0.18"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 dotenvy = "0.15"
+chrono = { version = "0.4", features = ["serde"] }
+sea-orm = { version = "1", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
+sea-orm-migration = { version = "1", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
+async-trait = "0.1"
+uuid = { version = "1", features = ["v4", "serde"] }

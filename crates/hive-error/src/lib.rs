@@ -19,6 +19,18 @@ pub enum HiveError {
     #[error("server error: {0}")]
     Server(String),
 
+    #[error("database error: {0}")]
+    Database(String),
+
+    #[error("entity not found: {0}")]
+    NotFound(String),
+
+    #[error("validation error: {0}")]
+    Validation(String),
+
     #[error(transparent)]
     Io(#[from] std::io::Error),
+
+    #[error(transparent)]
+    Db(#[from] sea_orm::DbErr),
 }
