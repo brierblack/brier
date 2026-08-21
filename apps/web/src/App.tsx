@@ -8,9 +8,10 @@ import { AddAgentDrawer } from './components/AddAgentDrawer';
 import { Agents } from './pages/Agents';
 import { Team } from './pages/Team';
 import { Skills } from './pages/Skills';
-import { Monitor } from './pages/Monitor';
 import { Config } from './pages/Config';
+import { CreateSpace } from './pages/CreateSpace';
 import { UIContext } from './ui-context';
+import { AuthProvider } from './auth-context';
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -18,20 +19,22 @@ export default function App() {
   return (
     <ConfigProvider locale={zhCN} theme={theme} wave={{ disabled: true }}>
       <AntApp>
-        <UIContext.Provider value={{ openDrawer: () => setDrawerOpen(true) }}>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route path="agents" element={<Agents />} />
-                <Route path="team" element={<Team />} />
-                <Route path="skills" element={<Skills />} />
-                <Route path="monitor" element={<Monitor />} />
-                <Route path="config" element={<Config />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-          <AddAgentDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-        </UIContext.Provider>
+        <AuthProvider>
+          <UIContext.Provider value={{ openDrawer: () => setDrawerOpen(true) }}>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/spaces/new" element={<CreateSpace />} />
+                <Route path="/" element={<Layout />}>
+                  <Route path="agents" element={<Agents />} />
+          <Route path="team" element={<Team />} />
+          <Route path="skills" element={<Skills />} />
+          <Route path="config" element={<Config />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+            <AddAgentDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+          </UIContext.Provider>
+        </AuthProvider>
       </AntApp>
     </ConfigProvider>
   );

@@ -1,13 +1,23 @@
 import { useMemo, useState } from 'react';
-import { Input, Select, Space, Tag, Button } from 'antd';
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { Input, Select, Space, Button, Dropdown, type MenuProps } from 'antd';
+import { PlusOutlined, SearchOutlined, ReloadOutlined, DesktopOutlined, EllipsisOutlined, EyeOutlined, StarOutlined, CopyOutlined, DeleteOutlined, LockOutlined, GlobalOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
 import { StatusBadge } from '../../components/StatusBadge';
 import { useUI } from '../../ui-context';
 import { agents } from '../../data/mockData';
-import type { Agent, AgentStatus } from '../../types';
+import type { Agent, AgentStatus, AgentVisibility, PublicScope } from '../../types';
 import { Table } from '@/components/Table';
+
+const actionMenuItems: MenuProps['items'] = [
+  { key: 'view', label: '查看详情', icon: <EyeOutlined /> },
+  { key: 'computer', label: '查看工作电脑', icon: <DesktopOutlined /> },
+  { type: 'divider' },
+  { key: 'default', label: '设为默认', icon: <StarOutlined /> },
+  { key: 'copy', label: '复制 Agent', icon: <CopyOutlined /> },
+  { type: 'divider' },
+  { key: 'delete', label: '删除', icon: <DeleteOutlined />, danger: true },
+];
 
 export const Agents = () => {
   const { openDrawer } = useUI();
@@ -27,7 +37,7 @@ export const Agents = () => {
   const columns: ColumnsType<Agent> = useMemo(
     () => [
       {
-        title: 'Agent',
+        title: '名称',
         dataIndex: 'name',
         render: (_, r) => (
           <div className="flex items-center gap-2.5">
@@ -39,46 +49,65 @@ export const Agents = () => {
             </div>
             <div>
               <div className="font-medium">{r.name}</div>
-              <div className="text-[11px] text-faint">{r.desc}</div>
             </div>
           </div>
-        ),
-      },
-      {
-        title: '模型',
-        dataIndex: 'model',
-        render: (m: string) => (
-          <Tag color="orange" className="font-mono">
-            {m}
-          </Tag>
-        ),
-      },
-      {
-        title: '团队',
-        dataIndex: 'team',
-        render: (t: string | null) => t ?? <span className="text-ghost">—</span>,
-      },
-      {
-        title: '工作空间',
-        dataIndex: 'workspace',
-        render: (w: string) => <span className="text-muted">{w}</span>,
-      },
-      {
-        title: '技能',
-        dataIndex: 'skills',
-        render: (s: number) => <span className="font-mono tabular-nums text-brand">{s}</span>,
-      },
-      {
-        title: '调用',
-        dataIndex: 'runs',
-        render: (r: number) => (
-          <span className="font-mono tabular-nums text-faint">{r.toLocaleString()}</span>
         ),
       },
       {
         title: '状态',
         dataIndex: 'status',
         render: (s: AgentStatus) => <StatusBadge status={s} />,
+      },
+      {
+        title: '可见性',
+        dataIndex: 'visibility',
+        render: (v: AgentVisibility, r: Agent) => {
+          if (v === 'private') {
+            return (
+              <span className="flex items-center gap-1 text-xs font-medium text-muted">
+                <LockOutlined />
+                仅个人可用
+              </span>
+            );
+          }
+          const scopeConfig: Record<PublicScope, string> = {
+            all: '所有人',
+            joined_spaces: '我加入的所有空间',
+            specified_spaces: '指定空间',
+          };
+          const scope = r.publicScope ?? 'all';
+          return (
+            <span className="flex items-center gap-1 text-xs font-medium text-muted">
+              <GlobalOutlined />
+              公开 · {scopeConfig[scope]}
+            </span>
+          );
+        },
+      },
+      {
+        title: '工作电脑',
+        dataIndex: 'workComputer',
+        render: (w: string) => <span className="font-mono text-xs font-medium text-muted">{w}</span>,
+      },
+      {
+        title: 'Runtime',
+        dataIndex: 'runtime',
+        render: (r: string) => <span className="font-mono text-xs font-medium text-muted">{r}</span>,
+      },
+      {
+        title: '最近活跃',
+        dataIndex: 'lastActive',
+        render: (t: string) => <span className="text-xs font-medium text-faint">{t}</span>,
+      },
+      {
+        title: '操作',
+        key: 'action',
+        align: 'right',
+        render: () => (
+          <Dropdown menu={{ items: actionMenuItems }} trigger={['click']}>
+            <Button type="text" icon={<EllipsisOutlined />} className="!p-1" />
+          </Dropdown>
+        ),
       },
     ],
     [],
@@ -89,9 +118,15 @@ export const Agents = () => {
       title="Agents"
       subtitle="管理所有 AI Agent，配置模型、技能与工具"
       extra={
-        <Button type="primary" icon={<PlusOutlined />} onClick={openDrawer}>
-          新增 Agent
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button icon={<ReloadOutlined />}>刷新</Button>
+          <Button icon={<DesktopOutlined />}>
+            工作电脑 <span className="font-mono tabular-nums">3</span>
+          </Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={openDrawer}>
+            新增 Agent
+          </Button>
+        </div>
       }
     >
       <Space className="mb-4">
@@ -109,9 +144,8 @@ export const Agents = () => {
           options={[
             { value: 'all', label: '全部状态' },
             { value: 'online', label: '在线' },
-            { value: 'busy', label: '忙碌' },
-            { value: 'idle', label: '空闲' },
-            { value: 'error', label: '异常' },
+            { value: 'connecting', label: '连接中' },
+            { value: 'offline', label: '离线' },
           ]}
         />
       </Space>

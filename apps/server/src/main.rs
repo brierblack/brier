@@ -10,6 +10,8 @@ use tower_http::trace::TraceLayer;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let _ = dotenvy::dotenv();
+
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -33,7 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/auth/github/callback", get(auth::github_callback))
         .route("/api/auth/me", get(auth::auth_me))
         .route("/api/auth/logout", get(auth::logout))
-        .nest_service("/", serve_dir)
+        .fallback_service(serve_dir)
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 

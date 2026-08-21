@@ -1,4 +1,5 @@
-import { Card, Switch, Tabs, Tag } from 'antd';
+import { Card, Switch, Tabs } from 'antd';
+import { Tag } from '@/components/Tag';
 import { Page } from '@/components/Page';
 import { StatusBadge } from '../../components/StatusBadge';
 

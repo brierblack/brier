@@ -1,11 +1,15 @@
-export type AgentStatus = 'online' | 'busy' | 'idle' | 'error';
+export type AgentStatus = 'online' | 'offline' | 'connecting';
 export type WorkspaceStatus = 'online' | 'offline';
 export type TeamStatus = 'active' | 'paused';
+export type ServiceStatus = 'online' | 'error';
 export type WorkspaceType = 'local' | 'ssh' | 'cloud';
 export type TeamMode = 'coordinator' | 'sequential' | 'graph';
 export type SkillType = 'builtin' | 'mcp' | 'custom';
-export type EntityStatus = AgentStatus | WorkspaceStatus | TeamStatus;
-export type PageKey = 'agents' | 'team' | 'skills' | 'monitor' | 'config';
+export type EntityStatus = AgentStatus | WorkspaceStatus | TeamStatus | ServiceStatus;
+export type PageKey = 'agents' | 'team' | 'skills' | 'config';
+
+export type AgentVisibility = 'private' | 'public';
+export type PublicScope = 'all' | 'joined_spaces' | 'specified_spaces';
 
 export interface Agent {
   id: number;
@@ -20,6 +24,11 @@ export interface Agent {
   icon: string;
   color: string;
   runs: number;
+  visibility: AgentVisibility;
+  publicScope?: PublicScope;
+  workComputer: string;
+  runtime: string;
+  lastActive: string;
 }
 
 export interface Workspace {
@@ -55,6 +64,14 @@ export interface Skill {
   type: SkillType;
   desc: string;
   agents: number;
+}
+
+export interface UserInfo {
+  id: number;
+  login: string;
+  name: string | null;
+  email: string | null;
+  avatar_url: string | null;
 }
 
 export interface NavItem {

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { Tag, Button } from 'antd';
+import { Button } from 'antd';
+import { Tag } from '@/components/Tag';
 import { Table } from '@/components/Table';
 import { ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';

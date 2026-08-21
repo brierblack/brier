@@ -1,5 +1,24 @@
+import type { ReactNode } from 'react';
+import { Tag } from '@/components/Tag';
+import {
+  WifiOutlined,
+  SyncOutlined,
+  ExclamationCircleOutlined,
+  CheckCircleOutlined,
+  PauseCircleOutlined,
+  DisconnectOutlined
+} from '@ant-design/icons';
 import { STATUS_MAP } from '../define';
 import type { EntityStatus } from '../types';
+
+const STATUS_ICON: Record<EntityStatus, ReactNode> = {
+  online: <WifiOutlined />,
+  connecting: <SyncOutlined spin />,
+  offline: <DisconnectOutlined />,
+  error: <ExclamationCircleOutlined />,
+  active: <CheckCircleOutlined />,
+  paused: <PauseCircleOutlined />,
+};
 
 interface StatusBadgeProps {
   status: EntityStatus;
@@ -10,14 +29,15 @@ export function StatusBadge({ status }: StatusBadgeProps) {
   if (!config) return null;
 
   return (
-    <div className="flex items-center gap-1.5">
-      <span
-        className="inline-block size-[7px] rounded-full"
-        style={{ background: config.color, boxShadow: `0 0 6px ${config.color}80` }}
-      />
-      <span className="text-xs font-medium" style={{ color: config.color }}>
-        {config.label}
-      </span>
-    </div>
+    <Tag
+      icon={STATUS_ICON[status]}
+      style={{
+        background: `${config.color}1a`,
+        borderColor: `${config.color}33`,
+        color: config.color,
+      }}
+    >
+      {config.label}
+    </Tag>
   );
 }

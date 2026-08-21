@@ -86,7 +86,7 @@ pub async fn github_callback(
         .map(|url| format!("{}/", url))
         .unwrap_or_else(|| "/".to_string());
 
-    let mut response = Redirect::to(&redirect_url);
+    let mut response = Redirect::to(&redirect_url).into_response();
     response.headers_mut().insert(
         header::SET_COOKIE,
         HeaderValue::from_str(&build_cookie_header(&jwt)).unwrap(),
@@ -111,8 +111,8 @@ pub async fn auth_me(
     }))
 }
 
-pub async fn logout() -> impl IntoResponse {
-    let mut response = Redirect::to("/");
+pub async fn logout() -> Response {
+    let mut response = Redirect::to("/").into_response();
     response.headers_mut().insert(
         header::SET_COOKIE,
         HeaderValue::from_str(&clear_cookie_header()).unwrap(),

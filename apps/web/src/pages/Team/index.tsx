@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { Avatar, Tag, Button } from 'antd';
+import { Avatar, Button } from 'antd';
+import { Tag } from '@/components/Tag';
 import { Table } from '@/components/Table';
 import { PlusOutlined } from '@ant-design/icons';
 import { App } from 'antd';

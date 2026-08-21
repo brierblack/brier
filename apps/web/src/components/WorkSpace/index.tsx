@@ -106,7 +106,7 @@ export const WorkSpace = memo(() => {
         block
         type="text"
         classNames={{
-          root: ' !border-[#e2e2e2]',
+          root: ' !border-[#e2e2e2] !px-2',
         }}
       >
         <Avatar workspace={current} />

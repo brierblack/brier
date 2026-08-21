@@ -1,4 +1,5 @@
-import { List, Tag, Button } from 'antd';
+import { List, Button } from 'antd';
+import { Tag } from '@/components/Tag';
 import { PlusOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import { Page } from '@/components/Page';
@@ -17,7 +18,7 @@ export function Skills() {
 
   return (
     <Page
-      title="技能库"
+      title="Skills"
       subtitle="内置工具、MCP 服务与自定义技能"
       extra={
         <Button

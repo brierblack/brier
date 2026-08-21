@@ -2,19 +2,17 @@ import {
   RobotOutlined,
   TeamOutlined,
   ThunderboltOutlined,
-  MonitorOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
 
 import type { PageKey } from './types';
 
 export const STATUS_MAP = {
-  online: { label: '在线', color: '#00c758' },
-  busy: { label: '忙碌', color: '#f99c00' },
-  idle: { label: '空闲', color: '#90a1b9' },
-  error: { label: '异常', color: '#fb2c36' },
+  online: { label: '在线', color: '#389e0d' },
+  connecting: { label: '连接中', color: '#1677ff' },
   offline: { label: '离线', color: '#90a1b9' },
-  active: { label: '运行中', color: '#00c758' },
+  error: { label: '异常', color: '#fb2c36' },
+  active: { label: '运行中', color: '#389e0d' },
   paused: { label: '已暂停', color: '#90a1b9' },
 } as const;
 
@@ -39,19 +37,17 @@ export const WS_TYPE_MAP = {
 export const PAGE_TITLES: Record<PageKey, { title: string; subtitle: string }> = {
   agents: { title: 'Agents', subtitle: '管理所有 AI Agent，配置模型、技能与工具' },
   team: { title: 'Agent 团队', subtitle: '编排多 Agent 协作，实现复杂工作流' },
-  skills: { title: '技能库', subtitle: '内置工具、MCP 服务与自定义技能' },
-  monitor: { title: '监控', subtitle: 'Agent 运行状态与调用统计' },
+  skills: { title: 'Skills', subtitle: '内置工具、MCP 服务与自定义技能' },
   config: { title: '配置', subtitle: '模型、MCP 服务、AG-UI 协议与外观设置' },
 };
 
 export const NAV_ITEMS: { key: PageKey; label: string; icon: React.ReactNode; section: string }[] =
-  [
-    { key: 'agents', label: 'Agents', icon: <RobotOutlined />, section: '导航' },
-    { key: 'team', label: 'Agent 团队', icon: <TeamOutlined />, section: '导航' },
-    { key: 'skills', label: '技能库', icon: <ThunderboltOutlined />, section: '导航' },
-    { key: 'monitor', label: '监控', icon: <MonitorOutlined />, section: '导航' },
-    { key: 'config', label: '配置', icon: <SettingOutlined />, section: '导航' },
-  ];
+ [
+ { key: 'agents', label: 'Agents', icon: <RobotOutlined />, section: '导航' },
+ { key: 'team', label: 'Agent 团队', icon: <TeamOutlined />, section: '导航' },
+ { key: 'skills', label: 'Skills', icon: <ThunderboltOutlined />, section: '导航' },
+ { key: 'config', label: '配置', icon: <SettingOutlined />, section: '导航' },
+ ];
 
 export const MODELS = ['GPT-4o', 'GPT-4o mini', 'Claude 3.5 Sonnet', 'DeepSeek V3', 'Qwen Max'];
 export const AGENT_ICONS = ['📊', '🔍', '💬', '📄', '🛡️', '⚙️', '🌐', '🧪'];

@@ -82,10 +82,10 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--color-ghost);
+    background: #dedede;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-faint);
+    background: #c8c8c8;
   }
 }
