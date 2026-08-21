@@ -4,8 +4,6 @@ import {
   WifiOutlined,
   SyncOutlined,
   ExclamationCircleOutlined,
-  CheckCircleOutlined,
-  PauseCircleOutlined,
   DisconnectOutlined,
 } from '@ant-design/icons';
 import { STATUS_MAP } from '../define';
@@ -16,8 +14,8 @@ const STATUS_ICON: Record<EntityStatus, ReactNode> = {
   connecting: <SyncOutlined spin />,
   offline: <DisconnectOutlined />,
   error: <ExclamationCircleOutlined />,
-  active: <CheckCircleOutlined />,
-  paused: <PauseCircleOutlined />,
+  available: <WifiOutlined />,
+  unavailable: <DisconnectOutlined />,
 };
 
 interface StatusBadgeProps {

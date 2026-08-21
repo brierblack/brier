@@ -1,6 +1,6 @@
 export type AgentStatus = 'online' | 'offline' | 'connecting';
 export type WorkspaceStatus = 'online' | 'offline';
-export type TeamStatus = 'active' | 'paused';
+export type TeamStatus = 'available' | 'unavailable';
 export type ServiceStatus = 'online' | 'error';
 export type WorkspaceType = 'local' | 'ssh' | 'cloud';
 export type TeamMode = 'coordinator' | 'sequential' | 'graph';
@@ -57,6 +57,10 @@ export interface Team {
   desc: string;
   runs: number;
   members: TeamMember[];
+  workComputer: string;
+  runtime: string;
+  creator: string;
+  lastActive: string;
 }
 
 export interface Skill {

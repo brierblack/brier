@@ -1,15 +1,20 @@
 import { useMemo } from 'react';
-import { Avatar, Button } from 'antd';
-import { Tag } from '@/components/Tag';
-import { Table } from '@/components/Table';
-import { PlusOutlined } from '@ant-design/icons';
-import { App } from 'antd';
+import { App, Button, Dropdown, type MenuProps } from 'antd';
+import { PlusOutlined, EllipsisOutlined, EyeOutlined, DesktopOutlined, UserOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
+import { Table } from '@/components/Table';
 import { StatusBadge } from '../../components/StatusBadge';
 import { teams } from '../../data/mockData';
-import { MODE_MAP } from '../../define';
 import type { Team } from '../../types';
+
+const actionMenuItems: MenuProps['items'] = [
+  { key: 'view', label: '查看详情', icon: <EyeOutlined /> },
+  { key: 'computer', label: '查看工作电脑', icon: <DesktopOutlined /> },
+  { key: 'main-agent', label: '查看主 Agent', icon: <UserOutlined /> },
+  { type: 'divider' },
+  { key: 'delete', label: '删除', icon: <DeleteOutlined />, danger: true },
+];
 
 export function Team() {
   const { message } = App.useApp();
@@ -17,7 +22,7 @@ export function Team() {
   const columns: ColumnsType<Team> = useMemo(
     () => [
       {
-        title: '团队',
+        title: '名称',
         dataIndex: 'name',
         render: (_, r) => (
           <div className="flex items-center gap-2.5">
@@ -32,52 +37,39 @@ export function Team() {
         ),
       },
       {
-        title: '编排模式',
-        dataIndex: 'mode',
-        render: (m: Team['mode']) => {
-          const cfg = MODE_MAP[m];
-          return (
-            <Tag style={{ background: `${cfg.color}0d`, color: cfg.color, border: 'none' }}>
-              {cfg.label}
-            </Tag>
-          );
-        },
-      },
-      {
-        title: '成员',
-        dataIndex: 'members',
-        render: (members: Team['members'], r) => (
-          <div className="flex items-center gap-1">
-            <Avatar.Group>
-              {members.map((m, i) => (
-                <Avatar
-                  key={i}
-                  size={28}
-                  style={{
-                    background: `${m.color}0d`,
-                    border: `1px solid ${m.color}22`,
-                    color: m.color,
-                    fontSize: 14,
-                    borderRadius: 6,
-                  }}
-                >
-                  {m.icon}
-                </Avatar>
-              ))}
-            </Avatar.Group>
-            <span className="text-xs text-faint ml-1.5">{r.agents}</span>
-          </div>
-        ),
-      },
-      {
         title: '状态',
         dataIndex: 'status',
         render: (s) => <StatusBadge status={s} />,
       },
       {
-        title: '执行次数',
-        dataIndex: 'runs',
-        render: (r: number) => <span className="font-mono tabular-nums">{r.toLocaleString()}</span>,
+        title: '工作电脑',
+        dataIndex: 'workComputer',
+        render: (w: string) => <span className="font-mono text-xs font-medium text-muted">{w}</span>,
+      },
+      {
+        title: 'Runtime',
+        dataIndex: 'runtime',
+        render: (r: string) => <span className="font-mono text-xs font-medium text-muted">{r}</span>,
+      },
+      {
+        title: '创建者',
+        dataIndex: 'creator',
+        render: (c: string) => <span className="text-sm font-medium">{c}</span>,
+      },
+      {
+        title: '最近活跃',
+        dataIndex: 'lastActive',
+        render: (t: string) => <span className="text-xs font-medium text-faint">{t}</span>,
+      },
+      {
+        title: '操作',
+        key: 'action',
+        align: 'right',
+        render: () => (
+          <Dropdown menu={{ items: actionMenuItems }} trigger={['click']}>
+            <Button type="text" icon={<EllipsisOutlined />} className="!p-1" />
+          </Dropdown>
+        ),
       },
     ],
     [],

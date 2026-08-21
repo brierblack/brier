@@ -12,8 +12,8 @@ export const STATUS_MAP = {
   connecting: { label: '连接中', color: '#1677ff' },
   offline: { label: '离线', color: '#90a1b9' },
   error: { label: '异常', color: '#fb2c36' },
-  active: { label: '运行中', color: '#389e0d' },
-  paused: { label: '已暂停', color: '#90a1b9' },
+  available: { label: '可用', color: '#389e0d' },
+  unavailable: { label: '不可用', color: '#90a1b9' },
 } as const;
 
 export const MODE_MAP = {
