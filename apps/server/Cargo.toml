@@ -4,18 +4,13 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-hive-core.workspace = true
-hive-error.workspace = true
+hive-api.workspace = true
 hive-config.workspace = true
-hive-github-auth.workspace = true
+hive-database.workspace = true
+hive-error.workspace = true
 axum.workspace = true
 tokio.workspace = true
-tower.workspace = true
 tower-http.workspace = true
-jsonwebtoken.workspace = true
-serde.workspace = true
-serde_json.workspace = true
-cookie.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 dotenvy.workspace = true

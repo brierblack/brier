@@ -1,45 +1,20 @@
 use axum::extract::{Query, State};
-use axum::http::{header, HeaderMap, HeaderValue, StatusCode};
+use axum::http::{header, HeaderMap, HeaderValue};
 use axum::response::{IntoResponse, Redirect, Response};
+use axum::routing::get;
 use axum::Json;
+use axum::Router;
 use cookie::Cookie;
 use hive_core::auth::UserInfo;
 use hive_error::HiveError;
-use hive_github_auth::GithubAuth;
-use serde::Deserialize;
 
-pub struct ApiError(pub HiveError);
+use crate::error::ApiError;
+use crate::jwt;
+use crate::AppState;
 
-impl From<HiveError> for ApiError {
-    fn from(e: HiveError) -> Self {
-        Self(e)
-    }
-}
-
-impl IntoResponse for ApiError {
-    fn into_response(self) -> Response {
-        let (status, message) = match &self.0 {
-            HiveError::Config(msg) => (StatusCode::INTERNAL_SERVER_ERROR, msg.clone()),
-            HiveError::Auth(msg) => (StatusCode::UNAUTHORIZED, msg.clone()),
-            HiveError::GithubApi(msg) => (StatusCode::BAD_GATEWAY, msg.clone()),
-            HiveError::Jwt(msg) => (StatusCode::UNAUTHORIZED, msg.clone()),
-            HiveError::Server(msg) => (StatusCode::INTERNAL_SERVER_ERROR, msg.clone()),
-            HiveError::Io(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
-        };
-        (status, Json(serde_json::json!({ "error": message }))).into_response()
-    }
-}
-
-#[derive(Clone)]
-pub struct AppState {
-    pub github_auth: GithubAuth,
-    pub jwt_secret: String,
-    pub frontend_url: Option<String>,
-}
-
-#[derive(Deserialize)]
-pub struct CallbackParams {
-    pub code: String,
+#[derive(serde::Deserialize)]
+struct CallbackParams {
+    code: String,
 }
 
 fn build_cookie_header(token: &str) -> String {
@@ -67,18 +42,26 @@ fn get_token_from_headers(headers: &HeaderMap) -> Option<String> {
         .map(|c| c.value().to_string())
 }
 
-pub async fn github_login(State(state): State<AppState>) -> Redirect {
+pub fn router() -> Router<AppState> {
+    Router::new()
+        .route("/github", get(github_login))
+        .route("/github/callback", get(github_callback))
+        .route("/me", get(auth_me))
+        .route("/logout", get(logout))
+}
+
+async fn github_login(State(state): State<AppState>) -> Redirect {
     let url = state.github_auth.authorize_url();
     Redirect::to(&url)
 }
 
-pub async fn github_callback(
+async fn github_callback(
     State(state): State<AppState>,
     Query(params): Query<CallbackParams>,
 ) -> Result<impl IntoResponse, ApiError> {
     let access_token = state.github_auth.exchange_code(&params.code).await?;
     let user = state.github_auth.get_user(&access_token).await?;
-    let jwt = crate::jwt::create_token(&user, &state.jwt_secret)?;
+    let jwt = jwt::create_token(&user, &state.jwt_secret)?;
 
     let redirect_url = state
         .frontend_url
@@ -94,13 +77,13 @@ pub async fn github_callback(
     Ok(response)
 }
 
-pub async fn auth_me(
+async fn auth_me(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> Result<Json<UserInfo>, ApiError> {
     let token =
         get_token_from_headers(&headers).ok_or_else(|| ApiError(HiveError::Auth("not logged in".into())))?;
-    let claims = crate::jwt::verify_token(&token, &state.jwt_secret)?;
+    let claims = jwt::verify_token(&token, &state.jwt_secret)?;
 
     Ok(Json(UserInfo {
         id: claims.sub,
@@ -111,7 +94,7 @@ pub async fn auth_me(
     }))
 }
 
-pub async fn logout() -> Response {
+async fn logout() -> Response {
     let mut response = Redirect::to("/").into_response();
     response.headers_mut().insert(
         header::SET_COOKIE,

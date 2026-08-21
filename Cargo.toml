@@ -7,6 +7,7 @@ members = [
     "crates/hive-database",
     "crates/hive-config",
     "crates/hive-github-auth",
+    "crates/hive-api",
 ]
 resolver = "2"
 
@@ -21,6 +22,7 @@ hive-type = { path = "crates/hive-type" }
 hive-database = { path = "crates/hive-database" }
 hive-config = { path = "crates/hive-config" }
 hive-github-auth = { path = "crates/hive-github-auth" }
+hive-api = { path = "crates/hive-api" }
 axum = "0.8"
 tokio = { version = "1", features = ["full"] }
 tower = "0.5"

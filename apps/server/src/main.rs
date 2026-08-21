@@ -1,10 +1,6 @@
-mod auth;
-mod jwt;
-
-use axum::routing::get;
 use axum::Router;
 use hive_config::AppConfig;
-use hive_github_auth::GithubAuth;
+use hive_database::{connect, run_migrations};
 use tower_http::services::{ServeDir, ServeFile};
 use tower_http::trace::TraceLayer;
 
@@ -21,23 +17,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let config = AppConfig::from_env()?;
 
-    let state = auth::AppState {
-        github_auth: GithubAuth::new(config.github.clone()),
-        jwt_secret: config.server.jwt_secret.clone(),
-        frontend_url: config.server.frontend_url.clone(),
-    };
+    let db = connect(&config.server.database_url).await?;
+    run_migrations(&db).await?;
+
+    let state = hive_api::AppState::new(&config, db);
 
     let index_path = format!("{}/index.html", config.server.frontend_dir);
     let serve_dir = ServeDir::new(&config.server.frontend_dir).fallback(ServeFile::new(&index_path));
 
+    let api_router = hive_api::router(state);
+
     let app = Router::new()
-        .route("/api/auth/github", get(auth::github_login))
-        .route("/api/auth/github/callback", get(auth::github_callback))
-        .route("/api/auth/me", get(auth::auth_me))
-        .route("/api/auth/logout", get(auth::logout))
+        .merge(api_router)
         .fallback_service(serve_dir)
-        .layer(TraceLayer::new_for_http())
-        .with_state(state);
+        .layer(TraceLayer::new_for_http());
 
     let addr = format!("{}:{}", config.server.host, config.server.port);
     let listener = tokio::net::TcpListener::bind(&addr).await?;

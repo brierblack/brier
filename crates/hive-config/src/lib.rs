@@ -14,6 +14,7 @@ pub struct ServerConfig {
     pub jwt_secret: String,
     pub frontend_dir: String,
     pub frontend_url: Option<String>,
+    pub database_url: String,
 }
 
 #[derive(Debug, Clone)]
@@ -47,6 +48,8 @@ impl AppConfig {
             frontend_dir: std::env::var("FRONTEND_DIR")
                 .map_err(|e| hive_error::HiveError::Config(e.to_string()))?,
             frontend_url: std::env::var("FRONTEND_URL").ok().filter(|s| !s.is_empty()),
+            database_url: std::env::var("DATABASE_URL")
+                .map_err(|e| hive_error::HiveError::Config(e.to_string()))?,
         };
 
         Ok(Self { github, server })
