@@ -1,11 +1,4 @@
-import type {
-  Agent,
-  Team,
-  Skill,
-  WorkComputer,
-  BackendService,
-  ComputerAgent,
-} from '../types';
+import type { Agent, Team, Skill, WorkComputer, BackendService, ComputerAgent } from '../types';
 
 export const agents: Agent[] = [
   {

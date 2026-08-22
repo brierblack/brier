@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use sea_orm::{ConnectionTrait, Statement};
+use sea_orm::ConnectionTrait;
 use sea_orm_migration::{DbErr, MigrationName, MigrationTrait, MigratorTrait, SchemaManager};
 
 const UP_SQL: &str = include_str!("../migrations/init.sql");
@@ -25,24 +25,12 @@ impl MigrationName for Migration {
 #[async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .get_connection()
-            .execute(Statement::from_string(
-                manager.get_database_backend(),
-                UP_SQL,
-            ))
-            .await?;
+        manager.get_connection().execute_unprepared(UP_SQL).await?;
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .get_connection()
-            .execute(Statement::from_string(
-                manager.get_database_backend(),
-                DOWN_SQL,
-            ))
-            .await?;
+        manager.get_connection().execute_unprepared(DOWN_SQL).await?;
         Ok(())
     }
 }

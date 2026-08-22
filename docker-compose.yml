@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: hive
       POSTGRES_DB: hive
     ports:
-      - '127.0.0.1:5432:5432'
+      - '127.0.0.1:5433:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -23,6 +23,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      network: host
     container_name: hive-app
     restart: unless-stopped
     env_file:

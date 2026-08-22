@@ -1,7 +1,8 @@
+# syntax=docker/dockerfile:1
 # ============================================================
 # Multi-stage Dockerfile for Hive
 # Stage 1: Build Frontend (React 19 + Vite + Tailwind CSS 4)
-# Stage 2: Build Backend (Rust + axum)
+# Stage 2: Build Backend (Rust + axum, slim image + cargo cache)
 # Stage 3: Runtime (debian-slim, single binary serves API + static files)
 # ============================================================
 
@@ -29,26 +30,31 @@ RUN pnpm run lint && pnpm run format:check
 RUN pnpm run build
 
 # ---- Stage 2: Build Backend ----
-FROM rust:latest AS backend-builder
+FROM rust:slim-bookworm AS backend-builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends libssl-dev pkg-config && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential pkg-config libssl-dev ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY Cargo.toml ./
+COPY Cargo.toml Cargo.lock ./
 COPY apps/server/ apps/server/
 COPY crates/ crates/
 
-RUN cargo build --release
+RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
+    --mount=type=cache,target=/app/target,sharing=locked \
+    cargo build --release && \
+    cp /app/target/release/hive /app/hive
 
 # ---- Stage 3: Runtime ----
-FROM debian:stable-slim
+FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates libssl3 curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY --from=backend-builder /app/target/release/hive /app/hive
+COPY --from=backend-builder /app/hive /app/hive
 COPY --from=frontend-builder /app/apps/web/dist /app/frontend/dist
 
 ENV HOST=0.0.0.0

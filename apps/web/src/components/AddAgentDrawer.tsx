@@ -16,13 +16,7 @@ import {
 } from 'antd';
 import { CheckOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { skills } from '../data/mockData';
-import {
-  MODELS,
-  AGENT_ICONS,
-  TEAMS_LIST,
-  CREATE_STEPS,
-  SKILL_TYPE_MAP,
-} from '../define';
+import { MODELS, AGENT_ICONS, TEAMS_LIST, CREATE_STEPS, SKILL_TYPE_MAP } from '../define';
 import { fetchWorkspaces } from '../services/workspace';
 
 const { Text } = Typography;
@@ -165,10 +159,7 @@ export function AddAgentDrawer({ open, onClose }: AddAgentDrawerProps) {
               <ColorPicker showText format="hex" defaultValue="#fe6e00" />
             </Form.Item>
             <Form.Item name="workspace" label="工作空间">
-              <Select
-                options={workspaceOptions}
-                placeholder="选择运行环境"
-              />
+              <Select options={workspaceOptions} placeholder="选择运行环境" />
             </Form.Item>
             <Form.Item name="team" label="所属团队">
               <Select
