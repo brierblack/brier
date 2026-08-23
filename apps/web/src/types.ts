@@ -96,6 +96,8 @@ export interface WorkComputer {
   lastHeartbeat: string;
   agentCount: number;
   runtime: string;
+  detectedRuntimes: string[];
+  systemType: string;
 }
 
 export interface BackendService {
@@ -111,6 +113,8 @@ export interface BackendService {
 export interface ComputerAgent {
   id: number;
   name: string;
+  desc: string;
+  icon: string;
   status: AgentStatus;
   runtime: string;
   lastActive: string;

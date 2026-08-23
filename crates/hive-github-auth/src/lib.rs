@@ -1,6 +1,14 @@
 use hive_config::GithubConfig;
 use hive_core::auth::{AuthProvider, UserInfo};
 use hive_error::{HiveError, Result};
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RepoInfo {
+    pub full_name: String,
+    pub name: String,
+    pub private: bool,
+}
 
 #[derive(Clone)]
 pub struct GithubAuth {
@@ -18,7 +26,7 @@ impl GithubAuth {
 
     pub fn authorize_url(&self) -> String {
         format!(
-            "https://github.com/login/oauth/authorize?client_id={}&redirect_uri={}",
+            "https://github.com/login/oauth/authorize?client_id={}&redirect_uri={}&scope=repo",
             self.config.client_id, self.config.redirect_uri
         )
     }
@@ -71,6 +79,25 @@ impl GithubAuth {
             email: body["email"].as_str().map(|s| s.to_string()),
             avatar_url: body["avatar_url"].as_str().map(|s| s.to_string()),
         })
+    }
+
+    pub async fn list_repos(&self, access_token: &str) -> Result<Vec<RepoInfo>> {
+        let resp = self
+            .client
+            .get("https://api.github.com/user/repos?per_page=100&sort=updated&direction=desc")
+            .header("Authorization", format!("Bearer {access_token}"))
+            .header("User-Agent", "hive")
+            .header("Accept", "application/vnd.github+json")
+            .send()
+            .await
+            .map_err(|e| HiveError::GithubApi(e.to_string()))?;
+
+        let repos: Vec<RepoInfo> = resp
+            .json()
+            .await
+            .map_err(|e| HiveError::GithubApi(e.to_string()))?;
+
+        Ok(repos)
     }
 }
 

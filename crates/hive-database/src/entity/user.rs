@@ -11,6 +11,7 @@ pub struct Model {
     pub name: Option<String>,
     pub email: Option<String>,
     pub avatar_url: Option<String>,
+    pub github_access_token: Option<String>,
     pub created_at: DateTimeUtc,
     pub updated_at: DateTimeUtc,
 }

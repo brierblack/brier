@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Avatar, Button, Dropdown, Menu, type MenuProps } from 'antd';
 import {
   GithubOutlined,
@@ -55,6 +55,24 @@ export function Sidebar() {
   const { user, loading, login, logout } = useAuth();
   const [recentExpanded, setRecentExpanded] = useState(true);
   const [olderExpanded, setOlderExpanded] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showShadow, setShowShadow] = useState(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const checkScroll = () => {
+      const hasOverflow = el.scrollHeight > el.clientHeight;
+      const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+      setShowShadow(hasOverflow && !isAtBottom);
+    };
+
+    checkScroll();
+    el.addEventListener('scroll', checkScroll, { passive: true });
+
+    return () => el.removeEventListener('scroll', checkScroll);
+  }, [recentExpanded, olderExpanded]);
 
   const selectedKey = location.pathname.slice(1);
 
@@ -98,7 +116,7 @@ export function Sidebar() {
         />
       </div>
 
-      <div className="px-1 flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="px-1 flex-1 overflow-y-auto">
         <div
           className="group flex items-center gap-1 px-2 py-1 cursor-pointer text-sm font-medium text-muted rounded hover:bg-[#f5f5f5] hover:text-ink"
           onClick={() => setRecentExpanded(!recentExpanded)}
@@ -146,7 +164,9 @@ export function Sidebar() {
         )}
       </div>
 
-      <div className="px-4 py-3 shrink-0">
+      <div
+        className={`px-4 py-3 shrink-0 transition-shadow duration-200 ${showShadow ? 'shadow-[0_-8px_12px_-8px_rgba(0,0,0,0.12)]' : 'shadow-none'}`}
+      >
         {loading && (
           <div className="flex items-center gap-2.5">
             <Avatar

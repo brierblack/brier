@@ -23,6 +23,7 @@ pub async fn upsert_user_by_github_id(
     name: Option<&str>,
     email: Option<&str>,
     avatar_url: Option<&str>,
+    github_access_token: Option<&str>,
 ) -> Result<User> {
     let existing = user::Entity::find()
         .filter(user::Column::GithubId.eq(github_id))
@@ -35,6 +36,7 @@ pub async fn upsert_user_by_github_id(
         active.name = sea_orm::Set(name.map(|s| s.to_string()));
         active.email = sea_orm::Set(email.map(|s| s.to_string()));
         active.avatar_url = sea_orm::Set(avatar_url.map(|s| s.to_string()));
+        active.github_access_token = sea_orm::Set(github_access_token.map(|s| s.to_string()));
         active.updated_at = sea_orm::Set(Utc::now());
         let model = active.update(db).await?;
         Ok(model.into())
@@ -45,11 +47,20 @@ pub async fn upsert_user_by_github_id(
             name: sea_orm::Set(name.map(|s| s.to_string())),
             email: sea_orm::Set(email.map(|s| s.to_string())),
             avatar_url: sea_orm::Set(avatar_url.map(|s| s.to_string())),
+            github_access_token: sea_orm::Set(github_access_token.map(|s| s.to_string())),
             ..Default::default()
         };
         let model = active.insert(db).await?;
         Ok(model.into())
     }
+}
+
+pub async fn get_github_token(db: &DatabaseConnection, user_id: UserId) -> Result<Option<String>> {
+    let model = user::Entity::find_by_id(user_id.0)
+        .one(db)
+        .await?
+        .ok_or_else(|| hive_error::HiveError::NotFound("user not found".into()))?;
+    Ok(model.github_access_token)
 }
 
 pub async fn create_workspace(db: &DatabaseConnection, ws: Workspace) -> Result<Workspace> {

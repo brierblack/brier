@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   App,
@@ -20,6 +20,7 @@ import {
   CheckOutlined,
 } from '@ant-design/icons';
 import { createWorkspace } from '../../services/workspace';
+import { fetchGithubRepos, type RepoInfo } from '../../services/github';
 
 const STEPS = [{ title: '基础信息' }, { title: '指令' }, { title: '自动化' }];
 
@@ -51,8 +52,15 @@ export const CreateSpace = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [avatarUrl, setAvatarUrl] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
+  const [repos, setRepos] = useState<RepoInfo[]>([]);
 
   const handleBack = () => navigate(-1);
+
+  useEffect(() => {
+    fetchGithubRepos()
+      .then(setRepos)
+      .catch(() => {});
+  }, []);
 
   const handlePrev = () => {
     if (currentStep > 0) setCurrentStep(currentStep - 1);
@@ -210,11 +218,10 @@ export const CreateSpace = () => {
                 <Select
                   mode="multiple"
                   placeholder="选择 GitHub 仓库"
-                  options={[
-                    { value: 'repo1', label: 'user/repo1' },
-                    { value: 'repo2', label: 'user/repo2' },
-                    { value: 'repo3', label: 'org/repo3' },
-                  ]}
+                  options={repos.map((r) => ({
+                    value: r.full_name,
+                    label: r.full_name,
+                  }))}
                 />
               </Form.Item>
             </div>

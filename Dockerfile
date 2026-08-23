@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # ============================================================
 # Multi-stage Dockerfile for Hive
 # Stage 1: Build Frontend (React 19 + Vite + Tailwind CSS 4)

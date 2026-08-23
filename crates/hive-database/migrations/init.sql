@@ -8,14 +8,15 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE IF NOT EXISTS users (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    github_id   BIGINT NOT NULL UNIQUE,
-    login       TEXT NOT NULL,
-    name        TEXT,
-    email       TEXT,
-    avatar_url  TEXT,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    github_id           BIGINT NOT NULL UNIQUE,
+    login               TEXT NOT NULL,
+    name                TEXT,
+    email               TEXT,
+    avatar_url          TEXT,
+    github_access_token TEXT,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS workspaces (

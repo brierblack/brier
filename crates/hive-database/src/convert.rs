@@ -37,6 +37,7 @@ impl From<user::Model> for User {
             name: m.name,
             email: m.email,
             avatar_url: m.avatar_url,
+            github_access_token: m.github_access_token,
             created_at: m.created_at,
             updated_at: m.updated_at,
         }
@@ -52,6 +53,7 @@ impl From<User> for user::ActiveModel {
             name: sea_orm::Set(u.name),
             email: sea_orm::Set(u.email),
             avatar_url: sea_orm::Set(u.avatar_url),
+            github_access_token: sea_orm::Set(u.github_access_token),
             created_at: sea_orm::Set(u.created_at),
             updated_at: sea_orm::Set(u.updated_at),
         }

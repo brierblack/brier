@@ -69,6 +69,7 @@ async fn github_callback(
         user.name.as_deref(),
         user.email.as_deref(),
         user.avatar_url.as_deref(),
+        Some(&access_token),
     )
     .await?;
 
