@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { App, Button, Dropdown, type MenuProps } from 'antd';
+import { useMemo, useState } from 'react';
+import { Button, Dropdown, type MenuProps } from 'antd';
 import {
   PlusOutlined,
   EllipsisOutlined,
@@ -12,6 +12,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
 import { Table } from '@/components/Table';
 import { StatusBadge } from '../../components/StatusBadge';
+import { CreateTeamModal } from './CreateModal';
 import { teams } from '../../data/mockData';
 import type { Team } from '../../types';
 
@@ -24,7 +25,7 @@ const actionMenuItems: MenuProps['items'] = [
 ];
 
 export function Team() {
-  const { message } = App.useApp();
+  const [createOpen, setCreateOpen] = useState(false);
 
   const columns: ColumnsType<Team> = useMemo(
     () => [
@@ -91,11 +92,7 @@ export function Team() {
       title="Agent 团队"
       subtitle="编排多 Agent 协作，实现复杂工作流"
       extra={
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => message.info('团队编排器开发中')}
-        >
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>
           新建团队
         </Button>
       }
@@ -108,6 +105,8 @@ export function Team() {
         pagination={false}
         size="middle"
       />
+
+      <CreateTeamModal open={createOpen} onCancel={() => setCreateOpen(false)} />
     </Page>
   );
 }

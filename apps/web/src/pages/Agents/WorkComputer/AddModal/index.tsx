@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { App, Button, Modal, Collapse } from 'antd';
+import { App, Button, Collapse } from 'antd';
 import type { CollapseProps } from 'antd';
-import { CopyOutlined, DownOutlined, RightOutlined, RobotOutlined } from '@ant-design/icons';
+import { CopyOutlined, DownOutlined, RobotOutlined } from '@ant-design/icons';
+import { Modal } from '@/components/Modal';
 
 interface AddComputerModalProps {
   open: boolean;
@@ -83,13 +84,6 @@ export function AddComputerModal({ open, onClose }: AddComputerModalProps) {
       title="添加 Agent 工作电脑"
       open={open}
       onCancel={onClose}
-      width={720}
-      centered
-      styles={{
-        container: { maxHeight: '85vh', display: 'flex', flexDirection: 'column' },
-        body: { flex: 1, minHeight: 0, overflowY: 'auto' },
-        wrapper: { overflow: 'hidden' },
-      }}
       footer={
         <div className="flex justify-end">
           <Button onClick={onClose}>取消</Button>

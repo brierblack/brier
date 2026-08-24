@@ -34,7 +34,7 @@ const CONFIG_ROWS = [
 
 export function Config() {
   return (
-    <Page title="配置" subtitle="模型、MCP 服务、AG-UI 协议与外观设置">
+    <Page title="设置" subtitle="模型、MCP 服务、AG-UI 协议与外观设置">
       <Tabs
         defaultActiveKey="model"
         items={[

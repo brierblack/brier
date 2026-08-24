@@ -38,7 +38,7 @@ export const PAGE_TITLES: Record<PageKey, { title: string; subtitle: string }> =
   agents: { title: 'Agents', subtitle: '管理所有 AI Agent，配置模型、技能与工具' },
   team: { title: 'Agent 团队', subtitle: '编排多 Agent 协作，实现复杂工作流' },
   skills: { title: 'Skills', subtitle: '内置工具、MCP 服务与自定义技能' },
-  config: { title: '配置', subtitle: '模型、MCP 服务、AG-UI 协议与外观设置' },
+  config: { title: '设置', subtitle: '模型、MCP 服务、AG-UI 协议与外观设置' },
 };
 
 export const NAV_ITEMS: { key: PageKey; label: string; icon: React.ReactNode; section: string }[] =
@@ -46,7 +46,7 @@ export const NAV_ITEMS: { key: PageKey; label: string; icon: React.ReactNode; se
     { key: 'agents', label: 'Agents', icon: <RobotOutlined />, section: '导航' },
     { key: 'team', label: 'Agent 团队', icon: <TeamOutlined />, section: '导航' },
     { key: 'skills', label: 'Skills', icon: <ThunderboltOutlined />, section: '导航' },
-    { key: 'config', label: '配置', icon: <SettingOutlined />, section: '导航' },
+    { key: 'config', label: '设置', icon: <SettingOutlined />, section: '导航' },
   ];
 
 export const MODELS = ['GPT-4o', 'GPT-4o mini', 'Claude 3.5 Sonnet', 'DeepSeek V3', 'Qwen Max'];

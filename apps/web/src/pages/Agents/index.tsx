@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Input, Select, Space, Button, Dropdown, type MenuProps } from 'antd';
 import {
   PlusOutlined,
@@ -17,7 +18,6 @@ import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
 import { StatusBadge } from '../../components/StatusBadge';
 import { WorkComputerDrawer } from './WorkComputer';
-import { useUI } from '../../ui-context';
 import { agents, workComputers } from '../../data/mockData';
 import type { Agent, AgentStatus, AgentVisibility, PublicScope } from '../../types';
 import { Table } from '@/components/Table';
@@ -33,7 +33,7 @@ const actionMenuItems: MenuProps['items'] = [
 ];
 
 export const Agents = () => {
-  const { openDrawer } = useUI();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [computerDrawerOpen, setComputerDrawerOpen] = useState(false);
@@ -141,7 +141,7 @@ export const Agents = () => {
           <Button icon={<DesktopOutlined />} onClick={() => setComputerDrawerOpen(true)}>
             工作电脑 <span className="font-mono tabular-nums">{workComputers.length}</span>
           </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={openDrawer}>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/agents/new')}>
             新增 Agent
           </Button>
         </div>
