@@ -5,8 +5,10 @@ import { theme } from './config/theme';
 import { Layout } from './layouts';
 import { Chat } from './pages/Chat';
 import { Agents } from './pages/Agents';
+import { AgentDetail } from './pages/Agents/Detail';
 import { NewAgent } from './pages/Agents/New';
 import { Team } from './pages/Team';
+import { TeamDetail } from './pages/Team/Detail';
 import { Skills } from './pages/Skills';
 import { Settings } from './pages/Settings';
 import { CreateSpace } from './pages/CreateSpace';
@@ -24,8 +26,10 @@ export default function App() {
                 <Route index element={<Navigate to="/chat" replace />} />
                 <Route path="chat" element={<Chat />} />
                 <Route path="agents" element={<Agents />} />
+                <Route path="agents/:id" element={<AgentDetail />} />
                 <Route path="agents/new" element={<NewAgent />} />
                 <Route path="team" element={<Team />} />
+                <Route path="team/:id" element={<TeamDetail />} />
                 <Route path="skills" element={<Skills />} />
                 <Route path="settings" element={<Settings />} />
               </Route>

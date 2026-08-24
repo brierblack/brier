@@ -54,7 +54,10 @@ export const Agents = () => {
         title: '名称',
         dataIndex: 'name',
         render: (_, r) => (
-          <div className="flex items-center gap-2.5">
+          <div
+            className="flex items-center gap-2.5 cursor-pointer"
+            onClick={() => navigate(`/agents/${r.id}`)}
+          >
             <div
               className="size-9 rounded-md flex items-center justify-center text-lg shrink-0"
               style={{ background: `${r.color}0d`, border: `1px solid ${r.color}22` }}
@@ -62,7 +65,7 @@ export const Agents = () => {
               {r.icon}
             </div>
             <div>
-              <div className="font-medium">{r.name}</div>
+              <div className="font-medium hover:text-brand transition-colors">{r.name}</div>
             </div>
           </div>
         ),
@@ -121,9 +124,22 @@ export const Agents = () => {
         title: '操作',
         key: 'action',
         align: 'right',
-        render: () => (
-          <Dropdown menu={{ items: actionMenuItems }} trigger={['click']}>
-            <Button type="text" icon={<EllipsisOutlined />} className="!p-1" />
+        render: (_, r) => (
+          <Dropdown
+            menu={{
+              items: actionMenuItems,
+              onClick: ({ key }) => {
+                if (key === 'view') navigate(`/agents/${r.id}`);
+              },
+            }}
+            trigger={['click']}
+          >
+            <Button
+              type="text"
+              icon={<EllipsisOutlined />}
+              className="!p-1"
+              onClick={(e) => e.stopPropagation()}
+            />
           </Dropdown>
         ),
       },
@@ -174,6 +190,7 @@ export const Agents = () => {
         dataSource={filteredAgents}
         rowKey="id"
         pagination={false}
+        onRow={(r) => ({ onClick: () => navigate(`/agents/${r.id}`) })}
       />
 
       <WorkComputerDrawer open={computerDrawerOpen} onClose={() => setComputerDrawerOpen(false)} />

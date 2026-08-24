@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Dropdown, type MenuProps } from 'antd';
 import {
   PlusOutlined,
@@ -25,6 +26,7 @@ const actionMenuItems: MenuProps['items'] = [
 ];
 
 export function Team() {
+  const navigate = useNavigate();
   const [createOpen, setCreateOpen] = useState(false);
 
   const columns: ColumnsType<Team> = useMemo(
@@ -33,12 +35,15 @@ export function Team() {
         title: '名称',
         dataIndex: 'name',
         render: (_, r) => (
-          <div className="flex items-center gap-2.5">
+          <div
+            className="flex items-center gap-2.5 cursor-pointer"
+            onClick={() => navigate(`/team/${r.id}`)}
+          >
             <div className="size-9 rounded-md flex items-center justify-center bg-surface border border-line shrink-0">
               👥
             </div>
             <div>
-              <div className="font-medium">{r.name}</div>
+              <div className="font-medium hover:text-brand transition-colors">{r.name}</div>
               <div className="text-[11px] text-faint">{r.desc}</div>
             </div>
           </div>
@@ -77,9 +82,22 @@ export function Team() {
         title: '操作',
         key: 'action',
         align: 'right',
-        render: () => (
-          <Dropdown menu={{ items: actionMenuItems }} trigger={['click']}>
-            <Button type="text" icon={<EllipsisOutlined />} className="!p-1" />
+        render: (_, r) => (
+          <Dropdown
+            menu={{
+              items: actionMenuItems,
+              onClick: ({ key }) => {
+                if (key === 'view') navigate(`/team/${r.id}`);
+              },
+            }}
+            trigger={['click']}
+          >
+            <Button
+              type="text"
+              icon={<EllipsisOutlined />}
+              className="!p-1"
+              onClick={(e) => e.stopPropagation()}
+            />
           </Dropdown>
         ),
       },
@@ -105,6 +123,7 @@ export function Team() {
         rowKey="id"
         pagination={false}
         size="middle"
+        onRow={(r) => ({ onClick: () => navigate(`/team/${r.id}`) })}
       />
 
       <CreateTeamModal open={createOpen} onCancel={() => setCreateOpen(false)} />
