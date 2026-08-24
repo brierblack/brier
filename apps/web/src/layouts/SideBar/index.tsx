@@ -74,7 +74,7 @@ export function Sidebar() {
     return () => el.removeEventListener('scroll', checkScroll);
   }, [recentExpanded, olderExpanded]);
 
-  const selectedKey = location.pathname.slice(1);
+  const selectedKey = location.pathname === '/chat' ? 'new-chat' : location.pathname.slice(1);
 
   const userMenuItems = [
     { key: 'logout', icon: <LogoutOutlined />, label: '退出登录', onClick: logout },
@@ -109,9 +109,13 @@ export function Sidebar() {
           selectedKeys={[selectedKey]}
           items={menuItems}
           onClick={(e) => {
-            if (e.key === 'new-chat' || e.key === 'automation') return;
-            navigate(`/${e.key}`);
-          }}
+        if (e.key === 'automation') return;
+        if (e.key === 'new-chat') {
+          navigate('/chat');
+          return;
+        }
+        navigate(`/${e.key}`);
+      }}
           classNames={menuClassNames}
         />
       </div>
