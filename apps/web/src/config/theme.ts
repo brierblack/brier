@@ -8,6 +8,7 @@ export const theme: ThemeConfig = {
     fontFamily: "'Inter Variable', -apple-system, sans-serif",
     fontSize: 13,
     colorBgElevated: '#fbfbfb',
+    colorBorder: '#e2e2e2',
   },
   components: {
     Table: {
