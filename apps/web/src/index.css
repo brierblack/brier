@@ -43,7 +43,7 @@
   --color-ghost: #cad5e2;
   --color-canvas: #f1f5f9;
   --color-surface: #f8fafc;
-  --color-line: #e2e8f0;
+  --color-line: #e2e2e2;
 
   --color-success: #00c758;
   --color-warn: #f99c00;
@@ -87,5 +87,23 @@
   }
   ::-webkit-scrollbar-thumb:hover {
     background: #c8c8c8;
+  }
+}
+
+@layer utilities {
+  .border-b-line {
+    border-bottom-color: var(--color-line);
+  }
+  .border-t-line {
+    border-top-color: var(--color-line);
+  }
+  .border-r-line {
+    border-right-color: var(--color-line);
+  }
+  .border-l-line {
+    border-left-color: var(--color-line);
+  }
+  .divide-line > * + * {
+    border-color: var(--color-line);
   }
 }

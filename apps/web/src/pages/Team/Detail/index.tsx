@@ -70,7 +70,7 @@ function SharingScope({
             className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
               selected === opt.value
                 ? 'border-brand bg-[#fff5ed]'
-                : 'border-[#e9e9e9] bg-white hover:border-[#d9d9d9]'
+                : 'border-line bg-white hover:border-line'
             }`}
           >
             {opt.value === 'private' && <LockOutlined className="text-sm text-faint" />}
@@ -106,7 +106,7 @@ function MembersTab({ members }: { members: MemberDetail[] }) {
           </Button>
         </div>
 
-        <div className="border border-[#e9e9e9] rounded-lg overflow-hidden divide-y divide-[#f0f0f0]">
+        <div className="border border-line rounded-lg overflow-hidden divide-y divide-line">
           {members.map((m) => (
             <div key={m.id} className="flex items-center gap-3 px-4 py-3 bg-white">
               <MemberAvatar icon={m.icon} color={m.color} />
@@ -196,7 +196,7 @@ export function TeamDetail() {
       extra={<Button type="text" danger>归档</Button>}
     >
       {/* Team info header */}
-      <div className="px-6 py-4 border-b border-[#e9e9e9]">
+      <div className="px-6 py-4 border-b border-line">
         <div className="flex items-center gap-3 mb-2">
           <div className="size-10 rounded-lg flex items-center justify-center text-xl bg-surface border border-line shrink-0">
             👥

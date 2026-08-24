@@ -81,7 +81,7 @@ interface ChatMessage {
 
 function PropertyRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between py-3 border-b border-[#f0f0f0] last:border-b-0">
+    <div className="flex items-center justify-between py-3 border-b border-line last:border-b-0">
       <span className="text-sm text-muted">{label}</span>
       <div className="flex items-center gap-2">{children}</div>
     </div>
@@ -152,7 +152,7 @@ function OverviewTab({
 
         <div className="mb-8">
           <div className="text-sm font-bold text-ink mb-2">属性</div>
-          <div className="border border-[#e9e9e9] rounded-lg px-4">
+          <div className="border border-line rounded-lg px-4">
             <PropertyRow label="工作电脑"><span className="text-sm font-medium text-ink font-mono">{agent.workComputer}</span></PropertyRow>
             <PropertyRow label="运行时"><Select value={runtime} onChange={setRuntime} options={RUNTIMES.map((r) => ({ value: r, label: r }))} size="small" className="w-40" /></PropertyRow>
             <PropertyRow label="模型"><Select value={model} onChange={setModel} options={MODELS.map((m) => ({ value: m, label: m }))} size="small" className="w-40" /></PropertyRow>
@@ -163,8 +163,8 @@ function OverviewTab({
 
         <div>
           <div className="text-sm font-bold text-ink mb-2">操作</div>
-          <div className="border border-[#e9e9e9] rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-[#f0f0f0]">
+          <div className="border border-line rounded-lg overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-line">
               <div className="flex-1">
                 <div className="text-sm font-medium text-ink">默认 Agent</div>
                 <p className="text-xs text-faint mt-1">设为你的"主力" Agent — 接受指派时的默认人选</p>
@@ -185,11 +185,11 @@ function OverviewTab({
       <div className="flex-1 shrink-0">
         <div className="mb-6">
           <div className="text-sm font-bold text-ink mb-3">进行中的会话</div>
-          <div className="border border-[#e9e9e9] rounded-lg p-4"><p className="text-xs text-faint">当前没有进行中的会话</p></div>
+          <div className="border border-line rounded-lg p-4"><p className="text-xs text-faint">当前没有进行中的会话</p></div>
         </div>
         <div className="mb-6">
           <div className="text-sm font-bold text-ink mb-3">近 30 天</div>
-          <div className="border border-[#e9e9e9] rounded-lg p-4">
+          <div className="border border-line rounded-lg p-4">
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-ink font-mono tabular-nums">{agent.runs > 0 ? agent.runs : 1}</span>
               <span className="text-xs text-faint">次运行</span>
@@ -199,7 +199,7 @@ function OverviewTab({
         </div>
         <div>
           <div className="text-sm font-bold text-ink mb-3">最近 Agent 事项</div>
-          <div className="border border-[#e9e9e9] rounded-lg p-4"><p className="text-xs text-faint">将 Agent 事项指派给该 Agent 后，会展示在这里</p></div>
+          <div className="border border-line rounded-lg p-4"><p className="text-xs text-faint">将 Agent 事项指派给该 Agent 后，会展示在这里</p></div>
         </div>
       </div>
     </div>
@@ -288,9 +288,9 @@ function NewChatTab({ agent }: { agent: Agent }) {
         </div>
       )}
 
-      <div className="shrink-0 px-4 pb-4 pt-2 border-t border-[#e9e9e9]">
+      <div className="shrink-0 px-4 pb-4 pt-2 border-t border-line">
         <div className="max-w-2xl mx-auto">
-          <div className="rounded-2xl border border-[#e0e0e0] bg-white overflow-hidden shadow-sm transition-colors focus-within:border-brand">
+          <div className="rounded-2xl border border-line bg-white overflow-hidden shadow-sm transition-colors focus-within:border-brand">
             <Input.TextArea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -351,7 +351,7 @@ function SkillsTab({ agent }: { agent: Agent }) {
           </div>
           <Button type="primary" icon={<PlusOutlined />}>添加 Skill</Button>
         </div>
-        <div className="border border-[#e9e9e9] rounded-lg overflow-hidden divide-y divide-[#f0f0f0]">
+        <div className="border border-line rounded-lg overflow-hidden divide-y divide-line">
           {boundSkills.map((skill) => (
             <div key={skill.name} className="flex items-center gap-3 px-4 py-3 bg-white">
               <div className="size-8 rounded-md bg-surface flex items-center justify-center shrink-0">
@@ -460,7 +460,7 @@ export function AgentDetail() {
       }
     >
       <div className="flex h-full">
-        <div className="w-52 shrink-0 px-2 py-3 border-r border-[#e2e2e2]">
+        <div className="w-52 shrink-0 px-2 py-3 border-r border-line">
           <Menu
             mode="inline"
             selectedKeys={[activeKey]}

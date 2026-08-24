@@ -76,7 +76,7 @@ function SectionCard({ title, children }: { title: React.ReactNode; children: Re
   return (
     <div className="mb-6">
       <div className="text-sm font-bold text-ink mb-3">{title}</div>
-      <div className="rounded-xl border border-[#f0f0f0] p-5 bg-white">{children}</div>
+      <div className="rounded-xl border border-line p-5 bg-white">{children}</div>
     </div>
   );
 }
@@ -201,7 +201,7 @@ export function NewAgent() {
                     className="size-20 rounded-full object-cover cursor-pointer"
                   />
                 ) : (
-                  <div className="size-20 rounded-full border border-dashed border-[#d9d9d9] flex flex-col items-center justify-center cursor-pointer hover:border-[#1677ff] text-faint">
+                  <div className="size-20 rounded-full border border-dashed border-line flex flex-col items-center justify-center cursor-pointer hover:border-[#1677ff] text-faint">
                     <PlusOutlined className="text-lg" />
                     <span className="text-xs mt-1">上传头像</span>
                   </div>
@@ -235,7 +235,7 @@ export function NewAgent() {
             </div>
           </div>
 
-          <div className="border-t border-[#f0f0f0] my-4" />
+          <div className="border-t border-line my-4" />
 
           <Form.Item label="可见性">
             <div className="flex flex-col gap-4">
@@ -250,7 +250,7 @@ export function NewAgent() {
                         className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer border transition-colors ${
                           visibility === opt.value
                             ? 'border-[#1677ff] bg-[#eff8ff]'
-                            : 'border-[#f0f0f0] hover:border-[#d9d9d9]'
+                            : 'border-line hover:border-line'
                         }`}
                       >
                         <span className="text-base text-muted shrink-0">{opt.icon}</span>
@@ -318,7 +318,7 @@ export function NewAgent() {
             {filteredExtensions.map((ext) => (
               <div
                 key={ext.id}
-                className="flex items-start gap-3 p-3 rounded-lg border border-[#f0f0f0] hover:border-[#d9d9d9] transition-colors"
+                className="flex items-start gap-3 p-3 rounded-lg border border-line hover:border-line transition-colors"
               >
                 <div className="size-8 rounded-md bg-[#f5f5f5] flex items-center justify-center shrink-0">
                   <AppstoreOutlined className="text-sm text-muted" />

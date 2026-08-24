@@ -11,7 +11,7 @@ export const Layout = () => {
             <Sidebar />
           </aside>
         </DragLine>
-        <main className=" flex-1 h-full overflow-hidden min-w-0 border border-[#e9e9e9] rounded-2xl">
+        <main className=" flex-1 h-full overflow-hidden min-w-0 border border-line rounded-2xl">
           <Outlet />
         </main>
       </div>

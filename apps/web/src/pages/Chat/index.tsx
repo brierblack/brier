@@ -185,7 +185,7 @@ function InputBox({
   };
 
   return (
-    <div className="rounded-2xl border border-[#e0e0e0] bg-white overflow-hidden shadow-sm transition-colors focus-within:border-brand">
+    <div className="rounded-2xl border border-line bg-white overflow-hidden shadow-sm transition-colors focus-within:border-brand">
       <Input.TextArea
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -270,7 +270,7 @@ export function Chat() {
               <div
                 key={i}
                 onClick={() => setInput(s.text)}
-                className="flex items-center gap-2.5 p-3 rounded-xl border border-[#e9e9e9] bg-white hover:border-brand hover:bg-[#fff5ed] cursor-pointer transition-all"
+                className="flex items-center gap-2.5 p-3 rounded-xl border border-line bg-white hover:border-brand hover:bg-[#fff5ed] cursor-pointer transition-all"
               >
                 <span className="text-base shrink-0">{s.icon}</span>
                 <span className="text-sm text-muted">{s.text}</span>

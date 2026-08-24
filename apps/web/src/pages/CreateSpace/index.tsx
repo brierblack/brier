@@ -162,7 +162,7 @@ export const CreateSpace = () => {
                     rules={[{ required: true, message: '请上传空间头像' }]}
                   >
                     <Upload {...uploadProps} showUploadList={false}>
-                      <div className="relative w-8 h-8 rounded border border-dashed border-[#d9d9d9] flex items-center justify-center cursor-pointer overflow-hidden hover:border-brand transition-colors">
+                      <div className="relative w-8 h-8 rounded border border-dashed border-line flex items-center justify-center cursor-pointer overflow-hidden hover:border-brand transition-colors">
                         {avatarUrl ? (
                           <img
                             src={avatarUrl}
@@ -253,7 +253,7 @@ export const CreateSpace = () => {
 
               <div className="flex flex-col gap-3">
                 {/* Card 1: PR auto review */}
-                <div className="flex items-start gap-3 p-4 border border-[#e2e2e2] rounded-lg bg-white">
+                <div className="flex items-start gap-3 p-4 border border-line rounded-lg bg-white">
                   <div
                     className="shrink-0 w-9 h-9 rounded-md flex items-center justify-center"
                     style={{ background: '#fe6e000d', border: '1px solid #fe6e0022' }}
@@ -281,7 +281,7 @@ export const CreateSpace = () => {
                 </div>
 
                 {/* Card 2: Issue auto assign */}
-                <div className="flex items-start gap-3 p-4 border border-[#e2e2e2] rounded-lg bg-white">
+                <div className="flex items-start gap-3 p-4 border border-line rounded-lg bg-white">
                   <div
                     className="shrink-0 w-9 h-9 rounded-md flex items-center justify-center"
                     style={{ background: '#8d54ff0d', border: '1px solid #8d54ff22' }}
@@ -313,7 +313,7 @@ export const CreateSpace = () => {
       </div>
 
       {/* Footer: step-dependent action buttons */}
-      <div className="shrink-0 px-8 py-4 border-t border-[#e9e9e9] flex justify-end gap-3">
+      <div className="shrink-0 px-8 py-4 border-t border-line flex justify-end gap-3">
         {currentStep > 0 && <Button onClick={handlePrev}>上一步</Button>}
         {currentStep < STEPS.length - 1 ? (
           <Button type="primary" onClick={handleNext}>

@@ -11,7 +11,7 @@ interface PageProps {
 export const Page = memo(({ children, title, subtitle, extra, breadcrumb }: PageProps) => {
   return (
     <div className="h-full flex flex-col bg-[#fbfbfb]">
-      <div className="h-14 px-5 flex items-center justify-between border-b border-[#e9e9e9] shrink-0">
+      <div className="h-14 px-5 flex items-center justify-between border-b border-line shrink-0">
         {breadcrumb ? (
           <div className="flex items-center gap-1.5 text-sm">{breadcrumb}</div>
         ) : (

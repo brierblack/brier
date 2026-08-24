@@ -60,7 +60,7 @@ export const WorkSpace = memo(() => {
     backgroundColor: token.colorBgElevated,
     borderRadius: token.borderRadiusLG,
     boxShadow: 'none',
-    border: '1px solid #e3e3e3',
+    border: '1px solid var(--color-line)',
   };
 
   const menuStyle: React.CSSProperties = {
@@ -71,7 +71,7 @@ export const WorkSpace = memo(() => {
 
   const dropdownContent = (menu: React.ReactNode) => (
     <div style={contentStyle}>
-      <div className="border-b border-[#e2e2e2]">
+      <div className="border-b border-line">
         <Input
           placeholder="搜索工作空间"
           prefix={<SearchOutlined className="text-faint" />}
@@ -90,7 +90,7 @@ export const WorkSpace = memo(() => {
         }>,
         { style: menuStyle },
       )}
-      <div className="border-t border-[#e2e2e2]">
+      <div className="border-t border-line">
         <Button
           block
           type="text"
@@ -110,7 +110,7 @@ export const WorkSpace = memo(() => {
         block
         type="text"
         onClick={handleCreate}
-        classNames={{ root: ' !border-[#e2e2e2] !px-2' }}
+        classNames={{ root: ' !border-line !px-2' }}
       >
         <PlusOutlined className="text-sm" />
         <span className="flex-1 text-left text-faint">新建工作空间</span>
@@ -131,7 +131,7 @@ export const WorkSpace = memo(() => {
         block
         type="text"
         classNames={{
-          root: ' !border-[#e2e2e2] !px-2',
+          root: ' !border-line !px-2',
         }}
       >
         <Avatar workspace={current} />

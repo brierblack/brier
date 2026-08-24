@@ -70,7 +70,7 @@ export function Settings() {
     >
       <div className="flex gap-6">
         {/* Left sidebar */}
-        <div className="w-[250px] shrink-0 px-2 py-3 border-r border-[#e2e2e2]">
+        <div className="w-[250px] shrink-0 px-2 py-3 border-r border-line">
           <Menu
             mode="inline"
             selectedKeys={[activeKey]}
@@ -99,7 +99,7 @@ export function Settings() {
                       return false;
                     }}
                   >
-                    <div className="w-8 h-8 rounded border border-dashed border-[#d9d9d9] flex items-center justify-center cursor-pointer overflow-hidden hover:border-brand transition-colors">
+                    <div className="w-8 h-8 rounded border border-dashed border-line flex items-center justify-center cursor-pointer overflow-hidden hover:border-brand transition-colors">
                       {avatarUrl ? (
                         <img
                           src={avatarUrl}
@@ -165,7 +165,7 @@ export function Settings() {
                 <p className="text-xs text-faint mb-3">
                   控制非成员能否通过空间链接读取公开内容。
                 </p>
-                <div className="flex items-center justify-between p-4 border border-[#f0f0f0] rounded-lg bg-white">
+                <div className="flex items-center justify-between p-4 border border-line rounded-lg bg-white">
                   <div className="flex-1">
                     <div className="text-sm font-medium text-ink">公开空间</div>
                     <p className="text-xs text-faint mt-1 leading-relaxed">
@@ -236,9 +236,9 @@ export function Settings() {
                   为所有空间内工作的 Agent 统一预装 Skills。
                 </p>
 
-                <div className="border border-[#e9e9e9] rounded-lg overflow-hidden">
+                <div className="border border-line rounded-lg overflow-hidden">
                   {/* Tab row + add button */}
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-[#f0f0f0]">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-line">
                     <div className="flex items-center gap-2">
                       <div className="px-3 py-1 rounded-full bg-ink text-white text-xs font-medium">
                         研发任务 {skills.length}
@@ -271,7 +271,7 @@ export function Settings() {
                   </div>
 
                   {/* Skills list */}
-                  <div className="divide-y divide-[#f0f0f0]">
+                  <div className="divide-y divide-line">
                     {filteredSkills.map((skill) => (
                       <div
                         key={skill.name}

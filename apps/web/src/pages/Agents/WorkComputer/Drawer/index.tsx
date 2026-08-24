@@ -95,7 +95,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
               <Tag
                 style={{
                   background: '#f0f0f0',
-                  borderColor: '#e0e0e0',
+                  borderColor: 'var(--color-line)',
                   color: '#999',
                 }}
               >
@@ -214,7 +214,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
     >
       <div className="flex h-full">
         {/* Left panel - computer list */}
-        <div className="w-60 shrink-0 border-r border-[#e2e2e2] overflow-y-auto">
+        <div className="w-60 shrink-0 border-r border-line overflow-y-auto">
           <div className="px-4 pt-4 pb-2">
             <span className="text-sm font-medium text-muted">我添加的</span>
           </div>
@@ -307,7 +307,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
                     key={rt}
                     style={{
                       background: '#f0f0f0',
-                      borderColor: '#e0e0e0',
+                      borderColor: 'var(--color-line)',
                       color: '#333',
                       cursor: 'pointer',
                     }}
@@ -324,7 +324,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
                 {selectedAgents.map((agent) => (
                   <div
                     key={agent.id}
-                    className="flex items-center gap-3 px-4 py-3 border-b border-[#f0f0f0] last:border--transparent cursor-pointer hover:bg-[#fafafa] rounded transition-colors"
+                    className="flex items-center gap-3 px-4 py-3 border-b border-line last:border--transparent cursor-pointer hover:bg-[#fafafa] rounded transition-colors"
                   >
                     <div className="w-9 h-9 rounded-md bg-[#f0f0f0] flex items-center justify-center text-lg shrink-0">
                       {agent.icon}
@@ -348,7 +348,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
                 className="hive-cli-collapse"
                 style={{
                   background: '#fff',
-                  border: '1px solid #e2e2e2',
+                  border: '1px solid var(--color-line)',
                   borderRadius: 8,
                 }}
               />

@@ -56,7 +56,7 @@ const FAQ_ITEMS: CollapseProps['items'] = [
     key: 'faq',
     label: (
       <span className="flex items-center gap-1.5 text-sm text-muted">
-        <span className="w-3.5 h-3.5 rounded-full border border-[#d9d9d9] shrink-0" />
+        <span className="w-3.5 h-3.5 rounded-full border border-line shrink-0" />
         这个命令安全吗？会影响我的网络安全吗？
       </span>
     ),

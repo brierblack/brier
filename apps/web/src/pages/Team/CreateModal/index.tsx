@@ -133,7 +133,7 @@ export function CreateTeamModal({ open, onCancel }: CreateTeamModalProps) {
                   className={`flex-1 p-3 rounded-lg cursor-pointer border transition-colors ${
                     visibility === opt.value
                       ? 'border-[#1677ff] bg-[#eff8ff]'
-                      : 'border-[#f0f0f0] hover:border-[#d9d9d9]'
+                      : 'border-line hover:border-line'
                   }`}
                 >
                   <div className="text-sm font-medium">{opt.label}</div>

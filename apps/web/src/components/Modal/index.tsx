@@ -10,9 +10,9 @@ export const Modal = memo((props: AntdModalProps) => {
       destroyOnHidden
       classNames={{
         container: '!p-0 !max-h-[85vh] !flex !flex-col',
-        header: '!p-4 !border-b !border-b-[#e8e8e8] !m-0',
+        header: '!p-4 !border-b !border-b-line !m-0',
         body: '!p-4 !flex-1 !min-h-0 !overflow-y-auto',
-        footer: '!p-4 !border-t !border-t-[#e8e8e8]',
+        footer: '!p-4 !border-t !border-t-line',
         wrapper: '!overflow-hidden',
       }}
       {...rest}

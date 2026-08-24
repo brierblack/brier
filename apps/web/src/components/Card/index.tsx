@@ -2,8 +2,8 @@ import { Card as AntdCard, type CardProps as AntdCardProps } from 'antd';
 import { memo, useMemo } from 'react';
 
 const DEFAULT_CLASS_NAMES = {
-  root: '!border-[#e2e2e2]',
-  header: '!border-b-[#e2e2e2] !px-4 !py-3',
+  root: '!border-line',
+  header: '!border-b-line !px-4 !py-3',
   body: ' !px-4 !py-3',
 };
 
