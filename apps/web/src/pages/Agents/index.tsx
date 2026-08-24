@@ -147,7 +147,7 @@ export const Agents = () => {
         </div>
       }
     >
-      <Space className="mb-4">
+      <Space className="mb-4 p-5">
         <Input
           placeholder="搜索 Agent 名称..."
           prefix={<SearchOutlined />}

@@ -31,6 +31,7 @@ export function Skills() {
       }
     >
       <List
+        className="!p-5"
         dataSource={skills}
         renderItem={(item) => {
           const cfg = SKILL_TYPE_MAP[item.type];

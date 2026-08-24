@@ -26,7 +26,7 @@ export const Page = memo(({ children, title, subtitle, extra, breadcrumb }: Page
         )}
         {extra && <div>{extra}</div>}
       </div>
-      <div className="flex-1 overflow-auto p-5">{children}</div>
+      <div className="flex-1 overflow-auto">{children}</div>
     </div>
   );
 });

@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App, Button, Form, Input, Select, Space, Upload } from 'antd';
 import {
-  ArrowLeftOutlined,
   CheckOutlined,
   DesktopOutlined,
   LockOutlined,
@@ -117,10 +116,6 @@ export function NewAgent() {
     <Page
       breadcrumb={
         <>
-          <ArrowLeftOutlined
-            onClick={() => navigate('/agents')}
-            className="cursor-pointer text-muted hover:text-ink"
-          />
           <span
             className="text-muted cursor-pointer hover:text-ink"
             onClick={() => navigate('/agents')}
@@ -140,7 +135,7 @@ export function NewAgent() {
         </Space>
       }
     >
-      <Form form={form} layout="vertical" className="max-w-[720px] !mx-auto">
+      <Form form={form} layout="vertical" className="max-w-[720px] !mx-auto !p-5">
         {/* 运行环境 */}
         <SectionCard title="运行环境">
           <Form.Item

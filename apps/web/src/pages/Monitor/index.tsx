@@ -89,7 +89,7 @@ export function Monitor() {
       subtitle="Agent 运行状态与调用统计"
       extra={<Button icon={<ReloadOutlined />}>刷新</Button>}
     >
-      <div className="flex gap-4 mb-6">
+      <div className="flex gap-4 mb-6 p-5">
         {stats.map((s) => (
           <div
             key={s.key}

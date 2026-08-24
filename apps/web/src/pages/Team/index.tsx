@@ -98,6 +98,7 @@ export function Team() {
       }
     >
       <Table
+        className="!p-5"
         bordered
         columns={columns}
         dataSource={teams}

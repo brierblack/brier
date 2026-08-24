@@ -7,7 +7,7 @@ import { Agents } from './pages/Agents';
 import { NewAgent } from './pages/Agents/New';
 import { Team } from './pages/Team';
 import { Skills } from './pages/Skills';
-import { Config } from './pages/Config';
+import { Settings } from './pages/Settings';
 import { CreateSpace } from './pages/CreateSpace';
 import { AuthProvider } from './auth-context';
 
@@ -24,7 +24,7 @@ export default function App() {
                 <Route path="agents/new" element={<NewAgent />} />
                 <Route path="team" element={<Team />} />
                 <Route path="skills" element={<Skills />} />
-                <Route path="config" element={<Config />} />
+                <Route path="settings" element={<Settings />} />
               </Route>
             </Routes>
           </BrowserRouter>

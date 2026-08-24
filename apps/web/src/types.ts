@@ -6,7 +6,7 @@ export type WorkspaceType = 'local' | 'ssh' | 'cloud';
 export type TeamMode = 'coordinator' | 'sequential' | 'graph';
 export type SkillType = 'builtin' | 'mcp' | 'custom';
 export type EntityStatus = AgentStatus | WorkspaceStatus | TeamStatus | ServiceStatus;
-export type PageKey = 'agents' | 'team' | 'skills' | 'config';
+export type PageKey = 'agents' | 'team' | 'skills' | 'settings';
 
 export type AgentVisibility = 'private' | 'public';
 export type PublicScope = 'all' | 'joined_spaces' | 'specified_spaces';
