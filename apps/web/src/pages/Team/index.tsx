@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Dropdown, type MenuProps } from 'antd';
+import { Button, Dropdown, Input, Space, type MenuProps } from 'antd';
 import {
   PlusOutlined,
   EllipsisOutlined,
@@ -8,6 +8,7 @@ import {
   DesktopOutlined,
   UserOutlined,
   DeleteOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
@@ -28,6 +29,18 @@ const actionMenuItems: MenuProps['items'] = [
 export function Team() {
   const navigate = useNavigate();
   const [createOpen, setCreateOpen] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const filteredTeams = useMemo(() => {
+    if (!search) return teams;
+    const q = search.toLowerCase();
+    return teams.filter(
+      (t) =>
+        t.name.toLowerCase().includes(q) ||
+        t.desc.toLowerCase().includes(q) ||
+        t.creator.toLowerCase().includes(q),
+    );
+  }, [search]);
 
   const columns: ColumnsType<Team> = useMemo(
     () => [
@@ -115,11 +128,22 @@ export function Team() {
         </Button>
       }
     >
+      <div className='p-5'>
+      <Space className="mb-4">
+        <Input
+          placeholder="搜索团队名称、描述或创建者..."
+          prefix={<SearchOutlined />}
+          style={{ width: 320 }}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          allowClear
+        />
+      </Space>
+
       <Table
-        className="!p-5"
         bordered
         columns={columns}
-        dataSource={teams}
+        dataSource={filteredTeams}
         rowKey="id"
         pagination={false}
         size="middle"
@@ -127,6 +151,7 @@ export function Team() {
       />
 
       <CreateTeamModal open={createOpen} onCancel={() => setCreateOpen(false)} />
+        </div>
     </Page>
   );
 }

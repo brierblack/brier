@@ -163,7 +163,9 @@ export const Agents = () => {
         </div>
       }
     >
-      <Space className="mb-4 p-5">
+      <div className='p-5'>
+
+      <Space className="mb-4">
         <Input
           placeholder="搜索 Agent 名称..."
           prefix={<SearchOutlined />}
@@ -192,6 +194,7 @@ export const Agents = () => {
         pagination={false}
         onRow={(r) => ({ onClick: () => navigate(`/agents/${r.id}`) })}
       />
+            </div>
 
       <WorkComputerDrawer open={computerDrawerOpen} onClose={() => setComputerDrawerOpen(false)} />
     </Page>

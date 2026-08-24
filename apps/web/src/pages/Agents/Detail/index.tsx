@@ -81,7 +81,7 @@ interface ChatMessage {
 
 function PropertyRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between py-3 border-b border-line last:border-b-0">
+    <div className="flex items-center justify-between py-2 ">
       <span className="text-sm text-muted">{label}</span>
       <div className="flex items-center gap-2">{children}</div>
     </div>
@@ -132,9 +132,9 @@ function OverviewTab({
   const statusConfig = STATUS_MAP[agent.status as AgentStatus] ?? STATUS_MAP.offline;
 
   return (
-    <div className="flex-1 flex gap-8 p-6 min-w-0 overflow-auto">
-      <div className="min-w-0 w-[300px] shrink-0">
-        <div className="flex items-center gap-4 mb-8">
+    <div className="flex-1 flex gap-8 p-4 min-w-0 overflow-hidden">
+      <div className="min-w-0 w-[300px] shrink-0 rounded-xl border border-line overflow-auto">
+        <div className="flex flex-col items-start gap-4 p-4 border-b border-line">
           <div className="size-14 rounded-xl flex items-center justify-center text-3xl shrink-0" style={{ background: `${agent.color}0d`, border: `1px solid ${agent.color}22` }}>
             {agent.icon}
           </div>
@@ -150,9 +150,9 @@ function OverviewTab({
           </div>
         </div>
 
-        <div className="mb-8">
+        <div className="p-4 border-b border-line">
           <div className="text-sm font-bold text-ink mb-2">属性</div>
-          <div className="border border-line rounded-lg px-4">
+          <div>
             <PropertyRow label="工作电脑"><span className="text-sm font-medium text-ink font-mono">{agent.workComputer}</span></PropertyRow>
             <PropertyRow label="运行时"><Select value={runtime} onChange={setRuntime} options={RUNTIMES.map((r) => ({ value: r, label: r }))} size="small" className="w-40" /></PropertyRow>
             <PropertyRow label="模型"><Select value={model} onChange={setModel} options={MODELS.map((m) => ({ value: m, label: m }))} size="small" className="w-40" /></PropertyRow>
@@ -161,17 +161,17 @@ function OverviewTab({
           </div>
         </div>
 
-        <div>
+        <div className='p-4'>
           <div className="text-sm font-bold text-ink mb-2">操作</div>
-          <div className="border border-line rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-line">
+          <div>
+            <div className="flex items-center justify-between border-b border-line pb-2 ">
               <div className="flex-1">
                 <div className="text-sm font-medium text-ink">默认 Agent</div>
                 <p className="text-xs text-faint mt-1">设为你的"主力" Agent — 接受指派时的默认人选</p>
               </div>
               <Button size="small">设为默认</Button>
             </div>
-            <div className="flex items-center justify-between p-4">
+            <div className="flex items-center justify-between pt-2">
               <div className="flex-1">
                 <div className="text-sm font-medium text-ink">归档 Agent</div>
                 <p className="text-xs text-faint mt-1">归档后 Agent 会从日常列表和指派选项中隐藏，历史任务与会话记录会保留</p>
@@ -182,7 +182,7 @@ function OverviewTab({
         </div>
       </div>
 
-      <div className="flex-1 shrink-0">
+      <div className="flex-1 shrink-0 overflow-auto">
         <div className="mb-6">
           <div className="text-sm font-bold text-ink mb-3">进行中的会话</div>
           <div className="border border-line rounded-lg p-4"><p className="text-xs text-faint">当前没有进行中的会话</p></div>
@@ -459,8 +459,8 @@ export function AgentDetail() {
         </>
       }
     >
-      <div className="flex h-full">
-        <div className="w-52 shrink-0 px-2 py-3 border-r border-line">
+      <div className="flex h-full overflow-hidden">
+        <div className="w-52 shrink-0 px-2 py-3 border-r border-line overflow-auto">
           <Menu
             mode="inline"
             selectedKeys={[activeKey]}
