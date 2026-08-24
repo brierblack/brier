@@ -4,6 +4,10 @@ import {
   PlusOutlined,
   UserOutlined,
   RobotOutlined,
+  SearchOutlined,
+  LockOutlined,
+  ToolOutlined,
+  ThunderboltOutlined,
 } from '@ant-design/icons';
 import { Page } from '@/components/Page';
 import { Tag } from '@/components/Tag';
@@ -36,6 +40,16 @@ export function Settings() {
   const [form] = Form.useForm();
   const [avatarUrl, setAvatarUrl] = useState('');
   const [publicSpace, setPublicSpace] = useState(false);
+  const [skillSearch, setSkillSearch] = useState('');
+  const [enabledSkills, setEnabledSkills] = useState<Record<string, boolean>>(
+    Object.fromEntries(skills.map((s) => [s.name, true]))
+  );
+
+  const filteredSkills = skills.filter((s) => {
+    if (!skillSearch) return true;
+    const q = skillSearch.toLowerCase();
+    return s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q);
+  });
 
   const handleInsertTemplate = () => {
     form.setFieldValue('instructions', INSTRUCTION_TEMPLATE);
@@ -215,33 +229,85 @@ export function Settings() {
                 />
               </Form.Item>
 
-              <div className="mt-6">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-ink">安装的 Skills</span>
-                  <Button size="small" type="primary" ghost>
-                    添加 Skill
-                  </Button>
-                </div>
-                <p className="text-xs text-faint mb-4">空间内所有 Agent 共享的技能</p>
-                <div className="flex flex-col gap-2">
-                  {skills.map((skill) => (
-                    <div
-                      key={skill.name}
-                      className="flex items-center gap-3 p-3 border border-[#f0f0f0] rounded-lg bg-white"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-ink">
-                            {skill.name}
-                          </span>
-                          <Tag color={SKILL_TYPE_MAP[skill.type].color}>
-                            {SKILL_TYPE_MAP[skill.type].label}
-                          </Tag>
-                        </div>
-                        <div className="text-xs text-faint mt-0.5">{skill.desc}</div>
+              {/* 安装的 Skills */}
+              <div className="mt-8">
+                <div className="text-sm font-semibold text-ink mb-0.5">Skills</div>
+                <p className="text-xs text-faint mb-3">
+                  为所有空间内工作的 Agent 统一预装 Skills。
+                </p>
+
+                <div className="border border-[#e9e9e9] rounded-lg overflow-hidden">
+                  {/* Tab row + add button */}
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-[#f0f0f0]">
+                    <div className="flex items-center gap-2">
+                      <div className="px-3 py-1 rounded-full bg-ink text-white text-xs font-medium">
+                        研发任务 {skills.length}
+                      </div>
+                      <div className="px-3 py-1 rounded-full bg-[#f0f0f0] text-faint text-xs flex items-center gap-1">
+                        <LockOutlined className="text-[10px]" />
+                        数字实习生
+                        <span className="text-[10px]">暂未开放</span>
                       </div>
                     </div>
-                  ))}
+                    <Button type="primary" icon={<ThunderboltOutlined />}>
+                      添加 Skills
+                    </Button>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-xs text-faint px-4 pt-3 pb-2">
+                    研发任务启动时会默认加载这里启用的 Skills。
+                  </p>
+
+                  {/* Search */}
+                  <div className="px-4 pb-3">
+                    <Input
+                      placeholder="搜索 Skills"
+                      prefix={<SearchOutlined className="text-faint" />}
+                      value={skillSearch}
+                      onChange={(e) => setSkillSearch(e.target.value)}
+                      allowClear
+                    />
+                  </div>
+
+                  {/* Skills list */}
+                  <div className="divide-y divide-[#f0f0f0]">
+                    {filteredSkills.map((skill) => (
+                      <div
+                        key={skill.name}
+                        className="flex items-center gap-3 px-4 py-3 bg-white"
+                      >
+                        <div className="size-8 rounded-md bg-surface flex items-center justify-center shrink-0">
+                          <ToolOutlined className="text-sm text-muted" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-ink font-mono">
+                              {skill.name}
+                            </span>
+                            <Tag color={SKILL_TYPE_MAP[skill.type].color}>
+                              {skill.type === 'builtin'
+                                ? 'Plugin 内置'
+                                : SKILL_TYPE_MAP[skill.type].label}
+                            </Tag>
+                          </div>
+                          <div className="text-xs text-faint mt-0.5 leading-relaxed">
+                            {skill.desc}
+                          </div>
+                        </div>
+                        <Switch
+                          size="small"
+                          checked={enabledSkills[skill.name] ?? true}
+                          onChange={(checked) =>
+                            setEnabledSkills((prev) => ({
+                              ...prev,
+                              [skill.name]: checked,
+                            }))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </>
