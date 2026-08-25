@@ -15,6 +15,7 @@ RUN corepack enable && corepack prepare pnpm@11.22.0 --activate
 # Copy workspace root files for dependency install
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/web/package.json apps/web/
+COPY packages/ui/package.json packages/ui/
 
 RUN pnpm config set fetch-timeout 300000 && \
     pnpm config set fetch-retries 5 && \
@@ -23,6 +24,7 @@ RUN pnpm config set fetch-timeout 300000 && \
 # Copy shared config and app source
 COPY eslint.config.js .prettierrc.json .prettierignore tsconfig.json ./
 COPY apps/web/ apps/web/
+COPY packages/ui/ packages/ui/
 
 RUN pnpm run lint && pnpm run format:check
 

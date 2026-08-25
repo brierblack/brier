@@ -14,6 +14,7 @@ export const Modal = memo((props: AntdModalProps) => {
         body: '!p-4 !flex-1 !min-h-0 !overflow-y-auto',
         footer: '!p-4 !border-t !border-t-line',
         wrapper: '!overflow-hidden',
+        ...classNames,
       }}
       {...rest}
     />

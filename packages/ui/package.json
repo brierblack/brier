@@ -8,7 +8,7 @@
       "import": "./dist/index.js",
       "types": "./types/index.d.ts"
     },
-    "./style.css": "./dist/style.css"
+    "./tailwind.css": "./dist/tailwind.css"
   },
   "files": [
     "dist",
@@ -19,12 +19,12 @@
     "dev": "vite build --watch"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "antd": "^6.0.0",
     "@ant-design/icons": "^6.0.0",
+    "antd": "^6.0.0",
+    "react": "^19.0.0",
     "react-dnd": "^16.0.0",
-    "react-dnd-html5-backend": "^16.0.0"
+    "react-dnd-html5-backend": "^16.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@ant-design/icons": "^6.3.2",
@@ -38,6 +38,7 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19.2.8",
+    "rollup-plugin-copy": "^3.5.0",
     "tailwindcss": "^4.3.3",
     "vite": "^8.2.1"
   }

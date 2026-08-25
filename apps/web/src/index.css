@@ -1,24 +1,2 @@
 @import 'tailwindcss';
-@import '@hiveblack/ui/style.css';
-
-@theme {
-  --color-brand: #fe6e00;
-  --color-brand-dark: #f05100;
-  --color-ink: #0f172b;
-  --color-muted: #62748e;
-  --color-faint: #90a1b9;
-  --color-ghost: #cad5e2;
-  --color-canvas: #f1f5f9;
-  --color-surface: #f8fafc;
-  --color-line: #e2e2e2;
-
-  --color-success: #00c758;
-  --color-warn: #f99c00;
-  --color-danger: #fb2c36;
-  --color-iris: #8d54ff;
-
-  --font-sans: 'Inter Variable', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', monospace;
-
-  --text-sm: 0.8125rem;
-}
+@import '@hiveblack/ui/tailwind.css';

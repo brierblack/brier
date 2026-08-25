@@ -1,8 +1,8 @@
-import { lazy, Suspense, type ReactNode } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { App as AntApp, Spin } from 'antd';
 import { ThemeProvider } from '@hiveblack/ui';
-import { AuthProvider, useAuth } from './auth-context';
+import { AuthProvider } from './auth-context';
 import { Layout as SpaceLayout } from './pages/Space';
 
 const Login = lazy(() => import('./pages/Login'));

@@ -1,6 +1,8 @@
 # Build artifacts
 target/
 apps/web/dist/
+packages/ui/dist/
+packages/ui/types/
 **/node_modules/
 
 # pnpm store
