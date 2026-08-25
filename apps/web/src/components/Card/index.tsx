@@ -3,22 +3,19 @@ import { memo, useMemo } from 'react';
 
 const DEFAULT_CLASS_NAMES = {
   root: '!border-line',
-  header: '!border-b-line !px-4 !py-3',
-  body: ' !px-4 !py-3',
+  header: '!border-b-line !p-4 !mb-0',
+  body: ' !p-0',
 };
 
-export interface CardProps extends AntdCardProps {
-  paddingless?: boolean;
-}
+export interface CardProps extends AntdCardProps {}
 
 export const Card = memo((props: CardProps) => {
-  const { paddingless = false, classNames, ...rest } = props;
+  const { classNames, ...rest } = props;
   const cn = useMemo(() => {
     return {
       ...DEFAULT_CLASS_NAMES,
-      body: paddingless ? ' !p-0' : DEFAULT_CLASS_NAMES.body,
       ...classNames,
     };
-  }, [paddingless, classNames]);
+  }, [classNames]);
   return <AntdCard classNames={cn} {...rest} />;
 });

@@ -273,7 +273,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
           <div className="flex flex-col gap-4">
             {/* 后台服务升级 */}
             <Card title="后台服务升级">
-              <div className="flex items-center justify-between">
+              <div className="p-4 flex items-center justify-between">
                 <div>
                   <span className="text-xs text-faint">当前版本 </span>
                   <span className="text-sm font-medium font-mono">
@@ -301,7 +301,7 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
 
             {/* 检测到的 Runtime */}
             <Card title="检测到的 Runtime">
-              <div className="flex flex-wrap gap-2">
+              <div className="p-4 flex flex-wrap gap-2">
                 {selectedComputer.detectedRuntimes.map((rt) => (
                   <Tag
                     key={rt}
@@ -319,12 +319,12 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
             </Card>
 
             {/* Agents */}
-            <Card title={`Agents (${selectedAgents.length})`} paddingless={true}>
+            <Card title={`Agents (${selectedAgents.length})`}>
               <div className="flex flex-col">
                 {selectedAgents.map((agent) => (
                   <div
                     key={agent.id}
-                    className="flex items-center gap-3 px-4 py-3 border-b border-line last:border--transparent cursor-pointer hover:bg-[#fafafa] rounded transition-colors"
+                    className="flex items-center gap-3 px-4 py-3 border-b border-line last:border-transparent cursor-pointer hover:bg-[#fafafa] rounded transition-colors"
                   >
                     <div className="w-9 h-9 rounded-md bg-[#f0f0f0] flex items-center justify-center text-lg shrink-0">
                       {agent.icon}
@@ -340,23 +340,23 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
             </Card>
 
             {/* Hive CLI 使用 */}
-            <Card title="Hive CLI 使用" paddingless={true}>
+            <Card title="Hive CLI 使用">
               <Collapse
                 activeKey={activeKeys}
                 onChange={(keys) => setActiveKeys(keys as string[])}
                 items={cliItems}
                 className="hive-cli-collapse"
                 style={{
-                  background: '#fff',
-                  border: '1px solid var(--color-line)',
-                  borderRadius: 8,
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: '1px solid var(--color-line)',
                 }}
               />
             </Card>
 
             {/* 危险操作 */}
             <Card title="危险操作">
-              <div className="flex items-center justify-between">
+              <div className="p-4 flex items-center justify-between">
                 <div className="flex items-start gap-2">
                   <ExclamationCircleOutlined className="text-danger mt-0.5" />
                   <div>

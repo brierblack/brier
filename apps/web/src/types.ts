@@ -71,6 +71,12 @@ export interface Skill {
   type: SkillType;
   desc: string;
   agents: number;
+  author: string;
+  installs: number;
+  category: string;
+  source: 'internal' | 'community';
+  installed: boolean;
+  featured: boolean;
 }
 
 export interface UserInfo {
