@@ -17,7 +17,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
 import { StatusBadge } from '../../../components/StatusBadge';
-import { WorkComputerDrawer } from './WorkComputer';
+import { WorkComputerDrawer } from '../components/WorkComputer';
 import { agents, workComputers } from '../../../data/mockData';
 import type { Agent, AgentStatus, AgentVisibility, PublicScope } from '../../../types';
 import { Table } from '@/components/Table';
