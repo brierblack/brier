@@ -156,7 +156,7 @@ const Skills = () => {
   const communityCount = skills.filter((s) => s.source === 'community').length;
 
   return (
-    <div className="h-full flex flex-col bg-[#fbfbfb]">
+    <div className="h-full flex flex-col bg-work">
       {/* Top tab nav */}
       <div className="flex items-center gap-1 px-6 pt-4 border-b border-line">
         {TOP_TABS.map((tab) => (

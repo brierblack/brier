@@ -80,12 +80,14 @@
   --color-ghost: #cad5e2;
   --color-canvas: #f1f5f9;
   --color-surface: #f8fafc;
-  --color-line: #e2e2e2;
 
   --color-success: #00c758;
   --color-warn: #f99c00;
   --color-danger: #fb2c36;
   --color-iris: #8d54ff;
+
+  --color-line: #e2e2e2;
+  --color-work: #fbfbfb;
 }
 
 @source "../dist";

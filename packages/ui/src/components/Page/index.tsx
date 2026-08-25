@@ -10,7 +10,7 @@ export interface PageProps {
 
 export const Page = memo(({ children, title, subtitle, extra, breadcrumb }: PageProps) => {
   return (
-    <div className="h-full flex flex-col bg-[#fbfbfb]">
+    <div className="h-full flex flex-col bg-work">
       <div className="h-12 px-4 flex items-center justify-between border-b border-line shrink-0">
         {breadcrumb ? (
           <div className="flex items-center gap-1.5 text-standard">{breadcrumb}</div>

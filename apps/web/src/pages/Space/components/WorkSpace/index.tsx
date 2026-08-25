@@ -79,7 +79,7 @@ export const WorkSpace = memo(() => {
           onChange={(e) => setSearch(e.target.value)}
           allowClear
           variant="filled"
-          classNames={{ root: ' !bg-[#fbfbfb]' }}
+          classNames={{ root: ' !bg-work' }}
           className="!border-transparent"
         />
       </div>
@@ -95,7 +95,7 @@ export const WorkSpace = memo(() => {
           block
           type="text"
           onClick={handleCreate}
-          className=" bg-[#fbfbfb] rounded-none w-full flex items-center gap-2 px-3 h-9 text-faint transition-colors cursor-pointer"
+          className=" bg-work rounded-none w-full flex items-center gap-2 px-3 h-9 text-faint transition-colors cursor-pointer"
         >
           <PlusOutlined className="text-xs" />
           新建工作空间

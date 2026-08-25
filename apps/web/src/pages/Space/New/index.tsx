@@ -111,7 +111,7 @@ const New = () => {
   };
 
   return (
-    <div className="h-screen bg-[#fbfbfb] flex flex-col">
+    <div className="h-screen bg-work flex flex-col">
       {/* Header: back button (left) + centered title */}
       <div className="shrink-0 px-6 py-4">
         <div className="flex items-center">
