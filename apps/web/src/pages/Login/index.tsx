@@ -69,7 +69,7 @@ const Login = () => {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-canvas">
+      <div className="flex h-screen items-center justify-center bg-canvas">
         <Spin size="large" />
       </div>
     );
@@ -81,7 +81,7 @@ const Login = () => {
   }
 
   return (
-    <div className="h-screen flex relative overflow-hidden bg-[#0a0e1a]">
+    <div className="relative flex h-screen overflow-hidden bg-[#0a0e1a]">
       {/* Animated flowing background */}
       <div className="absolute inset-0">
         <div
@@ -138,20 +138,20 @@ const Login = () => {
       />
 
       {/* Content layer */}
-      <div className="relative z-10 flex items-center w-full">
+      <div className="relative z-10 flex w-full items-center">
         {/* Left brand panel */}
-        <div className="hidden lg:flex flex-col justify-between h-full py-12 pl-16 pr-8 w-[52%]">
+        <div className="hidden h-full w-[52%] flex-col justify-between py-12 pr-8 pl-16 lg:flex">
           <div className="flex items-center gap-3">
             <HiveLogo size={44} />
             <div>
-              <div className="text-xl font-bold text-white tracking-tight">Hive</div>
+              <div className="text-xl font-bold tracking-tight text-white">Hive</div>
               <div className="text-[11px] text-white/40">AI Agent Workspace</div>
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col justify-center -mt-10">
+          <div className="-mt-10 flex flex-1 flex-col justify-center">
             <div
-              className="text-5xl font-bold text-white leading-[1.15] tracking-tight mb-4"
+              className="mb-4 text-5xl leading-[1.15] font-bold tracking-tight text-white"
               style={{
                 background: 'linear-gradient(135deg, #fff 0%, #fff 40%, #fe6e00 70%, #c44ad8 100%)',
                 WebkitBackgroundClip: 'text',
@@ -162,11 +162,11 @@ const Login = () => {
               <br />
               真正参与开发
             </div>
-            <p className="text-standard text-white/50 mb-12 leading-relaxed max-w-md">
+            <p className="mb-12 max-w-md text-standard leading-relaxed text-white/50">
               连接代码仓库与工作电脑，编排多 Agent 团队， 将复杂工作流交给 AI 自主完成。
             </p>
 
-            <div className="space-y-3.5 max-w-md">
+            <div className="max-w-md space-y-3.5">
               {FEATURES.map((f, i) => (
                 <div
                   key={f.title}
@@ -175,12 +175,12 @@ const Login = () => {
                     animation: `slideIn 0.6s ease-out ${0.3 + i * 0.15}s forwards`,
                   }}
                 >
-                  <div className="size-9 rounded-xl flex items-center justify-center text-lg shrink-0 bg-white/[0.06] border border-white/10">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06] text-lg">
                     {f.icon}
                   </div>
                   <div>
                     <div className="text-standard font-medium text-white/90">{f.title}</div>
-                    <div className="text-xs text-white/40 mt-0.5">{f.desc}</div>
+                    <div className="mt-0.5 text-xs text-white/40">{f.desc}</div>
                   </div>
                 </div>
               ))}
@@ -191,7 +191,7 @@ const Login = () => {
         </div>
 
         {/* Right login panel */}
-        <div className="flex-1 flex items-center justify-center px-8 h-full">
+        <div className="flex h-full flex-1 items-center justify-center px-8">
           <div className="w-full max-w-sm" style={{ animation: 'fadeUp 0.7s ease-out 0.2s both' }}>
             {/* Glass card */}
             <div
@@ -205,20 +205,20 @@ const Login = () => {
               }}
             >
               {/* Mobile logo */}
-              <div className="lg:hidden flex items-center justify-center gap-2.5 mb-6">
+              <div className="mb-6 flex items-center justify-center gap-2.5 lg:hidden">
                 <HiveLogo size={40} />
                 <span className="text-lg font-bold text-white">Hive</span>
               </div>
 
-              <div className="text-center mb-7">
-                <h2 className="text-2xl font-bold text-white mb-1.5 tracking-tight">欢迎回来</h2>
+              <div className="mb-7 text-center">
+                <h2 className="mb-1.5 text-2xl font-bold tracking-tight text-white">欢迎回来</h2>
                 <p className="text-standard text-white/45">登录你的账户，继续工作</p>
               </div>
 
               <Button
                 block
                 size="large"
-                className="!h-12 !rounded-xl !bg-white !border-white !text-[#1f2328] hover:!bg-white/90 hover:!border-white/90 font-medium"
+                className="!h-12 !rounded-xl !border-white !bg-white font-medium !text-[#1f2328] hover:!border-white/90 hover:!bg-white/90"
                 icon={<GitHubIcon />}
                 iconPosition="start"
                 onClick={login}
@@ -226,10 +226,10 @@ const Login = () => {
                 使用 GitHub 登录
               </Button>
 
-              <div className="flex items-center gap-3 my-5">
-                <div className="flex-1 h-px bg-white/8" />
+              <div className="my-5 flex items-center gap-3">
+                <div className="h-px flex-1 bg-white/8" />
                 <span className="text-xs text-white/30">或</span>
-                <div className="flex-1 h-px bg-white/8" />
+                <div className="h-px flex-1 bg-white/8" />
               </div>
 
               <div className="space-y-2.5">
@@ -237,18 +237,18 @@ const Login = () => {
                   <span className="size-1.5 rounded-full" style={{ background: '#00c758' }} />
                   <span>所有服务运行正常</span>
                 </div>
-                <p className="text-center text-xs text-white/30 leading-relaxed">
+                <p className="text-center text-xs leading-relaxed text-white/30">
                   登录即表示你同意我们的
                   <a
                     href="#"
-                    className="text-white/60 hover:text-white underline-offset-2 hover:underline"
+                    className="text-white/60 underline-offset-2 hover:text-white hover:underline"
                   >
                     服务条款
                   </a>{' '}
                   和{' '}
                   <a
                     href="#"
-                    className="text-white/60 hover:text-white underline-offset-2 hover:underline"
+                    className="text-white/60 underline-offset-2 hover:text-white hover:underline"
                   >
                     隐私政策
                   </a>

@@ -86,7 +86,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
     >
       <div className="flex h-full">
         {/* Left panel - computer list */}
-        <div className="w-80 p-2 shrink-0 border-r border-line overflow-y-auto">
+        <div className="w-80 shrink-0 overflow-y-auto border-r border-line p-2">
           <div className="px-2 py-1">
             <span className="text-standard font-medium text-muted">我添加的</span>
           </div>
@@ -95,16 +95,16 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
               <div
                 key={computer.id}
                 onClick={() => handleSelectComputer(computer.id)}
-                className={`px-3 py-2.5 rounded-lg flex items-center gap-2.5 cursor-pointer transition-colors ${
+                className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2.5 transition-colors ${
                   computer.id === selectedComputerId ? 'bg-[#eaeaea]' : 'hover:bg-[#eaeaea]'
                 }`}
               >
-                <div className="w-8 h-8 rounded-lg bg-[#f3f3f3] flex items-center justify-center shrink-0">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#f3f3f3]">
                   <DesktopOutlined className="text-base text-muted" />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2.5">
-                    <div className="text-standard font-medium truncate">{computer.name}</div>
+                    <div className="truncate text-standard font-medium">{computer.name}</div>
                     <StatusBadge status={computer.status} />
                   </div>
                   <div className="text-xs text-faint">v2.0.75 · {computer.agentCount} 个 Agent</div>
@@ -117,9 +117,9 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
         {/* Right panel - computer detail */}
         <div className="flex-1 overflow-y-auto p-5">
           {/* Computer header */}
-          <div className="flex flex-col gap-3 mb-1">
+          <div className="mb-1 flex flex-col gap-3">
             <div className="flex gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#f0f0f0] flex items-center justify-center shrink-0">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#f0f0f0]">
                 <DesktopOutlined className="text-xl text-ink" />
               </div>
               <div className="flex flex-col gap-1">
@@ -130,7 +130,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
                     最后心跳: {selectedComputer.lastHeartbeat}
                   </span>
                 </div>
-                <div className="text-standard text-muted mb-5 font-mono">
+                <div className="mb-5 font-mono text-standard text-muted">
                   {selectedComputer.hostname}, {selectedComputer.systemType}
                 </div>
               </div>

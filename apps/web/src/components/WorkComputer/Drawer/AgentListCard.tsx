@@ -13,14 +13,14 @@ export const AgentListCard = memo(({ agents }: AgentListCardProps) => (
       {agents.map((agent) => (
         <div
           key={agent.id}
-          className="flex items-center gap-3 px-4 py-3 border-b border-line last:border-transparent cursor-pointer hover:bg-[#fafafa] rounded transition-colors"
+          className="flex cursor-pointer items-center gap-3 rounded border-b border-line px-4 py-3 transition-colors last:border-transparent hover:bg-[#fafafa]"
         >
-          <div className="w-9 h-9 rounded-md bg-[#f0f0f0] flex items-center justify-center text-lg shrink-0">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#f0f0f0] text-lg">
             {agent.icon}
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="text-standard font-medium">{agent.name}</div>
-            <div className="text-xs text-faint truncate">{agent.desc}</div>
+            <div className="truncate text-xs text-faint">{agent.desc}</div>
           </div>
           <RightOutlined className="text-xs text-faint" />
         </div>

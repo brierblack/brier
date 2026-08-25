@@ -1,8 +1,10 @@
 mod auth;
 mod github;
+mod tunnel;
 mod workspace;
 
 use axum::http::HeaderMap;
+use axum::routing::get;
 use axum::Router;
 use hive_error::HiveError;
 use hive_type::User;
@@ -15,6 +17,7 @@ pub fn router() -> Router<AppState> {
         .nest("/api/auth", auth::router())
         .nest("/api/workspaces", workspace::router())
         .nest("/api/github", github::router())
+        .route("/tunnel", get(tunnel::tunnel_handler))
 }
 
 pub(crate) async fn current_user(state: &AppState, headers: &HeaderMap) -> Result<User, ApiError> {

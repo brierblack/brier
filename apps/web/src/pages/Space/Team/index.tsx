@@ -48,14 +48,14 @@ const Team = () => {
         dataIndex: 'name',
         render: (_, r) => (
           <div
-            className="flex items-center gap-2.5 cursor-pointer"
+            className="flex cursor-pointer items-center gap-2.5"
             onClick={() => navigate(`/team/${r.id}`)}
           >
-            <div className="size-9 rounded-md flex items-center justify-center bg-surface border border-line shrink-0">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-md border border-line bg-surface">
               👥
             </div>
             <div>
-              <div className="font-medium hover:text-brand transition-colors">{r.name}</div>
+              <div className="font-medium transition-colors hover:text-brand">{r.name}</div>
               <div className="text-[11px] text-faint">{r.desc}</div>
             </div>
           </div>

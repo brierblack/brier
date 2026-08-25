@@ -1,4 +1,5 @@
 use hive_config::AppConfig;
+use hive_core::tunnel::ConnectionRegistry;
 use hive_github_auth::GithubAuth;
 use sea_orm::DatabaseConnection;
 
@@ -8,6 +9,7 @@ pub struct AppState {
     pub github_auth: GithubAuth,
     pub jwt_secret: String,
     pub frontend_url: Option<String>,
+    pub tunnel_registry: ConnectionRegistry,
 }
 
 impl AppState {
@@ -17,6 +19,7 @@ impl AppState {
             github_auth: GithubAuth::new(config.github.clone()),
             jwt_secret: config.server.jwt_secret.clone(),
             frontend_url: config.server.frontend_url.clone(),
+            tunnel_registry: ConnectionRegistry::new(),
         }
     }
 }

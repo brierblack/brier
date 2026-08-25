@@ -81,8 +81,8 @@ const SectionCard = ({
 }) => {
   return (
     <div className="mb-6">
-      <div className="text-standard font-bold text-ink mb-3">{title}</div>
-      <div className="rounded-xl border border-line p-5 bg-white">{children}</div>
+      <div className="mb-3 text-standard font-bold text-ink">{title}</div>
+      <div className="rounded-xl border border-line bg-white p-5">{children}</div>
     </div>
   );
 };
@@ -123,13 +123,13 @@ const NewAgent = () => {
       breadcrumb={
         <>
           <span
-            className="text-muted cursor-pointer hover:text-ink"
+            className="cursor-pointer text-muted hover:text-ink"
             onClick={() => navigate('/agents')}
           >
             Agents
           </span>
           <span className="text-faint">/</span>
-          <span className="text-ink font-medium">新建</span>
+          <span className="font-medium text-ink">新建</span>
         </>
       }
       extra={
@@ -141,7 +141,7 @@ const NewAgent = () => {
         </Space>
       }
     >
-      <Form form={form} layout="vertical" className="max-w-[720px] !mx-auto !p-5">
+      <Form form={form} layout="vertical" className="!mx-auto max-w-[720px] !p-5">
         {/* 运行环境 */}
         <SectionCard title="运行环境">
           <Form.Item
@@ -159,7 +159,7 @@ const NewAgent = () => {
                     <DesktopOutlined className="text-standard text-muted" />
                     {c.name}
                     <span
-                      className={`inline-block w-1.5 h-1.5 rounded-full ${
+                      className={`inline-block h-1.5 w-1.5 rounded-full ${
                         c.status === 'online' ? 'bg-[#389e0d]' : 'bg-[#c9cdd4]'
                       }`}
                     />
@@ -204,12 +204,12 @@ const NewAgent = () => {
                   <img
                     src={avatarUrl}
                     alt="头像"
-                    className="size-20 rounded-full object-cover cursor-pointer"
+                    className="size-20 cursor-pointer rounded-full object-cover"
                   />
                 ) : (
-                  <div className="size-20 rounded-full border border-dashed border-line flex flex-col items-center justify-center cursor-pointer hover:border-[#1677ff] text-faint">
+                  <div className="flex size-20 cursor-pointer flex-col items-center justify-center rounded-full border border-dashed border-line text-faint hover:border-[#1677ff]">
                     <PlusOutlined className="text-lg" />
-                    <span className="text-xs mt-1">上传头像</span>
+                    <span className="mt-1 text-xs">上传头像</span>
                   </div>
                 )}
               </Upload>
@@ -236,36 +236,36 @@ const NewAgent = () => {
                     options={MODELS.map((m) => ({ label: m, value: m }))}
                   />
                 </Form.Item>
-                <div className="text-xs text-faint mt-1">不指定则由 runtime 自己决定</div>
+                <div className="mt-1 text-xs text-faint">不指定则由 runtime 自己决定</div>
               </Form.Item>
             </div>
           </div>
 
-          <div className="border-t border-line my-4" />
+          <div className="my-4 border-t border-line" />
 
           <Form.Item label="可见性">
             <div className="flex flex-col gap-4">
               {VISIBILITY_GROUPS.map((group) => (
                 <div key={group.label}>
-                  <div className="text-xs text-faint mb-2">{group.label}</div>
+                  <div className="mb-2 text-xs text-faint">{group.label}</div>
                   <div className="flex flex-col gap-2">
                     {group.options.map((opt) => (
                       <div
                         key={opt.value}
                         onClick={() => setVisibility(opt.value)}
-                        className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer border transition-colors ${
+                        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
                           visibility === opt.value
                             ? 'border-[#1677ff] bg-[#eff8ff]'
                             : 'border-line hover:border-line'
                         }`}
                       >
-                        <span className="text-base text-muted shrink-0">{opt.icon}</span>
+                        <span className="shrink-0 text-base text-muted">{opt.icon}</span>
                         <div className="flex-1">
                           <div className="text-standard font-medium text-ink">{opt.label}</div>
-                          <div className="text-xs text-faint mt-0.5">{opt.desc}</div>
+                          <div className="mt-0.5 text-xs text-faint">{opt.desc}</div>
                         </div>
                         {visibility === opt.value && (
-                          <CheckOutlined className="text-standard text-[#1677ff] shrink-0" />
+                          <CheckOutlined className="shrink-0 text-standard text-[#1677ff]" />
                         )}
                       </div>
                     ))}
@@ -280,11 +280,11 @@ const NewAgent = () => {
         <SectionCard
           title={
             <>
-              指令 <span className="text-xs font-normal text-faint ml-2">可选</span>
+              指令 <span className="ml-2 text-xs font-normal text-faint">可选</span>
             </>
           }
         >
-          <p className="text-xs text-faint mb-3">设置 Agent 在所有任务中默认遵守的工作方式</p>
+          <p className="mb-3 text-xs text-faint">设置 Agent 在所有任务中默认遵守的工作方式</p>
           <Form.Item name="instructions">
             <Input.TextArea
               rows={6}
@@ -305,10 +305,10 @@ const NewAgent = () => {
 
         {/* 预装扩展 */}
         <SectionCard title="预装扩展">
-          <p className="text-xs text-faint mb-3">
+          <p className="mb-3 text-xs text-faint">
             Skill 会在任务创建时写入该 Agent 的工作区目录，本地运行时自动可用。
           </p>
-          <div className="flex items-center gap-2 mb-3">
+          <div className="mb-3 flex items-center gap-2">
             <Input
               placeholder="搜索已绑定的扩展名"
               prefix={<SearchOutlined className="text-faint" />}
@@ -324,14 +324,14 @@ const NewAgent = () => {
             {filteredExtensions.map((ext) => (
               <div
                 key={ext.id}
-                className="flex items-start gap-3 p-3 rounded-lg border border-line hover:border-line transition-colors"
+                className="flex items-start gap-3 rounded-lg border border-line p-3 transition-colors hover:border-line"
               >
-                <div className="size-8 rounded-md bg-[#f5f5f5] flex items-center justify-center shrink-0">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#f5f5f5]">
                   <AppstoreOutlined className="text-standard text-muted" />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="text-standard font-medium text-ink">{ext.name}</div>
-                  <div className="text-xs text-faint leading-relaxed mt-0.5 line-clamp-2">
+                  <div className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-faint">
                     {ext.desc}
                   </div>
                 </div>
@@ -346,7 +346,7 @@ const NewAgent = () => {
               </div>
             ))}
             {filteredExtensions.length === 0 && (
-              <div className="text-center py-8 text-standard text-faint">
+              <div className="py-8 text-center text-standard text-faint">
                 {extSearch ? '未找到匹配的扩展' : '暂无预装扩展'}
               </div>
             )}

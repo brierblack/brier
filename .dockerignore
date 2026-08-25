@@ -3,6 +3,8 @@ target/
 apps/web/dist/
 packages/ui/dist/
 packages/ui/types/
+packages/cli/dist/
+packages/cli/types/
 **/node_modules/
 
 # pnpm store

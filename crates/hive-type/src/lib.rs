@@ -6,6 +6,7 @@ pub mod work_computer;
 pub mod agent;
 pub mod agent_team;
 pub mod relation;
+pub mod tunnel;
 
 pub use id::*;
 pub use enums::*;

@@ -1,0 +1,32 @@
+{
+  "name": "@hive/cli",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "hive": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./types/index.d.ts"
+    },
+    "./tunnel": {
+      "import": "./dist/tunnel/TunnelClient.js",
+      "types": "./types/tunnel/TunnelClient.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/ws": "^8.5.13",
+    "typescript": "^6.0.3"
+  }
+}

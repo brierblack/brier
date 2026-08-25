@@ -5,4 +5,7 @@ edition.workspace = true
 
 [dependencies]
 hive-error.workspace = true
+hive-type.workspace = true
 serde = { version = "1", features = ["derive"] }
+tokio.workspace = true
+tracing.workspace = true

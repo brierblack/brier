@@ -111,7 +111,7 @@ const New = () => {
   };
 
   return (
-    <div className="h-screen bg-work flex flex-col">
+    <div className="flex h-screen flex-col bg-work">
       {/* Header: back button (left) + centered title */}
       <div className="shrink-0 px-6 py-4">
         <div className="flex items-center">
@@ -125,7 +125,7 @@ const New = () => {
           </div>
           <div className="flex-1" />
         </div>
-        <p className="text-center text-xs text-faint mt-1">
+        <p className="mt-1 text-center text-xs text-faint">
           协作空间，承载团队协作所需的全部上下文
         </p>
       </div>
@@ -133,7 +133,7 @@ const New = () => {
       <Divider className="!m-0" />
 
       {/* Horizontal timeline */}
-      <div className="shrink-0 px-16 py-6 flex justify-center">
+      <div className="flex shrink-0 justify-center px-16 py-6">
         <Steps
           current={currentStep}
           items={STEPS}
@@ -145,11 +145,11 @@ const New = () => {
 
       {/* Form content */}
       <div className="flex-1 overflow-auto px-8 pb-6">
-        <div className="max-w-[720px] mx-auto">
+        <div className="mx-auto max-w-[720px]">
           <Form form={form} layout="vertical" requiredMark>
             {/* Step 0: Basic info - kept mounted via CSS to preserve field values */}
             <div style={{ display: currentStep === 0 ? 'block' : 'none' }}>
-              <p className="text-standard text-muted mb-6">完善空间基础信息</p>
+              <p className="mb-6 text-standard text-muted">完善空间基础信息</p>
 
               {/* Avatar + Name (required, same row) */}
               <Form.Item label="空间头像和名称" required>
@@ -162,12 +162,12 @@ const New = () => {
                     rules={[{ required: true, message: '请上传空间头像' }]}
                   >
                     <Upload {...uploadProps} showUploadList={false}>
-                      <div className="relative w-8 h-8 rounded border border-dashed border-line flex items-center justify-center cursor-pointer overflow-hidden hover:border-brand transition-colors">
+                      <div className="relative flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded border border-dashed border-line transition-colors hover:border-brand">
                         {avatarUrl ? (
                           <img
                             src={avatarUrl}
                             alt="avatar"
-                            className="absolute inset-0 w-full h-full object-cover"
+                            className="absolute inset-0 h-full w-full object-cover"
                           />
                         ) : (
                           <PlusOutlined className="text-standard text-faint" />
@@ -228,13 +228,13 @@ const New = () => {
 
             {/* Step 1: Instructions */}
             <div style={{ display: currentStep === 1 ? 'block' : 'none' }}>
-              <div className="flex items-center justify-between mb-1">
+              <div className="mb-1 flex items-center justify-between">
                 <span className="text-standard font-medium text-ink">指令（可选）</span>
                 <Button size="small" onClick={handleInsertTemplate}>
                   插入模版
                 </Button>
               </div>
-              <p className="text-xs text-faint mb-4">
+              <p className="mb-4 text-xs text-faint">
                 为所有在空间内工作的 Agent 提供自定义指令和上下文
               </p>
               <Form.Item name="instructions">
@@ -244,29 +244,29 @@ const New = () => {
 
             {/* Step 2: Automation */}
             <div style={{ display: currentStep === 2 ? 'block' : 'none' }}>
-              <div className="flex items-center justify-between mb-1">
+              <div className="mb-1 flex items-center justify-between">
                 <span className="text-standard font-medium text-ink">开启自动化（可选）</span>
               </div>
-              <p className="text-xs text-faint mb-4">
+              <p className="mb-4 text-xs text-faint">
                 选择需要的自动化规则，外部事件发生时会自动创建 Agent 事项并交给 Agent。
               </p>
 
               <div className="flex flex-col gap-3">
                 {/* Card 1: PR auto review */}
-                <div className="flex items-start gap-3 p-4 border border-line rounded-lg bg-white">
+                <div className="flex items-start gap-3 rounded-lg border border-line bg-white p-4">
                   <div
-                    className="shrink-0 w-9 h-9 rounded-md flex items-center justify-center"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
                     style={{ background: '#fe6e000d', border: '1px solid #fe6e0022' }}
                   >
                     <PullRequestOutlined className="text-brand" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-standard text-ink">PR 变更时自动 Review</div>
-                    <p className="text-xs text-faint mt-1 leading-relaxed">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-standard font-medium text-ink">PR 变更时自动 Review</div>
+                    <p className="mt-1 text-xs leading-relaxed text-faint">
                       当代码仓库有 PR 创建或更新时，直接调用 PR 作者的默认 Agent
                       审查代码并给出评审意见。
                     </p>
-                    <div className="flex items-center gap-4 mt-2 text-xs">
+                    <div className="mt-2 flex items-center gap-4 text-xs">
                       <span className="text-muted">
                         触发事件：<span className="text-ink">Github · Pull request</span>
                       </span>
@@ -281,19 +281,19 @@ const New = () => {
                 </div>
 
                 {/* Card 2: Issue auto assign */}
-                <div className="flex items-start gap-3 p-4 border border-line rounded-lg bg-white">
+                <div className="flex items-start gap-3 rounded-lg border border-line bg-white p-4">
                   <div
-                    className="shrink-0 w-9 h-9 rounded-md flex items-center justify-center"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
                     style={{ background: '#8d54ff0d', border: '1px solid #8d54ff22' }}
                   >
                     <BugOutlined className="text-iris" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-standard text-ink">Issue 创建时自动分派</div>
-                    <p className="text-xs text-faint mt-1 leading-relaxed">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-standard font-medium text-ink">Issue 创建时自动分派</div>
+                    <p className="mt-1 text-xs leading-relaxed text-faint">
                       当代码仓库有新 Issue 创建时，自动分析内容并分配给对应负责人的 Agent 处理。
                     </p>
-                    <div className="flex items-center gap-4 mt-2 text-xs">
+                    <div className="mt-2 flex items-center gap-4 text-xs">
                       <span className="text-muted">
                         触发事件：<span className="text-ink">Github · Issue</span>
                       </span>
@@ -313,7 +313,7 @@ const New = () => {
       </div>
 
       {/* Footer: step-dependent action buttons */}
-      <div className="shrink-0 px-8 py-4 border-t border-line flex justify-end gap-3">
+      <div className="flex shrink-0 justify-end gap-3 border-t border-line px-8 py-4">
         {currentStep > 0 && <Button onClick={handlePrev}>上一步</Button>}
         {currentStep < STEPS.length - 1 ? (
           <Button type="primary" onClick={handleNext}>

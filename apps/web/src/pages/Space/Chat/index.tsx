@@ -25,7 +25,7 @@ const AVAILABLE_AGENTS = agents.filter((a) => a.status !== 'offline');
 const AgentAvatar = ({ agent, size = 32 }: { agent: Agent; size?: number }) => {
   return (
     <div
-      className="flex items-center justify-center rounded-md shrink-0"
+      className="flex shrink-0 items-center justify-center rounded-md"
       style={{
         width: size,
         height: size,
@@ -49,9 +49,9 @@ const MessageBubble = ({
 }) => {
   if (message.role === 'user') {
     return (
-      <div className="flex items-start gap-3 justify-end">
-        <div className="bg-brand text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[75%]">
-          <p className="text-standard leading-relaxed whitespace-pre-wrap break-words">
+      <div className="flex items-start justify-end gap-3">
+        <div className="max-w-[75%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-white">
+          <p className="text-standard leading-relaxed break-words whitespace-pre-wrap">
             {message.content}
           </p>
         </div>
@@ -81,10 +81,10 @@ const MessageBubble = ({
   return (
     <div className="flex items-start gap-3">
       <AgentAvatar agent={agent} size={32} />
-      <div className="flex flex-col gap-1 max-w-[75%]">
+      <div className="flex max-w-[75%] flex-col gap-1">
         <div className="text-[11px] font-medium text-faint">{agent.name}</div>
-        <div className="bg-surface text-ink px-4 py-2.5 rounded-2xl rounded-bl-md border border-line">
-          <p className="text-standard leading-relaxed whitespace-pre-wrap break-words">
+        <div className="rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-2.5 text-ink">
+          <p className="text-standard leading-relaxed break-words whitespace-pre-wrap">
             {message.content}
           </p>
         </div>
@@ -99,18 +99,18 @@ const TypingIndicator = ({ agent }: { agent: Agent }) => {
       <AgentAvatar agent={agent} size={32} />
       <div className="flex flex-col gap-1">
         <div className="text-[11px] font-medium text-faint">{agent.name}</div>
-        <div className="bg-surface border border-line px-4 py-3 rounded-2xl rounded-bl-md">
+        <div className="rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3">
           <div className="flex items-center gap-1">
             <span
-              className="size-1.5 rounded-full bg-faint animate-bounce"
+              className="size-1.5 animate-bounce rounded-full bg-faint"
               style={{ animationDelay: '0ms' }}
             />
             <span
-              className="size-1.5 rounded-full bg-faint animate-bounce"
+              className="size-1.5 animate-bounce rounded-full bg-faint"
               style={{ animationDelay: '150ms' }}
             />
             <span
-              className="size-1.5 rounded-full bg-faint animate-bounce"
+              className="size-1.5 animate-bounce rounded-full bg-faint"
               style={{ animationDelay: '300ms' }}
             />
           </div>
@@ -131,7 +131,7 @@ const AgentSelector = ({ agent, onSelect }: { agent: Agent; onSelect: (a: Agent)
             <div className="flex items-center gap-2.5">
               <AgentAvatar agent={a} size={20} />
               <span className="text-standard font-medium text-ink">{a.name}</span>
-              {a.id === agent.id && <CheckOutlined className="text-xs text-brand ml-auto" />}
+              {a.id === agent.id && <CheckOutlined className="ml-auto text-xs text-brand" />}
             </div>
           ),
         })),
@@ -141,7 +141,7 @@ const AgentSelector = ({ agent, onSelect }: { agent: Agent; onSelect: (a: Agent)
         },
       }}
     >
-      <div className="flex items-center gap-1.5 cursor-pointer px-2 py-1 rounded-lg hover:bg-surface transition-colors">
+      <div className="flex cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1 transition-colors hover:bg-surface">
         <AgentAvatar agent={agent} size={20} />
         <span className="text-xs font-medium text-ink">{agent.name}</span>
         <DownOutlined className="text-[9px] text-faint" />
@@ -173,7 +173,7 @@ const InputBox = ({
   };
 
   return (
-    <div className="rounded-2xl border border-line bg-white overflow-hidden shadow-sm transition-colors focus-within:border-brand">
+    <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm transition-colors focus-within:border-brand">
       <Input.TextArea
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -239,9 +239,9 @@ const Chat = () => {
   // Empty state — centered input
   if (messages.length === 0) {
     return (
-      <div className="h-full flex flex-col bg-white">
-        <div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
-          <Logo className="w-14 h-10" />
+      <div className="flex h-full flex-col bg-white">
+        <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
+          <Logo className="h-10 w-14" />
           <h1 className="text-xl font-bold text-ink">有什么可以帮你？</h1>
           <div className="w-full max-w-2xl">
             <InputBox
@@ -253,14 +253,14 @@ const Chat = () => {
               onAgentSelect={setSelectedAgent}
             />
           </div>
-          <div className="grid grid-cols-2 gap-2 w-full max-w-2xl">
+          <div className="grid w-full max-w-2xl grid-cols-2 gap-2">
             {SUGGESTIONS.map((s, i) => (
               <div
                 key={i}
                 onClick={() => setInput(s.text)}
-                className="flex items-center gap-2.5 p-3 rounded-xl border border-line bg-white hover:border-brand hover:bg-[#fff5ed] cursor-pointer transition-all"
+                className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-line bg-white p-3 transition-all hover:border-brand hover:bg-[#fff5ed]"
               >
-                <span className="text-base shrink-0">{s.icon}</span>
+                <span className="shrink-0 text-base">{s.icon}</span>
                 <span className="text-standard text-muted">{s.text}</span>
               </div>
             ))}
@@ -272,9 +272,9 @@ const Chat = () => {
 
   // Active conversation — messages + bottom input
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="flex h-full flex-col bg-white">
       <div className="flex-1 overflow-auto">
-        <div className="max-w-2xl mx-auto py-6 px-4 flex flex-col gap-5">
+        <div className="mx-auto flex max-w-2xl flex-col gap-5 px-4 py-6">
           {messages.map((msg) => (
             <MessageBubble
               key={msg.id}
@@ -292,8 +292,8 @@ const Chat = () => {
         </div>
       </div>
 
-      <div className="shrink-0 px-4 pb-4 pt-2">
-        <div className="max-w-2xl mx-auto">
+      <div className="shrink-0 px-4 pt-2 pb-4">
+        <div className="mx-auto max-w-2xl">
           <InputBox
             agent={selectedAgent}
             value={input}
@@ -302,7 +302,7 @@ const Chat = () => {
             loading={loading}
             onAgentSelect={setSelectedAgent}
           />
-          <p className="text-[11px] text-faint mt-1.5 text-center">Enter 发送 · Shift+Enter 换行</p>
+          <p className="mt-1.5 text-center text-[11px] text-faint">Enter 发送 · Shift+Enter 换行</p>
         </div>
       </div>
     </div>

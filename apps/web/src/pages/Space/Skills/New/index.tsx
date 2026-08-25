@@ -66,7 +66,7 @@ const New = () => {
         <div className="flex items-center gap-2 text-standard">
           <button
             onClick={() => navigate('/space/skills')}
-            className="flex items-center gap-1 text-faint hover:text-ink transition-colors"
+            className="flex items-center gap-1 text-faint transition-colors hover:text-ink"
           >
             <ArrowLeftOutlined className="text-xs" />
             <span>市场</span>
@@ -90,25 +90,25 @@ const New = () => {
         </div>
       }
     >
-      <div className="max-w-2xl mx-auto p-8">
+      <div className="mx-auto max-w-2xl p-8">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-ink mb-1.5">Skill</h1>
-          <p className="text-standard text-muted leading-relaxed">
+          <h1 className="mb-1.5 text-2xl font-bold text-ink">Skill</h1>
+          <p className="text-standard leading-relaxed text-muted">
             Skills 扩展 Hive 的任务特定能力，将指令、资源和可选脚本打包， 实现可靠的工作流执行
           </p>
         </div>
 
         {/* Info banner */}
         <div
-          className="flex items-start gap-3 rounded-lg p-3.5 mb-6"
+          className="mb-6 flex items-start gap-3 rounded-lg p-3.5"
           style={{ background: '#eff8ff', border: '1px solid #91caff' }}
         >
           <BulbOutlined style={{ color: '#1677ff', marginTop: 2 }} />
           <div className="text-standard leading-relaxed">
             <span className="text-ink">推荐使用 </span>
             <code
-              className="font-mono text-xs px-1.5 py-0.5 rounded"
+              className="rounded px-1.5 py-0.5 font-mono text-xs"
               style={{ background: '#e6f4ff', color: '#1677ff' }}
             >
               /skill-creator
@@ -121,15 +121,15 @@ const New = () => {
         </div>
 
         {/* Import tabs */}
-        <div className="flex items-center gap-1 mb-5 border-b border-line">
+        <div className="mb-5 flex items-center gap-1 border-b border-line">
           {IMPORT_TABS.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setImportTab(tab.key)}
-              className={`px-4 py-2 text-standard font-medium border-b-2 -mb-px transition-colors ${
+              className={`-mb-px border-b-2 px-4 py-2 text-standard font-medium transition-colors ${
                 importTab === tab.key
-                  ? 'text-brand border-brand'
-                  : 'text-faint border-transparent hover:text-ink'
+                  ? 'border-brand text-brand'
+                  : 'border-transparent text-faint hover:text-ink'
               }`}
             >
               {tab.label}
@@ -142,20 +142,20 @@ const New = () => {
           {/* Upload or GitHub URL */}
           {importTab === 'zip' ? (
             <div>
-              <label className="block text-standard font-medium text-ink mb-1.5">
+              <label className="mb-1.5 block text-standard font-medium text-ink">
                 Skill 压缩包
               </label>
               <Dragger {...uploadProps} className="!bg-canvas">
-                <p className="text-4xl text-faint mb-2">
+                <p className="mb-2 text-4xl text-faint">
                   <InboxOutlined />
                 </p>
                 <p className="text-standard text-muted">点击或拖拽文件到此区域上传</p>
-                <p className="text-xs text-faint mt-1">仅支持 .zip 格式</p>
+                <p className="mt-1 text-xs text-faint">仅支持 .zip 格式</p>
               </Dragger>
             </div>
           ) : (
             <div>
-              <label className="block text-standard font-medium text-ink mb-1.5">
+              <label className="mb-1.5 block text-standard font-medium text-ink">
                 GitHub 仓库地址
               </label>
               <Input
@@ -164,7 +164,7 @@ const New = () => {
                 value={githubUrl}
                 onChange={(e) => setGithubUrl(e.target.value)}
               />
-              <p className="text-xs text-faint mt-1.5">
+              <p className="mt-1.5 text-xs text-faint">
                 仓库需包含 SKILL.md 文件，系统将自动解析并导入
               </p>
             </div>
@@ -172,7 +172,7 @@ const New = () => {
 
           {/* Category */}
           <div>
-            <label className="block text-standard font-medium text-ink mb-1.5">分类</label>
+            <label className="mb-1.5 block text-standard font-medium text-ink">分类</label>
             <Select
               value={category}
               onChange={setCategory}
@@ -184,14 +184,14 @@ const New = () => {
 
           {/* Visibility */}
           <div>
-            <label className="block text-standard font-medium text-ink mb-1.5">可见性</label>
+            <label className="mb-1.5 block text-standard font-medium text-ink">可见性</label>
             <div className="flex items-center gap-4">
               <Radio.Group value={visibility} onChange={(e) => setVisibility(e.target.value)}>
                 <Radio value="public">公开</Radio>
                 <Radio value="private">私有</Radio>
               </Radio.Group>
             </div>
-            <p className="text-xs text-faint mt-1.5">
+            <p className="mt-1.5 text-xs text-faint">
               {visibility === 'public'
                 ? '所有空间成员均可安装使用此技能'
                 : '仅创建者可安装使用此技能'}
@@ -200,8 +200,8 @@ const New = () => {
         </div>
 
         {/* Bottom actions */}
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-line">
-          <label className="flex items-center gap-2 text-standard text-muted cursor-pointer">
+        <div className="mt-8 flex items-center justify-between border-t border-line pt-6">
+          <label className="flex cursor-pointer items-center gap-2 text-standard text-muted">
             <input
               type="checkbox"
               checked={installForMe}
@@ -215,7 +215,7 @@ const New = () => {
             size="large"
             loading={submitting}
             onClick={handleSubmit}
-            className="!bg-ink !border-ink hover:!bg-ink/90"
+            className="!border-ink !bg-ink hover:!bg-ink/90"
           >
             新建
           </Button>

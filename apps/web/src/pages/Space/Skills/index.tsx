@@ -71,18 +71,18 @@ const SkillCard = ({ skill, compact }: { skill: Skill; compact?: boolean }) => {
 
   return (
     <div
-      className={`flex flex-col gap-2 ${compact ? 'w-[280px] shrink-0' : 'w-full'} rounded-xl border border-line p-4 bg-white hover:shadow-md transition-shadow`}
+      className={`flex flex-col gap-2 ${compact ? 'w-[280px] shrink-0' : 'w-full'} rounded-xl border border-line bg-white p-4 transition-shadow hover:shadow-md`}
     >
       <div className="flex items-start gap-2.5">
         <div
-          className="size-9 rounded-lg flex items-center justify-center text-lg shrink-0"
+          className="flex size-9 shrink-0 items-center justify-center rounded-lg text-lg"
           style={{ background: `${cfg.color}0d`, border: `1px solid ${cfg.color}22` }}
         >
           {SKILL_ICONS[skill.type]}
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-mono text-standard font-medium text-ink truncate">{skill.name}</div>
-          <div className="flex items-center gap-1.5 mt-0.5">
+        <div className="min-w-0 flex-1">
+          <div className="truncate font-mono text-standard font-medium text-ink">{skill.name}</div>
+          <div className="mt-0.5 flex items-center gap-1.5">
             <Tag
               style={{
                 background: `${cfg.color}0d`,
@@ -102,9 +102,9 @@ const SkillCard = ({ skill, compact }: { skill: Skill; compact?: boolean }) => {
         </div>
       </div>
 
-      <p className="text-xs text-muted leading-relaxed line-clamp-2">{skill.desc}</p>
+      <p className="line-clamp-2 text-xs leading-relaxed text-muted">{skill.desc}</p>
 
-      <div className="flex items-center justify-between mt-auto pt-1">
+      <div className="mt-auto flex items-center justify-between pt-1">
         <span className="text-xs text-faint">
           {skill.author} · <span className="font-mono tabular-nums">{skill.installs}</span>
         </span>
@@ -156,17 +156,17 @@ const Skills = () => {
   const communityCount = skills.filter((s) => s.source === 'community').length;
 
   return (
-    <div className="h-full bg-work flex flex-col">
+    <div className="flex h-full flex-col bg-work">
       {/* Top tab nav */}
-      <div className="h-12 px-4 border-b border-line flex items-center gap-1 shrink-0">
+      <div className="flex h-12 shrink-0 items-center gap-1 border-b border-line px-4">
         {TOP_TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setTopTab(tab.key)}
-            className={`h-full px-4 text-2xl text-standard font-medium border-b-2 transition-colors ${
+            className={`h-full border-b-2 px-4 text-2xl text-standard font-medium transition-colors ${
               topTab === tab.key
-                ? 'text-brand border-brand'
-                : 'text-faint border-transparent hover:text-ink'
+                ? 'border-brand text-brand'
+                : 'border-transparent text-faint hover:text-ink'
             }`}
           >
             {tab.label}
@@ -176,12 +176,12 @@ const Skills = () => {
 
       {/* Header */}
       <div className="px-6 pt-5 pb-4">
-        <h1 className="text-2xl font-bold text-ink mb-1">{TOP_TAB_CONFIG[topTab].title}</h1>
-        <p className="text-standard text-muted leading-relaxed">{TOP_TAB_CONFIG[topTab].desc}</p>
+        <h1 className="mb-1 text-2xl font-bold text-ink">{TOP_TAB_CONFIG[topTab].title}</h1>
+        <p className="text-standard leading-relaxed text-muted">{TOP_TAB_CONFIG[topTab].desc}</p>
       </div>
 
       {/* Search bar */}
-      <div className="px-6 pb-4 flex items-center gap-3">
+      <div className="flex items-center gap-3 px-6 pb-4">
         <Input
           placeholder="请输入技能名称"
           prefix={<SearchOutlined className="text-faint" />}
@@ -202,7 +202,7 @@ const Skills = () => {
 
       {/* Featured section */}
       <div className="px-6 pb-6">
-        <div className="flex items-center gap-2 mb-3">
+        <div className="mb-3 flex items-center gap-2">
           <FireOutlined style={{ color: '#fe6e00' }} />
           <span className="text-standard font-medium text-ink">精选技能</span>
           <span className="text-xs text-faint">经过验证的优质技能</span>
@@ -215,8 +215,8 @@ const Skills = () => {
       </div>
 
       {/* All skills section */}
-      <div className="px-6 flex-1 overflow-y-auto">
-        <div className="border border-line rounded-xl">
+      <div className="flex-1 overflow-y-auto px-6">
+        <div className="rounded-xl border border-line">
           {/* Source tabs + filter tabs */}
           <div className="flex items-center justify-between border-b border-line px-4 pt-3">
             <div className="flex items-center gap-1">
@@ -224,14 +224,14 @@ const Skills = () => {
                 <button
                   key={tab.key}
                   onClick={() => setSourceTab(tab.key)}
-                  className={`px-3 py-2 text-standard font-medium rounded-t-md transition-colors ${
+                  className={`rounded-t-md px-3 py-2 text-standard font-medium transition-colors ${
                     sourceTab === tab.key
-                      ? 'text-brand border-b-2 border-brand -mb-px'
+                      ? '-mb-px border-b-2 border-brand text-brand'
                       : 'text-faint hover:text-ink'
                   }`}
                 >
                   {tab.label}{' '}
-                  <span className="font-mono tabular-nums text-xs">
+                  <span className="font-mono text-xs tabular-nums">
                     {tab.key === 'internal' ? internalCount : communityCount}
                   </span>
                 </button>
@@ -242,10 +242,10 @@ const Skills = () => {
                 <button
                   key={tab.key}
                   onClick={() => setFilterTab(tab.key)}
-                  className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                  className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
                     filterTab === tab.key
                       ? 'bg-ink text-white'
-                      : 'text-faint hover:text-ink hover:bg-canvas'
+                      : 'text-faint hover:bg-canvas hover:text-ink'
                   }`}
                 >
                   {tab.label}
@@ -255,13 +255,13 @@ const Skills = () => {
           </div>
 
           {/* Category tags */}
-          <div className="flex items-center gap-1.5 px-4 py-3 border-b border-line flex-wrap">
+          <div className="flex flex-wrap items-center gap-1.5 border-b border-line px-4 py-3">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setCategory(cat)}
-                className={`px-2 py-0.5 text-xs rounded transition-colors ${
-                  category === cat ? 'text-brand font-medium' : 'text-faint hover:text-ink'
+                className={`rounded px-2 py-0.5 text-xs transition-colors ${
+                  category === cat ? 'font-medium text-brand' : 'text-faint hover:text-ink'
                 }`}
               >
                 #{cat}
@@ -272,9 +272,9 @@ const Skills = () => {
           {/* Skill list */}
           <div className="p-4">
             {filteredSkills.length === 0 ? (
-              <div className="text-center py-12 text-standard text-faint">没有找到匹配的技能</div>
+              <div className="py-12 text-center text-standard text-faint">没有找到匹配的技能</div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                 {filteredSkills.map((skill) => (
                   <SkillCard key={skill.name} skill={skill} />
                 ))}

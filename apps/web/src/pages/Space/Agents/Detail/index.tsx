@@ -89,7 +89,7 @@ interface ChatMessage {
 
 const PropertyRow = ({ label, children }: { label: string; children: React.ReactNode }) => {
   return (
-    <div className="flex items-center justify-between py-2 ">
+    <div className="flex items-center justify-between py-2">
       <span className="text-standard text-muted">{label}</span>
       <div className="flex items-center gap-2">{children}</div>
     </div>
@@ -124,7 +124,7 @@ const Sparkline = ({ data }: { data: number[] }) => {
 const AgentAvatar = ({ agent, size = 32 }: { agent: Agent; size?: number }) => {
   return (
     <div
-      className="flex items-center justify-center rounded-md shrink-0"
+      className="flex shrink-0 items-center justify-center rounded-md"
       style={{
         width: size,
         height: size,
@@ -161,16 +161,16 @@ const OverviewTab = ({
   const statusConfig = STATUS_MAP[agent.status as AgentStatus] ?? STATUS_MAP.offline;
 
   return (
-    <div className="flex-1 flex gap-8 p-4 min-w-0 overflow-hidden">
-      <div className="min-w-0 w-[300px] shrink-0 rounded-xl border border-line overflow-auto">
-        <div className="flex flex-col items-start gap-4 p-4 border-b border-line">
+    <div className="flex min-w-0 flex-1 gap-8 overflow-hidden p-4">
+      <div className="w-[300px] min-w-0 shrink-0 overflow-auto rounded-xl border border-line">
+        <div className="flex flex-col items-start gap-4 border-b border-line p-4">
           <div
-            className="size-14 rounded-xl flex items-center justify-center text-3xl shrink-0"
+            className="flex size-14 shrink-0 items-center justify-center rounded-xl text-3xl"
             style={{ background: `${agent.color}0d`, border: `1px solid ${agent.color}22` }}
           >
             {agent.icon}
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold text-ink">{agent.name}</h1>
               <span className={`flex items-center gap-1 text-xs font-medium ${statusConfig.color}`}>
@@ -178,15 +178,15 @@ const OverviewTab = ({
                 {statusConfig.label}
               </span>
             </div>
-            <p className="text-standard text-muted mt-0.5">{agent.desc}</p>
+            <p className="mt-0.5 text-standard text-muted">{agent.desc}</p>
           </div>
         </div>
 
-        <div className="p-4 border-b border-line">
-          <div className="text-standard font-bold text-ink mb-2">属性</div>
+        <div className="border-b border-line p-4">
+          <div className="mb-2 text-standard font-bold text-ink">属性</div>
           <div>
             <PropertyRow label="工作电脑">
-              <span className="text-standard font-medium text-ink font-mono">
+              <span className="font-mono text-standard font-medium text-ink">
                 {agent.workComputer}
               </span>
             </PropertyRow>
@@ -231,12 +231,12 @@ const OverviewTab = ({
         </div>
 
         <div className="p-4">
-          <div className="text-standard font-bold text-ink mb-2">操作</div>
+          <div className="mb-2 text-standard font-bold text-ink">操作</div>
           <div>
-            <div className="flex items-center justify-between border-b border-line pb-2 ">
+            <div className="flex items-center justify-between border-b border-line pb-2">
               <div className="flex-1">
                 <div className="text-standard font-medium text-ink">默认 Agent</div>
-                <p className="text-xs text-faint mt-1">
+                <p className="mt-1 text-xs text-faint">
                   设为你的"主力" Agent — 接受指派时的默认人选
                 </p>
               </div>
@@ -245,7 +245,7 @@ const OverviewTab = ({
             <div className="flex items-center justify-between pt-2">
               <div className="flex-1">
                 <div className="text-standard font-medium text-ink">归档 Agent</div>
-                <p className="text-xs text-faint mt-1">
+                <p className="mt-1 text-xs text-faint">
                   归档后 Agent 会从日常列表和指派选项中隐藏，历史任务与会话记录会保留
                 </p>
               </div>
@@ -257,16 +257,16 @@ const OverviewTab = ({
 
       <div className="flex-1 shrink-0 overflow-auto">
         <div className="mb-6">
-          <div className="text-standard font-bold text-ink mb-3">进行中的会话</div>
-          <div className="border border-line rounded-lg p-4">
+          <div className="mb-3 text-standard font-bold text-ink">进行中的会话</div>
+          <div className="rounded-lg border border-line p-4">
             <p className="text-xs text-faint">当前没有进行中的会话</p>
           </div>
         </div>
         <div className="mb-6">
-          <div className="text-standard font-bold text-ink mb-3">近 30 天</div>
-          <div className="border border-line rounded-lg p-4">
+          <div className="mb-3 text-standard font-bold text-ink">近 30 天</div>
+          <div className="rounded-lg border border-line p-4">
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-ink font-mono tabular-nums">
+              <span className="font-mono text-2xl font-bold text-ink tabular-nums">
                 {agent.runs > 0 ? agent.runs : 1}
               </span>
               <span className="text-xs text-faint">次运行</span>
@@ -277,8 +277,8 @@ const OverviewTab = ({
           </div>
         </div>
         <div>
-          <div className="text-standard font-bold text-ink mb-3">最近 Agent 事项</div>
-          <div className="border border-line rounded-lg p-4">
+          <div className="mb-3 text-standard font-bold text-ink">最近 Agent 事项</div>
+          <div className="rounded-lg border border-line p-4">
             <p className="text-xs text-faint">将 Agent 事项指派给该 Agent 后，会展示在这里</p>
           </div>
         </div>
@@ -318,21 +318,21 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden">
+    <div className="flex h-full flex-1 flex-col overflow-hidden">
       {messages.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center px-4 gap-4">
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4">
           <AgentAvatar agent={agent} size={48} />
           <div className="text-lg font-bold text-ink">{agent.name}</div>
           <p className="text-standard text-faint">{agent.desc}</p>
         </div>
       ) : (
         <div className="flex-1 overflow-auto">
-          <div className="max-w-2xl mx-auto py-6 px-4 flex flex-col gap-5">
+          <div className="mx-auto flex max-w-2xl flex-col gap-5 px-4 py-6">
             {messages.map((msg) =>
               msg.role === 'user' ? (
-                <div key={msg.id} className="flex items-start gap-3 justify-end">
-                  <div className="bg-brand text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[75%]">
-                    <p className="text-standard leading-relaxed whitespace-pre-wrap break-words">
+                <div key={msg.id} className="flex items-start justify-end gap-3">
+                  <div className="max-w-[75%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-white">
+                    <p className="text-standard leading-relaxed break-words whitespace-pre-wrap">
                       {msg.content}
                     </p>
                   </div>
@@ -359,10 +359,10 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
               ) : (
                 <div key={msg.id} className="flex items-start gap-3">
                   <AgentAvatar agent={agent} size={32} />
-                  <div className="flex flex-col gap-1 max-w-[75%]">
+                  <div className="flex max-w-[75%] flex-col gap-1">
                     <div className="text-[11px] font-medium text-faint">{agent.name}</div>
-                    <div className="bg-surface text-ink px-4 py-2.5 rounded-2xl rounded-bl-md border border-line">
-                      <p className="text-standard leading-relaxed whitespace-pre-wrap break-words">
+                    <div className="rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-2.5 text-ink">
+                      <p className="text-standard leading-relaxed break-words whitespace-pre-wrap">
                         {msg.content}
                       </p>
                     </div>
@@ -375,18 +375,18 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
                 <AgentAvatar agent={agent} size={32} />
                 <div className="flex flex-col gap-1">
                   <div className="text-[11px] font-medium text-faint">{agent.name}</div>
-                  <div className="bg-surface border border-line px-4 py-3 rounded-2xl rounded-bl-md">
+                  <div className="rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3">
                     <div className="flex items-center gap-1">
                       <span
-                        className="size-1.5 rounded-full bg-faint animate-bounce"
+                        className="size-1.5 animate-bounce rounded-full bg-faint"
                         style={{ animationDelay: '0ms' }}
                       />
                       <span
-                        className="size-1.5 rounded-full bg-faint animate-bounce"
+                        className="size-1.5 animate-bounce rounded-full bg-faint"
                         style={{ animationDelay: '150ms' }}
                       />
                       <span
-                        className="size-1.5 rounded-full bg-faint animate-bounce"
+                        className="size-1.5 animate-bounce rounded-full bg-faint"
                         style={{ animationDelay: '300ms' }}
                       />
                     </div>
@@ -399,9 +399,9 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
         </div>
       )}
 
-      <div className="shrink-0 px-4 pb-4 pt-2 border-t border-line">
-        <div className="max-w-2xl mx-auto">
-          <div className="rounded-2xl border border-line bg-white overflow-hidden shadow-sm transition-colors focus-within:border-brand">
+      <div className="shrink-0 border-t border-line px-4 pt-2 pb-4">
+        <div className="mx-auto max-w-2xl">
+          <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm transition-colors focus-within:border-brand">
             <Input.TextArea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -417,7 +417,7 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
               className="!px-4 !py-3 !text-standard"
             />
             <div className="flex items-center justify-between px-2 pb-2">
-              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg">
+              <div className="flex items-center gap-1.5 rounded-lg px-2 py-1">
                 <AgentAvatar agent={agent} size={20} />
                 <span className="text-xs font-medium text-ink">{agent.name}</span>
               </div>
@@ -463,9 +463,9 @@ const ConversationsTab = () => {
   ];
 
   return (
-    <div className="flex-1 p-6 overflow-auto">
+    <div className="flex-1 overflow-auto p-6">
       <div className="max-w-3xl">
-        <div className="text-standard font-bold text-ink mb-3">历史会话</div>
+        <div className="mb-3 text-standard font-bold text-ink">历史会话</div>
         <Table
           bordered
           columns={columns}
@@ -488,31 +488,31 @@ const SkillsTab = ({ agent }: { agent: Agent }) => {
   };
 
   return (
-    <div className="flex-1 p-6 overflow-auto">
+    <div className="flex-1 overflow-auto p-6">
       <div className="max-w-2xl">
-        <div className="flex items-center justify-between mb-3">
+        <div className="mb-3 flex items-center justify-between">
           <div>
             <div className="text-standard font-bold text-ink">绑定的 Skills</div>
-            <p className="text-xs text-faint mt-0.5">该 Agent 可使用的技能</p>
+            <p className="mt-0.5 text-xs text-faint">该 Agent 可使用的技能</p>
           </div>
           <Button type="primary" icon={<PlusOutlined />}>
             添加 Skill
           </Button>
         </div>
-        <div className="border border-line rounded-lg overflow-hidden divide-y divide-line">
+        <div className="divide-y divide-line overflow-hidden rounded-lg border border-line">
           {boundSkills.map((skill) => (
-            <div key={skill.name} className="flex items-center gap-3 px-4 py-3 bg-white">
-              <div className="size-8 rounded-md bg-surface flex items-center justify-center shrink-0">
+            <div key={skill.name} className="flex items-center gap-3 bg-white px-4 py-3">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-surface">
                 <ToolOutlined className="text-standard text-muted" />
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-standard font-medium text-ink font-mono">{skill.name}</span>
+                  <span className="font-mono text-standard font-medium text-ink">{skill.name}</span>
                   <Tag color={SKILL_TYPE_MAP[skill.type].color}>
                     {skill.type === 'builtin' ? 'Plugin 内置' : SKILL_TYPE_MAP[skill.type].label}
                   </Tag>
                 </div>
-                <div className="text-xs text-faint mt-0.5 leading-relaxed">{skill.desc}</div>
+                <div className="mt-0.5 text-xs leading-relaxed text-faint">{skill.desc}</div>
               </div>
               <Button
                 type="text"
@@ -538,15 +538,15 @@ const InstructionsTab = () => {
   const [instructions, setInstructions] = useState('');
 
   return (
-    <div className="flex-1 p-6 overflow-auto">
+    <div className="flex-1 overflow-auto p-6">
       <div className="max-w-2xl">
-        <div className="flex items-center justify-between mb-1">
+        <div className="mb-1 flex items-center justify-between">
           <span className="text-standard font-bold text-ink">指令</span>
           <Button size="small" onClick={() => setInstructions(INSTRUCTION_TEMPLATE)}>
             插入模版
           </Button>
         </div>
-        <p className="text-xs text-faint mb-4">为该 Agent 提供自定义指令和上下文</p>
+        <p className="mb-4 text-xs text-faint">为该 Agent 提供自定义指令和上下文</p>
         <Input.TextArea
           value={instructions}
           onChange={(e) => setInstructions(e.target.value)}
@@ -565,10 +565,10 @@ const WorkDirTab = () => {
   const [path, setPath] = useState('');
 
   return (
-    <div className="flex-1 p-6 overflow-auto">
+    <div className="flex-1 overflow-auto p-6">
       <div className="max-w-2xl">
-        <div className="text-standard font-bold text-ink mb-1">工作目录</div>
-        <p className="text-xs text-faint mb-4">Agent 执行任务时使用的工作目录，填写本机绝对路径</p>
+        <div className="mb-1 text-standard font-bold text-ink">工作目录</div>
+        <p className="mb-4 text-xs text-faint">Agent 执行任务时使用的工作目录，填写本机绝对路径</p>
         <Input
           value={path}
           onChange={(e) => setPath(e.target.value)}
@@ -597,9 +597,9 @@ const AgentDetail = () => {
   if (!agent) {
     return (
       <Page breadcrumb={<span className="text-faint">Agent 未找到</span>}>
-        <div className="flex items-center justify-center h-full">
+        <div className="flex h-full items-center justify-center">
           <div className="text-center">
-            <p className="text-standard text-muted mb-3">未找到该 Agent</p>
+            <p className="mb-3 text-standard text-muted">未找到该 Agent</p>
             <Button onClick={() => navigate('/agents')}>返回列表</Button>
           </div>
         </div>
@@ -612,18 +612,18 @@ const AgentDetail = () => {
       breadcrumb={
         <>
           <span
-            className="text-faint cursor-pointer hover:text-ink"
+            className="cursor-pointer text-faint hover:text-ink"
             onClick={() => navigate('/agents')}
           >
             Agents
           </span>
           <span className="text-faint">/</span>
-          <span className="text-ink font-medium">{agent.name}</span>
+          <span className="font-medium text-ink">{agent.name}</span>
         </>
       }
     >
       <div className="flex h-full overflow-hidden">
-        <div className="w-52 shrink-0 px-2 py-3 border-r border-line overflow-auto">
+        <div className="w-52 shrink-0 overflow-auto border-r border-line px-2 py-3">
           <Menu
             mode="inline"
             selectedKeys={[activeKey]}

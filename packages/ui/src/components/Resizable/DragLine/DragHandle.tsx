@@ -37,11 +37,11 @@ export const DragHandle = memo(({ start, onDraggingChange }: DragHandleProps) =>
   return (
     <div
       ref={drag as unknown as React.Ref<HTMLDivElement>}
-      className="h-full w-1.5 -right-0.75 z-10 absolute top-0 cursor-col-resize group"
+      className="group absolute top-0 -right-0.75 z-10 h-full w-1.5 cursor-col-resize"
       style={{ touchAction: 'none' }}
     >
       <div
-        className="h-full w-0.5 transition-colors delay-150 duration-200 bg-transparent group-hover:bg-brand"
+        className="h-full w-0.5 bg-transparent transition-colors delay-150 duration-200 group-hover:bg-brand"
         style={lineStyle}
       />
     </div>

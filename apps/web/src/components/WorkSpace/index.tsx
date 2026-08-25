@@ -38,8 +38,8 @@ export const WorkSpace = memo(() => {
         label: (
           <div className="flex items-center gap-2 py-0.5">
             <Avatar workspace={w} />
-            <div className="flex-1 min-w-0">
-              <div className="font-medium truncate">{w.name}</div>
+            <div className="min-w-0 flex-1">
+              <div className="truncate font-medium">{w.name}</div>
             </div>
           </div>
         ),
@@ -95,7 +95,7 @@ export const WorkSpace = memo(() => {
           block
           type="text"
           onClick={handleCreate}
-          className=" bg-work rounded-none w-full flex items-center gap-2 px-3 h-9 text-faint transition-colors cursor-pointer"
+          className="flex h-9 w-full cursor-pointer items-center gap-2 rounded-none bg-work px-3 text-faint transition-colors"
         >
           <PlusOutlined className="text-xs" />
           新建工作空间
@@ -130,10 +130,10 @@ export const WorkSpace = memo(() => {
         }}
       >
         <Avatar workspace={current} />
-        <div className="flex-1 min-w-0 text-left">
-          <div className=" font-medium text-ink truncate">{current.name}</div>
+        <div className="min-w-0 flex-1 text-left">
+          <div className="truncate font-medium text-ink">{current.name}</div>
         </div>
-        <span className="flex items-center gap-0.5 text-faint text-[12px] shrink-0">
+        <span className="flex shrink-0 items-center gap-0.5 text-[12px] text-faint">
           切换
           <SwapOutlined />
         </span>

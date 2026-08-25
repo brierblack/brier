@@ -15,7 +15,7 @@ export const Avatar = memo(({ workspace }: { workspace: Workspace }) => {
       <img
         src={workspace.avatar}
         alt={workspace.name}
-        className="size-5 rounded-sm shrink-0 object-cover"
+        className="size-5 shrink-0 rounded-sm object-cover"
       />
     );
   }
@@ -26,7 +26,7 @@ export const Avatar = memo(({ workspace }: { workspace: Workspace }) => {
 
   return (
     <div
-      className="size-5 rounded-sm shrink-0 flex items-center justify-center text-white text-[12px] font-bold"
+      className="flex size-5 shrink-0 items-center justify-center rounded-sm text-[12px] font-bold text-white"
       style={{ background: bg }}
     >
       {initial}

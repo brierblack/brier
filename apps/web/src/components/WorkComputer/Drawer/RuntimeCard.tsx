@@ -7,7 +7,7 @@ interface RuntimeCardProps {
 
 export const RuntimeCard = memo(({ runtimes }: RuntimeCardProps) => (
   <Card title="检测到的 Runtime">
-    <div className="p-4 flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 p-4">
       {runtimes.map((rt) => (
         <Tag
           key={rt}

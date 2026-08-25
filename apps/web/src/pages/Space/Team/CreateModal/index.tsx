@@ -26,7 +26,7 @@ const AGENT_OPTIONS = agents.map((a) => ({
   label: (
     <span className="flex items-center gap-2">
       <span
-        className="size-5 flex items-center justify-center rounded text-xs"
+        className="flex size-5 items-center justify-center rounded text-xs"
         style={{ backgroundColor: a.color + '1a' }}
       >
         {a.icon}
@@ -75,12 +75,12 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
       title={
         <div className="flex items-center justify-between pr-8">
           <div className="flex items-center gap-3">
-            <div className="size-8 rounded-lg bg-[#f5f5f5] flex items-center justify-center">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-[#f5f5f5]">
               <TeamOutlined className="text-base" />
             </div>
             <div>
               <div className="text-base font-semibold">创建 Agent 团队</div>
-              <div className="text-xs text-faint font-normal">
+              <div className="text-xs font-normal text-faint">
                 选择主 Agent 负责协调任务，再按需加入协作成员。
               </div>
             </div>
@@ -90,7 +90,7 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
     >
       <div className="flex gap-6 pt-2">
         {/* Left column — Avatar */}
-        <div className="w-44 shrink-0 flex flex-col items-center gap-2 pt-2 border border-line rounded-lg">
+        <div className="flex w-44 shrink-0 flex-col items-center gap-2 rounded-lg border border-line pt-2">
           <Upload
             showUploadList={false}
             beforeUpload={(file) => {
@@ -100,18 +100,18 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
             accept="image/png,image/jpeg"
           >
             {avatarUrl ? (
-              <div className="size-20 rounded-full overflow-hidden cursor-pointer border border-line">
+              <div className="size-20 cursor-pointer overflow-hidden rounded-full border border-line">
                 <img src={avatarUrl} alt="avatar" className="size-full object-cover" />
               </div>
             ) : (
-              <div className="size-20 rounded-full cursor-pointer border border-dashed border-line flex items-center justify-center bg-surface">
+              <div className="flex size-20 cursor-pointer items-center justify-center rounded-full border border-dashed border-line bg-surface">
                 <StarOutlined className="text-xl text-muted" />
               </div>
             )}
           </Upload>
-          <div className="text-standard font-medium text-center">{teamName || '未命名团队'}</div>
+          <div className="text-center text-standard font-medium">{teamName || '未命名团队'}</div>
           <div className="text-xs text-faint">PNG/JPG，最大 5MB</div>
-          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-surface text-muted">
+          <div className="inline-flex items-center gap-1 rounded bg-surface px-2 py-0.5 text-xs text-muted">
             {visibility === 'private' ? '仅自己' : '空间共享'}
           </div>
         </div>
@@ -120,24 +120,24 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
         <Form form={form} layout="vertical" className="flex-1">
           {/* 可见性 */}
           <div className="mb-5">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="mb-1 flex items-center gap-2">
               <EyeOutlined className="text-standard text-muted" />
               <span className="text-standard font-semibold">可见性</span>
             </div>
-            <p className="text-xs text-faint mb-3">控制团队是否在 @ 列表和任务分配中可见</p>
+            <p className="mb-3 text-xs text-faint">控制团队是否在 @ 列表和任务分配中可见</p>
             <div className="flex gap-2">
               {VISIBILITY_OPTIONS.map((opt) => (
                 <div
                   key={opt.value}
                   onClick={() => setVisibility(opt.value)}
-                  className={`flex-1 p-3 rounded-lg cursor-pointer border transition-colors ${
+                  className={`flex-1 cursor-pointer rounded-lg border p-3 transition-colors ${
                     visibility === opt.value
                       ? 'border-[#1677ff] bg-[#eff8ff]'
                       : 'border-line hover:border-line'
                   }`}
                 >
                   <div className="text-standard font-medium">{opt.label}</div>
-                  <div className="text-xs text-faint mt-0.5">{opt.desc}</div>
+                  <div className="mt-0.5 text-xs text-faint">{opt.desc}</div>
                 </div>
               ))}
             </div>
@@ -145,7 +145,7 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
 
           {/* 基础信息 */}
           <div className="mb-5">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="mb-3 flex items-center gap-2">
               <FormOutlined className="text-standard text-muted" />
               <span className="text-standard font-semibold">基础信息</span>
             </div>
@@ -162,12 +162,12 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
           </div>
 
           {/* 主 Agent */}
-          <div className="mb-5 border border-line rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-1">
+          <div className="mb-5 rounded-lg border border-line p-4">
+            <div className="mb-1 flex items-center gap-2">
               <CrownOutlined className="text-standard text-muted" />
               <span className="text-standard font-semibold">主 Agent</span>
             </div>
-            <p className="text-xs text-faint mb-3">接收分配给团队的任务，并协调其他成员。</p>
+            <p className="mb-3 text-xs text-faint">接收分配给团队的任务，并协调其他成员。</p>
             <Form.Item
               noStyle
               name="mainAgent"
@@ -182,12 +182,12 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
           </div>
 
           {/* 附加成员 */}
-          <div className="border border-line rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-1">
+          <div className="rounded-lg border border-line p-4">
+            <div className="mb-1 flex items-center gap-2">
               <UserAddOutlined className="text-standard text-muted" />
               <span className="text-standard font-semibold">附加成员（可选）</span>
             </div>
-            <p className="text-xs text-faint mb-3">
+            <p className="mb-3 text-xs text-faint">
               主 Agent 可以委派任务给这些成员，也可以稍后再添加。
             </p>
             <Form.Item noStyle name="members">

@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter @hive/web dev",
-    "build": "pnpm --filter @hiveblack/ui build && pnpm --filter @hive/web build",
+    "build": "pnpm --filter @hiveblack/ui build && pnpm --filter @hive/cli build && pnpm --filter @hive/web build",
     "preview": "pnpm --filter @hive/web preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -18,6 +18,7 @@
     "eslint-plugin-react-refresh": "^0.4.26",
     "globals": "^17.11.0",
     "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0"
   }

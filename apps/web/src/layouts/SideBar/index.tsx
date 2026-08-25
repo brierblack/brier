@@ -93,17 +93,17 @@ export function Sidebar() {
   }));
 
   return (
-    <div className="h-full flex flex-col pr-2">
-      <div className=" px-1 flex items-center gap-1 shrink-0">
-        <Logo className="w-14 h-10 shrink-0" />
+    <div className="flex h-full flex-col pr-2">
+      <div className="flex shrink-0 items-center gap-1 px-1">
+        <Logo className="h-10 w-14 shrink-0" />
         <Wordmark className="text-[20px] tracking-tight whitespace-nowrap" />
       </div>
 
-      <div className="px-1 py-2 shrink-0">
+      <div className="shrink-0 px-1 py-2">
         <WorkSpace />
       </div>
 
-      <div className=" px-1 shrink-0">
+      <div className="shrink-0 px-1">
         <Menu
           mode="vertical"
           selectedKeys={[selectedKey]}
@@ -120,13 +120,13 @@ export function Sidebar() {
         />
       </div>
 
-      <div ref={scrollRef} className="px-1 flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-1">
         <div
-          className="group flex items-center gap-1 px-2 py-1 cursor-pointer text-sm font-medium text-muted rounded hover:bg-[#f5f5f5] hover:text-ink"
+          className="group flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-sm font-medium text-muted hover:bg-[#f5f5f5] hover:text-ink"
           onClick={() => setRecentExpanded(!recentExpanded)}
         >
           最近 7 天
-          <span className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="flex items-center opacity-0 transition-opacity group-hover:opacity-100">
             {recentExpanded ? (
               <CaretDownOutlined className="text-[10px]" />
             ) : (
@@ -145,11 +145,11 @@ export function Sidebar() {
         )}
 
         <div
-          className="group flex items-center gap-1 px-2 py-1 cursor-pointer text-sm font-medium text-muted rounded hover:bg-[#f5f5f5] hover:text-ink"
+          className="group flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-sm font-medium text-muted hover:bg-[#f5f5f5] hover:text-ink"
           onClick={() => setOlderExpanded(!olderExpanded)}
         >
           更早
-          <span className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="flex items-center opacity-0 transition-opacity group-hover:opacity-100">
             {olderExpanded ? (
               <CaretDownOutlined className="text-[10px]" />
             ) : (
@@ -169,7 +169,7 @@ export function Sidebar() {
       </div>
 
       <div
-        className={`px-4 py-3 shrink-0 transition-shadow duration-200 ${showShadow ? 'shadow-[0_-8px_12px_-8px_rgba(0,0,0,0.12)]' : 'shadow-none'}`}
+        className={`shrink-0 px-4 py-3 transition-shadow duration-200 ${showShadow ? 'shadow-[0_-8px_12px_-8px_rgba(0,0,0,0.12)]' : 'shadow-none'}`}
       >
         {loading && (
           <div className="flex items-center gap-2.5">
@@ -191,7 +191,7 @@ export function Sidebar() {
         )}
         {!loading && user && (
           <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="topLeft">
-            <div className="flex items-center gap-2.5 cursor-pointer">
+            <div className="flex cursor-pointer items-center gap-2.5">
               {user.avatar_url ? (
                 <Avatar
                   size={32}
@@ -212,10 +212,10 @@ export function Sidebar() {
                 </Avatar>
               )}
               <div className="min-w-0 flex-1">
-                <div className="text-[13px] font-medium text-ink truncate">
+                <div className="truncate text-[13px] font-medium text-ink">
                   {user.name ?? user.login}
                 </div>
-                <div className="text-[11px] text-faint truncate">{user.email ?? user.login}</div>
+                <div className="truncate text-[11px] text-faint">{user.email ?? user.login}</div>
               </div>
             </div>
           </Dropdown>

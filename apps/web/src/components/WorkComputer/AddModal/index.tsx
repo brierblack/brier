@@ -33,17 +33,17 @@ const MANUAL_ITEMS: CollapseProps['items'] = [
     children: (
       <div className="flex flex-col gap-3">
         <div>
-          <div className="text-xs text-faint mb-1">1. 安装 hive CLI</div>
-          <div className="bg-[#f5f5f5] rounded px-3 py-2">
-            <code className="text-standard font-mono text-ink">
+          <div className="mb-1 text-xs text-faint">1. 安装 hive CLI</div>
+          <div className="rounded bg-[#f5f5f5] px-3 py-2">
+            <code className="font-mono text-standard text-ink">
               npm install -g @hive/cli@latest
             </code>
           </div>
         </div>
         <div>
-          <div className="text-xs text-faint mb-1">2. 启动后台服务</div>
-          <div className="bg-[#f5f5f5] rounded px-3 py-2">
-            <code className="text-standard font-mono text-ink break-all">
+          <div className="mb-1 text-xs text-faint">2. 启动后台服务</div>
+          <div className="rounded bg-[#f5f5f5] px-3 py-2">
+            <code className="font-mono text-standard break-all text-ink">
               HIVE_TOKEN='your-token' hive daemon start --server-url https://hive.local
             </code>
           </div>
@@ -58,12 +58,12 @@ const FAQ_ITEMS: CollapseProps['items'] = [
     key: 'faq',
     label: (
       <span className="flex items-center gap-1.5 text-standard text-muted">
-        <span className="w-3.5 h-3.5 rounded-full border border-line shrink-0" />
+        <span className="h-3.5 w-3.5 shrink-0 rounded-full border border-line" />
         这个命令安全吗？会影响我的网络安全吗？
       </span>
     ),
     children: (
-      <div className="text-xs text-muted leading-relaxed">
+      <div className="text-xs leading-relaxed text-muted">
         命令本身是安全的。hive CLI 仅用于启动一个本地后台服务，通过加密通道与 Hive
         平台通信，不会开放端口给外部网络。HIVE_TOKEN
         是临时密钥，仅用于身份验证，不涉及你的代码或数据权限。
@@ -93,12 +93,12 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
       }
     >
       {/* 推荐方案 */}
-      <div className="border border-[#91caff] rounded-lg bg-[#eff8ff] my-3">
+      <div className="my-3 rounded-lg border border-[#91caff] bg-[#eff8ff]">
         <div className="flex items-start gap-1.5 border-b border-[#91caff] px-3 py-2.5">
-          <RobotOutlined className="text-xs text-[#1677ff] mt-1" />
+          <RobotOutlined className="mt-1 text-xs text-[#1677ff]" />
           <div className="flex-1">
             <span className="text-standard font-medium text-[#1f2329]">让本机 AI 帮你装(推荐)</span>
-            <p className="text-[11px] text-[#86909c] leading-relaxed">
+            <p className="text-[11px] leading-relaxed text-[#86909c]">
               复制这段 Prompt，发送给本机的 Claude Code / Cursor / Codex 等 Agent，它会自行处理 Node
               / npm / hive CLI 安装并启动后台服务。
             </p>
@@ -114,11 +114,11 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
         </div>
 
         <div
-          className={` flex items-center justify-between px-3 py-1.5 ${showPrompt ? 'border-b border-[#91caff]' : ''}`}
+          className={`flex items-center justify-between px-3 py-1.5 ${showPrompt ? 'border-b border-[#91caff]' : ''}`}
         >
           <div className="flex items-center justify-between">
             <span
-              className={` text-xs text-[#1677ff] cursor-pointer flex items-center gap-1`}
+              className={`flex cursor-pointer items-center gap-1 text-xs text-[#1677ff]`}
               onClick={() => setShowPrompt(!showPrompt)}
             >
               <DownOutlined
@@ -133,8 +133,8 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
 
         {/* 展开后的 Prompt 内容 */}
         {showPrompt && (
-          <div className=" px-3 py-2">
-            <pre className="text-xs text-[#86909c] whitespace-pre-wrap font-mono leading-relaxed m-0">
+          <div className="px-3 py-2">
+            <pre className="m-0 font-mono text-xs leading-relaxed whitespace-pre-wrap text-[#86909c]">
               {PROMPT_CONTENT}
             </pre>
           </div>
@@ -156,8 +156,8 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
       />
 
       {/* 状态提示 */}
-      <div className="flex items-center gap-1.5 mt-4 px-3">
-        <span className="w-2 h-2 rounded-full bg-[#1677ff] shrink-0" />
+      <div className="mt-4 flex items-center gap-1.5 px-3">
+        <span className="h-2 w-2 shrink-0 rounded-full bg-[#1677ff]" />
         <span className="text-xs text-[#86909c]">
           等待你的电脑上线（后台服务启动后通常一分钟内自动发现）
         </span>

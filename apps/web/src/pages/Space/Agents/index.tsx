@@ -54,17 +54,17 @@ const Agents = () => {
         dataIndex: 'name',
         render: (_, r) => (
           <div
-            className="flex items-center gap-2.5 cursor-pointer"
+            className="flex cursor-pointer items-center gap-2.5"
             onClick={() => navigate(`/agents/${r.id}`)}
           >
             <div
-              className="size-9 rounded-md flex items-center justify-center text-lg shrink-0"
+              className="flex size-9 shrink-0 items-center justify-center rounded-md text-lg"
               style={{ background: `${r.color}0d`, border: `1px solid ${r.color}22` }}
             >
               {r.icon}
             </div>
             <div>
-              <div className="font-medium hover:text-brand transition-colors">{r.name}</div>
+              <div className="font-medium transition-colors hover:text-brand">{r.name}</div>
             </div>
           </div>
         ),

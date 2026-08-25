@@ -1,6 +1,8 @@
 pub use hive_error::{HiveError, Result};
 use serde::{Deserialize, Serialize};
 
+pub mod tunnel;
+
 pub mod auth {
     use super::{Deserialize, Serialize};
 

@@ -60,7 +60,7 @@ const Settings = () => {
         <>
           <span className="text-faint">设置</span>
           <span className="text-faint">/</span>
-          <span className="text-ink font-medium">
+          <span className="font-medium text-ink">
             {SETTINGS_NAV.find((n) => n.key === activeKey)?.label}
           </span>
         </>
@@ -69,7 +69,7 @@ const Settings = () => {
     >
       <div className="flex gap-6">
         {/* Left sidebar */}
-        <div className="w-[250px] shrink-0 px-2 py-3 border-r border-line">
+        <div className="w-[250px] shrink-0 border-r border-line px-2 py-3">
           <Menu
             mode="inline"
             selectedKeys={[activeKey]}
@@ -84,7 +84,7 @@ const Settings = () => {
         </div>
 
         {/* Right form content */}
-        <Form form={form} layout="vertical" className="flex-1 max-w-[720px] !mx-auto !p-6">
+        <Form form={form} layout="vertical" className="!mx-auto max-w-[720px] flex-1 !p-6">
           {activeKey === 'basic' && (
             <>
               <Form.Item label="空间头像和名称" required>
@@ -98,9 +98,9 @@ const Settings = () => {
                       return false;
                     }}
                   >
-                    <div className="w-8 h-8 rounded border border-dashed border-line flex items-center justify-center cursor-pointer overflow-hidden hover:border-brand transition-colors">
+                    <div className="flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded border border-dashed border-line transition-colors hover:border-brand">
                       {avatarUrl ? (
-                        <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                        <img src={avatarUrl} alt="avatar" className="h-full w-full object-cover" />
                       ) : (
                         <PlusOutlined className="text-standard text-faint" />
                       )}
@@ -152,12 +152,12 @@ const Settings = () => {
 
               {/* 空间可见性 */}
               <div className="mt-6">
-                <div className="text-standard font-semibold mb-1">空间可见性</div>
-                <p className="text-xs text-faint mb-3">控制非成员能否通过空间链接读取公开内容。</p>
-                <div className="flex items-center justify-between p-4 border border-line rounded-lg bg-white">
+                <div className="mb-1 text-standard font-semibold">空间可见性</div>
+                <p className="mb-3 text-xs text-faint">控制非成员能否通过空间链接读取公开内容。</p>
+                <div className="flex items-center justify-between rounded-lg border border-line bg-white p-4">
                   <div className="flex-1">
                     <div className="text-standard font-medium text-ink">公开空间</div>
-                    <p className="text-xs text-faint mt-1 leading-relaxed">
+                    <p className="mt-1 text-xs leading-relaxed text-faint">
                       开启后，公司内已登录用户可只读访问；只有空间成员可以创建、评论或修改内容。
                     </p>
                   </div>
@@ -167,12 +167,12 @@ const Settings = () => {
 
               {/* 空间操作 */}
               <div className="mt-6">
-                <div className="text-standard font-semibold mb-3">空间操作</div>
-                <div className="border border-[#ffccc7] rounded-lg overflow-hidden">
-                  <div className="flex items-center justify-between p-4 border-b border-[#ffccc7]">
+                <div className="mb-3 text-standard font-semibold">空间操作</div>
+                <div className="overflow-hidden rounded-lg border border-[#ffccc7]">
+                  <div className="flex items-center justify-between border-b border-[#ffccc7] p-4">
                     <div className="flex-1">
                       <div className="text-standard font-medium text-ink">转交空间</div>
-                      <p className="text-xs text-faint mt-1">将空间所有权转交给其他人员。</p>
+                      <p className="mt-1 text-xs text-faint">将空间所有权转交给其他人员。</p>
                     </div>
                     <Button type="text" danger>
                       转交空间
@@ -181,7 +181,7 @@ const Settings = () => {
                   <div className="flex items-center justify-between p-4">
                     <div className="flex-1">
                       <div className="text-standard font-medium text-ink">删除空间</div>
-                      <p className="text-xs text-faint mt-1">
+                      <p className="mt-1 text-xs text-faint">
                         删除后空间内的所有 Agent 事项、会话、配置将永久丢失，且无法恢复。
                       </p>
                     </div>
@@ -196,13 +196,13 @@ const Settings = () => {
 
           {activeKey === 'agent' && (
             <>
-              <div className="flex items-center justify-between mb-1">
+              <div className="mb-1 flex items-center justify-between">
                 <span className="text-standard font-medium text-ink">空间指令</span>
                 <Button size="small" onClick={handleInsertTemplate}>
                   插入模版
                 </Button>
               </div>
-              <p className="text-xs text-faint mb-4">
+              <p className="mb-4 text-xs text-faint">
                 为所有在空间内工作的 Agent 提供自定义指令和上下文
               </p>
               <Form.Item name="instructions">
@@ -217,19 +217,19 @@ const Settings = () => {
 
               {/* 安装的 Skills */}
               <div className="mt-8">
-                <div className="text-standard font-semibold text-ink mb-0.5">Skills</div>
-                <p className="text-xs text-faint mb-3">
+                <div className="mb-0.5 text-standard font-semibold text-ink">Skills</div>
+                <p className="mb-3 text-xs text-faint">
                   为所有空间内工作的 Agent 统一预装 Skills。
                 </p>
 
-                <div className="border border-line rounded-lg overflow-hidden">
+                <div className="overflow-hidden rounded-lg border border-line">
                   {/* Tab row + add button */}
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-line">
+                  <div className="flex items-center justify-between border-b border-line px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className="px-3 py-1 rounded-full bg-ink text-white text-xs font-medium">
+                      <div className="rounded-full bg-ink px-3 py-1 text-xs font-medium text-white">
                         研发任务 {skills.length}
                       </div>
-                      <div className="px-3 py-1 rounded-full bg-[#f0f0f0] text-faint text-xs flex items-center gap-1">
+                      <div className="flex items-center gap-1 rounded-full bg-[#f0f0f0] px-3 py-1 text-xs text-faint">
                         <LockOutlined className="text-[10px]" />
                         数字实习生
                         <span className="text-[10px]">暂未开放</span>
@@ -241,7 +241,7 @@ const Settings = () => {
                   </div>
 
                   {/* Description */}
-                  <p className="text-xs text-faint px-4 pt-3 pb-2">
+                  <p className="px-4 pt-3 pb-2 text-xs text-faint">
                     研发任务启动时会默认加载这里启用的 Skills。
                   </p>
 
@@ -259,13 +259,13 @@ const Settings = () => {
                   {/* Skills list */}
                   <div className="divide-y divide-line">
                     {filteredSkills.map((skill) => (
-                      <div key={skill.name} className="flex items-center gap-3 px-4 py-3 bg-white">
-                        <div className="size-8 rounded-md bg-surface flex items-center justify-center shrink-0">
+                      <div key={skill.name} className="flex items-center gap-3 bg-white px-4 py-3">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-surface">
                           <ToolOutlined className="text-standard text-muted" />
                         </div>
-                        <div className="flex-1 min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-standard font-medium text-ink font-mono">
+                            <span className="font-mono text-standard font-medium text-ink">
                               {skill.name}
                             </span>
                             <Tag color={SKILL_TYPE_MAP[skill.type].color}>
@@ -274,7 +274,7 @@ const Settings = () => {
                                 : SKILL_TYPE_MAP[skill.type].label}
                             </Tag>
                           </div>
-                          <div className="text-xs text-faint mt-0.5 leading-relaxed">
+                          <div className="mt-0.5 text-xs leading-relaxed text-faint">
                             {skill.desc}
                           </div>
                         </div>
