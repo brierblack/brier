@@ -86,8 +86,8 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
     >
       <div className="flex h-full">
         {/* Left panel - computer list */}
-        <div className="w-60 shrink-0 border-r border-line overflow-y-auto">
-          <div className="px-4 pt-4 pb-2">
+        <div className="w-80 shrink-0 border-r border-line overflow-y-auto">
+          <div className="p-2">
             <span className="text-standard font-medium text-muted">我添加的</span>
           </div>
           <div className="px-2 pb-4 flex flex-col gap-0.5">
