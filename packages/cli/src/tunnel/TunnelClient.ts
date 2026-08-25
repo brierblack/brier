@@ -62,12 +62,9 @@ export const createTunnelClient = (config: DaemonConfig): TunnelClient => {
   };
 
   const taskExecutor = createTaskExecutor({
-    onOutput: (taskId, stream, data) =>
-      safeSend({ type: 'task-output', taskId, stream, data }),
-    onComplete: (taskId, exitCode) =>
-      safeSend({ type: 'task-complete', taskId, exitCode }),
-    onError: (taskId, error) =>
-      safeSend({ type: 'task-error', taskId, error }),
+    onOutput: (taskId, stream, data) => safeSend({ type: 'task-output', taskId, stream, data }),
+    onComplete: (taskId, exitCode) => safeSend({ type: 'task-complete', taskId, exitCode }),
+    onError: (taskId, error) => safeSend({ type: 'task-error', taskId, error }),
   });
 
   const startHeartbeat = () => {

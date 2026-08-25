@@ -8,10 +8,7 @@ export const HIVE_DIR = join(homedir(), '.hive');
 export const PID_FILE = join(HIVE_DIR, 'daemon.pid');
 export const LOG_FILE = join(HIVE_DIR, 'daemon.log');
 
-export const loadConfig = (options: {
-  serverUrl?: string;
-  token?: string;
-}): DaemonConfig => {
+export const loadConfig = (options: { serverUrl?: string; token?: string }): DaemonConfig => {
   const serverUrl = options.serverUrl ?? process.env.HIVE_SERVER_URL;
   const token = options.token ?? process.env.HIVE_TOKEN;
 
@@ -32,10 +29,12 @@ export const loadConfig = (options: {
 };
 
 export const toWsUrl = (serverUrl: string): string => {
-  return serverUrl
-    .replace(/^https:\/\//, 'wss://')
-    .replace(/^http:\/\//, 'ws://')
-    .replace(/\/$/, '') + '/tunnel';
+  return (
+    serverUrl
+      .replace(/^https:\/\//, 'wss://')
+      .replace(/^http:\/\//, 'ws://')
+      .replace(/\/$/, '') + '/tunnel'
+  );
 };
 
 const detectRuntimes = (): string[] => {

@@ -41,10 +41,7 @@ export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecut
     const cmd = resolveCommand(task);
     const childEnv = task.env ? { ...process.env, ...task.env } : process.env;
 
-    logger.info(
-      `Task ${task.taskId} starting: ${cmd} ${task.args.join(' ')}`,
-      task.runtime,
-    );
+    logger.info(`Task ${task.taskId} starting: ${cmd} ${task.args.join(' ')}`, task.runtime);
 
     let child: ChildProcess;
     try {

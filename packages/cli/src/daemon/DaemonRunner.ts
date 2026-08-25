@@ -42,7 +42,9 @@ const run = (config: DaemonConfig) => {
 
 const main = () => {
   if (process.env.HIVE_DAEMON_MODE !== '1') {
-    console.error('This script is intended to be run as a daemon. Use "hive daemon start" instead.');
+    console.error(
+      'This script is intended to be run as a daemon. Use "hive daemon start" instead.',
+    );
     process.exit(1);
   }
 
