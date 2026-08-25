@@ -4,7 +4,7 @@ import { PlusOutlined, SwapOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { MenuProps } from 'antd';
 import type { Workspace } from '@/types';
-import { fetchWorkspaces } from '../../services/workspace';
+import { fetchWorkspaces } from '@/services/workspace';
 import { Avatar } from './Avatar';
 
 export const WorkSpace = memo(() => {
@@ -106,12 +106,7 @@ export const WorkSpace = memo(() => {
 
   if (!current) {
     return (
-      <Button
-        block
-        type="text"
-        onClick={handleCreate}
-        classNames={{ root: ' !border-line !px-2' }}
-      >
+      <Button block type="text" onClick={handleCreate} classNames={{ root: ' !border-line !px-2' }}>
         <PlusOutlined className="text-sm" />
         <span className="flex-1 text-left text-faint">新建工作空间</span>
       </Button>

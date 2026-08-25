@@ -1,18 +1,43 @@
-import { App as AntApp, ConfigProvider } from 'antd';
-import zhCN from 'antd/locale/zh_CN';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { App as AntApp, ConfigProvider, Spin } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
 import { theme } from './config/theme';
-import { Layout } from './layouts';
-import { Chat } from './pages/Chat';
-import { Agents } from './pages/Agents';
-import { AgentDetail } from './pages/Agents/Detail';
-import { NewAgent } from './pages/Agents/New';
-import { Team } from './pages/Team';
-import { TeamDetail } from './pages/Team/Detail';
-import { Skills } from './pages/Skills';
-import { Settings } from './pages/Settings';
-import { CreateSpace } from './pages/CreateSpace';
-import { AuthProvider } from './auth-context';
+import { AuthProvider, useAuth } from './auth-context';
+import { Layout as SpaceLayout } from './pages/Space';
+
+const Login = lazy(() => import('./pages/Login'));
+const New = lazy(() => import('./pages/Space/New'));
+const Chat = lazy(() => import('./pages/Space/Chat'));
+const Agents = lazy(() => import('./pages/Space/Agents'));
+const AgentDetail = lazy(() => import('./pages/Space/Agents/Detail'));
+const NewAgent = lazy(() => import('./pages/Space/Agents/New'));
+const Team = lazy(() => import('./pages/Space/Team'));
+const TeamDetail = lazy(() => import('./pages/Space/Team/Detail'));
+const Skills = lazy(() => import('./pages/Space/Skills'));
+const Settings = lazy(() => import('./pages/Space/Settings'));
+
+function PageLoading() {
+  return (
+    <div className="h-screen flex items-center justify-center">
+      <Spin size="large" />
+    </div>
+  );
+}
+
+function AuthGuard({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <PageLoading />;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
 
 export default function App() {
   return (
@@ -20,20 +45,23 @@ export default function App() {
       <AntApp>
         <AuthProvider>
           <BrowserRouter>
-            <Routes>
-              <Route path="/spaces/new" element={<CreateSpace />} />
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Navigate to="/chat" replace />} />
-                <Route path="chat" element={<Chat />} />
-                <Route path="agents" element={<Agents />} />
-                <Route path="agents/:id" element={<AgentDetail />} />
-                <Route path="agents/new" element={<NewAgent />} />
-                <Route path="team" element={<Team />} />
-                <Route path="team/:id" element={<TeamDetail />} />
-                <Route path="skills" element={<Skills />} />
-                <Route path="settings" element={<Settings />} />
-              </Route>
-            </Routes>
+            <Suspense fallback={<PageLoading />}>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/space" element={<SpaceLayout />}>
+                  <Route index element={<Navigate to="/space/chat" replace />} />
+                  <Route path="/space/new" element={<New />} />
+                  <Route path="/space/chat" element={<Chat />} />
+                  <Route path="/space/agents" element={<Agents />} />
+                  <Route path="/space/agents/:id" element={<AgentDetail />} />
+                  <Route path="/space/agents/new" element={<NewAgent />} />
+                  <Route path="/space/team" element={<Team />} />
+                  <Route path="/space/team/:id" element={<TeamDetail />} />
+                  <Route path="/space/skills" element={<Skills />} />
+                  <Route path="/space/settings" element={<Settings />} />
+                </Route>
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </AuthProvider>
       </AntApp>

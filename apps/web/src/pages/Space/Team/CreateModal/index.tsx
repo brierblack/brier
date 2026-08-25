@@ -8,7 +8,7 @@ import {
   TeamOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
-import { agents } from '../../../data/mockData';
+import { agents } from '../../../../data/mockData';
 import { Modal } from '@/components/Modal';
 
 interface CreateTeamModalProps {

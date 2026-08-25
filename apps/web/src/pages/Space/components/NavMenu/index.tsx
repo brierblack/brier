@@ -9,10 +9,10 @@ import {
   CaretRightOutlined,
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { NAV_ITEMS } from '../../define';
-import { Logo, Wordmark } from '../../components/Logo';
-import { WorkSpace } from '../../components/WorkSpace';
-import { useAuth } from '../../auth-context';
+import { NAV_ITEMS } from '@/define';
+import { Logo, Wordmark } from '@/components/Logo';
+import { WorkSpace } from '../WorkSpace';
+import { useAuth } from '@/auth-context';
 
 const recentConversations = [
   { id: 1, title: '优化数据库查询性能' },
@@ -49,7 +49,7 @@ const menuItems: MenuProps['items'] = [
   { type: 'divider' },
 ];
 
-export function Sidebar() {
+export function NavMenu() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, login, logout } = useAuth();
@@ -109,13 +109,13 @@ export function Sidebar() {
           selectedKeys={[selectedKey]}
           items={menuItems}
           onClick={(e) => {
-        if (e.key === 'automation') return;
-        if (e.key === 'new-chat') {
-          navigate('/chat');
-          return;
-        }
-        navigate(`/${e.key}`);
-      }}
+            if (e.key === 'automation') return;
+            if (e.key === 'new-chat') {
+              navigate('/space/chat');
+              return;
+            }
+            navigate(`/space/${e.key}`);
+          }}
           classNames={menuClassNames}
         />
       </div>

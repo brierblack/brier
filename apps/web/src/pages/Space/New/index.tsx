@@ -19,8 +19,8 @@ import {
   BugOutlined,
   CheckOutlined,
 } from '@ant-design/icons';
-import { createWorkspace } from '../../services/workspace';
-import { fetchGithubRepos, type RepoInfo } from '../../services/github';
+import { createWorkspace } from '../../../services/workspace';
+import { fetchGithubRepos, type RepoInfo } from '../../../services/github';
 
 const STEPS = [{ title: '基础信息' }, { title: '指令' }, { title: '自动化' }];
 
@@ -45,7 +45,7 @@ const normFile = (e: { fileList?: unknown[] } | unknown[]) => {
   return (e as { fileList?: unknown[] })?.fileList;
 };
 
-export const CreateSpace = () => {
+const New = () => {
   const navigate = useNavigate();
   const { message } = App.useApp();
   const [form] = Form.useForm();
@@ -328,3 +328,4 @@ export const CreateSpace = () => {
     </div>
   );
 };
+export default New;

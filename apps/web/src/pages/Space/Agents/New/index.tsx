@@ -15,8 +15,8 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import { Page } from '@/components/Page';
-import { workComputers } from '../../../data/mockData';
-import { MODELS } from '../../../define';
+import { workComputers } from '../../../../data/mockData';
+import { MODELS } from '../../../../define';
 
 interface MockExtension {
   id: string;
@@ -81,7 +81,7 @@ function SectionCard({ title, children }: { title: React.ReactNode; children: Re
   );
 }
 
-export function NewAgent() {
+export default function NewAgent() {
   const { message } = App.useApp();
   const navigate = useNavigate();
   const [form] = Form.useForm();

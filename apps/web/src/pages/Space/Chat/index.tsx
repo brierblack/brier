@@ -1,14 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Avatar, Button, Dropdown, Input } from 'antd';
-import {
-  ArrowUpOutlined,
-  DownOutlined,
-  CheckOutlined,
-} from '@ant-design/icons';
-import { agents } from '../../data/mockData';
-import { useAuth } from '../../auth-context';
-import { Logo } from '../../components/Logo';
-import type { Agent } from '../../types';
+import { ArrowUpOutlined, DownOutlined, CheckOutlined } from '@ant-design/icons';
+import { agents } from '../../../data/mockData';
+import { useAuth } from '../../../auth-context';
+import { Logo } from '../../../components/Logo';
+import type { Agent } from '../../../types';
 
 interface ChatMessage {
   id: number;
@@ -124,13 +120,7 @@ function TypingIndicator({ agent }: { agent: Agent }) {
   );
 }
 
-function AgentSelector({
-  agent,
-  onSelect,
-}: {
-  agent: Agent;
-  onSelect: (a: Agent) => void;
-}) {
+function AgentSelector({ agent, onSelect }: { agent: Agent; onSelect: (a: Agent) => void }) {
   return (
     <Dropdown
       trigger={['click']}
@@ -141,9 +131,7 @@ function AgentSelector({
             <div className="flex items-center gap-2.5">
               <AgentAvatar agent={a} size={20} />
               <span className="text-sm font-medium text-ink">{a.name}</span>
-              {a.id === agent.id && (
-                <CheckOutlined className="text-xs text-brand ml-auto" />
-              )}
+              {a.id === agent.id && <CheckOutlined className="text-xs text-brand ml-auto" />}
             </div>
           ),
         })),
@@ -211,7 +199,7 @@ function InputBox({
   );
 }
 
-export function Chat() {
+function Chat() {
   const { user } = useAuth();
   const [selectedAgent, setSelectedAgent] = useState<Agent>(AVAILABLE_AGENTS[0]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -293,7 +281,7 @@ export function Chat() {
               message={msg}
               agent={
                 msg.agentId
-                  ? agents.find((a) => a.id === msg.agentId) ?? selectedAgent
+                  ? (agents.find((a) => a.id === msg.agentId) ?? selectedAgent)
                   : selectedAgent
               }
               user={user}
@@ -314,11 +302,11 @@ export function Chat() {
             loading={loading}
             onAgentSelect={setSelectedAgent}
           />
-          <p className="text-[11px] text-faint mt-1.5 text-center">
-            Enter 发送 · Shift+Enter 换行
-          </p>
+          <p className="text-[11px] text-faint mt-1.5 text-center">Enter 发送 · Shift+Enter 换行</p>
         </div>
       </div>
     </div>
   );
 }
+
+export default Chat;

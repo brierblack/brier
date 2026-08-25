@@ -3,9 +3,9 @@ import { Tag } from '@/components/Tag';
 import { PlusOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import { Page } from '@/components/Page';
-import { skills } from '../../data/mockData';
-import { SKILL_TYPE_MAP } from '../../define';
-import type { Skill } from '../../types';
+import { skills } from '../../../data/mockData';
+import { SKILL_TYPE_MAP } from '../../../define';
+import type { Skill } from '../../../types';
 
 const SKILL_ICONS: Record<Skill['type'], string> = {
   builtin: '📦',
@@ -13,7 +13,7 @@ const SKILL_ICONS: Record<Skill['type'], string> = {
   custom: '⚡',
 };
 
-export function Skills() {
+export default function Skills() {
   const { message } = App.useApp();
 
   return (

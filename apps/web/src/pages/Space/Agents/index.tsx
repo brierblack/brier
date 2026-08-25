@@ -16,10 +16,10 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
-import { StatusBadge } from '../../components/StatusBadge';
+import { StatusBadge } from '../../../components/StatusBadge';
 import { WorkComputerDrawer } from './WorkComputer';
-import { agents, workComputers } from '../../data/mockData';
-import type { Agent, AgentStatus, AgentVisibility, PublicScope } from '../../types';
+import { agents, workComputers } from '../../../data/mockData';
+import type { Agent, AgentStatus, AgentVisibility, PublicScope } from '../../../types';
 import { Table } from '@/components/Table';
 
 const actionMenuItems: MenuProps['items'] = [
@@ -32,7 +32,7 @@ const actionMenuItems: MenuProps['items'] = [
   { key: 'delete', label: '删除', icon: <DeleteOutlined />, danger: true },
 ];
 
-export const Agents = () => {
+const Agents = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -163,40 +163,40 @@ export const Agents = () => {
         </div>
       }
     >
-      <div className='p-5'>
+      <div className="p-5">
+        <Space className="mb-4">
+          <Input
+            placeholder="搜索 Agent 名称..."
+            prefix={<SearchOutlined />}
+            style={{ width: 320 }}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <Select
+            value={statusFilter}
+            onChange={setStatusFilter}
+            style={{ width: 120 }}
+            options={[
+              { value: 'all', label: '全部状态' },
+              { value: 'online', label: '在线' },
+              { value: 'connecting', label: '连接中' },
+              { value: 'offline', label: '离线' },
+            ]}
+          />
+        </Space>
 
-      <Space className="mb-4">
-        <Input
-          placeholder="搜索 Agent 名称..."
-          prefix={<SearchOutlined />}
-          style={{ width: 320 }}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+        <Table
+          bordered
+          columns={columns}
+          dataSource={filteredAgents}
+          rowKey="id"
+          pagination={false}
+          onRow={(r) => ({ onClick: () => navigate(`/agents/${r.id}`) })}
         />
-        <Select
-          value={statusFilter}
-          onChange={setStatusFilter}
-          style={{ width: 120 }}
-          options={[
-            { value: 'all', label: '全部状态' },
-            { value: 'online', label: '在线' },
-            { value: 'connecting', label: '连接中' },
-            { value: 'offline', label: '离线' },
-          ]}
-        />
-      </Space>
-
-      <Table
-        bordered
-        columns={columns}
-        dataSource={filteredAgents}
-        rowKey="id"
-        pagination={false}
-        onRow={(r) => ({ onClick: () => navigate(`/agents/${r.id}`) })}
-      />
-            </div>
+      </div>
 
       <WorkComputerDrawer open={computerDrawerOpen} onClose={() => setComputerDrawerOpen(false)} />
     </Page>
   );
 };
+export default Agents;

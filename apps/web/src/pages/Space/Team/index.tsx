@@ -13,10 +13,10 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { Page } from '@/components/Page';
 import { Table } from '@/components/Table';
-import { StatusBadge } from '../../components/StatusBadge';
+import { StatusBadge } from '../../../components/StatusBadge';
 import { CreateTeamModal } from './CreateModal';
-import { teams } from '../../data/mockData';
-import type { Team } from '../../types';
+import { teams } from '../../../data/mockData';
+import type { Team } from '../../../types';
 
 const actionMenuItems: MenuProps['items'] = [
   { key: 'view', label: '查看详情', icon: <EyeOutlined /> },
@@ -26,7 +26,7 @@ const actionMenuItems: MenuProps['items'] = [
   { key: 'delete', label: '删除', icon: <DeleteOutlined />, danger: true },
 ];
 
-export function Team() {
+export default function Team() {
   const navigate = useNavigate();
   const [createOpen, setCreateOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -128,30 +128,30 @@ export function Team() {
         </Button>
       }
     >
-      <div className='p-5'>
-      <Space className="mb-4">
-        <Input
-          placeholder="搜索团队名称、描述或创建者..."
-          prefix={<SearchOutlined />}
-          style={{ width: 320 }}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          allowClear
+      <div className="p-5">
+        <Space className="mb-4">
+          <Input
+            placeholder="搜索团队名称、描述或创建者..."
+            prefix={<SearchOutlined />}
+            style={{ width: 320 }}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            allowClear
+          />
+        </Space>
+
+        <Table
+          bordered
+          columns={columns}
+          dataSource={filteredTeams}
+          rowKey="id"
+          pagination={false}
+          size="middle"
+          onRow={(r) => ({ onClick: () => navigate(`/team/${r.id}`) })}
         />
-      </Space>
 
-      <Table
-        bordered
-        columns={columns}
-        dataSource={filteredTeams}
-        rowKey="id"
-        pagination={false}
-        size="middle"
-        onRow={(r) => ({ onClick: () => navigate(`/team/${r.id}`) })}
-      />
-
-      <CreateTeamModal open={createOpen} onCancel={() => setCreateOpen(false)} />
-        </div>
+        <CreateTeamModal open={createOpen} onCancel={() => setCreateOpen(false)} />
+      </div>
     </Page>
   );
 }

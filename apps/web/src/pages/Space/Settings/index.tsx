@@ -11,8 +11,8 @@ import {
 } from '@ant-design/icons';
 import { Page } from '@/components/Page';
 import { Tag } from '@/components/Tag';
-import { skills } from '../../data/mockData';
-import { SKILL_TYPE_MAP } from '../../define';
+import { skills } from '../../../data/mockData';
+import { SKILL_TYPE_MAP } from '../../../define';
 
 const SETTINGS_NAV = [
   { key: 'basic', label: '基础信息', icon: <UserOutlined /> },
@@ -35,14 +35,14 @@ const INSTRUCTION_TEMPLATE = `# 空间指令
 - 遇到阻塞及时反馈
 - 尊重他人的代码和文档`;
 
-export function Settings() {
+export default function Settings() {
   const [activeKey, setActiveKey] = useState('basic');
   const [form] = Form.useForm();
   const [avatarUrl, setAvatarUrl] = useState('');
   const [publicSpace, setPublicSpace] = useState(false);
   const [skillSearch, setSkillSearch] = useState('');
   const [enabledSkills, setEnabledSkills] = useState<Record<string, boolean>>(
-    Object.fromEntries(skills.map((s) => [s.name, true]))
+    Object.fromEntries(skills.map((s) => [s.name, true])),
   );
 
   const filteredSkills = skills.filter((s) => {
@@ -66,7 +66,7 @@ export function Settings() {
           </span>
         </>
       }
-      extra={<Button type="primary" >保存</Button>}
+      extra={<Button type="primary">保存</Button>}
     >
       <div className="flex gap-6">
         {/* Left sidebar */}
@@ -78,9 +78,9 @@ export function Settings() {
             items={SETTINGS_NAV}
             style={{ borderInlineEnd: 'none' }}
             classNames={{
-  root: ' !border-none !grid !gap-1 !bg-transparent',
-  item: ' !px-2 !m-0 !h-8 !leading-8 !text-sm !w-full',
-}}
+              root: ' !border-none !grid !gap-1 !bg-transparent',
+              item: ' !px-2 !m-0 !h-8 !leading-8 !text-sm !w-full',
+            }}
           />
         </div>
 
@@ -101,11 +101,7 @@ export function Settings() {
                   >
                     <div className="w-8 h-8 rounded border border-dashed border-line flex items-center justify-center cursor-pointer overflow-hidden hover:border-brand transition-colors">
                       {avatarUrl ? (
-                        <img
-                          src={avatarUrl}
-                          alt="avatar"
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
                       ) : (
                         <PlusOutlined className="text-sm text-faint" />
                       )}
@@ -123,11 +119,7 @@ export function Settings() {
               </Form.Item>
 
               <Form.Item label="描述" name="description">
-                <Input.TextArea
-                  placeholder="简单介绍下空间"
-                  rows={3}
-                  style={{ resize: 'none' }}
-                />
+                <Input.TextArea placeholder="简单介绍下空间" rows={3} style={{ resize: 'none' }} />
               </Form.Item>
 
               <Form.Item
@@ -162,9 +154,7 @@ export function Settings() {
               {/* 空间可见性 */}
               <div className="mt-6">
                 <div className="text-sm font-semibold mb-1">空间可见性</div>
-                <p className="text-xs text-faint mb-3">
-                  控制非成员能否通过空间链接读取公开内容。
-                </p>
+                <p className="text-xs text-faint mb-3">控制非成员能否通过空间链接读取公开内容。</p>
                 <div className="flex items-center justify-between p-4 border border-line rounded-lg bg-white">
                   <div className="flex-1">
                     <div className="text-sm font-medium text-ink">公开空间</div>
@@ -183,9 +173,7 @@ export function Settings() {
                   <div className="flex items-center justify-between p-4 border-b border-[#ffccc7]">
                     <div className="flex-1">
                       <div className="text-sm font-medium text-ink">转交空间</div>
-                      <p className="text-xs text-faint mt-1">
-                        将空间所有权转交给其他人员。
-                      </p>
+                      <p className="text-xs text-faint mt-1">将空间所有权转交给其他人员。</p>
                     </div>
                     <Button type="text" danger>
                       转交空间
@@ -204,7 +192,6 @@ export function Settings() {
                   </div>
                 </div>
               </div>
-
             </>
           )}
 
@@ -273,10 +260,7 @@ export function Settings() {
                   {/* Skills list */}
                   <div className="divide-y divide-line">
                     {filteredSkills.map((skill) => (
-                      <div
-                        key={skill.name}
-                        className="flex items-center gap-3 px-4 py-3 bg-white"
-                      >
+                      <div key={skill.name} className="flex items-center gap-3 px-4 py-3 bg-white">
                         <div className="size-8 rounded-md bg-surface flex items-center justify-center shrink-0">
                           <ToolOutlined className="text-sm text-muted" />
                         </div>

@@ -1,14 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Input, Tabs } from 'antd';
-import {
-  PlusOutlined,
-  LockOutlined,
-  CheckOutlined,
-} from '@ant-design/icons';
+import { PlusOutlined, LockOutlined, CheckOutlined } from '@ant-design/icons';
 import { Page } from '@/components/Page';
 import { Tag } from '@/components/Tag';
-import { teams } from '../../../data/mockData';
+import { teams } from '../../../../data/mockData';
 
 interface MemberDetail {
   id: number;
@@ -21,9 +17,31 @@ interface MemberDetail {
 }
 
 const MOCK_MEMBERS: MemberDetail[] = [
-  { id: 1, name: '总参谋部 Agent', icon: '📋', color: '#1677ff', role: '负责人', status: 'online', isMain: true },
-  { id: 2, name: '纪律监察团 Agent', icon: '🔍', color: '#8d54ff', role: 'reviewer', status: 'online' },
-  { id: 3, name: '工程突击营 Agent', icon: '⚙️', color: '#fe6e00', role: 'frontend', status: 'online' },
+  {
+    id: 1,
+    name: '总参谋部 Agent',
+    icon: '📋',
+    color: '#1677ff',
+    role: '负责人',
+    status: 'online',
+    isMain: true,
+  },
+  {
+    id: 2,
+    name: '纪律监察团 Agent',
+    icon: '🔍',
+    color: '#8d54ff',
+    role: 'reviewer',
+    status: 'online',
+  },
+  {
+    id: 3,
+    name: '工程突击营 Agent',
+    icon: '⚙️',
+    color: '#fe6e00',
+    role: 'frontend',
+    status: 'online',
+  },
   { id: 4, name: '中央兵工厂 Agent', icon: '🛡️', color: '#fb2c36', role: '', status: 'online' },
   { id: 5, name: '情报侦察连 Agent', icon: '📡', color: '#00c758', role: '', status: 'online' },
 ];
@@ -51,13 +69,7 @@ function MemberAvatar({ icon, color, size = 36 }: { icon: string; color: string;
   );
 }
 
-function SharingScope({
-  selected,
-  onSelect,
-}: {
-  selected: string;
-  onSelect: (v: string) => void;
-}) {
+function SharingScope({ selected, onSelect }: { selected: string; onSelect: (v: string) => void }) {
   return (
     <div className="mb-6">
       <div className="text-sm font-bold text-ink mb-1">共享范围</div>
@@ -141,11 +153,11 @@ function InstructionsTab() {
     <div className="p-6 max-w-3xl">
       <div className="flex items-center justify-between mb-1">
         <span className="text-sm font-bold text-ink">团队指令</span>
-        <Button type="primary" size="small">保存</Button>
+        <Button type="primary" size="small">
+          保存
+        </Button>
       </div>
-      <p className="text-xs text-faint mb-4">
-        写给主 Agent 的协调规则、分工偏好和交付标准
-      </p>
+      <p className="text-xs text-faint mb-4">写给主 Agent 的协调规则、分工偏好和交付标准</p>
       <Input.TextArea
         value={instructions}
         onChange={(e) => setInstructions(e.target.value)}
@@ -157,7 +169,7 @@ function InstructionsTab() {
   );
 }
 
-export function TeamDetail() {
+export default function TeamDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('members');
@@ -193,7 +205,11 @@ export function TeamDetail() {
           <span className="text-ink font-medium">{team.name}</span>
         </>
       }
-      extra={<Button type="text" danger>归档</Button>}
+      extra={
+        <Button type="text" danger>
+          归档
+        </Button>
+      }
     >
       {/* Team info header */}
       <div className="px-6 py-4 border-b border-line">
