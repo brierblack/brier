@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { NavMenu } from './components/NavMenu';
-import { Resizable, DragLine } from '@/components/Resizable';
+import { Resizable, DragLine } from '@hiveblack/ui';
 
 export const Layout = () => {
   return (
