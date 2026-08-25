@@ -80,7 +80,7 @@ const Agents = () => {
         render: (v: AgentVisibility, r: Agent) => {
           if (v === 'private') {
             return (
-              <span className="flex items-center gap-1 text-xs font-medium text-muted">
+              <span className="flex items-center gap-1 text-xs font-medium">
                 <LockOutlined />
                 仅个人可用
               </span>
@@ -93,7 +93,7 @@ const Agents = () => {
           };
           const scope = r.publicScope ?? 'all';
           return (
-            <span className="flex items-center gap-1 text-xs font-medium text-muted">
+            <span className="flex items-center gap-1 text-xs font-medium">
               <GlobalOutlined />
               公开 · {scopeConfig[scope]}
             </span>
@@ -103,21 +103,17 @@ const Agents = () => {
       {
         title: '工作电脑',
         dataIndex: 'workComputer',
-        render: (w: string) => (
-          <span className="font-mono text-xs font-medium text-muted">{w}</span>
-        ),
+        render: (w: string) => <span className="text-xs font-medium">{w}</span>,
       },
       {
         title: 'Runtime',
         dataIndex: 'runtime',
-        render: (r: string) => (
-          <span className="font-mono text-xs font-medium text-muted">{r}</span>
-        ),
+        render: (r: string) => <span className="text-xs font-medium">{r}</span>,
       },
       {
         title: '最近活跃',
         dataIndex: 'lastActive',
-        render: (t: string) => <span className="text-xs font-medium text-faint">{t}</span>,
+        render: (t: string) => <span className="text-xs font-medium">{t}</span>,
       },
       {
         title: '操作',
@@ -133,12 +129,7 @@ const Agents = () => {
             }}
             trigger={['click']}
           >
-            <Button
-              type="text"
-              icon={<EllipsisOutlined />}
-              className="!p-1"
-              onClick={(e) => e.stopPropagation()}
-            />
+            <Button type="text" icon={<EllipsisOutlined />} onClick={(e) => e.stopPropagation()} />
           </Dropdown>
         ),
       },
@@ -154,7 +145,7 @@ const Agents = () => {
         <div className="flex items-center gap-3">
           <Button icon={<ReloadOutlined />}>刷新</Button>
           <Button icon={<DesktopOutlined />} onClick={() => setComputerDrawerOpen(true)}>
-            工作电脑 <span className="font-mono tabular-nums">{workComputers.length}</span>
+            工作电脑 <span className="tabular-nums">{workComputers.length}</span>
           </Button>
           <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/agents/new')}>
             新增 Agent

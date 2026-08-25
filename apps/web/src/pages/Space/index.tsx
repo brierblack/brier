@@ -5,7 +5,7 @@ import { Resizable, DragLine } from '@/components/Resizable';
 export const Layout = () => {
   return (
     <Resizable>
-      <div className="h-screen overflow-hidden flex bg-[#f4f4f4] p-2 text-standard">
+      <div className="h-screen overflow-hidden flex bg-work-secondary p-2 text-standard">
         <DragLine defaultWidth={250} minWidth={200} maxWidth={480}>
           <aside className=" h-full overflow-hidden">
             <NavMenu />

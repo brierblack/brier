@@ -76,7 +76,7 @@
   --color-brand-dark: #f05100;
   --color-ink: #0f172b;
   --color-muted: #62748e;
-  --color-faint: #90a1b9;
+  --color-faint: #868686;
   --color-ghost: #cad5e2;
   --color-canvas: #f1f5f9;
   --color-surface: #f8fafc;
@@ -88,6 +88,7 @@
 
   --color-line: #e2e2e2;
   --color-work: #fbfbfb;
+  --color-work-secondary: #f4f4f4;
 }
 
 @source "../dist";
