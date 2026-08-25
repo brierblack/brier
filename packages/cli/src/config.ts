@@ -3,6 +3,7 @@ import { execSync } from 'node:child_process';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { DaemonConfig } from './types.js';
+import { RUNTIME_REGISTRY } from './runtimes.js';
 
 export const HIVE_DIR = join(homedir(), '.hive');
 export const PID_FILE = join(HIVE_DIR, 'daemon.pid');
@@ -40,19 +41,9 @@ export const toWsUrl = (serverUrl: string): string => {
 const detectRuntimes = (): string[] => {
   const runtimes: string[] = [];
 
-  const checks: Array<{ name: string; cmd: string }> = [
-    { name: 'Claude Code', cmd: 'claude' },
-    { name: 'Codex CLI', cmd: 'codex' },
-    { name: 'GPT-4o CLI', cmd: 'gpt' },
-    { name: 'Gemini CLI', cmd: 'gemini' },
-    { name: 'Cursor CLI', cmd: 'cursor' },
-    { name: 'Node.js', cmd: 'node' },
-    { name: 'Python', cmd: 'python3' },
-  ];
-
-  for (const { name, cmd } of checks) {
+  for (const { name, command } of RUNTIME_REGISTRY) {
     try {
-      execSync(`command -v ${cmd}`, { stdio: 'pipe' });
+      execSync(`command -v ${command}`, { stdio: 'pipe' });
       runtimes.push(name);
     } catch {
       // not installed

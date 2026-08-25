@@ -1,7 +1,8 @@
-import type { DaemonConfig, TunnelState } from '../types.js';
+import type { ClientMessage, DaemonConfig, TunnelState } from '../types.js';
 import { loadConfig, LOG_FILE } from '../config.js';
 import { configureLogger, logger } from '../logger.js';
 import { createTunnelClient, type TunnelClient } from '../tunnel/TunnelClient.js';
+import { createTaskExecutor } from './TaskExecutor.js';
 
 let tunnel: TunnelClient | null = null;
 
@@ -26,7 +27,21 @@ const handleUncaughtError = (err: Error) => {
 };
 
 const run = (config: DaemonConfig) => {
-  tunnel = createTunnelClient(config);
+  const safeSend = (message: ClientMessage) => {
+    try {
+      tunnel?.send(message);
+    } catch {
+      // Connection not ready, output is dropped
+    }
+  };
+
+  const taskExecutor = createTaskExecutor({
+    onOutput: (taskId, stream, data) => safeSend({ type: 'task-output', taskId, stream, data }),
+    onComplete: (taskId, exitCode) => safeSend({ type: 'task-complete', taskId, exitCode }),
+    onError: (taskId, error) => safeSend({ type: 'task-error', taskId, error }),
+  });
+
+  tunnel = createTunnelClient(config, taskExecutor);
 
   tunnel.onStateChange((state: TunnelState) => {
     logger.info('Tunnel state:', state);

@@ -1,8 +1,8 @@
 import { WebSocket } from 'ws';
 import type { ClientMessage, ServerMessage, DaemonConfig, TunnelState } from '../types.js';
+import type { TaskExecutor } from '../daemon/TaskExecutor.js';
 import { toWsUrl } from '../config.js';
 import { logger } from '../logger.js';
-import { createTaskExecutor } from '../daemon/TaskExecutor.js';
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
 const HEARTBEAT_TIMEOUT_MS = 10_000;
@@ -18,7 +18,7 @@ export interface TunnelClient {
   onStateChange: (callback: (state: TunnelState) => void) => () => void;
 }
 
-export const createTunnelClient = (config: DaemonConfig): TunnelClient => {
+export const createTunnelClient = (config: DaemonConfig, taskExecutor: TaskExecutor): TunnelClient => {
   let ws: WebSocket | null = null;
   let state: TunnelState = 'disconnected';
   let running = false;
@@ -52,20 +52,6 @@ export const createTunnelClient = (config: DaemonConfig): TunnelClient => {
     }
     ws.send(JSON.stringify(message));
   };
-
-  const safeSend = (message: ClientMessage) => {
-    try {
-      send(message);
-    } catch {
-      // Connection lost, output is dropped
-    }
-  };
-
-  const taskExecutor = createTaskExecutor({
-    onOutput: (taskId, stream, data) => safeSend({ type: 'task-output', taskId, stream, data }),
-    onComplete: (taskId, exitCode) => safeSend({ type: 'task-complete', taskId, exitCode }),
-    onError: (taskId, error) => safeSend({ type: 'task-error', taskId, error }),
-  });
 
   const startHeartbeat = () => {
     stopHeartbeat();
@@ -164,6 +150,12 @@ export const createTunnelClient = (config: DaemonConfig): TunnelClient => {
   };
 
   const connect = () => {
+    if (ws) {
+      ws.removeAllListeners();
+      ws.terminate();
+      ws = null;
+    }
+
     const wsUrl = toWsUrl(config.serverUrl);
 
     logger.info('Connecting to', wsUrl);

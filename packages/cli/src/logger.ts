@@ -1,7 +1,9 @@
-import { mkdirSync, appendFileSync } from 'node:fs';
+import { mkdirSync, appendFileSync, statSync, renameSync, existsSync } from 'node:fs';
 import { dirname } from 'node:path';
 
 type LogLevel = 'info' | 'warn' | 'error';
+
+const MAX_LOG_SIZE = 5 * 1024 * 1024;
 
 let logFile: string | undefined;
 
@@ -19,11 +21,27 @@ const formatMessage = (level: LogLevel, message: string, ...args: unknown[]): st
   return `${timestamp} [${levelTag}] ${message}${rest}`;
 };
 
+const rotateIfNeeded = () => {
+  if (!logFile) return;
+  try {
+    if (!existsSync(logFile)) return;
+    if (statSync(logFile).size < MAX_LOG_SIZE) return;
+    const backup = logFile + '.1';
+    if (existsSync(backup)) {
+      try { renameSync(backup, backup + '.old'); } catch { /* ignore */ }
+    }
+    renameSync(logFile, backup);
+  } catch {
+    // rotation failed, continue writing to current file
+  }
+};
+
 const write = (level: LogLevel, message: string, ...args: unknown[]) => {
   const formatted = formatMessage(level, message, ...args);
   if (logFile) {
     try {
       mkdirSync(dirname(logFile), { recursive: true });
+      rotateIfNeeded();
       appendFileSync(logFile, formatted + '\n');
     } catch {
       console.error(formatted);

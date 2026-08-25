@@ -1,14 +1,9 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import type { TaskInfo } from '../types.js';
 import { logger } from '../logger.js';
+import { RUNTIME_COMMANDS } from '../runtimes.js';
 
-const RUNTIME_COMMANDS: Record<string, string> = {
-  'Claude Code': 'claude',
-  'Codex CLI': 'codex',
-  'GPT-4o CLI': 'gpt',
-  'Gemini CLI': 'gemini',
-  'Cursor CLI': 'cursor',
-};
+const MAX_CONCURRENT = 3;
 
 export interface TaskExecutorCallbacks {
   onOutput: (taskId: string, stream: 'stdout' | 'stderr', data: string) => void;
@@ -36,6 +31,11 @@ export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecut
     if (processes.has(task.taskId)) {
       logger.warn(`Task ${task.taskId} is already running, cancelling previous instance`);
       cancel(task.taskId);
+    }
+
+    if (processes.size >= MAX_CONCURRENT) {
+      callbacks.onError(task.taskId, `Max concurrent tasks (${MAX_CONCURRENT}) reached`);
+      return;
     }
 
     const cmd = resolveCommand(task);
