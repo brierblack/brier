@@ -149,7 +149,7 @@ const New = () => {
           <Form form={form} layout="vertical" requiredMark>
             {/* Step 0: Basic info - kept mounted via CSS to preserve field values */}
             <div style={{ display: currentStep === 0 ? 'block' : 'none' }}>
-              <p className="text-sm text-muted mb-6">完善空间基础信息</p>
+              <p className="text-standard text-muted mb-6">完善空间基础信息</p>
 
               {/* Avatar + Name (required, same row) */}
               <Form.Item label="空间头像和名称" required>
@@ -170,7 +170,7 @@ const New = () => {
                             className="absolute inset-0 w-full h-full object-cover"
                           />
                         ) : (
-                          <PlusOutlined className="text-sm text-faint" />
+                          <PlusOutlined className="text-standard text-faint" />
                         )}
                       </div>
                     </Upload>
@@ -229,7 +229,7 @@ const New = () => {
             {/* Step 1: Instructions */}
             <div style={{ display: currentStep === 1 ? 'block' : 'none' }}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-ink">指令（可选）</span>
+                <span className="text-standard font-medium text-ink">指令（可选）</span>
                 <Button size="small" onClick={handleInsertTemplate}>
                   插入模版
                 </Button>
@@ -245,7 +245,7 @@ const New = () => {
             {/* Step 2: Automation */}
             <div style={{ display: currentStep === 2 ? 'block' : 'none' }}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-ink">开启自动化（可选）</span>
+                <span className="text-standard font-medium text-ink">开启自动化（可选）</span>
               </div>
               <p className="text-xs text-faint mb-4">
                 选择需要的自动化规则，外部事件发生时会自动创建 Agent 事项并交给 Agent。
@@ -261,7 +261,7 @@ const New = () => {
                     <PullRequestOutlined className="text-brand" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm text-ink">PR 变更时自动 Review</div>
+                    <div className="font-medium text-standard text-ink">PR 变更时自动 Review</div>
                     <p className="text-xs text-faint mt-1 leading-relaxed">
                       当代码仓库有 PR 创建或更新时，直接调用 PR 作者的默认 Agent
                       审查代码并给出评审意见。
@@ -289,7 +289,7 @@ const New = () => {
                     <BugOutlined className="text-iris" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm text-ink">Issue 创建时自动分派</div>
+                    <div className="font-medium text-standard text-ink">Issue 创建时自动分派</div>
                     <p className="text-xs text-faint mt-1 leading-relaxed">
                       当代码仓库有新 Issue 创建时，自动分析内容并分配给对应负责人的 Agent 处理。
                     </p>

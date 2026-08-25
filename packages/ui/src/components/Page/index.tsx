@@ -1,6 +1,6 @@
 import { memo, type ReactNode } from 'react';
 
-interface PageProps {
+export interface PageProps {
   children: ReactNode;
   title?: ReactNode | string;
   subtitle?: ReactNode | string;
@@ -11,13 +11,13 @@ interface PageProps {
 export const Page = memo(({ children, title, subtitle, extra, breadcrumb }: PageProps) => {
   return (
     <div className="h-full flex flex-col bg-[#fbfbfb]">
-      <div className="h-14 px-5 flex items-center justify-between border-b border-line shrink-0">
+      <div className="h-12 px-4 flex items-center justify-between border-b border-line shrink-0">
         {breadcrumb ? (
-          <div className="flex items-center gap-1.5 text-sm">{breadcrumb}</div>
+          <div className="flex items-center gap-1.5 text-standard">{breadcrumb}</div>
         ) : (
           <div className="flex items-baseline gap-2">
             {title && (
-              <h1 className="m-0 font-bold tracking-tight text-sm text-ink leading-tight">
+              <h1 className="m-0 font-bold tracking-tight text-standard text-ink leading-tight">
                 {title}
               </h1>
             )}

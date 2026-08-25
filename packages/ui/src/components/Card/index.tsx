@@ -10,12 +10,12 @@ const DEFAULT_CLASS_NAMES = {
 export interface CardProps extends AntdCardProps {}
 
 export const Card = memo((props: CardProps) => {
-  const { classNames, ...rest } = props;
-  const cn = useMemo(() => {
+  const { classNames = {}, ...rest } = props;
+  const cns = useMemo(() => {
     return {
       ...DEFAULT_CLASS_NAMES,
       ...classNames,
     };
   }, [classNames]);
-  return <AntdCard classNames={cn} {...rest} />;
+  return <AntdCard classNames={cns} {...rest} />;
 });

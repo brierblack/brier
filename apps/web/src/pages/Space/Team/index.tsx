@@ -83,7 +83,7 @@ const Team = () => {
       {
         title: '创建者',
         dataIndex: 'creator',
-        render: (c: string) => <span className="text-sm font-medium">{c}</span>,
+        render: (c: string) => <span className="text-standard font-medium">{c}</span>,
       },
       {
         title: '最近活跃',

@@ -56,7 +56,7 @@ const menuItems: MenuProps['items'] = [
 
 const menuClassNames = {
   root: '!border-none !bg-transparent',
-  item: '!px-2 !m-0 !h-8 !leading-8 !text-sm !w-full !rounded-md',
+  item: '!px-2 !m-0 !h-8 !leading-8 !text-standard !w-full !rounded-md',
 };
 
 const INSTRUCTION_TEMPLATE = `# 角色定义
@@ -90,7 +90,7 @@ interface ChatMessage {
 const PropertyRow = ({ label, children }: { label: string; children: React.ReactNode }) => {
   return (
     <div className="flex items-center justify-between py-2 ">
-      <span className="text-sm text-muted">{label}</span>
+      <span className="text-standard text-muted">{label}</span>
       <div className="flex items-center gap-2">{children}</div>
     </div>
   );
@@ -184,15 +184,17 @@ const OverviewTab = ({
                 {statusConfig.label}
               </span>
             </div>
-            <p className="text-sm text-muted mt-0.5">{agent.desc}</p>
+            <p className="text-standard text-muted mt-0.5">{agent.desc}</p>
           </div>
         </div>
 
         <div className="p-4 border-b border-line">
-          <div className="text-sm font-bold text-ink mb-2">属性</div>
+          <div className="text-standard font-bold text-ink mb-2">属性</div>
           <div>
             <PropertyRow label="工作电脑">
-              <span className="text-sm font-medium text-ink font-mono">{agent.workComputer}</span>
+              <span className="text-standard font-medium text-ink font-mono">
+                {agent.workComputer}
+              </span>
             </PropertyRow>
             <PropertyRow label="运行时">
               <Select
@@ -235,11 +237,11 @@ const OverviewTab = ({
         </div>
 
         <div className="p-4">
-          <div className="text-sm font-bold text-ink mb-2">操作</div>
+          <div className="text-standard font-bold text-ink mb-2">操作</div>
           <div>
             <div className="flex items-center justify-between border-b border-line pb-2 ">
               <div className="flex-1">
-                <div className="text-sm font-medium text-ink">默认 Agent</div>
+                <div className="text-standard font-medium text-ink">默认 Agent</div>
                 <p className="text-xs text-faint mt-1">
                   设为你的"主力" Agent — 接受指派时的默认人选
                 </p>
@@ -248,7 +250,7 @@ const OverviewTab = ({
             </div>
             <div className="flex items-center justify-between pt-2">
               <div className="flex-1">
-                <div className="text-sm font-medium text-ink">归档 Agent</div>
+                <div className="text-standard font-medium text-ink">归档 Agent</div>
                 <p className="text-xs text-faint mt-1">
                   归档后 Agent 会从日常列表和指派选项中隐藏，历史任务与会话记录会保留
                 </p>
@@ -261,13 +263,13 @@ const OverviewTab = ({
 
       <div className="flex-1 shrink-0 overflow-auto">
         <div className="mb-6">
-          <div className="text-sm font-bold text-ink mb-3">进行中的会话</div>
+          <div className="text-standard font-bold text-ink mb-3">进行中的会话</div>
           <div className="border border-line rounded-lg p-4">
             <p className="text-xs text-faint">当前没有进行中的会话</p>
           </div>
         </div>
         <div className="mb-6">
-          <div className="text-sm font-bold text-ink mb-3">近 30 天</div>
+          <div className="text-standard font-bold text-ink mb-3">近 30 天</div>
           <div className="border border-line rounded-lg p-4">
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-ink font-mono tabular-nums">
@@ -281,7 +283,7 @@ const OverviewTab = ({
           </div>
         </div>
         <div>
-          <div className="text-sm font-bold text-ink mb-3">最近 Agent 事项</div>
+          <div className="text-standard font-bold text-ink mb-3">最近 Agent 事项</div>
           <div className="border border-line rounded-lg p-4">
             <p className="text-xs text-faint">将 Agent 事项指派给该 Agent 后，会展示在这里</p>
           </div>
@@ -327,7 +329,7 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
         <div className="flex-1 flex flex-col items-center justify-center px-4 gap-4">
           <AgentAvatar agent={agent} size={48} />
           <div className="text-lg font-bold text-ink">{agent.name}</div>
-          <p className="text-sm text-faint">{agent.desc}</p>
+          <p className="text-standard text-faint">{agent.desc}</p>
         </div>
       ) : (
         <div className="flex-1 overflow-auto">
@@ -336,7 +338,7 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
               msg.role === 'user' ? (
                 <div key={msg.id} className="flex items-start gap-3 justify-end">
                   <div className="bg-brand text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[75%]">
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                    <p className="text-standard leading-relaxed whitespace-pre-wrap break-words">
                       {msg.content}
                     </p>
                   </div>
@@ -366,7 +368,7 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
                   <div className="flex flex-col gap-1 max-w-[75%]">
                     <div className="text-[11px] font-medium text-faint">{agent.name}</div>
                     <div className="bg-surface text-ink px-4 py-2.5 rounded-2xl rounded-bl-md border border-line">
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                      <p className="text-standard leading-relaxed whitespace-pre-wrap break-words">
                         {msg.content}
                       </p>
                     </div>
@@ -418,7 +420,7 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
               placeholder={`给 ${agent.name} 发送消息…`}
               autoSize={{ minRows: 1, maxRows: 4 }}
               variant="borderless"
-              className="!px-4 !py-3 !text-sm"
+              className="!px-4 !py-3 !text-standard"
             />
             <div className="flex items-center justify-between px-2 pb-2">
               <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg">
@@ -469,7 +471,7 @@ const ConversationsTab = () => {
   return (
     <div className="flex-1 p-6 overflow-auto">
       <div className="max-w-3xl">
-        <div className="text-sm font-bold text-ink mb-3">历史会话</div>
+        <div className="text-standard font-bold text-ink mb-3">历史会话</div>
         <Table
           bordered
           columns={columns}
@@ -496,7 +498,7 @@ const SkillsTab = ({ agent }: { agent: Agent }) => {
       <div className="max-w-2xl">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <div className="text-sm font-bold text-ink">绑定的 Skills</div>
+            <div className="text-standard font-bold text-ink">绑定的 Skills</div>
             <p className="text-xs text-faint mt-0.5">该 Agent 可使用的技能</p>
           </div>
           <Button type="primary" icon={<PlusOutlined />}>
@@ -507,11 +509,11 @@ const SkillsTab = ({ agent }: { agent: Agent }) => {
           {boundSkills.map((skill) => (
             <div key={skill.name} className="flex items-center gap-3 px-4 py-3 bg-white">
               <div className="size-8 rounded-md bg-surface flex items-center justify-center shrink-0">
-                <ToolOutlined className="text-sm text-muted" />
+                <ToolOutlined className="text-standard text-muted" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-ink font-mono">{skill.name}</span>
+                  <span className="text-standard font-medium text-ink font-mono">{skill.name}</span>
                   <Tag color={SKILL_TYPE_MAP[skill.type].color}>
                     {skill.type === 'builtin' ? 'Plugin 内置' : SKILL_TYPE_MAP[skill.type].label}
                   </Tag>
@@ -529,7 +531,7 @@ const SkillsTab = ({ agent }: { agent: Agent }) => {
           ))}
           {boundSkills.length === 0 && (
             <div className="px-4 py-8 text-center">
-              <p className="text-sm text-faint">暂未绑定任何 Skill</p>
+              <p className="text-standard text-faint">暂未绑定任何 Skill</p>
             </div>
           )}
         </div>
@@ -545,7 +547,7 @@ const InstructionsTab = () => {
     <div className="flex-1 p-6 overflow-auto">
       <div className="max-w-2xl">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-sm font-bold text-ink">指令</span>
+          <span className="text-standard font-bold text-ink">指令</span>
           <Button size="small" onClick={() => setInstructions(INSTRUCTION_TEMPLATE)}>
             插入模版
           </Button>
@@ -571,7 +573,7 @@ const WorkDirTab = () => {
   return (
     <div className="flex-1 p-6 overflow-auto">
       <div className="max-w-2xl">
-        <div className="text-sm font-bold text-ink mb-1">工作目录</div>
+        <div className="text-standard font-bold text-ink mb-1">工作目录</div>
         <p className="text-xs text-faint mb-4">Agent 执行任务时使用的工作目录，填写本机绝对路径</p>
         <Input
           value={path}
@@ -603,7 +605,7 @@ const AgentDetail = () => {
       <Page breadcrumb={<span className="text-faint">Agent 未找到</span>}>
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
-            <p className="text-sm text-muted mb-3">未找到该 Agent</p>
+            <p className="text-standard text-muted mb-3">未找到该 Agent</p>
             <Button onClick={() => navigate('/agents')}>返回列表</Button>
           </div>
         </div>

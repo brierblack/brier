@@ -19,7 +19,7 @@ export const AgentListCard = memo(({ agents }: AgentListCardProps) => (
             {agent.icon}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium">{agent.name}</div>
+            <div className="text-standard font-medium">{agent.name}</div>
             <div className="text-xs text-faint truncate">{agent.desc}</div>
           </div>
           <RightOutlined className="text-xs text-faint" />

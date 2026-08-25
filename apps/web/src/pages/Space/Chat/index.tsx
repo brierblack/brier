@@ -3,7 +3,7 @@ import { Avatar, Button, Dropdown, Input } from 'antd';
 import { ArrowUpOutlined, DownOutlined, CheckOutlined } from '@ant-design/icons';
 import { agents } from '../../../data/mockData';
 import { useAuth } from '../../../auth-context';
-import { Logo } from '@hiveblack/ui';
+import { Logo } from '@/components/Logo';
 import type { Agent } from '../../../types';
 
 interface ChatMessage {
@@ -51,7 +51,7 @@ const MessageBubble = ({
     return (
       <div className="flex items-start gap-3 justify-end">
         <div className="bg-brand text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[75%]">
-          <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+          <p className="text-standard leading-relaxed whitespace-pre-wrap break-words">
             {message.content}
           </p>
         </div>
@@ -84,7 +84,7 @@ const MessageBubble = ({
       <div className="flex flex-col gap-1 max-w-[75%]">
         <div className="text-[11px] font-medium text-faint">{agent.name}</div>
         <div className="bg-surface text-ink px-4 py-2.5 rounded-2xl rounded-bl-md border border-line">
-          <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+          <p className="text-standard leading-relaxed whitespace-pre-wrap break-words">
             {message.content}
           </p>
         </div>
@@ -130,7 +130,7 @@ const AgentSelector = ({ agent, onSelect }: { agent: Agent; onSelect: (a: Agent)
           label: (
             <div className="flex items-center gap-2.5">
               <AgentAvatar agent={a} size={20} />
-              <span className="text-sm font-medium text-ink">{a.name}</span>
+              <span className="text-standard font-medium text-ink">{a.name}</span>
               {a.id === agent.id && <CheckOutlined className="text-xs text-brand ml-auto" />}
             </div>
           ),
@@ -181,7 +181,7 @@ const InputBox = ({
         placeholder="给 Agent 发送消息…"
         autoSize={{ minRows: 1, maxRows: 6 }}
         variant="borderless"
-        className="!px-4 !py-3 !text-sm"
+        className="!px-4 !py-3 !text-standard"
       />
       <div className="flex items-center justify-between px-2 pb-2">
         <AgentSelector agent={agent} onSelect={onAgentSelect} />
@@ -261,7 +261,7 @@ const Chat = () => {
                 className="flex items-center gap-2.5 p-3 rounded-xl border border-line bg-white hover:border-brand hover:bg-[#fff5ed] cursor-pointer transition-all"
               >
                 <span className="text-base shrink-0">{s.icon}</span>
-                <span className="text-sm text-muted">{s.text}</span>
+                <span className="text-standard text-muted">{s.text}</span>
               </div>
             ))}
           </div>

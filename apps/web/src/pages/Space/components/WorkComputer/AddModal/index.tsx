@@ -26,7 +26,7 @@ const MANUAL_ITEMS: CollapseProps['items'] = [
   {
     key: 'manual',
     label: (
-      <span className="flex items-center gap-1.5 text-sm text-muted">
+      <span className="flex items-center gap-1.5 text-standard text-muted">
         &gt;_&nbsp; 或者手动安装（两条命令）
       </span>
     ),
@@ -35,13 +35,15 @@ const MANUAL_ITEMS: CollapseProps['items'] = [
         <div>
           <div className="text-xs text-faint mb-1">1. 安装 hive CLI</div>
           <div className="bg-[#f5f5f5] rounded px-3 py-2">
-            <code className="text-sm font-mono text-ink">npm install -g @hive/cli@latest</code>
+            <code className="text-standard font-mono text-ink">
+              npm install -g @hive/cli@latest
+            </code>
           </div>
         </div>
         <div>
           <div className="text-xs text-faint mb-1">2. 启动后台服务</div>
           <div className="bg-[#f5f5f5] rounded px-3 py-2">
-            <code className="text-sm font-mono text-ink break-all">
+            <code className="text-standard font-mono text-ink break-all">
               HIVE_TOKEN='your-token' hive daemon start --server-url https://hive.local
             </code>
           </div>
@@ -55,7 +57,7 @@ const FAQ_ITEMS: CollapseProps['items'] = [
   {
     key: 'faq',
     label: (
-      <span className="flex items-center gap-1.5 text-sm text-muted">
+      <span className="flex items-center gap-1.5 text-standard text-muted">
         <span className="w-3.5 h-3.5 rounded-full border border-line shrink-0" />
         这个命令安全吗？会影响我的网络安全吗？
       </span>
@@ -95,7 +97,7 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
         <div className="flex items-start gap-1.5 border-b border-[#91caff] px-3 py-2.5">
           <RobotOutlined className="text-xs text-[#1677ff] mt-1" />
           <div className="flex-1">
-            <span className="text-sm font-medium text-[#1f2329]">让本机 AI 帮你装(推荐)</span>
+            <span className="text-standard font-medium text-[#1f2329]">让本机 AI 帮你装(推荐)</span>
             <p className="text-[11px] text-[#86909c] leading-relaxed">
               复制这段 Prompt，发送给本机的 Claude Code / Cursor / Codex 等 Agent，它会自行处理 Node
               / npm / hive CLI 安装并启动后台服务。

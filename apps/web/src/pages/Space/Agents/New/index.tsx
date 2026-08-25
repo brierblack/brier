@@ -81,7 +81,7 @@ const SectionCard = ({
 }) => {
   return (
     <div className="mb-6">
-      <div className="text-sm font-bold text-ink mb-3">{title}</div>
+      <div className="text-standard font-bold text-ink mb-3">{title}</div>
       <div className="rounded-xl border border-line p-5 bg-white">{children}</div>
     </div>
   );
@@ -156,7 +156,7 @@ const NewAgent = () => {
                 value: c.id,
                 label: (
                   <span className="flex items-center gap-2">
-                    <DesktopOutlined className="text-sm text-muted" />
+                    <DesktopOutlined className="text-standard text-muted" />
                     {c.name}
                     <span
                       className={`inline-block w-1.5 h-1.5 rounded-full ${
@@ -261,11 +261,11 @@ const NewAgent = () => {
                       >
                         <span className="text-base text-muted shrink-0">{opt.icon}</span>
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-ink">{opt.label}</div>
+                          <div className="text-standard font-medium text-ink">{opt.label}</div>
                           <div className="text-xs text-faint mt-0.5">{opt.desc}</div>
                         </div>
                         {visibility === opt.value && (
-                          <CheckOutlined className="text-sm text-[#1677ff] shrink-0" />
+                          <CheckOutlined className="text-standard text-[#1677ff] shrink-0" />
                         )}
                       </div>
                     ))}
@@ -327,10 +327,10 @@ const NewAgent = () => {
                 className="flex items-start gap-3 p-3 rounded-lg border border-line hover:border-line transition-colors"
               >
                 <div className="size-8 rounded-md bg-[#f5f5f5] flex items-center justify-center shrink-0">
-                  <AppstoreOutlined className="text-sm text-muted" />
+                  <AppstoreOutlined className="text-standard text-muted" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-ink">{ext.name}</div>
+                  <div className="text-standard font-medium text-ink">{ext.name}</div>
                   <div className="text-xs text-faint leading-relaxed mt-0.5 line-clamp-2">
                     {ext.desc}
                   </div>
@@ -346,7 +346,7 @@ const NewAgent = () => {
               </div>
             ))}
             {filteredExtensions.length === 0 && (
-              <div className="text-center py-8 text-sm text-faint">
+              <div className="text-center py-8 text-standard text-faint">
                 {extSearch ? '未找到匹配的扩展' : '暂无预装扩展'}
               </div>
             )}

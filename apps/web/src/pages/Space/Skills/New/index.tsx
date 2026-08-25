@@ -63,7 +63,7 @@ const New = () => {
   return (
     <Page
       breadcrumb={
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-standard">
           <button
             onClick={() => navigate('/space/skills')}
             className="flex items-center gap-1 text-faint hover:text-ink transition-colors"
@@ -94,7 +94,7 @@ const New = () => {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-ink mb-1.5">Skill</h1>
-          <p className="text-sm text-muted leading-relaxed">
+          <p className="text-standard text-muted leading-relaxed">
             Skills 扩展 Hive 的任务特定能力，将指令、资源和可选脚本打包， 实现可靠的工作流执行
           </p>
         </div>
@@ -105,7 +105,7 @@ const New = () => {
           style={{ background: '#eff8ff', border: '1px solid #91caff' }}
         >
           <BulbOutlined style={{ color: '#1677ff', marginTop: 2 }} />
-          <div className="text-sm leading-relaxed">
+          <div className="text-standard leading-relaxed">
             <span className="text-ink">推荐使用 </span>
             <code
               className="font-mono text-xs px-1.5 py-0.5 rounded"
@@ -126,7 +126,7 @@ const New = () => {
             <button
               key={tab.key}
               onClick={() => setImportTab(tab.key)}
-              className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              className={`px-4 py-2 text-standard font-medium border-b-2 -mb-px transition-colors ${
                 importTab === tab.key
                   ? 'text-brand border-brand'
                   : 'text-faint border-transparent hover:text-ink'
@@ -142,18 +142,22 @@ const New = () => {
           {/* Upload or GitHub URL */}
           {importTab === 'zip' ? (
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">Skill 压缩包</label>
+              <label className="block text-standard font-medium text-ink mb-1.5">
+                Skill 压缩包
+              </label>
               <Dragger {...uploadProps} className="!bg-canvas">
                 <p className="text-4xl text-faint mb-2">
                   <InboxOutlined />
                 </p>
-                <p className="text-sm text-muted">点击或拖拽文件到此区域上传</p>
+                <p className="text-standard text-muted">点击或拖拽文件到此区域上传</p>
                 <p className="text-xs text-faint mt-1">仅支持 .zip 格式</p>
               </Dragger>
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">GitHub 仓库地址</label>
+              <label className="block text-standard font-medium text-ink mb-1.5">
+                GitHub 仓库地址
+              </label>
               <Input
                 placeholder="https://github.com/username/skill-repo"
                 size="large"
@@ -168,7 +172,7 @@ const New = () => {
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">分类</label>
+            <label className="block text-standard font-medium text-ink mb-1.5">分类</label>
             <Select
               value={category}
               onChange={setCategory}
@@ -180,7 +184,7 @@ const New = () => {
 
           {/* Visibility */}
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">可见性</label>
+            <label className="block text-standard font-medium text-ink mb-1.5">可见性</label>
             <div className="flex items-center gap-4">
               <Radio.Group value={visibility} onChange={(e) => setVisibility(e.target.value)}>
                 <Radio value="public">公开</Radio>
@@ -197,7 +201,7 @@ const New = () => {
 
         {/* Bottom actions */}
         <div className="flex items-center justify-between mt-8 pt-6 border-t border-line">
-          <label className="flex items-center gap-2 text-sm text-muted cursor-pointer">
+          <label className="flex items-center gap-2 text-standard text-muted cursor-pointer">
             <input
               type="checkbox"
               checked={installForMe}

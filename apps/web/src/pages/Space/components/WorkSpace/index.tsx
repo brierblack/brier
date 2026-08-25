@@ -107,7 +107,7 @@ export const WorkSpace = memo(() => {
   if (!current) {
     return (
       <Button block type="text" onClick={handleCreate} classNames={{ root: ' !border-line !px-2' }}>
-        <PlusOutlined className="text-sm" />
+        <PlusOutlined className="text-standard" />
         <span className="flex-1 text-left text-faint">新建工作空间</span>
       </Button>
     );

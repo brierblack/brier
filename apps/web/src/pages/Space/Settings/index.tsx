@@ -78,7 +78,7 @@ const Settings = () => {
             style={{ borderInlineEnd: 'none' }}
             classNames={{
               root: ' !border-none !grid !gap-1 !bg-transparent',
-              item: ' !px-2 !m-0 !h-8 !leading-8 !text-sm !w-full',
+              item: ' !px-2 !m-0 !h-8 !leading-8 !text-standard !w-full',
             }}
           />
         </div>
@@ -102,7 +102,7 @@ const Settings = () => {
                       {avatarUrl ? (
                         <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
                       ) : (
-                        <PlusOutlined className="text-sm text-faint" />
+                        <PlusOutlined className="text-standard text-faint" />
                       )}
                     </div>
                   </Upload>
@@ -152,11 +152,11 @@ const Settings = () => {
 
               {/* 空间可见性 */}
               <div className="mt-6">
-                <div className="text-sm font-semibold mb-1">空间可见性</div>
+                <div className="text-standard font-semibold mb-1">空间可见性</div>
                 <p className="text-xs text-faint mb-3">控制非成员能否通过空间链接读取公开内容。</p>
                 <div className="flex items-center justify-between p-4 border border-line rounded-lg bg-white">
                   <div className="flex-1">
-                    <div className="text-sm font-medium text-ink">公开空间</div>
+                    <div className="text-standard font-medium text-ink">公开空间</div>
                     <p className="text-xs text-faint mt-1 leading-relaxed">
                       开启后，公司内已登录用户可只读访问；只有空间成员可以创建、评论或修改内容。
                     </p>
@@ -167,11 +167,11 @@ const Settings = () => {
 
               {/* 空间操作 */}
               <div className="mt-6">
-                <div className="text-sm font-semibold mb-3">空间操作</div>
+                <div className="text-standard font-semibold mb-3">空间操作</div>
                 <div className="border border-[#ffccc7] rounded-lg overflow-hidden">
                   <div className="flex items-center justify-between p-4 border-b border-[#ffccc7]">
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-ink">转交空间</div>
+                      <div className="text-standard font-medium text-ink">转交空间</div>
                       <p className="text-xs text-faint mt-1">将空间所有权转交给其他人员。</p>
                     </div>
                     <Button type="text" danger>
@@ -180,7 +180,7 @@ const Settings = () => {
                   </div>
                   <div className="flex items-center justify-between p-4">
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-ink">删除空间</div>
+                      <div className="text-standard font-medium text-ink">删除空间</div>
                       <p className="text-xs text-faint mt-1">
                         删除后空间内的所有 Agent 事项、会话、配置将永久丢失，且无法恢复。
                       </p>
@@ -197,7 +197,7 @@ const Settings = () => {
           {activeKey === 'agent' && (
             <>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-ink">空间指令</span>
+                <span className="text-standard font-medium text-ink">空间指令</span>
                 <Button size="small" onClick={handleInsertTemplate}>
                   插入模版
                 </Button>
@@ -217,7 +217,7 @@ const Settings = () => {
 
               {/* 安装的 Skills */}
               <div className="mt-8">
-                <div className="text-sm font-semibold text-ink mb-0.5">Skills</div>
+                <div className="text-standard font-semibold text-ink mb-0.5">Skills</div>
                 <p className="text-xs text-faint mb-3">
                   为所有空间内工作的 Agent 统一预装 Skills。
                 </p>
@@ -261,11 +261,11 @@ const Settings = () => {
                     {filteredSkills.map((skill) => (
                       <div key={skill.name} className="flex items-center gap-3 px-4 py-3 bg-white">
                         <div className="size-8 rounded-md bg-surface flex items-center justify-center shrink-0">
-                          <ToolOutlined className="text-sm text-muted" />
+                          <ToolOutlined className="text-standard text-muted" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-ink font-mono">
+                            <span className="text-standard font-medium text-ink font-mono">
                               {skill.name}
                             </span>
                             <Tag color={SKILL_TYPE_MAP[skill.type].color}>

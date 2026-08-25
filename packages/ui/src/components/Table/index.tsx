@@ -1,22 +1,22 @@
 import React, { memo, useMemo } from 'react';
-import { Table as AntdTable } from 'antd';
+import { Table as AntdTable, type TableProps as AntdTableProps } from 'antd';
 
-import type { TableProps } from 'antd/es/table';
+const DEFAULT_CLASS_NAMES = {
+  root: ' !bg-transparent !border-t !border-x !border-line rounded-t-md',
+};
 
-// 定义泛型函数类型
-type TableComponent = <T extends object = any>(props: TableProps<T>) => React.ReactNode;
+type TableComponent = <T extends object = any>(props: AntdTableProps<T>) => React.ReactNode;
 
 export const Table: TableComponent = memo((props) => {
-  const { bordered, classNames, ...args } = props;
-  const cn = useMemo(() => {
+  const { bordered, classNames = {}, ...args } = props;
+  const cns = useMemo(() => {
     if (bordered) {
       return {
-        root: ' !bg-transparent !border-t !border-x !border-line rounded-t-md',
-        headerWrapper: ' !bg-[#f8f8f8]',
+        ...DEFAULT_CLASS_NAMES,
         ...classNames,
       };
     }
     return classNames;
   }, [classNames, bordered]);
-  return <AntdTable classNames={cn} {...args} />;
+  return <AntdTable classNames={cns} {...args} />;
 });

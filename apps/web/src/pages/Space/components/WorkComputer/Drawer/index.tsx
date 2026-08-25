@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { App, Button, Drawer, Space } from 'antd';
+import { App, Button, Space } from 'antd';
 import { DesktopOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Drawer } from '@hiveblack/ui';
 import { backendServices, computerAgents, workComputers } from '@/data/mockData';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AddComputerModal } from '../AddModal';
@@ -87,7 +88,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
         {/* Left panel - computer list */}
         <div className="w-60 shrink-0 border-r border-line overflow-y-auto">
           <div className="px-4 pt-4 pb-2">
-            <span className="text-sm font-medium text-muted">我添加的</span>
+            <span className="text-standard font-medium text-muted">我添加的</span>
           </div>
           <div className="px-2 pb-4 flex flex-col gap-0.5">
             {workComputers.map((computer) => (
@@ -102,7 +103,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
                   <DesktopOutlined className="text-base text-muted" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium truncate">{computer.name}</div>
+                  <div className="text-standard font-medium truncate">{computer.name}</div>
                   <div className="text-xs text-faint">{computer.agentCount} 个 Agent</div>
                 </div>
                 <span
@@ -132,7 +133,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
                     最后心跳: {selectedComputer.lastHeartbeat}
                   </span>
                 </div>
-                <div className="text-sm text-muted mb-5 font-mono">
+                <div className="text-standard text-muted mb-5 font-mono">
                   {selectedComputer.hostname}, {selectedComputer.systemType}
                 </div>
               </div>

@@ -109,7 +109,7 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
               </div>
             )}
           </Upload>
-          <div className="text-sm font-medium text-center">{teamName || '未命名团队'}</div>
+          <div className="text-standard font-medium text-center">{teamName || '未命名团队'}</div>
           <div className="text-xs text-faint">PNG/JPG，最大 5MB</div>
           <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-surface text-muted">
             {visibility === 'private' ? '仅自己' : '空间共享'}
@@ -121,8 +121,8 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
           {/* 可见性 */}
           <div className="mb-5">
             <div className="flex items-center gap-2 mb-1">
-              <EyeOutlined className="text-sm text-muted" />
-              <span className="text-sm font-semibold">可见性</span>
+              <EyeOutlined className="text-standard text-muted" />
+              <span className="text-standard font-semibold">可见性</span>
             </div>
             <p className="text-xs text-faint mb-3">控制团队是否在 @ 列表和任务分配中可见</p>
             <div className="flex gap-2">
@@ -136,7 +136,7 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
                       : 'border-line hover:border-line'
                   }`}
                 >
-                  <div className="text-sm font-medium">{opt.label}</div>
+                  <div className="text-standard font-medium">{opt.label}</div>
                   <div className="text-xs text-faint mt-0.5">{opt.desc}</div>
                 </div>
               ))}
@@ -146,8 +146,8 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
           {/* 基础信息 */}
           <div className="mb-5">
             <div className="flex items-center gap-2 mb-3">
-              <FormOutlined className="text-sm text-muted" />
-              <span className="text-sm font-semibold">基础信息</span>
+              <FormOutlined className="text-standard text-muted" />
+              <span className="text-standard font-semibold">基础信息</span>
             </div>
             <Form.Item
               name="name"
@@ -164,8 +164,8 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
           {/* 主 Agent */}
           <div className="mb-5 border border-line rounded-lg p-4">
             <div className="flex items-center gap-2 mb-1">
-              <CrownOutlined className="text-sm text-muted" />
-              <span className="text-sm font-semibold">主 Agent</span>
+              <CrownOutlined className="text-standard text-muted" />
+              <span className="text-standard font-semibold">主 Agent</span>
             </div>
             <p className="text-xs text-faint mb-3">接收分配给团队的任务，并协调其他成员。</p>
             <Form.Item
@@ -184,8 +184,8 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
           {/* 附加成员 */}
           <div className="border border-line rounded-lg p-4">
             <div className="flex items-center gap-2 mb-1">
-              <UserAddOutlined className="text-sm text-muted" />
-              <span className="text-sm font-semibold">附加成员（可选）</span>
+              <UserAddOutlined className="text-standard text-muted" />
+              <span className="text-standard font-semibold">附加成员（可选）</span>
             </div>
             <p className="text-xs text-faint mb-3">
               主 Agent 可以委派任务给这些成员，也可以稍后再添加。

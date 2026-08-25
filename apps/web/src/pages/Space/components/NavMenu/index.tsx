@@ -10,7 +10,7 @@ import {
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '@/define';
-import { Logo, Wordmark } from '@hiveblack/ui';
+import { Logo, Wordmark } from '@/components/Logo';
 import { WorkSpace } from '../WorkSpace';
 import { useAuth } from '@/auth-context';
 
@@ -34,7 +34,7 @@ const olderConversations = [
 
 const menuClassNames = {
   root: ' !border-none !grid !gap-1 !bg-transparent',
-  item: ' !px-2 !m-0 !h-8 !leading-8 !text-sm !w-full',
+  item: ' !px-2 !m-0 !h-8 !leading-8 !text-standard !w-full',
 };
 
 const menuItems: MenuProps['items'] = [
@@ -122,7 +122,7 @@ export const NavMenu = () => {
 
       <div ref={scrollRef} className="px-1 flex-1 overflow-y-auto">
         <div
-          className="group flex items-center gap-1 px-2 py-1 cursor-pointer text-sm font-medium text-muted rounded hover:bg-[#f5f5f5] hover:text-ink"
+          className="group flex items-center gap-1 px-2 py-1 cursor-pointer text-standard font-medium text-muted rounded hover:bg-[#f5f5f5] hover:text-ink"
           onClick={() => setRecentExpanded(!recentExpanded)}
         >
           最近 7 天
@@ -145,7 +145,7 @@ export const NavMenu = () => {
         )}
 
         <div
-          className="group flex items-center gap-1 px-2 py-1 cursor-pointer text-sm font-medium text-muted rounded hover:bg-[#f5f5f5] hover:text-ink"
+          className="group flex items-center gap-1 px-2 py-1 cursor-pointer text-standard font-medium text-muted rounded hover:bg-[#f5f5f5] hover:text-ink"
           onClick={() => setOlderExpanded(!olderExpanded)}
         >
           更早

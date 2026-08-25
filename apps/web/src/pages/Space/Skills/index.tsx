@@ -81,7 +81,7 @@ const SkillCard = ({ skill, compact }: { skill: Skill; compact?: boolean }) => {
           {SKILL_ICONS[skill.type]}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-mono text-sm font-medium text-ink truncate">{skill.name}</div>
+          <div className="font-mono text-standard font-medium text-ink truncate">{skill.name}</div>
           <div className="flex items-center gap-1.5 mt-0.5">
             <Tag
               style={{
@@ -163,7 +163,7 @@ const Skills = () => {
           <button
             key={tab.key}
             onClick={() => setTopTab(tab.key)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
+            className={`px-4 py-2.5 text-standard font-medium border-b-2 -mb-px transition-colors ${
               topTab === tab.key
                 ? 'text-brand border-brand'
                 : 'text-faint border-transparent hover:text-ink'
@@ -177,7 +177,7 @@ const Skills = () => {
       {/* Header */}
       <div className="px-6 pt-5 pb-4">
         <h1 className="text-2xl font-bold text-ink mb-1">{TOP_TAB_CONFIG[topTab].title}</h1>
-        <p className="text-sm text-muted leading-relaxed">{TOP_TAB_CONFIG[topTab].desc}</p>
+        <p className="text-standard text-muted leading-relaxed">{TOP_TAB_CONFIG[topTab].desc}</p>
       </div>
 
       {/* Search bar */}
@@ -204,7 +204,7 @@ const Skills = () => {
       <div className="px-6 pb-6">
         <div className="flex items-center gap-2 mb-3">
           <FireOutlined style={{ color: '#fe6e00' }} />
-          <span className="text-sm font-medium text-ink">精选技能</span>
+          <span className="text-standard font-medium text-ink">精选技能</span>
           <span className="text-xs text-faint">经过验证的优质技能</span>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
@@ -224,7 +224,7 @@ const Skills = () => {
                 <button
                   key={tab.key}
                   onClick={() => setSourceTab(tab.key)}
-                  className={`px-3 py-2 text-sm font-medium rounded-t-md transition-colors ${
+                  className={`px-3 py-2 text-standard font-medium rounded-t-md transition-colors ${
                     sourceTab === tab.key
                       ? 'text-brand border-b-2 border-brand -mb-px'
                       : 'text-faint hover:text-ink'
@@ -272,7 +272,7 @@ const Skills = () => {
           {/* Skill list */}
           <div className="p-4">
             {filteredSkills.length === 0 ? (
-              <div className="text-center py-12 text-sm text-faint">没有找到匹配的技能</div>
+              <div className="text-center py-12 text-standard text-faint">没有找到匹配的技能</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                 {filteredSkills.map((skill) => (

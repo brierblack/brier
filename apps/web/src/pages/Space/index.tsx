@@ -1,11 +1,11 @@
 import { Outlet } from 'react-router-dom';
 import { NavMenu } from './components/NavMenu';
-import { Resizable, DragLine } from '@hiveblack/ui';
+import { Resizable, DragLine } from '@/components/Resizable';
 
 export const Layout = () => {
   return (
     <Resizable>
-      <div className="h-screen overflow-hidden flex bg-[#f4f4f4] p-2">
+      <div className="h-screen overflow-hidden flex bg-[#f4f4f4] p-2 text-standard">
         <DragLine defaultWidth={250} minWidth={200} maxWidth={480}>
           <aside className=" h-full overflow-hidden">
             <NavMenu />

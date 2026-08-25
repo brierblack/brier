@@ -15,7 +15,7 @@ export const ServiceUpgradeCard = memo(
       <div className="p-4 flex items-center justify-between">
         <div>
           <span className="text-xs text-faint">当前版本 </span>
-          <span className="text-sm font-medium font-mono">{version ?? '—'}</span>
+          <span className="text-standard font-medium font-mono">{version ?? '—'}</span>
         </div>
         {isLatest ? (
           <Tag

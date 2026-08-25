@@ -162,7 +162,7 @@ const Login = () => {
               <br />
               真正参与开发
             </div>
-            <p className="text-sm text-white/50 mb-12 leading-relaxed max-w-md">
+            <p className="text-standard text-white/50 mb-12 leading-relaxed max-w-md">
               连接代码仓库与工作电脑，编排多 Agent 团队， 将复杂工作流交给 AI 自主完成。
             </p>
 
@@ -179,7 +179,7 @@ const Login = () => {
                     {f.icon}
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-white/90">{f.title}</div>
+                    <div className="text-standard font-medium text-white/90">{f.title}</div>
                     <div className="text-xs text-white/40 mt-0.5">{f.desc}</div>
                   </div>
                 </div>
@@ -212,7 +212,7 @@ const Login = () => {
 
               <div className="text-center mb-7">
                 <h2 className="text-2xl font-bold text-white mb-1.5 tracking-tight">欢迎回来</h2>
-                <p className="text-sm text-white/45">登录你的账户，继续工作</p>
+                <p className="text-standard text-white/45">登录你的账户，继续工作</p>
               </div>
 
               <Button

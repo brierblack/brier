@@ -35,7 +35,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
       key: 'connect',
       label: (
         <div>
-          <div className="text-sm font-medium">连接命令</div>
+          <div className="text-standard font-medium">连接命令</div>
           <div className="text-xs text-faint mt-0.5">
             与"添加我的电脑"使用同一套接入命令，临时密钥过期后可刷新
           </div>
@@ -48,7 +48,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
               <span className="w-5 h-5 rounded-full bg-[#f0f0f0] text-xs flex items-center justify-center font-medium">
                 1
               </span>
-              <span className="text-sm font-medium">安装 Hive CLI</span>
+              <span className="text-standard font-medium">安装 Hive CLI</span>
               <Tag
                 style={{
                   background: '#f0f0f0',
@@ -60,7 +60,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
               </Tag>
             </div>
             <div className="flex items-center gap-2 bg-[#f5f5f5] rounded px-3 py-2">
-              <code className="flex-1 text-sm font-mono text-ink">{commands.install}</code>
+              <code className="flex-1 text-standard font-mono text-ink">{commands.install}</code>
               <Button
                 type="text"
                 size="small"
@@ -75,10 +75,12 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
               <span className="w-5 h-5 rounded-full bg-[#f0f0f0] text-xs flex items-center justify-center font-medium">
                 2
               </span>
-              <span className="text-sm font-medium">启动后台服务</span>
+              <span className="text-standard font-medium">启动后台服务</span>
             </div>
             <div className="flex items-center gap-2 bg-[#f5f5f5] rounded px-3 py-2">
-              <code className="flex-1 text-sm font-mono text-ink break-all">{commands.start}</code>
+              <code className="flex-1 text-standard font-mono text-ink break-all">
+                {commands.start}
+              </code>
               <Button
                 type="text"
                 size="small"
@@ -106,7 +108,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
       key: 'stop',
       label: (
         <div>
-          <div className="text-sm font-medium">停止后台服务</div>
+          <div className="text-standard font-medium">停止后台服务</div>
           <div className="text-xs text-faint mt-0.5">
             暂时不用这台电脑接收任务时，可停止本地后台服务
           </div>
@@ -114,7 +116,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
       ),
       children: (
         <div className="flex items-center gap-2 bg-[#f5f5f5] rounded px-3 py-2">
-          <code className="flex-1 text-sm font-mono text-ink">{commands.stop}</code>
+          <code className="flex-1 text-standard font-mono text-ink">{commands.stop}</code>
           <Button
             type="text"
             size="small"
@@ -128,7 +130,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
       key: 'restart',
       label: (
         <div>
-          <div className="text-sm font-medium">重启后台服务</div>
+          <div className="text-standard font-medium">重启后台服务</div>
           <div className="text-xs text-faint mt-0.5">
             升级 CLI，调整配置或连接异常后，可重启本地后台服务
           </div>
@@ -136,7 +138,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
       ),
       children: (
         <div className="flex items-center gap-2 bg-[#f5f5f5] rounded px-3 py-2">
-          <code className="flex-1 text-sm font-mono text-ink">{commands.restart}</code>
+          <code className="flex-1 text-standard font-mono text-ink">{commands.restart}</code>
           <Button
             type="text"
             size="small"
