@@ -8,12 +8,9 @@ import {
 import type { PageKey } from './types';
 
 export const STATUS_MAP = {
-  online: { label: '在线', color: '#389e0d' },
-  connecting: { label: '连接中', color: '#1677ff' },
-  offline: { label: '离线', color: '#90a1b9' },
-  error: { label: '异常', color: '#fb2c36' },
-  available: { label: '可用', color: '#389e0d' },
-  unavailable: { label: '不可用', color: '#90a1b9' },
+  online: { label: '在线', color: '!text-emerald-700 !bg-emerald-500/10' },
+  connecting: { label: '连接中', color: '!text-[#1677ff] !bg-[#1677ff]/10' },
+  offline: { label: '离线', color: '!text-[#90a1b9] !bg-[#90a1b9]/10' },
 } as const;
 
 export const MODE_MAP = {

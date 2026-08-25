@@ -173,14 +173,8 @@ const OverviewTab = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold text-ink">{agent.name}</h1>
-              <span
-                className="flex items-center gap-1 text-xs font-medium"
-                style={{ color: statusConfig.color }}
-              >
-                <span
-                  className="size-1.5 rounded-full"
-                  style={{ background: statusConfig.color }}
-                />
+              <span className={`flex items-center gap-1 text-xs font-medium ${statusConfig.color}`}>
+                <span className={`size-1.5 rounded-full ${statusConfig.color}`} />
                 {statusConfig.label}
               </span>
             </div>

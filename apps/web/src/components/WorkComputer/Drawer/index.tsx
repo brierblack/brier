@@ -95,7 +95,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
               <div
                 key={computer.id}
                 onClick={() => handleSelectComputer(computer.id)}
-                className={`flex items-center gap-2.5 px-2 py-2 rounded cursor-pointer transition-colors ${
+                className={`p-3 rounded-lg flex items-center gap-2.5 cursor-pointer transition-colors ${
                   computer.id === selectedComputerId ? 'bg-[#f0f0f0]' : 'hover:bg-[#f5f5f5]'
                 }`}
               >

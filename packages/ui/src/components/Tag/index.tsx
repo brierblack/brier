@@ -2,7 +2,7 @@ import { Tag as AntdTag, type TagProps as AntdTagProps } from 'antd';
 import { memo, useMemo } from 'react';
 
 const DEFAULT_CLASS_NAMES = {
-  root: '!text-xs !leading-5 !font-medium',
+  root: '!text-xs !leading-5 !font-medium !rounded-md',
 };
 
 export interface TagProps extends AntdTagProps {}

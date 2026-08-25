@@ -1,25 +1,17 @@
 import type { ReactNode } from 'react';
 import { Tag } from '@hiveblack/ui';
-import {
-  WifiOutlined,
-  SyncOutlined,
-  ExclamationCircleOutlined,
-  DisconnectOutlined,
-} from '@ant-design/icons';
+import { WifiOutlined, SyncOutlined, DisconnectOutlined } from '@ant-design/icons';
 import { STATUS_MAP } from '../define';
-import type { EntityStatus } from '../types';
+import type { AgentStatus } from '../types';
 
-const STATUS_ICON: Record<EntityStatus, ReactNode> = {
+const STATUS_ICON: Record<AgentStatus, ReactNode> = {
   online: <WifiOutlined />,
   connecting: <SyncOutlined spin />,
   offline: <DisconnectOutlined />,
-  error: <ExclamationCircleOutlined />,
-  available: <WifiOutlined />,
-  unavailable: <DisconnectOutlined />,
 };
 
 interface StatusBadgeProps {
-  status: EntityStatus;
+  status: AgentStatus;
 }
 
 export const StatusBadge = ({ status }: StatusBadgeProps) => {
@@ -27,14 +19,7 @@ export const StatusBadge = ({ status }: StatusBadgeProps) => {
   if (!config) return null;
 
   return (
-    <Tag
-      icon={STATUS_ICON[status]}
-      style={{
-        background: `${config.color}1a`,
-        borderColor: `${config.color}33`,
-        color: config.color,
-      }}
-    >
+    <Tag icon={STATUS_ICON[status]} className={config.color}>
       {config.label}
     </Tag>
   );
