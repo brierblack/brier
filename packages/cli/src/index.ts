@@ -8,11 +8,11 @@ import { statusCommand } from './commands/status.js';
 const program = new Command();
 
 program
-  .name('hive')
-  .description('Hive CLI - Connect to Hive platform via encrypted tunnel')
+  .name('hiveblack')
+  .description('HiveBlack CLI - Connect to Hive platform via encrypted tunnel')
   .version('0.0.1');
 
-const daemon = program.command('daemon').description('Manage the hive background service');
+const daemon = program.command('daemon').description('Manage the hiveblack background service');
 
 daemon
   .command('start')

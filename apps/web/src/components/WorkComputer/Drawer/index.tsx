@@ -41,10 +41,10 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
 
   const commands = useMemo(
     () => ({
-      install: 'npm install -g @hive/cli@latest',
-      start: `HIVE_TOKEN='${selectedComputer.hostname}-token' hive daemon start --server-url https://hive.local`,
-      stop: 'hive daemon stop',
-      restart: 'hive daemon restart',
+      install: 'npm install -g @hiveblack/cli@latest',
+      start: `HIVE_TOKEN='${selectedComputer.hostname}-token' hiveblack daemon start --server-url https://hive.local`,
+      stop: 'hiveblack daemon stop',
+      restart: 'hiveblack daemon restart',
     }),
     [selectedComputer.hostname],
   );

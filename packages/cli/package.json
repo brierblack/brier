@@ -1,10 +1,10 @@
 {
-  "name": "@hive/cli",
+  "name": "@hiveblack/cli",
   "version": "0.0.1",
   "private": true,
   "type": "module",
   "bin": {
-    "hive": "./dist/index.js"
+    "hiveblack": "./dist/index.js"
   },
   "exports": {
     ".": {

@@ -11,13 +11,13 @@ interface AddComputerModalProps {
 
 const PROMPT_CONTENT = `请帮我在本机接入 Hive 远程编码池，分两步完成：
 
-【1. 安装 hive CLI】
+【1. 安装 hiveblack CLI】
 - 先确认 Node.js 已装（无则用 nvm 安装 LTS）
-- 执行：npm install -g @hive/cli@latest
-- 如 hive 已安装，请升级到 latest
+- 执行：npm install -g @hiveblack/cli@latest
+- 如 hiveblack 已安装，请升级到 latest
 
 【2. 启动后台服务】
-- 执行：HIVE_TOKEN='temp-hive-token-xxxxx' hive daemon start --server-url https://hive.local
+- 执行：HIVE_TOKEN='temp-hive-token-xxxxx' hiveblack daemon start --server-url https://hive.local
 - HIVE_TOKEN 是临时密钥（约 30 天有效），请勿写入版本控制或分享
 - 如后台服务已在跑，先告诉我状态，不要强行重启
 - 执行过程中遇到需要权限或选择的步骤先问我；全部完成后告诉我"后台服务已上线"，我会回到平台页面等待自动发现。（跟我汇报时把 daemon 一律说"后台服务"。）`;
@@ -33,10 +33,10 @@ const MANUAL_ITEMS: CollapseProps['items'] = [
     children: (
       <div className="flex flex-col gap-3">
         <div>
-          <div className="mb-1 text-xs text-faint">1. 安装 hive CLI</div>
+          <div className="mb-1 text-xs text-faint">1. 安装 hiveblack CLI</div>
           <div className="rounded bg-[#f5f5f5] px-3 py-2">
             <code className="font-mono text-standard text-ink">
-              npm install -g @hive/cli@latest
+              npm install -g @hiveblack/cli@latest
             </code>
           </div>
         </div>
@@ -44,7 +44,7 @@ const MANUAL_ITEMS: CollapseProps['items'] = [
           <div className="mb-1 text-xs text-faint">2. 启动后台服务</div>
           <div className="rounded bg-[#f5f5f5] px-3 py-2">
             <code className="font-mono text-standard break-all text-ink">
-              HIVE_TOKEN='your-token' hive daemon start --server-url https://hive.local
+              HIVE_TOKEN='your-token' hiveblack daemon start --server-url https://hive.local
             </code>
           </div>
         </div>
@@ -64,7 +64,7 @@ const FAQ_ITEMS: CollapseProps['items'] = [
     ),
     children: (
       <div className="text-xs leading-relaxed text-muted">
-        命令本身是安全的。hive CLI 仅用于启动一个本地后台服务，通过加密通道与 Hive
+        命令本身是安全的。hiveblack CLI 仅用于启动一个本地后台服务，通过加密通道与 Hive
         平台通信，不会开放端口给外部网络。HIVE_TOKEN
         是临时密钥，仅用于身份验证，不涉及你的代码或数据权限。
       </div>
@@ -100,7 +100,7 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
             <span className="text-standard font-medium text-[#1f2329]">让本机 AI 帮你装(推荐)</span>
             <p className="text-[11px] leading-relaxed text-[#86909c]">
               复制这段 Prompt，发送给本机的 Claude Code / Cursor / Codex 等 Agent，它会自行处理 Node
-              / npm / hive CLI 安装并启动后台服务。
+              / npm / hiveblack CLI 安装并启动后台服务。
             </p>
           </div>
           <Button
