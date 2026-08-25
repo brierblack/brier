@@ -163,7 +163,7 @@ const Agents = () => {
         </div>
       }
     >
-      <div className="p-5">
+      <div className="p-4">
         <Space className="mb-4">
           <Input
             placeholder="搜索 Agent 名称..."
@@ -191,7 +191,7 @@ const Agents = () => {
           dataSource={filteredAgents}
           rowKey="id"
           pagination={false}
-          onRow={(r) => ({ onClick: () => navigate(`/agents/${r.id}`) })}
+          onRow={(r) => ({ onClick: () => navigate(`/space/agents/${r.id}`) })}
         />
       </div>
 

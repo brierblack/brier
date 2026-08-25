@@ -52,9 +52,9 @@ const App = () => {
                 <Route
                   path="/space"
                   element={
-                    <AuthGuard>
+                    //<AuthGuard>
                       <SpaceLayout />
-                    </AuthGuard>
+                    //</AuthGuard>
                   }
                 >
                   <Route index element={<Navigate to="/space/chat" replace />} />

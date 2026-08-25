@@ -128,7 +128,7 @@ const Team = () => {
         </Button>
       }
     >
-      <div className="p-5">
+      <div className="p-4">
         <Space className="mb-4">
           <Input
             placeholder="搜索团队名称、描述或创建者..."
