@@ -70,7 +70,7 @@ const FAQ_ITEMS: CollapseProps['items'] = [
   },
 ];
 
-export function AddComputerModal({ open, onClose }: AddComputerModalProps) {
+export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
   const { message } = App.useApp();
   const [showPrompt, setShowPrompt] = useState(false);
 
@@ -162,4 +162,4 @@ export function AddComputerModal({ open, onClose }: AddComputerModalProps) {
       </div>
     </Modal>
   );
-}
+};

@@ -72,16 +72,22 @@ const VISIBILITY_GROUPS = [
   },
 ] as const;
 
-function SectionCard({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
+const SectionCard = ({
+  title,
+  children,
+}: {
+  title: React.ReactNode;
+  children: React.ReactNode;
+}) => {
   return (
     <div className="mb-6">
       <div className="text-sm font-bold text-ink mb-3">{title}</div>
       <div className="rounded-xl border border-line p-5 bg-white">{children}</div>
     </div>
   );
-}
+};
 
-export default function NewAgent() {
+const NewAgent = () => {
   const { message } = App.useApp();
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -349,4 +355,5 @@ export default function NewAgent() {
       </Form>
     </Page>
   );
-}
+};
+export default NewAgent;

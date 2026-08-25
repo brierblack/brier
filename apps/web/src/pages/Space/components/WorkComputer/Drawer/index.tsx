@@ -25,7 +25,7 @@ interface WorkComputerDrawerProps {
   onClose: () => void;
 }
 
-export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
+export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) => {
   const { message } = App.useApp();
   const [selectedComputerId, setSelectedComputerId] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
@@ -378,4 +378,4 @@ export function WorkComputerDrawer({ open, onClose }: WorkComputerDrawerProps) {
       <AddComputerModal open={addModalOpen} onClose={() => setAddModalOpen(false)} />
     </Drawer>
   );
-}
+};

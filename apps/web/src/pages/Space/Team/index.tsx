@@ -26,7 +26,7 @@ const actionMenuItems: MenuProps['items'] = [
   { key: 'delete', label: '删除', icon: <DeleteOutlined />, danger: true },
 ];
 
-export default function Team() {
+const Team = () => {
   const navigate = useNavigate();
   const [createOpen, setCreateOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -154,4 +154,5 @@ export default function Team() {
       </div>
     </Page>
   );
-}
+};
+export default Team;

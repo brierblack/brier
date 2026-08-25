@@ -29,7 +29,7 @@ const IMPORT_TABS = [
   { key: 'github', label: 'GitHub 导入' },
 ] as const;
 
-export default function New() {
+const New = () => {
   const navigate = useNavigate();
   const { message } = App.useApp();
   const [importTab, setImportTab] = useState<string>('zip');
@@ -95,8 +95,7 @@ export default function New() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-ink mb-1.5">Skill</h1>
           <p className="text-sm text-muted leading-relaxed">
-            Skills 扩展 Hive 的任务特定能力，将指令、资源和可选脚本打包，
-            实现可靠的工作流执行
+            Skills 扩展 Hive 的任务特定能力，将指令、资源和可选脚本打包， 实现可靠的工作流执行
           </p>
         </div>
 
@@ -108,10 +107,16 @@ export default function New() {
           <BulbOutlined style={{ color: '#1677ff', marginTop: 2 }} />
           <div className="text-sm leading-relaxed">
             <span className="text-ink">推荐使用 </span>
-            <code className="font-mono text-xs px-1.5 py-0.5 rounded" style={{ background: '#e6f4ff', color: '#1677ff' }}>
+            <code
+              className="font-mono text-xs px-1.5 py-0.5 rounded"
+              style={{ background: '#e6f4ff', color: '#1677ff' }}
+            >
               /skill-creator
             </code>
-            <span className="text-muted"> 命令让 AI 辅助你创建技能，手动上传适合已有技能包的用户。</span>
+            <span className="text-muted">
+              {' '}
+              命令让 AI 辅助你创建技能，手动上传适合已有技能包的用户。
+            </span>
           </div>
         </div>
 
@@ -137,9 +142,7 @@ export default function New() {
           {/* Upload or GitHub URL */}
           {importTab === 'zip' ? (
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">
-                Skill 压缩包
-              </label>
+              <label className="block text-sm font-medium text-ink mb-1.5">Skill 压缩包</label>
               <Dragger {...uploadProps} className="!bg-canvas">
                 <p className="text-4xl text-faint mb-2">
                   <InboxOutlined />
@@ -150,9 +153,7 @@ export default function New() {
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">
-                GitHub 仓库地址
-              </label>
+              <label className="block text-sm font-medium text-ink mb-1.5">GitHub 仓库地址</label>
               <Input
                 placeholder="https://github.com/username/skill-repo"
                 size="large"
@@ -167,9 +168,7 @@ export default function New() {
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">
-              分类
-            </label>
+            <label className="block text-sm font-medium text-ink mb-1.5">分类</label>
             <Select
               value={category}
               onChange={setCategory}
@@ -181,14 +180,9 @@ export default function New() {
 
           {/* Visibility */}
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">
-              可见性
-            </label>
+            <label className="block text-sm font-medium text-ink mb-1.5">可见性</label>
             <div className="flex items-center gap-4">
-              <Radio.Group
-                value={visibility}
-                onChange={(e) => setVisibility(e.target.value)}
-              >
+              <Radio.Group value={visibility} onChange={(e) => setVisibility(e.target.value)}>
                 <Radio value="public">公开</Radio>
                 <Radio value="private">私有</Radio>
               </Radio.Group>
@@ -225,4 +219,5 @@ export default function New() {
       </div>
     </Page>
   );
-}
+};
+export default New;

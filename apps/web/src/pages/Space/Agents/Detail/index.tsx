@@ -89,16 +89,16 @@ interface ChatMessage {
   content: string;
 }
 
-function PropertyRow({ label, children }: { label: string; children: React.ReactNode }) {
+const PropertyRow = ({ label, children }: { label: string; children: React.ReactNode }) => {
   return (
     <div className="flex items-center justify-between py-2 ">
       <span className="text-sm text-muted">{label}</span>
       <div className="flex items-center gap-2">{children}</div>
     </div>
   );
-}
+};
 
-function Sparkline({ data }: { data: number[] }) {
+const Sparkline = ({ data }: { data: number[] }) => {
   const max = Math.max(...data, 1);
   const barWidth = 4;
   const gap = 2;
@@ -121,9 +121,9 @@ function Sparkline({ data }: { data: number[] }) {
       })}
     </svg>
   );
-}
+};
 
-function AgentAvatar({ agent, size = 32 }: { agent: Agent; size?: number }) {
+const AgentAvatar = ({ agent, size = 32 }: { agent: Agent; size?: number }) => {
   return (
     <div
       className="flex items-center justify-center rounded-md shrink-0"
@@ -137,9 +137,9 @@ function AgentAvatar({ agent, size = 32 }: { agent: Agent; size?: number }) {
       {agent.icon}
     </div>
   );
-}
+};
 
-function OverviewTab({
+const OverviewTab = ({
   agent,
   runtime,
   setRuntime,
@@ -159,7 +159,7 @@ function OverviewTab({
   setVisibility: (v: string) => void;
   concurrency: number;
   setConcurrency: (v: number) => void;
-}) {
+}) => {
   const statusConfig = STATUS_MAP[agent.status as AgentStatus] ?? STATUS_MAP.offline;
 
   return (
@@ -291,9 +291,9 @@ function OverviewTab({
       </div>
     </div>
   );
-}
+};
 
-function NewChatTab({ agent }: { agent: Agent }) {
+const NewChatTab = ({ agent }: { agent: Agent }) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -442,9 +442,9 @@ function NewChatTab({ agent }: { agent: Agent }) {
       </div>
     </div>
   );
-}
+};
 
-function ConversationsTab() {
+const ConversationsTab = () => {
   const columns: ColumnsType<(typeof MOCK_CONVERSATIONS)[0]> = [
     {
       title: '标题',
@@ -482,9 +482,9 @@ function ConversationsTab() {
       </div>
     </div>
   );
-}
+};
 
-function SkillsTab({ agent }: { agent: Agent }) {
+const SkillsTab = ({ agent }: { agent: Agent }) => {
   const [boundSkills, setBoundSkills] = useState<Skill[]>(
     allSkills.filter((_, i) => i < agent.skills),
   );
@@ -538,9 +538,9 @@ function SkillsTab({ agent }: { agent: Agent }) {
       </div>
     </div>
   );
-}
+};
 
-function InstructionsTab() {
+const InstructionsTab = () => {
   const [instructions, setInstructions] = useState('');
 
   return (
@@ -565,9 +565,9 @@ function InstructionsTab() {
       </div>
     </div>
   );
-}
+};
 
-function WorkDirTab() {
+const WorkDirTab = () => {
   const [path, setPath] = useState('');
 
   return (
@@ -587,9 +587,9 @@ function WorkDirTab() {
       </div>
     </div>
   );
-}
+};
 
-export default function AgentDetail() {
+const AgentDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeKey, setActiveKey] = useState('overview');
@@ -661,4 +661,5 @@ export default function AgentDetail() {
       </div>
     </Page>
   );
-}
+};
+export default AgentDetail;

@@ -22,7 +22,7 @@ interface StatusBadgeProps {
   status: EntityStatus;
 }
 
-export function StatusBadge({ status }: StatusBadgeProps) {
+export const StatusBadge = ({ status }: StatusBadgeProps) => {
   const config = STATUS_MAP[status];
   if (!config) return null;
 
@@ -38,4 +38,4 @@ export function StatusBadge({ status }: StatusBadgeProps) {
       {config.label}
     </Tag>
   );
-}
+};

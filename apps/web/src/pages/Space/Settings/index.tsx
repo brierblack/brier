@@ -35,7 +35,7 @@ const INSTRUCTION_TEMPLATE = `# 空间指令
 - 遇到阻塞及时反馈
 - 尊重他人的代码和文档`;
 
-export default function Settings() {
+const Settings = () => {
   const [activeKey, setActiveKey] = useState('basic');
   const [form] = Form.useForm();
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -300,4 +300,5 @@ export default function Settings() {
       </div>
     </Page>
   );
-}
+};
+export default Settings;

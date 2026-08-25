@@ -58,7 +58,15 @@ const INSTRUCTION_EXAMPLE = `分析需求，明确环境
 - @工程突击营 编写代码
 - @纪律检查团 code reviewer`;
 
-function MemberAvatar({ icon, color, size = 36 }: { icon: string; color: string; size?: number }) {
+const MemberAvatar = ({
+  icon,
+  color,
+  size = 36,
+}: {
+  icon: string;
+  color: string;
+  size?: number;
+}) => {
   return (
     <div
       className="flex items-center justify-center rounded-lg shrink-0"
@@ -67,9 +75,15 @@ function MemberAvatar({ icon, color, size = 36 }: { icon: string; color: string;
       {icon}
     </div>
   );
-}
+};
 
-function SharingScope({ selected, onSelect }: { selected: string; onSelect: (v: string) => void }) {
+const SharingScope = ({
+  selected,
+  onSelect,
+}: {
+  selected: string;
+  onSelect: (v: string) => void;
+}) => {
   return (
     <div className="mb-6">
       <div className="text-sm font-bold text-ink mb-1">共享范围</div>
@@ -96,9 +110,9 @@ function SharingScope({ selected, onSelect }: { selected: string; onSelect: (v: 
       </div>
     </div>
   );
-}
+};
 
-function MembersTab({ members }: { members: MemberDetail[] }) {
+const MembersTab = ({ members }: { members: MemberDetail[] }) => {
   const [sharing, setSharing] = useState('space');
 
   return (
@@ -144,9 +158,9 @@ function MembersTab({ members }: { members: MemberDetail[] }) {
       </div>
     </div>
   );
-}
+};
 
-function InstructionsTab() {
+const InstructionsTab = () => {
   const [instructions, setInstructions] = useState(INSTRUCTION_EXAMPLE);
 
   return (
@@ -167,9 +181,9 @@ function InstructionsTab() {
       />
     </div>
   );
-}
+};
 
-export default function TeamDetail() {
+const TeamDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('members');
@@ -243,4 +257,5 @@ export default function TeamDetail() {
       />
     </Page>
   );
-}
+};
+export default TeamDetail;

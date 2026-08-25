@@ -18,15 +18,15 @@ const Skills = lazy(() => import('./pages/Space/Skills'));
 const SkillNew = lazy(() => import('./pages/Space/Skills/New'));
 const Settings = lazy(() => import('./pages/Space/Settings'));
 
-function PageLoading() {
+const PageLoading = () => {
   return (
     <div className="h-screen flex items-center justify-center">
       <Spin size="large" />
     </div>
   );
-}
+};
 
-function AuthGuard({ children }: { children: ReactNode }) {
+const AuthGuard = ({ children }: { children: ReactNode }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -38,9 +38,9 @@ function AuthGuard({ children }: { children: ReactNode }) {
   }
 
   return <>{children}</>;
-}
+};
 
-export default function App() {
+const App = () => {
   return (
     <ConfigProvider locale={zhCN} theme={theme} wave={{ disabled: true }}>
       <AntApp>
@@ -49,7 +49,14 @@ export default function App() {
             <Suspense fallback={<PageLoading />}>
               <Routes>
                 <Route path="/login" element={<Login />} />
-                <Route path="/space" element={<SpaceLayout />}>
+                <Route
+                  path="/space"
+                  element={
+                    <AuthGuard>
+                      <SpaceLayout />
+                    </AuthGuard>
+                  }
+                >
                   <Route index element={<Navigate to="/space/chat" replace />} />
                   <Route path="/space/new" element={<New />} />
                   <Route path="/space/chat" element={<Chat />} />
@@ -69,4 +76,5 @@ export default function App() {
       </AntApp>
     </ConfigProvider>
   );
-}
+};
+export default App;

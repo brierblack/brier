@@ -11,13 +11,13 @@ export interface CreateWorkspaceRequest {
   auto_issue_assign?: boolean;
 }
 
-export async function fetchWorkspaces(): Promise<Workspace[]> {
+export const fetchWorkspaces = async (): Promise<Workspace[]> => {
   const res = await fetch('/api/workspaces');
   if (!res.ok) return [];
   return res.json();
-}
+};
 
-export async function createWorkspace(data: CreateWorkspaceRequest): Promise<Workspace> {
+export const createWorkspace = async (data: CreateWorkspaceRequest): Promise<Workspace> => {
   const res = await fetch('/api/workspaces', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -28,4 +28,4 @@ export async function createWorkspace(data: CreateWorkspaceRequest): Promise<Wor
     throw new Error(err.error || '创建空间失败');
   }
   return res.json();
-}
+};

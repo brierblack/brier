@@ -4,8 +4,8 @@ export interface RepoInfo {
   private: boolean;
 }
 
-export async function fetchGithubRepos(): Promise<RepoInfo[]> {
+export const fetchGithubRepos = async (): Promise<RepoInfo[]> => {
   const res = await fetch('/api/github/repos');
   if (!res.ok) return [];
   return res.json();
-}
+};

@@ -36,7 +36,7 @@ const AGENT_OPTIONS = agents.map((a) => ({
   ),
 }));
 
-export function CreateTeamModal({ open, onCancel }: CreateTeamModalProps) {
+export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
   const { message } = App.useApp();
   const [form] = Form.useForm();
   const [visibility, setVisibility] = useState<string>('private');
@@ -203,4 +203,4 @@ export function CreateTeamModal({ open, onCancel }: CreateTeamModalProps) {
       </div>
     </Modal>
   );
-}
+};

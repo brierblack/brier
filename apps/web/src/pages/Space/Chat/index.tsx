@@ -22,7 +22,7 @@ const SUGGESTIONS = [
 
 const AVAILABLE_AGENTS = agents.filter((a) => a.status !== 'offline');
 
-function AgentAvatar({ agent, size = 32 }: { agent: Agent; size?: number }) {
+const AgentAvatar = ({ agent, size = 32 }: { agent: Agent; size?: number }) => {
   return (
     <div
       className="flex items-center justify-center rounded-md shrink-0"
@@ -36,9 +36,9 @@ function AgentAvatar({ agent, size = 32 }: { agent: Agent; size?: number }) {
       {agent.icon}
     </div>
   );
-}
+};
 
-function MessageBubble({
+const MessageBubble = ({
   message,
   agent,
   user,
@@ -46,7 +46,7 @@ function MessageBubble({
   message: ChatMessage;
   agent: Agent;
   user: ReturnType<typeof useAuth>['user'];
-}) {
+}) => {
   if (message.role === 'user') {
     return (
       <div className="flex items-start gap-3 justify-end">
@@ -91,9 +91,9 @@ function MessageBubble({
       </div>
     </div>
   );
-}
+};
 
-function TypingIndicator({ agent }: { agent: Agent }) {
+const TypingIndicator = ({ agent }: { agent: Agent }) => {
   return (
     <div className="flex items-start gap-3">
       <AgentAvatar agent={agent} size={32} />
@@ -118,9 +118,9 @@ function TypingIndicator({ agent }: { agent: Agent }) {
       </div>
     </div>
   );
-}
+};
 
-function AgentSelector({ agent, onSelect }: { agent: Agent; onSelect: (a: Agent) => void }) {
+const AgentSelector = ({ agent, onSelect }: { agent: Agent; onSelect: (a: Agent) => void }) => {
   return (
     <Dropdown
       trigger={['click']}
@@ -148,9 +148,9 @@ function AgentSelector({ agent, onSelect }: { agent: Agent; onSelect: (a: Agent)
       </div>
     </Dropdown>
   );
-}
+};
 
-function InputBox({
+const InputBox = ({
   agent,
   value,
   onChange,
@@ -164,7 +164,7 @@ function InputBox({
   onSend: () => void;
   loading: boolean;
   onAgentSelect: (a: Agent) => void;
-}) {
+}) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -197,9 +197,9 @@ function InputBox({
       </div>
     </div>
   );
-}
+};
 
-function Chat() {
+const Chat = () => {
   const { user } = useAuth();
   const [selectedAgent, setSelectedAgent] = useState<Agent>(AVAILABLE_AGENTS[0]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -307,6 +307,6 @@ function Chat() {
       </div>
     </div>
   );
-}
+};
 
 export default Chat;

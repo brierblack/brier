@@ -49,7 +49,7 @@ const menuItems: MenuProps['items'] = [
   { type: 'divider' },
 ];
 
-export function NavMenu() {
+export const NavMenu = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, login, logout } = useAuth();
@@ -223,4 +223,4 @@ export function NavMenu() {
       </div>
     </div>
   );
-}
+};

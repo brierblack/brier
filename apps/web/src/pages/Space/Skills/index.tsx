@@ -2,11 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input, Button, Tag } from 'antd';
 import { App } from 'antd';
-import {
-  PlusOutlined,
-  SearchOutlined,
-  FireOutlined,
-} from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, FireOutlined } from '@ant-design/icons';
 import { skills } from '../../../data/mockData';
 import { SKILL_TYPE_MAP } from '../../../define';
 import type { Skill } from '../../../types';
@@ -39,9 +35,22 @@ const TOP_TAB_CONFIG: Record<string, { title: string; desc: string }> = {
 };
 
 const CATEGORIES = [
-  '全部', '未分类', '工具', '开发', '商业', '设计',
-  '数据/AI', '运维', '测试/安全', '文档', '内容/媒体',
-  '研究', '数据库', '生活', '区块链', '智能',
+  '全部',
+  '未分类',
+  '工具',
+  '开发',
+  '商业',
+  '设计',
+  '数据/AI',
+  '运维',
+  '测试/安全',
+  '文档',
+  '内容/媒体',
+  '研究',
+  '数据库',
+  '生活',
+  '区块链',
+  '智能',
 ];
 
 const FILTER_TABS = [
@@ -56,7 +65,7 @@ const SOURCE_TABS = [
   { key: 'community', label: '社区' },
 ] as const;
 
-function SkillCard({ skill, compact }: { skill: Skill; compact?: boolean }) {
+const SkillCard = ({ skill, compact }: { skill: Skill; compact?: boolean }) => {
   const { message } = App.useApp();
   const cfg = SKILL_TYPE_MAP[skill.type];
 
@@ -74,10 +83,21 @@ function SkillCard({ skill, compact }: { skill: Skill; compact?: boolean }) {
         <div className="flex-1 min-w-0">
           <div className="font-mono text-sm font-medium text-ink truncate">{skill.name}</div>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <Tag style={{ background: `${cfg.color}0d`, color: cfg.color, border: 'none', fontSize: 11, lineHeight: '18px', padding: '0 6px' }}>
+            <Tag
+              style={{
+                background: `${cfg.color}0d`,
+                color: cfg.color,
+                border: 'none',
+                fontSize: 11,
+                lineHeight: '18px',
+                padding: '0 6px',
+              }}
+            >
               {skill.category}
             </Tag>
-            <span className="text-xs text-faint">{skill.source === 'internal' ? '内部' : '社区'}</span>
+            <span className="text-xs text-faint">
+              {skill.source === 'internal' ? '内部' : '社区'}
+            </span>
           </div>
         </div>
       </div>
@@ -99,9 +119,9 @@ function SkillCard({ skill, compact }: { skill: Skill; compact?: boolean }) {
       </div>
     </div>
   );
-}
+};
 
-export default function Skills() {
+const Skills = () => {
   const navigate = useNavigate();
   const [topTab, setTopTab] = useState<string>('skill');
   const [search, setSearch] = useState('');
@@ -120,11 +140,14 @@ export default function Skills() {
     if (filterTab === 'mine') result = result.filter((s) => s.author === 'Hive');
     if (filterTab === 'installed') result = result.filter((s) => s.installed);
     if (filterTab === 'not-installed') result = result.filter((s) => !s.installed);
-    if (category !== '全部' && category !== '未分类') result = result.filter((s) => s.category === category);
+    if (category !== '全部' && category !== '未分类')
+      result = result.filter((s) => s.category === category);
     if (category === '未分类') result = result.filter((s) => !s.category);
     if (search) {
       const q = search.toLowerCase();
-      result = result.filter((s) => s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q));
+      result = result.filter(
+        (s) => s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q),
+      );
     }
     return result;
   }, [sourceTab, filterTab, category, search]);
@@ -154,9 +177,7 @@ export default function Skills() {
       {/* Header */}
       <div className="px-6 pt-5 pb-4">
         <h1 className="text-2xl font-bold text-ink mb-1">{TOP_TAB_CONFIG[topTab].title}</h1>
-        <p className="text-sm text-muted leading-relaxed">
-          {TOP_TAB_CONFIG[topTab].desc}
-        </p>
+        <p className="text-sm text-muted leading-relaxed">{TOP_TAB_CONFIG[topTab].desc}</p>
       </div>
 
       {/* Search bar */}
@@ -209,7 +230,8 @@ export default function Skills() {
                       : 'text-faint hover:text-ink'
                   }`}
                 >
-                  {tab.label} <span className="font-mono tabular-nums text-xs">
+                  {tab.label}{' '}
+                  <span className="font-mono tabular-nums text-xs">
                     {tab.key === 'internal' ? internalCount : communityCount}
                   </span>
                 </button>
@@ -239,9 +261,7 @@ export default function Skills() {
                 key={cat}
                 onClick={() => setCategory(cat)}
                 className={`px-2 py-0.5 text-xs rounded transition-colors ${
-                  category === cat
-                    ? 'text-brand font-medium'
-                    : 'text-faint hover:text-ink'
+                  category === cat ? 'text-brand font-medium' : 'text-faint hover:text-ink'
                 }`}
               >
                 #{cat}
@@ -252,9 +272,7 @@ export default function Skills() {
           {/* Skill list */}
           <div className="p-4">
             {filteredSkills.length === 0 ? (
-              <div className="text-center py-12 text-sm text-faint">
-                没有找到匹配的技能
-              </div>
+              <div className="text-center py-12 text-sm text-faint">没有找到匹配的技能</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                 {filteredSkills.map((skill) => (
@@ -267,4 +285,5 @@ export default function Skills() {
       </div>
     </div>
   );
-}
+};
+export default Skills;
