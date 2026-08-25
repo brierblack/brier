@@ -147,7 +147,11 @@ const Agents = () => {
           <Button icon={<DesktopOutlined />} onClick={() => setComputerDrawerOpen(true)}>
             工作电脑 <span className="tabular-nums">{workComputers.length}</span>
           </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/agents/new')}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => navigate('/space/agents/new')}
+          >
             新增 Agent
           </Button>
         </div>

@@ -86,32 +86,29 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
     >
       <div className="flex h-full">
         {/* Left panel - computer list */}
-        <div className="w-80 shrink-0 border-r border-line overflow-y-auto">
-          <div className="p-2">
+        <div className="w-80 p-2 shrink-0 border-r border-line overflow-y-auto">
+          <div className="px-2 py-1">
             <span className="text-standard font-medium text-muted">我添加的</span>
           </div>
-          <div className="px-2 pb-4 flex flex-col gap-0.5">
+          <div className="flex flex-col gap-1">
             {workComputers.map((computer) => (
               <div
                 key={computer.id}
                 onClick={() => handleSelectComputer(computer.id)}
-                className={`p-3 rounded-lg flex items-center gap-2.5 cursor-pointer transition-colors ${
-                  computer.id === selectedComputerId ? 'bg-[#f0f0f0]' : 'hover:bg-[#f5f5f5]'
+                className={`px-3 py-2.5 rounded-lg flex items-center gap-2.5 cursor-pointer transition-colors ${
+                  computer.id === selectedComputerId ? 'bg-[#eaeaea]' : 'hover:bg-[#eaeaea]'
                 }`}
               >
-                <div className="w-8 h-8 rounded-lg bg-[#f0f0f0] flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-[#f3f3f3] flex items-center justify-center shrink-0">
                   <DesktopOutlined className="text-base text-muted" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-standard font-medium truncate">{computer.name}</div>
-                  <div className="text-xs text-faint">{computer.agentCount} 个 Agent</div>
+                  <div className="flex items-center gap-2.5">
+                    <div className="text-standard font-medium truncate">{computer.name}</div>
+                    <StatusBadge status={computer.status} />
+                  </div>
+                  <div className="text-xs text-faint">v2.0.75 · {computer.agentCount} 个 Agent</div>
                 </div>
-                <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{
-                    background: computer.status === 'online' ? '#389e0d' : '#90a1b9',
-                  }}
-                />
               </div>
             ))}
           </div>
@@ -129,7 +126,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
                 <span className="text-base font-semibold">{selectedComputer.name}</span>
                 <div className="flex items-center gap-3">
                   <StatusBadge status={selectedComputer.status} />
-                  <span className="text-xs text-faint">
+                  <span className="text-xs text-muted">
                     最后心跳: {selectedComputer.lastHeartbeat}
                   </span>
                 </div>

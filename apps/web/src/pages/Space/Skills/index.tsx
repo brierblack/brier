@@ -156,14 +156,14 @@ const Skills = () => {
   const communityCount = skills.filter((s) => s.source === 'community').length;
 
   return (
-    <div className="h-full flex flex-col bg-work">
+    <div className="h-full bg-work flex flex-col">
       {/* Top tab nav */}
-      <div className="flex items-center gap-1 px-6 pt-4 border-b border-line">
+      <div className="h-12 px-4 border-b border-line flex items-center gap-1 shrink-0">
         {TOP_TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setTopTab(tab.key)}
-            className={`px-4 py-2.5 text-standard font-medium border-b-2 -mb-px transition-colors ${
+            className={`h-full px-4 text-2xl text-standard font-medium border-b-2 transition-colors ${
               topTab === tab.key
                 ? 'text-brand border-brand'
                 : 'text-faint border-transparent hover:text-ink'
