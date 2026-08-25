@@ -14,7 +14,7 @@ import {
   UploadOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import { Page } from '@/components/Page';
+import { Page } from '@hiveblack/ui';
 import { workComputers } from '../../../../data/mockData';
 import { MODELS } from '../../../../define';
 

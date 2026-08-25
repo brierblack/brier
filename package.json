@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter @hive/web dev",
-    "build": "pnpm --filter @hive/web build",
+    "build": "pnpm --filter @hiveblack/ui build && pnpm --filter @hive/web build",
     "preview": "pnpm --filter @hive/web preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

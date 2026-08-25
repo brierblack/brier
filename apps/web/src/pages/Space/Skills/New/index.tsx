@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input, Select, Radio, Upload, type UploadProps, App } from 'antd';
-import { Page } from '@/components/Page';
+import { Page } from '@hiveblack/ui';
 import { InboxOutlined, BulbOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 
 const { Dragger } = Upload;

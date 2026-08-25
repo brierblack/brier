@@ -9,8 +9,7 @@ import {
   ToolOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons';
-import { Page } from '@/components/Page';
-import { Tag } from '@/components/Tag';
+import { Page, Tag } from '@hiveblack/ui';
 import { skills } from '../../../data/mockData';
 import { SKILL_TYPE_MAP } from '../../../define';
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { App, Button, Collapse } from 'antd';
 import type { CollapseProps } from 'antd';
 import { CopyOutlined, DownOutlined, RobotOutlined } from '@ant-design/icons';
-import { Modal } from '@/components/Modal';
+import { Modal } from '@hiveblack/ui';
 
 interface AddComputerModalProps {
   open: boolean;

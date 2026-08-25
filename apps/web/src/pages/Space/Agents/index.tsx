@@ -15,12 +15,11 @@ import {
   GlobalOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { Page } from '@/components/Page';
+import { Page, Table } from '@hiveblack/ui';
 import { StatusBadge } from '../../../components/StatusBadge';
 import { WorkComputerDrawer } from '../components/WorkComputer';
 import { agents, workComputers } from '../../../data/mockData';
 import type { Agent, AgentStatus, AgentVisibility, PublicScope } from '../../../types';
-import { Table } from '@/components/Table';
 
 const actionMenuItems: MenuProps['items'] = [
   { key: 'view', label: '查看详情', icon: <EyeOutlined /> },

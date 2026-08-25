@@ -10,7 +10,7 @@ import {
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '@/define';
-import { Logo, Wordmark } from '@/components/Logo';
+import { Logo, Wordmark } from '@hiveblack/ui';
 import { WorkSpace } from '../WorkSpace';
 import { useAuth } from '@/auth-context';
 

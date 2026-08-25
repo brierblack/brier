@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Tag } from '@/components/Tag';
+import { Tag } from '@hiveblack/ui';
 import {
   WifiOutlined,
   SyncOutlined,

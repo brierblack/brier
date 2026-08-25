@@ -14,9 +14,7 @@ import {
   ToolOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { Page } from '@/components/Page';
-import { Table } from '@/components/Table';
-import { Tag } from '@/components/Tag';
+import { Page, Table, Tag } from '@hiveblack/ui';
 import { agents, skills as allSkills } from '../../../../data/mockData';
 import { STATUS_MAP, MODELS, SKILL_TYPE_MAP } from '../../../../define';
 import type { Agent, AgentStatus, Skill } from '../../../../types';

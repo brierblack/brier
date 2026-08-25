@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Input, Tabs } from 'antd';
 import { PlusOutlined, LockOutlined, CheckOutlined } from '@ant-design/icons';
-import { Page } from '@/components/Page';
-import { Tag } from '@/components/Tag';
+import { Page, Tag } from '@hiveblack/ui';
 import { teams } from '../../../../data/mockData';
 
 interface MemberDetail {

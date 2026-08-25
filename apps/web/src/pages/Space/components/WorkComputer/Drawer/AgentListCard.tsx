@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { RightOutlined } from '@ant-design/icons';
-import { Card } from '@/components/Card';
+import { Card } from '@hiveblack/ui';
 import type { ComputerAgent } from '@/types';
 
 interface AgentListCardProps {

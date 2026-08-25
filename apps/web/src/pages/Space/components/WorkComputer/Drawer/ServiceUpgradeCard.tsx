@@ -1,8 +1,7 @@
 import { memo } from 'react';
 import { Button } from 'antd';
 import { ArrowUpOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { Tag } from '@/components/Tag';
-import { Card } from '@/components/Card';
+import { Card, Tag } from '@hiveblack/ui';
 
 interface ServiceUpgradeCardProps {
   version?: string;

@@ -1,8 +1,7 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { App as AntApp, ConfigProvider, Spin } from 'antd';
-import zhCN from 'antd/locale/zh_CN';
-import { theme } from './config/theme';
+import { App as AntApp, Spin } from 'antd';
+import { ThemeProvider } from '@hiveblack/ui';
 import { AuthProvider, useAuth } from './auth-context';
 import { Layout as SpaceLayout } from './pages/Space';
 
@@ -26,23 +25,9 @@ const PageLoading = () => {
   );
 };
 
-const AuthGuard = ({ children }: { children: ReactNode }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <PageLoading />;
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
-};
-
 const App = () => {
   return (
-    <ConfigProvider locale={zhCN} theme={theme} wave={{ disabled: true }}>
+    <ThemeProvider>
       <AntApp>
         <AuthProvider>
           <BrowserRouter>
@@ -53,7 +38,7 @@ const App = () => {
                   path="/space"
                   element={
                     //<AuthGuard>
-                      <SpaceLayout />
+                    <SpaceLayout />
                     //</AuthGuard>
                   }
                 >
@@ -74,7 +59,7 @@ const App = () => {
           </BrowserRouter>
         </AuthProvider>
       </AntApp>
-    </ConfigProvider>
+    </ThemeProvider>
   );
 };
 export default App;

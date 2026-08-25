@@ -9,7 +9,7 @@ import {
   UserAddOutlined,
 } from '@ant-design/icons';
 import { agents } from '../../../../data/mockData';
-import { Modal } from '@/components/Modal';
+import { Modal } from '@hiveblack/ui';
 
 interface CreateTeamModalProps {
   open: boolean;

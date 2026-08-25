@@ -3,7 +3,7 @@ import { Avatar, Button, Dropdown, Input } from 'antd';
 import { ArrowUpOutlined, DownOutlined, CheckOutlined } from '@ant-design/icons';
 import { agents } from '../../../data/mockData';
 import { useAuth } from '../../../auth-context';
-import { Logo } from '../../../components/Logo';
+import { Logo } from '@hiveblack/ui';
 import type { Agent } from '../../../types';
 
 interface ChatMessage {

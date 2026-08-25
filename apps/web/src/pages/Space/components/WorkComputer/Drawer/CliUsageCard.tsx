@@ -2,8 +2,7 @@ import { memo, useState } from 'react';
 import { App, Button, Collapse, Alert, Typography } from 'antd';
 import type { CollapseProps } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
-import { Tag } from '@/components/Tag';
-import { Card } from '@/components/Card';
+import { Card, Tag } from '@hiveblack/ui';
 
 const { Link } = Typography;
 

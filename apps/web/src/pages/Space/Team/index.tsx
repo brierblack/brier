@@ -11,8 +11,7 @@ import {
   SearchOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { Page } from '@/components/Page';
-import { Table } from '@/components/Table';
+import { Page, Table } from '@hiveblack/ui';
 import { StatusBadge } from '../../../components/StatusBadge';
 import { CreateTeamModal } from './CreateModal';
 import { teams } from '../../../data/mockData';
