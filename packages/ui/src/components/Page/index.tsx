@@ -5,15 +5,15 @@ export interface PageProps {
   title?: ReactNode | string;
   subtitle?: ReactNode | string;
   extra?: ReactNode | string;
-  breadcrumb?: ReactNode;
+  header?: ReactNode;
 }
 
-export const Page = memo(({ children, title, subtitle, extra, breadcrumb }: PageProps) => {
+export const Page = memo(({ children, title, subtitle, extra, header }: PageProps) => {
   return (
     <div className="flex h-full flex-col bg-canvas">
-      <div className="flex h-12 shrink-0 items-center justify-between border-b border-ghost px-4">
-        {breadcrumb ? (
-          <div className="flex items-center gap-1.5 text-standard">{breadcrumb}</div>
+      <div className="flex min-h-12 shrink-0 items-center justify-between border-b border-ghost px-4">
+        {header ? (
+          <div className="flex items-center gap-1.5 text-standard">{header}</div>
         ) : (
           <div className="flex items-baseline gap-2">
             {title && (

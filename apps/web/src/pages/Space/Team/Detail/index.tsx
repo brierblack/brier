@@ -188,7 +188,7 @@ const TeamDetail = () => {
 
   if (!team) {
     return (
-      <Page breadcrumb={<span className="">团队未找到</span>}>
+      <Page header={<span className="">团队未找到</span>}>
         <div className="flex h-full items-center justify-center">
           <div className="text-center">
             <p className="mb-3 text-standard">未找到该团队</p>
@@ -203,7 +203,7 @@ const TeamDetail = () => {
 
   return (
     <Page
-      breadcrumb={
+      header={
         <>
           <span className="cursor-pointer" onClick={() => navigate('/team')}>
             Agent 团队
@@ -219,7 +219,7 @@ const TeamDetail = () => {
       }
     >
       {/* Team info header */}
-      <div className="border-b border-ghost px-6 py-4">
+      <div className="border-b border-ghost px-4 py-4">
         <div className="mb-2 flex items-center gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-ghost text-xl">
             👥

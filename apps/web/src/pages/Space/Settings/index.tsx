@@ -57,7 +57,7 @@ const Settings = () => {
 
   return (
     <Page
-      breadcrumb={
+      header={
         <>
           <span className="">设置</span>
           <span className="">/</span>

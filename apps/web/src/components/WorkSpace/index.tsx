@@ -90,7 +90,7 @@ export const WorkSpace = memo(() => {
         const w = workspaces.find((ws) => ws.id === value);
         if (!w) return null;
         return (
-          <>
+          <div className=' w-full flex justify-between items-center gap-2'>
             <Avatar workspace={w} />
             <div className="min-w-0 flex-1 text-left">
               <div className="truncate font-medium">{w.name}</div>
@@ -99,7 +99,7 @@ export const WorkSpace = memo(() => {
               切换
               <SwapOutlined />
             </span>
-          </>
+          </div>
         );
       }}
       notFoundContent="暂无工作空间"

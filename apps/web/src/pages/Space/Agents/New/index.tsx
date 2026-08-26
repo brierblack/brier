@@ -121,7 +121,7 @@ const NewAgent = () => {
 
   return (
     <Page
-      breadcrumb={
+      header={
         <>
           <span className="cursor-pointer" onClick={() => navigate('/agents')}>
             Agents

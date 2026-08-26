@@ -63,7 +63,7 @@ const New = () => {
 
   return (
     <Page
-      breadcrumb={
+      header={
         <div className="flex items-center gap-2 text-standard">
           <button
             onClick={() => navigate('/space/skills')}

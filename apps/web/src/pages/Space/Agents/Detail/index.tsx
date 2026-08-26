@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Avatar, Input, InputNumber, Menu, Select } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Avatar, Input, InputNumber, Menu } from 'antd';
+import { Button, Select } from '@hiveblack/ui';
 import type { MenuProps } from 'antd';
 import {
   AppstoreOutlined,
@@ -194,8 +194,12 @@ const OverviewTab = ({
                 value={runtime}
                 onChange={setRuntime}
                 options={RUNTIMES.map((r) => ({ value: r, label: r }))}
-                size="small"
-                className="w-40"
+                button={{
+                  size: 'small',
+                  type: 'text',
+                  className: 'w-40 justify-between',
+                  classNames: { root: '!border !border-ghost !rounded-md' },
+                }}
               />
             </PropertyRow>
             <PropertyRow label="模型">
@@ -203,8 +207,12 @@ const OverviewTab = ({
                 value={model}
                 onChange={setModel}
                 options={MODELS.map((m) => ({ value: m, label: m }))}
-                size="small"
-                className="w-40"
+                button={{
+                  size: 'small',
+                  type: 'text',
+                  className: 'w-40 justify-between',
+                  classNames: { root: '!border !border-ghost !rounded-md' },
+                }}
               />
             </PropertyRow>
             <PropertyRow label="可见性">
@@ -212,8 +220,12 @@ const OverviewTab = ({
                 value={visibility}
                 onChange={setVisibility}
                 options={VISIBILITY_OPTIONS}
-                size="small"
-                className="w-48"
+                button={{
+                  size: 'small',
+                  type: 'text',
+                  className: 'w-48 justify-between',
+                  classNames: { root: '!border !border-ghost !rounded-md' },
+                }}
               />
             </PropertyRow>
             <PropertyRow label="并发">
@@ -593,7 +605,7 @@ const AgentDetail = () => {
 
   if (!agent) {
     return (
-      <Page breadcrumb={<span className="">Agent 未找到</span>}>
+      <Page header={<span className="">Agent 未找到</span>}>
         <div className="flex h-full items-center justify-center">
           <div className="text-center">
             <p className="mb-3 text-standard">未找到该 Agent</p>
@@ -606,7 +618,7 @@ const AgentDetail = () => {
 
   return (
     <Page
-      breadcrumb={
+      header={
         <>
           <span className="cursor-pointer" onClick={() => navigate('/agents')}>
             Agents
