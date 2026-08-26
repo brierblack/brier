@@ -1,8 +1,19 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Input, Tabs } from 'antd';
+import { Input, Tabs, Tooltip } from 'antd';
 import { Button } from '@hiveblack/ui';
-import { PlusOutlined, LockOutlined, CheckOutlined, GlobalOutlined, ArrowLeftOutlined, RobotOutlined, TeamOutlined, FileTextOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  LockOutlined,
+  CheckOutlined,
+  GlobalOutlined,
+  ArrowLeftOutlined,
+  RobotOutlined,
+  TeamOutlined,
+  FileTextOutlined,
+  CrownOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 import { Page, Tag } from '@hiveblack/ui';
 import { teams } from '../../../../data/mockData';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -141,21 +152,45 @@ const MembersTab = ({
           {members.map((m) => (
             <div
               key={m.id}
-              className="flex items-start gap-3 rounded-lg border border-ghost px-4 py-3"
+              className="group flex items-start gap-3 rounded-lg border border-ghost px-4 py-3 transition-colors hover:border-ghost"
             >
               <MemberAvatar icon={m.icon} color={m.color} />
-              <div className="min-w-0 flex-1 flex flex-col justify-between">
+              <div className="flex min-w-0 flex-1 flex-col justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-standard font-medium">{m.name}</span>
                   {m.isMain && <Tag color="#a855f7">主 Agent</Tag>}
                 </div>
                 <div>
-                  {m.role ? <span className="cursor-pointer text-xs hover:text-brand">{m.role}</span> : <span className="cursor-pointer text-xs hover:text-brand">添加角色…</span>}
+                  {m.role ? (
+                    <span className="cursor-pointer text-xs hover:text-brand">{m.role}</span>
+                  ) : (
+                    <span className="cursor-pointer text-xs hover:text-brand">添加角色…</span>
+                  )}
                 </div>
-                              <div className="flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full" style={{ background: '#389e0d' }} />
-                <span>在线</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="size-1.5 rounded-full" style={{ background: '#389e0d' }} />
+                  <span>在线</span>
+                </div>
               </div>
+              <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                {!m.isMain && (
+                  <Tooltip title="设置为主 Agent">
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<CrownOutlined />}
+                      className="text-muted hover:text-brand"
+                    />
+                  </Tooltip>
+                )}
+                <Tooltip title="删除">
+                  <Button
+                    type="text"
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    className="text-muted hover:text-red-500"
+                  />
+                </Tooltip>
               </div>
             </div>
           ))}
@@ -172,9 +207,7 @@ const InstructionsTab = () => {
     <div className="p-4">
       <div className="mb-1 flex items-center justify-between">
         <span className="text-standard font-bold">团队指令</span>
-        <Button type="primary">
-          保存
-        </Button>
+        <Button type="primary">保存</Button>
       </div>
       <p className="mb-4 text-xs">写给主 Agent 的协调规则、分工偏好和交付标准</p>
       <Input.TextArea
@@ -271,10 +304,15 @@ const TeamDetail = () => {
               <MembersTab members={MOCK_MEMBERS} sharing={sharing} setSharing={setSharing} />
             ),
           },
-          { key: 'instructions', label: '团队指令', icon: <FileTextOutlined />, children: <InstructionsTab /> },
+          {
+            key: 'instructions',
+            label: '团队指令',
+            icon: <FileTextOutlined />,
+            children: <InstructionsTab />,
+          },
         ]}
         tabBarStyle={{ marginBottom: 0 }}
-        classNames={{header: 'px-4!'}}
+        classNames={{ header: 'px-4!' }}
       />
     </Page>
   );

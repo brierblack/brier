@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App, Input, Segmented, Tag } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button, Page } from '@hiveblack/ui';
 import { PlusOutlined, SearchOutlined, FireOutlined } from '@ant-design/icons';
 import { skills } from '../../../data/mockData';
 import { SKILL_TYPE_MAP } from '../../../define';
@@ -154,114 +154,114 @@ const Skills = () => {
   const communityCount = skills.filter((s) => s.source === 'community').length;
 
   return (
-    <div className="flex h-full flex-col bg-canvas">
-      {/* Top tab nav */}
-      <div className="flex h-12 shrink-0 items-center gap-1 border-b border-ghost px-4">
+    <Page
+      header={
         <Segmented
           options={TOP_TABS.map((t) => ({ label: t.label, value: t.key }))}
           value={topTab}
           onChange={(v) => setTopTab(v as string)}
         />
-      </div>
+      }
+    >
+      <div className="flex flex-col items-center p-4">
+        <div className="flex max-w-160 flex-col items-center">
+          {/* Header */}
+          <div className="mt-6 text-3xl font-bold">{TOP_TAB_CONFIG[topTab].title}</div>
+          <div className="mt-6">{TOP_TAB_CONFIG[topTab].desc}</div>
 
-      {/* Header */}
-      <div className="px-6 pt-5 pb-4">
-        <h1 className="mb-1 text-2xl font-bold">{TOP_TAB_CONFIG[topTab].title}</h1>
-        <p className="text-standard leading-relaxed">{TOP_TAB_CONFIG[topTab].desc}</p>
-      </div>
-
-      {/* Search bar */}
-      <div className="flex items-center gap-3 px-6 pb-4">
-        <Input
-          placeholder="请输入技能名称"
-          prefix={<SearchOutlined className="" />}
-          style={{ width: 360 }}
-          size="large"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          allowClear
-        />
-        <Button
-          type="primary"
-          size="large"
-          shape="circle"
-          icon={<PlusOutlined />}
-          onClick={() => navigate('/space/skills/new')}
-        />
-      </div>
-
-      {/* Featured section */}
-      <div className="px-6 pb-6">
-        <div className="mb-3 flex items-center gap-2">
-          <FireOutlined style={{ color: '#fe6e00' }} />
-          <span className="text-standard font-medium">精选技能</span>
-          <span className="text-xs">经过验证的优质技能</span>
-        </div>
-        <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
-          {featuredSkills.map((skill) => (
-            <SkillCard key={skill.name} skill={skill} compact />
-          ))}
-        </div>
-      </div>
-
-      {/* All skills section */}
-      <div className="flex-1 overflow-y-auto px-6">
-        <div className="rounded-xl border border-ghost">
-          {/* Source tabs + filter tabs */}
-          <div className="flex items-center justify-between border-b border-ghost px-4 pt-3 pb-3">
-            <Segmented
-              options={SOURCE_TABS.map((t) => ({
-                label: (
-                  <span>
-                    {t.label}{' '}
-                    <span className="font-mono text-xs tabular-nums">
-                      {t.key === 'internal' ? internalCount : communityCount}
-                    </span>
-                  </span>
-                ),
-                value: t.key,
-              }))}
-              value={sourceTab}
-              onChange={(v) => setSourceTab(v as string)}
+          {/* Search bar */}
+          <div className="mt-6 flex items-center gap-3 w-full">
+            <Input
+              placeholder="请输入技能名称"
+              prefix={<SearchOutlined className="" />}
+              size="large"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              allowClear
             />
-            <Segmented
-              size="small"
-              options={FILTER_TABS.map((t) => ({ label: t.label, value: t.key }))}
-              value={filterTab}
-              onChange={(v) => setFilterTab(v as string)}
+            <Button
+              type="primary"
+              size="large"
+              shape="circle"
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/space/skills/new')}
             />
           </div>
+        </div>
 
-          {/* Category tags */}
-          <div className="flex flex-wrap items-center gap-1.5 border-b border-ghost px-4 py-3">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setCategory(cat)}
-                className={`rounded px-2 py-0.5 text-xs transition-colors ${
-                  category === cat ? 'font-medium text-brand' : ''
-                }`}
-              >
-                #{cat}
-              </button>
+        {/* Featured section */}
+        <div className="mt-12 pb-6 overflow-hidden w-full">
+          <div className="mb-3 flex items-center gap-2">
+            <FireOutlined style={{ color: '#fe6e00' }} />
+            <span className="text-standard font-medium">精选技能</span>
+            <span className="text-xs">经过验证的优质技能</span>
+          </div>
+          <div className="flex gap-3 overflow-x-auto">
+            {featuredSkills.map((skill) => (
+              <SkillCard key={skill.name} skill={skill} compact />
             ))}
           </div>
+        </div>
 
-          {/* Skill list */}
-          <div className="p-4">
-            {filteredSkills.length === 0 ? (
-              <div className="py-12 text-center text-standard">没有找到匹配的技能</div>
-            ) : (
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {filteredSkills.map((skill) => (
-                  <SkillCard key={skill.name} skill={skill} />
-                ))}
-              </div>
-            )}
+        {/* All skills section */}
+        <div className="flex-1 px-6">
+          <div className="rounded-xl border border-ghost">
+            {/* Source tabs + filter tabs */}
+            <div className="flex items-center justify-between border-b border-ghost px-4 pt-3 pb-3">
+              <Segmented
+                options={SOURCE_TABS.map((t) => ({
+                  label: (
+                    <span>
+                      {t.label}{' '}
+                      <span className="font-mono text-xs tabular-nums">
+                        {t.key === 'internal' ? internalCount : communityCount}
+                      </span>
+                    </span>
+                  ),
+                  value: t.key,
+                }))}
+                value={sourceTab}
+                onChange={(v) => setSourceTab(v as string)}
+              />
+              <Segmented
+                size="small"
+                options={FILTER_TABS.map((t) => ({ label: t.label, value: t.key }))}
+                value={filterTab}
+                onChange={(v) => setFilterTab(v as string)}
+              />
+            </div>
+
+            {/* Category tags */}
+            <div className="flex flex-wrap items-center gap-1.5 border-b border-ghost px-4 py-3">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  className={`rounded px-2 py-0.5 text-xs transition-colors ${
+                    category === cat ? 'font-medium text-brand' : ''
+                  }`}
+                >
+                  #{cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Skill list */}
+            <div className="p-4">
+              {filteredSkills.length === 0 ? (
+                <div className="py-12 text-center text-standard">没有找到匹配的技能</div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  {filteredSkills.map((skill) => (
+                    <SkillCard key={skill.name} skill={skill} />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Page>
   );
 };
 export default Skills;
