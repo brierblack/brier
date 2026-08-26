@@ -6,7 +6,6 @@ export const theme: ThemeConfig = {
     fontSize: 13,
     colorPrimary: '#fe6e00',
     colorBgContainer: '#fbfbfb',
-    colorBgElevated: '#fbfbfb',
     colorBorder: '#e2e2e2',
     borderRadiusSM: 4,
     borderRadius: 6,

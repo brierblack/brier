@@ -89,6 +89,7 @@
   /* 背景空间 */
   --color-canvas: #fbfbfb; /* 页面底层 */
   --color-surface: #f4f4f4; /* 卡片/容器 */
+  --color-surface-hover: #ebebeb; /* 卡片/容器悬停 */
 }
 
 @source '../dist';

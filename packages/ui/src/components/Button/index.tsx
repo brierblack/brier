@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react';
 import { Button as AntdButton, type ButtonProps as AntdButtonProps } from 'antd';
 
 const DEFAULT_CLASS_NAMES = {
-  root: ' hover:!bg-surface active:!bg-surface',
+  root: ' hover:!bg-surface-hover active:!bg-surface-hover',
 };
 
 export interface ButtonProps extends AntdButtonProps {
@@ -21,14 +21,15 @@ export const Button = memo((props: ButtonProps) => {
 
   const cns = useMemo(() => {
     if (composeType === 'text') {
+      let root = DEFAULT_CLASS_NAMES.root;
       if (selected) {
-        DEFAULT_CLASS_NAMES.root += ' !bg-surface';
+        root = `${root} !bg-surface-hover`;
       }
       if (bordered) {
-        DEFAULT_CLASS_NAMES.root += ' !border-ghost';
+        root = `${root} !border-ghost`;
       }
       return {
-        ...DEFAULT_CLASS_NAMES,
+        ...{ root },
         ...classNames,
       };
     }

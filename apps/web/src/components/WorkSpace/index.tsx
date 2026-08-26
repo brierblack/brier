@@ -1,19 +1,17 @@
-import React, { memo, useEffect, useMemo, useState } from 'react';
-import { Dropdown, Input, theme } from 'antd';
-import { Button } from '@hiveblack/ui';
-import { PlusOutlined, SwapOutlined, SearchOutlined } from '@ant-design/icons';
+import { memo, useEffect, useMemo, useState } from 'react';
+import { Button, Select } from '@hiveblack/ui';
+import { PlusOutlined, SwapOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import type { MenuProps } from 'antd';
 import type { Workspace } from '@/types';
 import { fetchWorkspaces } from '@/services/workspace';
 import { Avatar } from './Avatar';
+
+const CREATE_VALUE = '__create__';
 
 export const WorkSpace = memo(() => {
   const navigate = useNavigate();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [currentId, setCurrentId] = useState<string>('');
-  const [search, setSearch] = useState('');
-  const { token } = theme.useToken();
 
   useEffect(() => {
     fetchWorkspaces().then((data) => {
@@ -24,18 +22,10 @@ export const WorkSpace = memo(() => {
 
   const current = workspaces.find((w) => w.id === currentId) ?? workspaces[0];
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return workspaces;
-    return workspaces.filter(
-      (w) => w.name.toLowerCase().includes(q) || w.slug.toLowerCase().includes(q),
-    );
-  }, [workspaces, search]);
-
-  const menuItems: MenuProps['items'] = useMemo(
-    () =>
-      filtered.map((w) => ({
-        key: w.id,
+  const options = useMemo(
+    () => [
+      ...workspaces.map((w) => ({
+        value: w.id,
         label: (
           <div className="flex items-center gap-2 py-0.5">
             <Avatar workspace={w} />
@@ -44,73 +34,36 @@ export const WorkSpace = memo(() => {
             </div>
           </div>
         ),
+        workspace: w,
       })),
-    [filtered],
+      { type: 'divider' as const, value: '__divider__' },
+      {
+        value: CREATE_VALUE,
+        label: (
+          <span className="flex items-center gap-2 text-brand">
+            <PlusOutlined className="text-xs" />
+            新建工作空间
+          </span>
+        ),
+      },
+    ],
+    [workspaces],
   );
 
-  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
-    setCurrentId(key);
+  const handleChange = (val: string) => {
+    if (val === CREATE_VALUE) {
+      navigate('/spaces/new');
+      return;
+    }
+    setCurrentId(val);
   };
-
-  const handleCreate = () => {
-    setSearch('');
-    navigate('/spaces/new');
-  };
-
-  const contentStyle: React.CSSProperties = {
-    backgroundColor: token.colorBgElevated,
-    borderRadius: token.borderRadiusLG,
-    boxShadow: 'none',
-    border: '1px solid var(--color-ghost)',
-  };
-
-  const menuStyle: React.CSSProperties = {
-    backgroundColor: token.colorBgElevated,
-    borderRadius: 'none',
-    boxShadow: 'none',
-  };
-
-  const dropdownContent = (menu: React.ReactNode) => (
-    <div style={contentStyle}>
-      <div className="border-b border-ghost">
-        <Input
-          placeholder="搜索工作空间"
-          prefix={<SearchOutlined className="" />}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          allowClear
-          variant="filled"
-          classNames={{ root: ' !bg-canvas' }}
-          className="!border-transparent"
-        />
-      </div>
-
-      {React.cloneElement(
-        menu as React.ReactElement<{
-          style: React.CSSProperties;
-        }>,
-        { style: menuStyle },
-      )}
-      <div className="border-t border-ghost">
-        <Button
-          block
-          type="text"
-          onClick={handleCreate}
-          className="flex h-9 w-full cursor-pointer items-center gap-2 rounded-none bg-canvas px-3 transition-colors"
-        >
-          <PlusOutlined className="text-xs" />
-          新建工作空间
-        </Button>
-      </div>
-    </div>
-  );
 
   if (!current) {
     return (
       <Button
         block
         type="text"
-        onClick={handleCreate}
+        onClick={() => navigate('/spaces/new')}
         classNames={{ root: ' !border-ghost !px-2' }}
       >
         <PlusOutlined className="text-standard" />
@@ -120,30 +73,37 @@ export const WorkSpace = memo(() => {
   }
 
   return (
-    <Dropdown
-      menu={{
-        items: menuItems,
-        onClick: handleMenuClick,
+    <Select
+      value={currentId}
+      onChange={(val) => handleChange(val as string)}
+      options={options}
+      showSearch={{
+        filterOption: (input, option) => {
+          if (option?.value === CREATE_VALUE) return true;
+          const w = workspaces.find((ws) => ws.id === option?.value);
+          if (!w) return false;
+          const q = input.toLowerCase();
+          return w.name.toLowerCase().includes(q) || w.slug.toLowerCase().includes(q);
+        },
       }}
-      popupRender={(menu) => dropdownContent(menu)}
-      trigger={['click']}
-    >
-      <Button
-        block
-        type="text"
-        classNames={{
-          root: ' !border-ghost !px-2',
-        }}
-      >
-        <Avatar workspace={current} />
-        <div className="min-w-0 flex-1 text-left">
-          <div className="truncate font-medium">{current.name}</div>
-        </div>
-        <span className="flex shrink-0 items-center gap-0.5 text-[12px]">
-          切换
-          <SwapOutlined />
-        </span>
-      </Button>
-    </Dropdown>
+      labelRender={({ value }) => {
+        const w = workspaces.find((ws) => ws.id === value);
+        if (!w) return null;
+        return (
+          <>
+            <Avatar workspace={w} />
+            <div className="min-w-0 flex-1 text-left">
+              <div className="truncate font-medium">{w.name}</div>
+            </div>
+            <span className="flex shrink-0 items-center gap-0.5 text-[12px]">
+              切换
+              <SwapOutlined />
+            </span>
+          </>
+        );
+      }}
+      notFoundContent="暂无工作空间"
+      button={{ block: true }}
+    />
   );
 });
