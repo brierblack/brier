@@ -50,7 +50,7 @@ const Team = () => {
         render: (_, r) => (
           <div
             className="flex cursor-pointer items-center gap-2.5"
-            onClick={() => navigate(`/team/${r.id}`)}
+            onClick={() => navigate(`/space/team/${r.id}`)}
           >
             <div className="flex size-9 shrink-0 items-center justify-center rounded-md border border-ghost">
               👥
@@ -96,7 +96,7 @@ const Team = () => {
             menu={{
               items: actionMenuItems,
               onClick: ({ key }) => {
-                if (key === 'view') navigate(`/team/${r.id}`);
+                if (key === 'view') navigate(`/space/team/${r.id}`);
               },
             }}
             trigger={['click']}
@@ -143,7 +143,7 @@ const Team = () => {
           rowKey="id"
           pagination={false}
           size="middle"
-          onRow={(r) => ({ onClick: () => navigate(`/team/${r.id}`) })}
+          onRow={(r) => ({ onClick: () => navigate(`/space/team/${r.id}`) })}
         />
 
         <CreateTeamModal open={createOpen} onCancel={() => setCreateOpen(false)} />

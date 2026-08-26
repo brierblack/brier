@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Input, Tag } from 'antd';
+import { App, Input, Segmented, Tag } from 'antd';
 import { Button } from '@hiveblack/ui';
-import { App } from 'antd';
 import { PlusOutlined, SearchOutlined, FireOutlined } from '@ant-design/icons';
 import { skills } from '../../../data/mockData';
 import { SKILL_TYPE_MAP } from '../../../define';
@@ -158,17 +157,11 @@ const Skills = () => {
     <div className="flex h-full flex-col bg-canvas">
       {/* Top tab nav */}
       <div className="flex h-12 shrink-0 items-center gap-1 border-b border-ghost px-4">
-        {TOP_TABS.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setTopTab(tab.key)}
-            className={`h-full border-b-2 px-4 text-2xl text-standard font-medium transition-colors ${
-              topTab === tab.key ? 'border-brand text-brand' : 'border-transparent'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+        <Segmented
+          options={TOP_TABS.map((t) => ({ label: t.label, value: t.key }))}
+          value={topTab}
+          onChange={(v) => setTopTab(v as string)}
+        />
       </div>
 
       {/* Header */}
@@ -215,36 +208,28 @@ const Skills = () => {
       <div className="flex-1 overflow-y-auto px-6">
         <div className="rounded-xl border border-ghost">
           {/* Source tabs + filter tabs */}
-          <div className="flex items-center justify-between border-b border-ghost px-4 pt-3">
-            <div className="flex items-center gap-1">
-              {SOURCE_TABS.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setSourceTab(tab.key)}
-                  className={`rounded-t-md px-3 py-2 text-standard font-medium transition-colors ${
-                    sourceTab === tab.key ? '-mb-px border-b-2 border-brand text-brand' : ''
-                  }`}
-                >
-                  {tab.label}{' '}
-                  <span className="font-mono text-xs tabular-nums">
-                    {tab.key === 'internal' ? internalCount : communityCount}
+          <div className="flex items-center justify-between border-b border-ghost px-4 pt-3 pb-3">
+            <Segmented
+              options={SOURCE_TABS.map((t) => ({
+                label: (
+                  <span>
+                    {t.label}{' '}
+                    <span className="font-mono text-xs tabular-nums">
+                      {t.key === 'internal' ? internalCount : communityCount}
+                    </span>
                   </span>
-                </button>
-              ))}
-            </div>
-            <div className="flex items-center gap-1 pb-1">
-              {FILTER_TABS.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setFilterTab(tab.key)}
-                  className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
-                    filterTab === tab.key ? 'text-white' : ''
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+                ),
+                value: t.key,
+              }))}
+              value={sourceTab}
+              onChange={(v) => setSourceTab(v as string)}
+            />
+            <Segmented
+              size="small"
+              options={FILTER_TABS.map((t) => ({ label: t.label, value: t.key }))}
+              value={filterTab}
+              onChange={(v) => setFilterTab(v as string)}
+            />
           </div>
 
           {/* Category tags */}
