@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { Button, Dropdown, Input, theme } from 'antd';
-import { Button as AntdButton } from '@hiveblack/ui';
+import { Dropdown, Input, theme } from 'antd';
+import { Button } from '@hiveblack/ui';
 import { PlusOutlined, SwapOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { MenuProps } from 'antd';
