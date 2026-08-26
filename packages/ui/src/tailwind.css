@@ -79,16 +79,16 @@
   --color-iris: #8d54ff;
 
   /* 前景内容（文字） */
-  --color-ink: #0f172b;      /* 主文本 */
-  --color-muted: #62748e;    /* 次要文本 */
-  --color-faint: #868686;    /* 占位/禁用 */
+  --color-ink: #0f172b; /* 主文本 */
+  --color-muted: #62748e; /* 次要文本 */
+  --color-faint: #868686; /* 占位/禁用 */
 
   /* 过渡层（线条） */
-  --color-ghost: #e2e2e2;    /* 边框/分割线 */
+  --color-ghost: #e2e2e2; /* 边框/分割线 */
 
   /* 背景空间 */
-  --color-canvas: #fbfbfb;   /* 页面底层 */
-  --color-surface: #f4f4f4;  /* 卡片/容器 */
+  --color-canvas: #fbfbfb; /* 页面底层 */
+  --color-surface: #f4f4f4; /* 卡片/容器 */
 }
 
 @source '../dist';

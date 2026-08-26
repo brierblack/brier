@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Button } from 'antd';
+import { Button } from '@hiveblack/ui';
 import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Card } from '@hiveblack/ui';
 

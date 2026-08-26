@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Input, Button, Tag } from 'antd';
+import { Input, Tag } from 'antd';
+import { Button } from '@hiveblack/ui';
 import { App } from 'antd';
 import { PlusOutlined, SearchOutlined, FireOutlined } from '@ant-design/icons';
 import { skills } from '../../../data/mockData';
@@ -95,9 +96,7 @@ const SkillCard = ({ skill, compact }: { skill: Skill; compact?: boolean }) => {
             >
               {skill.category}
             </Tag>
-            <span className="text-xs">
-              {skill.source === 'internal' ? '内部' : '社区'}
-            </span>
+            <span className="text-xs">{skill.source === 'internal' ? '内部' : '社区'}</span>
           </div>
         </div>
       </div>
@@ -164,9 +163,7 @@ const Skills = () => {
             key={tab.key}
             onClick={() => setTopTab(tab.key)}
             className={`h-full border-b-2 px-4 text-2xl text-standard font-medium transition-colors ${
-              topTab === tab.key
-                ? 'border-brand text-brand'
-                : 'border-transparent'
+              topTab === tab.key ? 'border-brand text-brand' : 'border-transparent'
             }`}
           >
             {tab.label}
@@ -225,9 +222,7 @@ const Skills = () => {
                   key={tab.key}
                   onClick={() => setSourceTab(tab.key)}
                   className={`rounded-t-md px-3 py-2 text-standard font-medium transition-colors ${
-                    sourceTab === tab.key
-                      ? '-mb-px border-b-2 border-brand text-brand'
-                      : ''
+                    sourceTab === tab.key ? '-mb-px border-b-2 border-brand text-brand' : ''
                   }`}
                 >
                   {tab.label}{' '}
@@ -243,9 +238,7 @@ const Skills = () => {
                   key={tab.key}
                   onClick={() => setFilterTab(tab.key)}
                   className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
-                    filterTab === tab.key
-                      ? ' text-white'
-                      : ''
+                    filterTab === tab.key ? 'text-white' : ''
                   }`}
                 >
                   {tab.label}

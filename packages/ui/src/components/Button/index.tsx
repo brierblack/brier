@@ -2,12 +2,12 @@ import { memo, useMemo } from 'react';
 import { Button as AntdButton, type ButtonProps as AntdButtonProps } from 'antd';
 
 const DEFAULT_CLASS_NAMES = {
-    root: '!border-ghost',
+  root: '!border-ghost hover:!bg-surface active:!bg-surface',
 };
 
 export interface ButtonProps extends AntdButtonProps {
-    selected?: boolean;
-    bordered?: boolean;
+  selected?: boolean;
+  bordered?: boolean;
 }
 
 export const Button = memo((props: ButtonProps) => {
@@ -20,11 +20,11 @@ export const Button = memo((props: ButtonProps) => {
   }, [type]);
 
   const cns = useMemo(() => {
-    if(composeType === 'text') {
-        return {
-            ...DEFAULT_CLASS_NAMES,
-            ...classNames,
-        }
+    if (composeType === 'text') {
+      return {
+        ...DEFAULT_CLASS_NAMES,
+        ...classNames,
+      };
     }
     return classNames;
   }, [composeType, classNames]);

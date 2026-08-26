@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { App, Button, Collapse } from 'antd';
+import { App, Collapse } from 'antd';
+import { Button } from '@hiveblack/ui';
 import type { CollapseProps } from 'antd';
 import { CopyOutlined, DownOutlined, RobotOutlined } from '@ant-design/icons';
 import { Modal } from '@hiveblack/ui';
@@ -35,9 +36,7 @@ const MANUAL_ITEMS: CollapseProps['items'] = [
         <div>
           <div className="mb-1 text-xs">1. 安装 hiveblack CLI</div>
           <div className="rounded bg-[#f5f5f5] px-3 py-2">
-            <code className="font-mono text-standard">
-              npm install -g @hiveblack/cli@latest
-            </code>
+            <code className="font-mono text-standard">npm install -g @hiveblack/cli@latest</code>
           </div>
         </div>
         <div>

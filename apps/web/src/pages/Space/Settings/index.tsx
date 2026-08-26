@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Button, Form, Input, Menu, Select, Switch, Upload } from 'antd';
+import { Form, Input, Menu, Select, Switch, Upload } from 'antd';
+import { Button } from '@hiveblack/ui';
 import {
   PlusOutlined,
   UserOutlined,
@@ -202,9 +203,7 @@ const Settings = () => {
                   插入模版
                 </Button>
               </div>
-              <p className="mb-4 text-xs">
-                为所有在空间内工作的 Agent 提供自定义指令和上下文
-              </p>
+              <p className="mb-4 text-xs">为所有在空间内工作的 Agent 提供自定义指令和上下文</p>
               <Form.Item name="instructions">
                 <Input.TextArea
                   placeholder={
@@ -218,9 +217,7 @@ const Settings = () => {
               {/* 安装的 Skills */}
               <div className="mt-8">
                 <div className="mb-0.5 text-standard font-semibold">Skills</div>
-                <p className="mb-3 text-xs">
-                  为所有空间内工作的 Agent 统一预装 Skills。
-                </p>
+                <p className="mb-3 text-xs">为所有空间内工作的 Agent 统一预装 Skills。</p>
 
                 <div className="overflow-hidden rounded-lg border border-ghost">
                   {/* Tab row + add button */}
@@ -274,9 +271,7 @@ const Settings = () => {
                                 : SKILL_TYPE_MAP[skill.type].label}
                             </Tag>
                           </div>
-                          <div className="mt-0.5 text-xs leading-relaxed">
-                            {skill.desc}
-                          </div>
+                          <div className="mt-0.5 text-xs leading-relaxed">{skill.desc}</div>
                         </div>
                         <Switch
                           size="small"

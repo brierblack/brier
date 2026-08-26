@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { Button, Dropdown, Input, theme } from 'antd';
+import { Button as AntdButton } from '@hiveblack/ui';
 import { PlusOutlined, SwapOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { MenuProps } from 'antd';
@@ -106,7 +107,12 @@ export const WorkSpace = memo(() => {
 
   if (!current) {
     return (
-      <Button block type="text" onClick={handleCreate} classNames={{ root: ' !border-ghost !px-2' }}>
+      <Button
+        block
+        type="text"
+        onClick={handleCreate}
+        classNames={{ root: ' !border-ghost !px-2' }}
+      >
         <PlusOutlined className="text-standard" />
         <span className="flex-1 text-left">新建工作空间</span>
       </Button>

@@ -1,3 +1,4 @@
+export { Button } from './components/Button';
 export { Card } from './components/Card';
 export { Drawer } from './components/Drawer';
 export { Modal } from './components/Modal';

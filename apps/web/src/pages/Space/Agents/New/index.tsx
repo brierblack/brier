@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { App, Button, Form, Input, Select, Space, Upload } from 'antd';
+import { App, Form, Input, Select, Space, Upload } from 'antd';
+import { Button } from '@hiveblack/ui';
 import {
   CheckOutlined,
   DesktopOutlined,
@@ -122,10 +123,7 @@ const NewAgent = () => {
     <Page
       breadcrumb={
         <>
-          <span
-            className="cursor-pointer"
-            onClick={() => navigate('/agents')}
-          >
+          <span className="cursor-pointer" onClick={() => navigate('/agents')}>
             Agents
           </span>
           <span className="">/</span>
@@ -163,9 +161,7 @@ const NewAgent = () => {
                         c.status === 'online' ? 'bg-[#389e0d]' : 'bg-[#c9cdd4]'
                       }`}
                     />
-                    <span className="text-xs">
-                      {c.status === 'online' ? '在线' : '离线'}
-                    </span>
+                    <span className="text-xs">{c.status === 'online' ? '在线' : '离线'}</span>
                   </span>
                 ),
               }))}
@@ -331,9 +327,7 @@ const NewAgent = () => {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-standard font-medium">{ext.name}</div>
-                  <div className="mt-0.5 line-clamp-2 text-xs leading-relaxed">
-                    {ext.desc}
-                  </div>
+                  <div className="mt-0.5 line-clamp-2 text-xs leading-relaxed">{ext.desc}</div>
                 </div>
                 <Button
                   size="small"

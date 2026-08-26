@@ -1,4 +1,5 @@
-import { Button, Spin } from 'antd';
+import { Spin } from 'antd';
+import { Button } from '@hiveblack/ui';
 import { useAuth } from '../../auth-context';
 
 const HiveLogo = ({ size = 48 }: { size?: number }) => {

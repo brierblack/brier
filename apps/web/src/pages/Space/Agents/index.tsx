@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Input, Select, Space, Button, Dropdown, type MenuProps } from 'antd';
+import { Input, Select, Space, Dropdown, type MenuProps } from 'antd';
+import { Button } from '@hiveblack/ui';
 import {
   PlusOutlined,
   SearchOutlined,

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Avatar, Button, Dropdown, Menu, type MenuProps } from 'antd';
+import { Avatar, Dropdown, Menu, type MenuProps } from 'antd';
+import { Button } from '@hiveblack/ui';
 import {
   GithubOutlined,
   LogoutOutlined,
@@ -212,9 +213,7 @@ export function Sidebar() {
                 </Avatar>
               )}
               <div className="min-w-0 flex-1">
-                <div className="truncate text-[13px] font-medium">
-                  {user.name ?? user.login}
-                </div>
+                <div className="truncate text-[13px] font-medium">{user.name ?? user.login}</div>
                 <div className="truncate text-[11px]">{user.email ?? user.login}</div>
               </div>
             </div>

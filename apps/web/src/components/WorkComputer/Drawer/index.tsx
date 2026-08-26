@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { App, Button, Space } from 'antd';
+import { App, Space } from 'antd';
+import { Button } from '@hiveblack/ui';
 import { DesktopOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Drawer } from '@hiveblack/ui';
 import { backendServices, computerAgents, workComputers } from '@/data/mockData';
@@ -126,9 +127,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
                 <span className="text-base font-semibold">{selectedComputer.name}</span>
                 <div className="flex items-center gap-3">
                   <StatusBadge status={selectedComputer.status} />
-                  <span className="text-xs">
-                    最后心跳: {selectedComputer.lastHeartbeat}
-                  </span>
+                  <span className="text-xs">最后心跳: {selectedComputer.lastHeartbeat}</span>
                 </div>
                 <div className="mb-5 font-mono text-standard">
                   {selectedComputer.hostname}, {selectedComputer.systemType}

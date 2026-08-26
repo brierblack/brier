@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { App, Button, Form, Input, Select, Upload } from 'antd';
+import { App, Form, Input, Select, Upload } from 'antd';
+import { Button } from '@hiveblack/ui';
+
 import {
   CrownOutlined,
   EyeOutlined,
@@ -187,9 +189,7 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
               <UserAddOutlined className="text-standard" />
               <span className="text-standard font-semibold">附加成员（可选）</span>
             </div>
-            <p className="mb-3 text-xs">
-              主 Agent 可以委派任务给这些成员，也可以稍后再添加。
-            </p>
+            <p className="mb-3 text-xs">主 Agent 可以委派任务给这些成员，也可以稍后再添加。</p>
             <Form.Item noStyle name="members">
               <Select
                 placeholder="添加协作 Agent"

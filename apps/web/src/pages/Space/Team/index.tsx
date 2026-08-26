@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Dropdown, Input, Space, type MenuProps } from 'antd';
+import { Dropdown, Input, Space, type MenuProps } from 'antd';
+import { Button } from '@hiveblack/ui';
 import {
   PlusOutlined,
   EllipsisOutlined,
@@ -69,16 +70,12 @@ const Team = () => {
       {
         title: '工作电脑',
         dataIndex: 'workComputer',
-        render: (w: string) => (
-          <span className="font-mono text-xs font-medium">{w}</span>
-        ),
+        render: (w: string) => <span className="font-mono text-xs font-medium">{w}</span>,
       },
       {
         title: 'Runtime',
         dataIndex: 'runtime',
-        render: (r: string) => (
-          <span className="font-mono text-xs font-medium">{r}</span>
-        ),
+        render: (r: string) => <span className="font-mono text-xs font-medium">{r}</span>,
       },
       {
         title: '创建者',

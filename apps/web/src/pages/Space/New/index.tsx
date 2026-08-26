@@ -1,17 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  App,
-  Button,
-  Steps,
-  Form,
-  Input,
-  Upload,
-  Select,
-  Divider,
-  Switch,
-  type UploadProps,
-} from 'antd';
+import { App, Steps, Form, Input, Upload, Select, Divider, Switch, type UploadProps } from 'antd';
+import { Button } from '@hiveblack/ui';
 import {
   ArrowLeftOutlined,
   PlusOutlined,
@@ -111,7 +101,7 @@ const New = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-work">
+    <div className="flex h-screen flex-col bg-canvas">
       {/* Header: back button (left) + centered title */}
       <div className="shrink-0 px-6 py-4">
         <div className="flex items-center">
@@ -125,9 +115,7 @@ const New = () => {
           </div>
           <div className="flex-1" />
         </div>
-        <p className="mt-1 text-center text-xs">
-          协作空间，承载团队协作所需的全部上下文
-        </p>
+        <p className="mt-1 text-center text-xs">协作空间，承载团队协作所需的全部上下文</p>
       </div>
 
       <Divider className="!m-0" />
@@ -234,9 +222,7 @@ const New = () => {
                   插入模版
                 </Button>
               </div>
-              <p className="mb-4 text-xs">
-                为所有在空间内工作的 Agent 提供自定义指令和上下文
-              </p>
+              <p className="mb-4 text-xs">为所有在空间内工作的 Agent 提供自定义指令和上下文</p>
               <Form.Item name="instructions">
                 <Input.TextArea placeholder="模版内容" rows={12} style={{ resize: 'none' }} />
               </Form.Item>

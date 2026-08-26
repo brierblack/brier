@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Input, Select, Radio, Upload, type UploadProps, App } from 'antd';
+import { Input, Select, Radio, Upload, type UploadProps, App } from 'antd';
+import { Button } from '@hiveblack/ui';
 import { Page } from '@hiveblack/ui';
 import { InboxOutlined, BulbOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 
@@ -113,10 +114,7 @@ const New = () => {
             >
               /skill-creator
             </code>
-            <span className="">
-              {' '}
-              命令让 AI 辅助你创建技能，手动上传适合已有技能包的用户。
-            </span>
+            <span className=""> 命令让 AI 辅助你创建技能，手动上传适合已有技能包的用户。</span>
           </div>
         </div>
 
@@ -127,9 +125,7 @@ const New = () => {
               key={tab.key}
               onClick={() => setImportTab(tab.key)}
               className={`-mb-px border-b-2 px-4 py-2 text-standard font-medium transition-colors ${
-                importTab === tab.key
-                  ? 'border-brand text-brand'
-                  : 'border-transparent'
+                importTab === tab.key ? 'border-brand text-brand' : 'border-transparent'
               }`}
             >
               {tab.label}
@@ -142,9 +138,7 @@ const New = () => {
           {/* Upload or GitHub URL */}
           {importTab === 'zip' ? (
             <div>
-              <label className="mb-1.5 block text-standard font-medium">
-                Skill 压缩包
-              </label>
+              <label className="mb-1.5 block text-standard font-medium">Skill 压缩包</label>
               <Dragger {...uploadProps} className="">
                 <p className="mb-2 text-4xl">
                   <InboxOutlined />
@@ -155,18 +149,14 @@ const New = () => {
             </div>
           ) : (
             <div>
-              <label className="mb-1.5 block text-standard font-medium">
-                GitHub 仓库地址
-              </label>
+              <label className="mb-1.5 block text-standard font-medium">GitHub 仓库地址</label>
               <Input
                 placeholder="https://github.com/username/skill-repo"
                 size="large"
                 value={githubUrl}
                 onChange={(e) => setGithubUrl(e.target.value)}
               />
-              <p className="mt-1.5 text-xs">
-                仓库需包含 SKILL.md 文件，系统将自动解析并导入
-              </p>
+              <p className="mt-1.5 text-xs">仓库需包含 SKILL.md 文件，系统将自动解析并导入</p>
             </div>
           )}
 

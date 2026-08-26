@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Avatar, Button, Input, InputNumber, Menu, Select } from 'antd';
+import { Avatar, Input, InputNumber, Menu, Select } from 'antd';
+import { Button } from '@hiveblack/ui';
 import type { MenuProps } from 'antd';
 import {
   AppstoreOutlined,
@@ -186,9 +187,7 @@ const OverviewTab = ({
           <div className="mb-2 text-standard font-bold">属性</div>
           <div>
             <PropertyRow label="工作电脑">
-              <span className="font-mono text-standard font-medium">
-                {agent.workComputer}
-              </span>
+              <span className="font-mono text-standard font-medium">{agent.workComputer}</span>
             </PropertyRow>
             <PropertyRow label="运行时">
               <Select
@@ -236,9 +235,7 @@ const OverviewTab = ({
             <div className="flex items-center justify-between border-b border-ghost pb-2">
               <div className="flex-1">
                 <div className="text-standard font-medium">默认 Agent</div>
-                <p className="mt-1 text-xs">
-                  设为你的"主力" Agent — 接受指派时的默认人选
-                </p>
+                <p className="mt-1 text-xs">设为你的"主力" Agent — 接受指派时的默认人选</p>
               </div>
               <Button size="small">设为默认</Button>
             </div>
@@ -611,10 +608,7 @@ const AgentDetail = () => {
     <Page
       breadcrumb={
         <>
-          <span
-            className="cursor-pointer"
-            onClick={() => navigate('/agents')}
-          >
+          <span className="cursor-pointer" onClick={() => navigate('/agents')}>
             Agents
           </span>
           <span className="">/</span>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Input, Tabs } from 'antd';
+import { Input, Tabs } from 'antd';
+import { Button } from '@hiveblack/ui';
 import { PlusOutlined, LockOutlined, CheckOutlined } from '@ant-design/icons';
 import { Page, Tag } from '@hiveblack/ui';
 import { teams } from '../../../../data/mockData';
@@ -122,9 +123,7 @@ const MembersTab = ({ members }: { members: MemberDetail[] }) => {
         <div className="mb-3 flex items-center justify-between">
           <div>
             <div className="text-standard font-bold">团队成员</div>
-            <p className="mt-0.5 text-xs">
-              共 {members.length} 名成员，由主 Agent 负责协调
-            </p>
+            <p className="mt-0.5 text-xs">共 {members.length} 名成员，由主 Agent 负责协调</p>
           </div>
           <Button type="primary" icon={<PlusOutlined />}>
             添加成员
@@ -141,9 +140,7 @@ const MembersTab = ({ members }: { members: MemberDetail[] }) => {
                   {m.isMain && <Tag color="#fe6e00">主 Agent</Tag>}
                   {m.role && !m.isMain && <Tag color="#8d54ff">{m.role}</Tag>}
                   {!m.role && !m.isMain && (
-                    <span className="cursor-pointer text-xs hover:text-brand">
-                      添加角色…
-                    </span>
+                    <span className="cursor-pointer text-xs hover:text-brand">添加角色…</span>
                   )}
                 </div>
               </div>
@@ -208,10 +205,7 @@ const TeamDetail = () => {
     <Page
       breadcrumb={
         <>
-          <span
-            className="cursor-pointer"
-            onClick={() => navigate('/team')}
-          >
+          <span className="cursor-pointer" onClick={() => navigate('/team')}>
             Agent 团队
           </span>
           <span className="">/</span>

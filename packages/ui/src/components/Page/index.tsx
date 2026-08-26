@@ -17,9 +17,7 @@ export const Page = memo(({ children, title, subtitle, extra, breadcrumb }: Page
         ) : (
           <div className="flex items-baseline gap-2">
             {title && (
-              <h1 className="m-0 text-standard leading-tight font-bold tracking-tight">
-                {title}
-              </h1>
+              <h1 className="m-0 text-standard leading-tight font-bold tracking-tight">{title}</h1>
             )}
             {subtitle && <span className="text-xs">{subtitle}</span>}
           </div>
