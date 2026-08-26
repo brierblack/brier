@@ -69,7 +69,7 @@ const Login = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-canvas">
+      <div className="flex h-screen items-center justify-center">
         <Spin size="large" />
       </div>
     );

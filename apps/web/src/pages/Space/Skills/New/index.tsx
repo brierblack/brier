@@ -66,18 +66,18 @@ const New = () => {
         <div className="flex items-center gap-2 text-standard">
           <button
             onClick={() => navigate('/space/skills')}
-            className="flex items-center gap-1 text-faint transition-colors hover:text-ink"
+            className="flex items-center gap-1 transition-colors"
           >
             <ArrowLeftOutlined className="text-xs" />
             <span>市场</span>
           </button>
-          <span className="text-faint">/</span>
-          <span className="font-medium text-ink">新建</span>
+          <span className="">/</span>
+          <span className="font-medium">新建</span>
         </div>
       }
       extra={
         <div className="flex items-center gap-3">
-          <span className="text-xs text-faint">创建类型</span>
+          <span className="text-xs">创建类型</span>
           <Select
             defaultValue="skill"
             style={{ width: 120 }}
@@ -93,8 +93,8 @@ const New = () => {
       <div className="mx-auto max-w-2xl p-8">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="mb-1.5 text-2xl font-bold text-ink">Skill</h1>
-          <p className="text-standard leading-relaxed text-muted">
+          <h1 className="mb-1.5 text-2xl font-bold">Skill</h1>
+          <p className="text-standard leading-relaxed">
             Skills 扩展 Hive 的任务特定能力，将指令、资源和可选脚本打包， 实现可靠的工作流执行
           </p>
         </div>
@@ -106,14 +106,14 @@ const New = () => {
         >
           <BulbOutlined style={{ color: '#1677ff', marginTop: 2 }} />
           <div className="text-standard leading-relaxed">
-            <span className="text-ink">推荐使用 </span>
+            <span className="">推荐使用 </span>
             <code
               className="rounded px-1.5 py-0.5 font-mono text-xs"
               style={{ background: '#e6f4ff', color: '#1677ff' }}
             >
               /skill-creator
             </code>
-            <span className="text-muted">
+            <span className="">
               {' '}
               命令让 AI 辅助你创建技能，手动上传适合已有技能包的用户。
             </span>
@@ -121,7 +121,7 @@ const New = () => {
         </div>
 
         {/* Import tabs */}
-        <div className="mb-5 flex items-center gap-1 border-b border-line">
+        <div className="mb-5 flex items-center gap-1 border-b border-ghost">
           {IMPORT_TABS.map((tab) => (
             <button
               key={tab.key}
@@ -129,7 +129,7 @@ const New = () => {
               className={`-mb-px border-b-2 px-4 py-2 text-standard font-medium transition-colors ${
                 importTab === tab.key
                   ? 'border-brand text-brand'
-                  : 'border-transparent text-faint hover:text-ink'
+                  : 'border-transparent'
               }`}
             >
               {tab.label}
@@ -142,20 +142,20 @@ const New = () => {
           {/* Upload or GitHub URL */}
           {importTab === 'zip' ? (
             <div>
-              <label className="mb-1.5 block text-standard font-medium text-ink">
+              <label className="mb-1.5 block text-standard font-medium">
                 Skill 压缩包
               </label>
-              <Dragger {...uploadProps} className="!bg-canvas">
-                <p className="mb-2 text-4xl text-faint">
+              <Dragger {...uploadProps} className="">
+                <p className="mb-2 text-4xl">
                   <InboxOutlined />
                 </p>
-                <p className="text-standard text-muted">点击或拖拽文件到此区域上传</p>
-                <p className="mt-1 text-xs text-faint">仅支持 .zip 格式</p>
+                <p className="text-standard">点击或拖拽文件到此区域上传</p>
+                <p className="mt-1 text-xs">仅支持 .zip 格式</p>
               </Dragger>
             </div>
           ) : (
             <div>
-              <label className="mb-1.5 block text-standard font-medium text-ink">
+              <label className="mb-1.5 block text-standard font-medium">
                 GitHub 仓库地址
               </label>
               <Input
@@ -164,7 +164,7 @@ const New = () => {
                 value={githubUrl}
                 onChange={(e) => setGithubUrl(e.target.value)}
               />
-              <p className="mt-1.5 text-xs text-faint">
+              <p className="mt-1.5 text-xs">
                 仓库需包含 SKILL.md 文件，系统将自动解析并导入
               </p>
             </div>
@@ -172,7 +172,7 @@ const New = () => {
 
           {/* Category */}
           <div>
-            <label className="mb-1.5 block text-standard font-medium text-ink">分类</label>
+            <label className="mb-1.5 block text-standard font-medium">分类</label>
             <Select
               value={category}
               onChange={setCategory}
@@ -184,14 +184,14 @@ const New = () => {
 
           {/* Visibility */}
           <div>
-            <label className="mb-1.5 block text-standard font-medium text-ink">可见性</label>
+            <label className="mb-1.5 block text-standard font-medium">可见性</label>
             <div className="flex items-center gap-4">
               <Radio.Group value={visibility} onChange={(e) => setVisibility(e.target.value)}>
                 <Radio value="public">公开</Radio>
                 <Radio value="private">私有</Radio>
               </Radio.Group>
             </div>
-            <p className="mt-1.5 text-xs text-faint">
+            <p className="mt-1.5 text-xs">
               {visibility === 'public'
                 ? '所有空间成员均可安装使用此技能'
                 : '仅创建者可安装使用此技能'}
@@ -200,8 +200,8 @@ const New = () => {
         </div>
 
         {/* Bottom actions */}
-        <div className="mt-8 flex items-center justify-between border-t border-line pt-6">
-          <label className="flex cursor-pointer items-center gap-2 text-standard text-muted">
+        <div className="mt-8 flex items-center justify-between border-t border-ghost pt-6">
+          <label className="flex cursor-pointer items-center gap-2 text-standard">
             <input
               type="checkbox"
               checked={installForMe}
@@ -215,7 +215,7 @@ const New = () => {
             size="large"
             loading={submitting}
             onClick={handleSubmit}
-            className="!border-ink !bg-ink hover:!bg-ink/90"
+            className=""
           >
             新建
           </Button>

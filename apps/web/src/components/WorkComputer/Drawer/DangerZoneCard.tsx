@@ -15,7 +15,7 @@ export const DangerZoneCard = memo(({ agentCount, onDelete }: DangerZoneCardProp
         <ExclamationCircleOutlined className="mt-0.5 text-danger" />
         <div>
           <div className="text-standard font-medium">删除 Agent 工作电脑</div>
-          <div className="mt-1 text-xs text-muted">
+          <div className="mt-1 text-xs">
             该 Agent 工作电脑上还有 {agentCount} 个 Agent，请先归档所有 Agent 再删除。
           </div>
         </div>

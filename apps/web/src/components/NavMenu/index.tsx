@@ -122,7 +122,7 @@ export const NavMenu = () => {
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-1">
         <div
-          className="group flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-standard font-medium text-muted hover:bg-[#f5f5f5] hover:text-ink"
+          className="group flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-standard font-medium hover:bg-[#f5f5f5]"
           onClick={() => setRecentExpanded(!recentExpanded)}
         >
           最近 7 天
@@ -145,7 +145,7 @@ export const NavMenu = () => {
         )}
 
         <div
-          className="group flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-standard font-medium text-muted hover:bg-[#f5f5f5] hover:text-ink"
+          className="group flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-standard font-medium hover:bg-[#f5f5f5]"
           onClick={() => setOlderExpanded(!olderExpanded)}
         >
           更早
@@ -179,7 +179,7 @@ export const NavMenu = () => {
               style={{ borderRadius: 6, background: '#e0e0e0' }}
             />
             <div className="min-w-0">
-              <div className="text-[13px] font-medium text-muted">加载中...</div>
+              <div className="text-[13px] font-medium">加载中...</div>
             </div>
           </div>
         )}
@@ -212,10 +212,10 @@ export const NavMenu = () => {
                 </Avatar>
               )}
               <div className="min-w-0 flex-1">
-                <div className="truncate text-[13px] font-medium text-ink">
+                <div className="truncate text-[13px] font-medium">
                   {user.name ?? user.login}
                 </div>
-                <div className="truncate text-[11px] text-faint">{user.email ?? user.login}</div>
+                <div className="truncate text-[11px]">{user.email ?? user.login}</div>
               </div>
             </div>
           </Dropdown>

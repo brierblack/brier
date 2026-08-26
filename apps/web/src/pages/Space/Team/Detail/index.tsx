@@ -85,8 +85,8 @@ const SharingScope = ({
 }) => {
   return (
     <div className="mb-6">
-      <div className="mb-1 text-standard font-bold text-ink">共享范围</div>
-      <p className="mb-3 text-xs text-faint">控制团队是否出现在空间成员的指派和 @ 列表中。</p>
+      <div className="mb-1 text-standard font-bold">共享范围</div>
+      <p className="mb-3 text-xs">控制团队是否出现在空间成员的指派和 @ 列表中。</p>
       <div className="flex flex-col gap-2">
         {SHARING_OPTIONS.map((opt) => (
           <div
@@ -95,13 +95,13 @@ const SharingScope = ({
             className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-all ${
               selected === opt.value
                 ? 'border-brand bg-[#fff5ed]'
-                : 'border-line bg-white hover:border-line'
+                : 'border-ghost bg-white hover:border-ghost'
             }`}
           >
-            {opt.value === 'private' && <LockOutlined className="text-standard text-faint" />}
+            {opt.value === 'private' && <LockOutlined className="text-standard" />}
             <div className="flex-1">
-              <div className="text-standard font-medium text-ink">{opt.label}</div>
-              <div className="mt-0.5 text-xs text-faint">{opt.desc}</div>
+              <div className="text-standard font-medium">{opt.label}</div>
+              <div className="mt-0.5 text-xs">{opt.desc}</div>
             </div>
             {selected === opt.value && <CheckOutlined className="text-standard text-brand" />}
           </div>
@@ -121,8 +121,8 @@ const MembersTab = ({ members }: { members: MemberDetail[] }) => {
       <div>
         <div className="mb-3 flex items-center justify-between">
           <div>
-            <div className="text-standard font-bold text-ink">团队成员</div>
-            <p className="mt-0.5 text-xs text-faint">
+            <div className="text-standard font-bold">团队成员</div>
+            <p className="mt-0.5 text-xs">
               共 {members.length} 名成员，由主 Agent 负责协调
             </p>
           </div>
@@ -131,17 +131,17 @@ const MembersTab = ({ members }: { members: MemberDetail[] }) => {
           </Button>
         </div>
 
-        <div className="divide-y divide-line overflow-hidden rounded-lg border border-line">
+        <div className="divide-y divide-ghost overflow-hidden rounded-lg border border-ghost">
           {members.map((m) => (
             <div key={m.id} className="flex items-center gap-3 bg-white px-4 py-3">
               <MemberAvatar icon={m.icon} color={m.color} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-standard font-medium text-ink">{m.name}</span>
+                  <span className="text-standard font-medium">{m.name}</span>
                   {m.isMain && <Tag color="#fe6e00">主 Agent</Tag>}
                   {m.role && !m.isMain && <Tag color="#8d54ff">{m.role}</Tag>}
                   {!m.role && !m.isMain && (
-                    <span className="cursor-pointer text-xs text-faint hover:text-brand">
+                    <span className="cursor-pointer text-xs hover:text-brand">
                       添加角色…
                     </span>
                   )}
@@ -149,7 +149,7 @@ const MembersTab = ({ members }: { members: MemberDetail[] }) => {
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="size-1.5 rounded-full" style={{ background: '#389e0d' }} />
-                <span className="text-xs text-faint">在线</span>
+                <span className="text-xs">在线</span>
               </div>
             </div>
           ))}
@@ -165,12 +165,12 @@ const InstructionsTab = () => {
   return (
     <div className="max-w-3xl p-6">
       <div className="mb-1 flex items-center justify-between">
-        <span className="text-standard font-bold text-ink">团队指令</span>
+        <span className="text-standard font-bold">团队指令</span>
         <Button type="primary" size="small">
           保存
         </Button>
       </div>
-      <p className="mb-4 text-xs text-faint">写给主 Agent 的协调规则、分工偏好和交付标准</p>
+      <p className="mb-4 text-xs">写给主 Agent 的协调规则、分工偏好和交付标准</p>
       <Input.TextArea
         value={instructions}
         onChange={(e) => setInstructions(e.target.value)}
@@ -191,10 +191,10 @@ const TeamDetail = () => {
 
   if (!team) {
     return (
-      <Page breadcrumb={<span className="text-faint">团队未找到</span>}>
+      <Page breadcrumb={<span className="">团队未找到</span>}>
         <div className="flex h-full items-center justify-center">
           <div className="text-center">
-            <p className="mb-3 text-standard text-muted">未找到该团队</p>
+            <p className="mb-3 text-standard">未找到该团队</p>
             <Button onClick={() => navigate('/team')}>返回列表</Button>
           </div>
         </div>
@@ -209,13 +209,13 @@ const TeamDetail = () => {
       breadcrumb={
         <>
           <span
-            className="cursor-pointer text-faint hover:text-ink"
+            className="cursor-pointer"
             onClick={() => navigate('/team')}
           >
             Agent 团队
           </span>
-          <span className="text-faint">/</span>
-          <span className="font-medium text-ink">{team.name}</span>
+          <span className="">/</span>
+          <span className="font-medium">{team.name}</span>
         </>
       }
       extra={
@@ -225,18 +225,18 @@ const TeamDetail = () => {
       }
     >
       {/* Team info header */}
-      <div className="border-b border-line px-6 py-4">
+      <div className="border-b border-ghost px-6 py-4">
         <div className="mb-2 flex items-center gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-line bg-surface text-xl">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-ghost text-xl">
             👥
           </div>
-          <h1 className="m-0 text-lg font-bold text-ink">{team.name}</h1>
+          <h1 className="m-0 text-lg font-bold">{team.name}</h1>
           <Tag color="#1677ff">空间共享</Tag>
         </div>
         <div className="flex items-center justify-between">
-          <p className="text-standard text-muted">{team.desc}</p>
-          <div className="ml-4 shrink-0 text-xs text-faint">
-            主 Agent: <span className="font-medium text-ink">{mainAgent?.name ?? '未指定'}</span>
+          <p className="text-standard">{team.desc}</p>
+          <div className="ml-4 shrink-0 text-xs">
+            主 Agent: <span className="font-medium">{mainAgent?.name ?? '未指定'}</span>
             <span className="mx-1">·</span>
             {MOCK_MEMBERS.length} 名成员
           </div>

@@ -26,11 +26,12 @@ RUN pnpm config set fetch-timeout 300000 && \
 COPY eslint.config.js .prettierrc.json .prettierignore tsconfig.json ./
 COPY apps/web/ apps/web/
 COPY packages/ui/ packages/ui/
-COPY packages/cli/ packages/cli/
+
+RUN pnpm --filter @hiveblack/ui build
 
 RUN pnpm run lint && pnpm run format:check
 
-RUN pnpm run build
+RUN pnpm --filter @hive/web build
 
 # ---- Stage 2: Build Backend ----
 FROM rust:slim-bookworm AS backend-builder

@@ -13,7 +13,7 @@ export const RuntimeCard = memo(({ runtimes }: RuntimeCardProps) => (
           key={rt}
           style={{
             background: '#f0f0f0',
-            borderColor: 'var(--color-line)',
+            borderColor: 'var(--color-ghost)',
             color: '#333',
             cursor: 'pointer',
           }}

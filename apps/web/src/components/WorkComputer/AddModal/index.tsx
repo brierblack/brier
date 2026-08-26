@@ -26,24 +26,24 @@ const MANUAL_ITEMS: CollapseProps['items'] = [
   {
     key: 'manual',
     label: (
-      <span className="flex items-center gap-1.5 text-standard text-muted">
+      <span className="flex items-center gap-1.5 text-standard">
         &gt;_&nbsp; 或者手动安装（两条命令）
       </span>
     ),
     children: (
       <div className="flex flex-col gap-3">
         <div>
-          <div className="mb-1 text-xs text-faint">1. 安装 hiveblack CLI</div>
+          <div className="mb-1 text-xs">1. 安装 hiveblack CLI</div>
           <div className="rounded bg-[#f5f5f5] px-3 py-2">
-            <code className="font-mono text-standard text-ink">
+            <code className="font-mono text-standard">
               npm install -g @hiveblack/cli@latest
             </code>
           </div>
         </div>
         <div>
-          <div className="mb-1 text-xs text-faint">2. 启动后台服务</div>
+          <div className="mb-1 text-xs">2. 启动后台服务</div>
           <div className="rounded bg-[#f5f5f5] px-3 py-2">
-            <code className="font-mono text-standard break-all text-ink">
+            <code className="font-mono text-standard break-all">
               HIVE_TOKEN='your-token' hiveblack daemon start --server-url https://hive.local
             </code>
           </div>
@@ -57,13 +57,13 @@ const FAQ_ITEMS: CollapseProps['items'] = [
   {
     key: 'faq',
     label: (
-      <span className="flex items-center gap-1.5 text-standard text-muted">
-        <span className="h-3.5 w-3.5 shrink-0 rounded-full border border-line" />
+      <span className="flex items-center gap-1.5 text-standard">
+        <span className="h-3.5 w-3.5 shrink-0 rounded-full border border-ghost" />
         这个命令安全吗？会影响我的网络安全吗？
       </span>
     ),
     children: (
-      <div className="text-xs leading-relaxed text-muted">
+      <div className="text-xs leading-relaxed">
         命令本身是安全的。hiveblack CLI 仅用于启动一个本地后台服务，通过加密通道与 Hive
         平台通信，不会开放端口给外部网络。HIVE_TOKEN
         是临时密钥，仅用于身份验证，不涉及你的代码或数据权限。

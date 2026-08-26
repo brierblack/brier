@@ -18,7 +18,10 @@ export interface TunnelClient {
   onStateChange: (callback: (state: TunnelState) => void) => () => void;
 }
 
-export const createTunnelClient = (config: DaemonConfig, taskExecutor: TaskExecutor): TunnelClient => {
+export const createTunnelClient = (
+  config: DaemonConfig,
+  taskExecutor: TaskExecutor,
+): TunnelClient => {
   let ws: WebSocket | null = null;
   let state: TunnelState = 'disconnected';
   let running = false;

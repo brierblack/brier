@@ -1,7 +1,6 @@
 {
   "name": "@hiveblack/cli",
   "version": "0.0.1",
-  "private": true,
   "type": "module",
   "bin": {
     "hiveblack": "./dist/index.js"
@@ -16,9 +15,17 @@
       "types": "./types/tunnel/TunnelClient.d.ts"
     }
   },
+  "files": [
+    "dist",
+    "types"
+  ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "prepublishOnly": "pnpm run build"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "commander": "^12.1.0",

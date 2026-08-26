@@ -44,7 +44,6 @@
   }
 
   body {
-    background: var(--color-canvas);
     font-family: var(--font-sans);
     font-size: 14px;
     -webkit-font-smoothing: antialiased;
@@ -74,21 +73,22 @@
 
   --color-brand: #fe6e00;
   --color-brand-dark: #f05100;
-  --color-ink: #0f172b;
-  --color-muted: #62748e;
-  --color-faint: #868686;
-  --color-ghost: #cad5e2;
-  --color-canvas: #f1f5f9;
-  --color-surface: #f8fafc;
-
   --color-success: #00c758;
   --color-warn: #f99c00;
   --color-danger: #fb2c36;
   --color-iris: #8d54ff;
 
-  --color-line: #e2e2e2;
-  --color-work: #fbfbfb;
-  --color-work-secondary: #f4f4f4;
+  /* 前景内容（文字） */
+  --color-ink: #0f172b;      /* 主文本 */
+  --color-muted: #62748e;    /* 次要文本 */
+  --color-faint: #868686;    /* 占位/禁用 */
+
+  /* 过渡层（线条） */
+  --color-ghost: #e2e2e2;    /* 边框/分割线 */
+
+  /* 背景空间 */
+  --color-canvas: #fbfbfb;   /* 页面底层 */
+  --color-surface: #f4f4f4;  /* 卡片/容器 */
 }
 
 @source '../dist';

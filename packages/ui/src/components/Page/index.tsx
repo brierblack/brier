@@ -10,18 +10,18 @@ export interface PageProps {
 
 export const Page = memo(({ children, title, subtitle, extra, breadcrumb }: PageProps) => {
   return (
-    <div className="flex h-full flex-col bg-work">
-      <div className="flex h-12 shrink-0 items-center justify-between border-b border-line px-4">
+    <div className="flex h-full flex-col bg-canvas">
+      <div className="flex h-12 shrink-0 items-center justify-between border-b border-ghost px-4">
         {breadcrumb ? (
           <div className="flex items-center gap-1.5 text-standard">{breadcrumb}</div>
         ) : (
           <div className="flex items-baseline gap-2">
             {title && (
-              <h1 className="m-0 text-standard leading-tight font-bold tracking-tight text-ink">
+              <h1 className="m-0 text-standard leading-tight font-bold tracking-tight">
                 {title}
               </h1>
             )}
-            {subtitle && <span className="text-xs text-faint">{subtitle}</span>}
+            {subtitle && <span className="text-xs">{subtitle}</span>}
           </div>
         )}
         {extra && <div>{extra}</div>}

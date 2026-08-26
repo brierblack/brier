@@ -28,7 +28,11 @@ const rotateIfNeeded = () => {
     if (statSync(logFile).size < MAX_LOG_SIZE) return;
     const backup = logFile + '.1';
     if (existsSync(backup)) {
-      try { renameSync(backup, backup + '.old'); } catch { /* ignore */ }
+      try {
+        renameSync(backup, backup + '.old');
+      } catch {
+        /* ignore */
+      }
     }
     renameSync(logFile, backup);
   } catch {

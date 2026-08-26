@@ -51,12 +51,12 @@ const Team = () => {
             className="flex cursor-pointer items-center gap-2.5"
             onClick={() => navigate(`/team/${r.id}`)}
           >
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-md border border-line bg-surface">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-md border border-ghost">
               👥
             </div>
             <div>
               <div className="font-medium transition-colors hover:text-brand">{r.name}</div>
-              <div className="text-[11px] text-faint">{r.desc}</div>
+              <div className="text-[11px]">{r.desc}</div>
             </div>
           </div>
         ),
@@ -70,14 +70,14 @@ const Team = () => {
         title: '工作电脑',
         dataIndex: 'workComputer',
         render: (w: string) => (
-          <span className="font-mono text-xs font-medium text-muted">{w}</span>
+          <span className="font-mono text-xs font-medium">{w}</span>
         ),
       },
       {
         title: 'Runtime',
         dataIndex: 'runtime',
         render: (r: string) => (
-          <span className="font-mono text-xs font-medium text-muted">{r}</span>
+          <span className="font-mono text-xs font-medium">{r}</span>
         ),
       },
       {
@@ -88,7 +88,7 @@ const Team = () => {
       {
         title: '最近活跃',
         dataIndex: 'lastActive',
-        render: (t: string) => <span className="text-xs font-medium text-faint">{t}</span>,
+        render: (t: string) => <span className="text-xs font-medium">{t}</span>,
       },
       {
         title: '操作',

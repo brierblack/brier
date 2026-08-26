@@ -82,8 +82,8 @@ const MessageBubble = ({
     <div className="flex items-start gap-3">
       <AgentAvatar agent={agent} size={32} />
       <div className="flex max-w-[75%] flex-col gap-1">
-        <div className="text-[11px] font-medium text-faint">{agent.name}</div>
-        <div className="rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-2.5 text-ink">
+        <div className="text-[11px] font-medium">{agent.name}</div>
+        <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-2.5">
           <p className="text-standard leading-relaxed break-words whitespace-pre-wrap">
             {message.content}
           </p>
@@ -98,19 +98,19 @@ const TypingIndicator = ({ agent }: { agent: Agent }) => {
     <div className="flex items-start gap-3">
       <AgentAvatar agent={agent} size={32} />
       <div className="flex flex-col gap-1">
-        <div className="text-[11px] font-medium text-faint">{agent.name}</div>
-        <div className="rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3">
+        <div className="text-[11px] font-medium">{agent.name}</div>
+        <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-3">
           <div className="flex items-center gap-1">
             <span
-              className="size-1.5 animate-bounce rounded-full bg-faint"
+              className="size-1.5 animate-bounce rounded-full"
               style={{ animationDelay: '0ms' }}
             />
             <span
-              className="size-1.5 animate-bounce rounded-full bg-faint"
+              className="size-1.5 animate-bounce rounded-full"
               style={{ animationDelay: '150ms' }}
             />
             <span
-              className="size-1.5 animate-bounce rounded-full bg-faint"
+              className="size-1.5 animate-bounce rounded-full"
               style={{ animationDelay: '300ms' }}
             />
           </div>
@@ -130,7 +130,7 @@ const AgentSelector = ({ agent, onSelect }: { agent: Agent; onSelect: (a: Agent)
           label: (
             <div className="flex items-center gap-2.5">
               <AgentAvatar agent={a} size={20} />
-              <span className="text-standard font-medium text-ink">{a.name}</span>
+              <span className="text-standard font-medium">{a.name}</span>
               {a.id === agent.id && <CheckOutlined className="ml-auto text-xs text-brand" />}
             </div>
           ),
@@ -141,10 +141,10 @@ const AgentSelector = ({ agent, onSelect }: { agent: Agent; onSelect: (a: Agent)
         },
       }}
     >
-      <div className="flex cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1 transition-colors hover:bg-surface">
+      <div className="flex cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1 transition-colors">
         <AgentAvatar agent={agent} size={20} />
-        <span className="text-xs font-medium text-ink">{agent.name}</span>
-        <DownOutlined className="text-[9px] text-faint" />
+        <span className="text-xs font-medium">{agent.name}</span>
+        <DownOutlined className="text-[9px]" />
       </div>
     </Dropdown>
   );
@@ -173,7 +173,7 @@ const InputBox = ({
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm transition-colors focus-within:border-brand">
+    <div className="overflow-hidden rounded-2xl border border-ghost bg-white shadow-sm transition-colors focus-within:border-brand">
       <Input.TextArea
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -242,7 +242,7 @@ const Chat = () => {
       <div className="flex h-full flex-col bg-white">
         <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
           <Logo className="h-10 w-14" />
-          <h1 className="text-xl font-bold text-ink">有什么可以帮你？</h1>
+          <h1 className="text-xl font-bold">有什么可以帮你？</h1>
           <div className="w-full max-w-2xl">
             <InputBox
               agent={selectedAgent}
@@ -258,10 +258,10 @@ const Chat = () => {
               <div
                 key={i}
                 onClick={() => setInput(s.text)}
-                className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-line bg-white p-3 transition-all hover:border-brand hover:bg-[#fff5ed]"
+                className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-ghost bg-white p-3 transition-all hover:border-brand hover:bg-[#fff5ed]"
               >
                 <span className="shrink-0 text-base">{s.icon}</span>
-                <span className="text-standard text-muted">{s.text}</span>
+                <span className="text-standard">{s.text}</span>
               </div>
             ))}
           </div>
@@ -302,7 +302,7 @@ const Chat = () => {
             loading={loading}
             onAgentSelect={setSelectedAgent}
           />
-          <p className="mt-1.5 text-center text-[11px] text-faint">Enter 发送 · Shift+Enter 换行</p>
+          <p className="mt-1.5 text-center text-[11px]">Enter 发送 · Shift+Enter 换行</p>
         </div>
       </div>
     </div>

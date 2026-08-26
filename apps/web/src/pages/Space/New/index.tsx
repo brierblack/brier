@@ -121,11 +121,11 @@ const New = () => {
             </Button>
           </div>
           <div className="text-center">
-            <h1 className="m-0 text-lg font-bold tracking-tight text-ink">新建空间</h1>
+            <h1 className="m-0 text-lg font-bold tracking-tight">新建空间</h1>
           </div>
           <div className="flex-1" />
         </div>
-        <p className="mt-1 text-center text-xs text-faint">
+        <p className="mt-1 text-center text-xs">
           协作空间，承载团队协作所需的全部上下文
         </p>
       </div>
@@ -149,7 +149,7 @@ const New = () => {
           <Form form={form} layout="vertical" requiredMark>
             {/* Step 0: Basic info - kept mounted via CSS to preserve field values */}
             <div style={{ display: currentStep === 0 ? 'block' : 'none' }}>
-              <p className="mb-6 text-standard text-muted">完善空间基础信息</p>
+              <p className="mb-6 text-standard">完善空间基础信息</p>
 
               {/* Avatar + Name (required, same row) */}
               <Form.Item label="空间头像和名称" required>
@@ -162,7 +162,7 @@ const New = () => {
                     rules={[{ required: true, message: '请上传空间头像' }]}
                   >
                     <Upload {...uploadProps} showUploadList={false}>
-                      <div className="relative flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded border border-dashed border-line transition-colors hover:border-brand">
+                      <div className="relative flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded border border-dashed border-ghost transition-colors hover:border-brand">
                         {avatarUrl ? (
                           <img
                             src={avatarUrl}
@@ -170,7 +170,7 @@ const New = () => {
                             className="absolute inset-0 h-full w-full object-cover"
                           />
                         ) : (
-                          <PlusOutlined className="text-standard text-faint" />
+                          <PlusOutlined className="text-standard" />
                         )}
                       </div>
                     </Upload>
@@ -229,12 +229,12 @@ const New = () => {
             {/* Step 1: Instructions */}
             <div style={{ display: currentStep === 1 ? 'block' : 'none' }}>
               <div className="mb-1 flex items-center justify-between">
-                <span className="text-standard font-medium text-ink">指令（可选）</span>
+                <span className="text-standard font-medium">指令（可选）</span>
                 <Button size="small" onClick={handleInsertTemplate}>
                   插入模版
                 </Button>
               </div>
-              <p className="mb-4 text-xs text-faint">
+              <p className="mb-4 text-xs">
                 为所有在空间内工作的 Agent 提供自定义指令和上下文
               </p>
               <Form.Item name="instructions">
@@ -245,15 +245,15 @@ const New = () => {
             {/* Step 2: Automation */}
             <div style={{ display: currentStep === 2 ? 'block' : 'none' }}>
               <div className="mb-1 flex items-center justify-between">
-                <span className="text-standard font-medium text-ink">开启自动化（可选）</span>
+                <span className="text-standard font-medium">开启自动化（可选）</span>
               </div>
-              <p className="mb-4 text-xs text-faint">
+              <p className="mb-4 text-xs">
                 选择需要的自动化规则，外部事件发生时会自动创建 Agent 事项并交给 Agent。
               </p>
 
               <div className="flex flex-col gap-3">
                 {/* Card 1: PR auto review */}
-                <div className="flex items-start gap-3 rounded-lg border border-line bg-white p-4">
+                <div className="flex items-start gap-3 rounded-lg border border-ghost bg-white p-4">
                   <div
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
                     style={{ background: '#fe6e000d', border: '1px solid #fe6e0022' }}
@@ -261,17 +261,17 @@ const New = () => {
                     <PullRequestOutlined className="text-brand" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-standard font-medium text-ink">PR 变更时自动 Review</div>
-                    <p className="mt-1 text-xs leading-relaxed text-faint">
+                    <div className="text-standard font-medium">PR 变更时自动 Review</div>
+                    <p className="mt-1 text-xs leading-relaxed">
                       当代码仓库有 PR 创建或更新时，直接调用 PR 作者的默认 Agent
                       审查代码并给出评审意见。
                     </p>
                     <div className="mt-2 flex items-center gap-4 text-xs">
-                      <span className="text-muted">
-                        触发事件：<span className="text-ink">Github · Pull request</span>
+                      <span className="">
+                        触发事件：<span className="">Github · Pull request</span>
                       </span>
-                      <span className="text-muted">
-                        指派给：<span className="text-ink">PR作者 → ta 的默认 Agent</span>
+                      <span className="">
+                        指派给：<span className="">PR作者 → ta 的默认 Agent</span>
                       </span>
                     </div>
                   </div>
@@ -281,7 +281,7 @@ const New = () => {
                 </div>
 
                 {/* Card 2: Issue auto assign */}
-                <div className="flex items-start gap-3 rounded-lg border border-line bg-white p-4">
+                <div className="flex items-start gap-3 rounded-lg border border-ghost bg-white p-4">
                   <div
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
                     style={{ background: '#8d54ff0d', border: '1px solid #8d54ff22' }}
@@ -289,16 +289,16 @@ const New = () => {
                     <BugOutlined className="text-iris" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-standard font-medium text-ink">Issue 创建时自动分派</div>
-                    <p className="mt-1 text-xs leading-relaxed text-faint">
+                    <div className="text-standard font-medium">Issue 创建时自动分派</div>
+                    <p className="mt-1 text-xs leading-relaxed">
                       当代码仓库有新 Issue 创建时，自动分析内容并分配给对应负责人的 Agent 处理。
                     </p>
                     <div className="mt-2 flex items-center gap-4 text-xs">
-                      <span className="text-muted">
-                        触发事件：<span className="text-ink">Github · Issue</span>
+                      <span className="">
+                        触发事件：<span className="">Github · Issue</span>
                       </span>
-                      <span className="text-muted">
-                        指派给：<span className="text-ink">Issue 负责人 → ta 的默认 Agent</span>
+                      <span className="">
+                        指派给：<span className="">Issue 负责人 → ta 的默认 Agent</span>
                       </span>
                     </div>
                   </div>
@@ -313,7 +313,7 @@ const New = () => {
       </div>
 
       {/* Footer: step-dependent action buttons */}
-      <div className="flex shrink-0 justify-end gap-3 border-t border-line px-8 py-4">
+      <div className="flex shrink-0 justify-end gap-3 border-t border-ghost px-8 py-4">
         {currentStep > 0 && <Button onClick={handlePrev}>上一步</Button>}
         {currentStep < STEPS.length - 1 ? (
           <Button type="primary" onClick={handleNext}>

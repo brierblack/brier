@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import { Table as AntdTable, type TableProps as AntdTableProps } from 'antd';
 
 const DEFAULT_CLASS_NAMES = {
-  root: ' !bg-transparent !border-t !border-x !border-line rounded-t-md',
+  root: ' !bg-transparent !border-t !border-x !border-ghost rounded-t-md',
 };
 
 type TableComponent = <T extends object = any>(props: AntdTableProps<T>) => React.ReactNode;

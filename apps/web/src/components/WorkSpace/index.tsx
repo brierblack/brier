@@ -60,7 +60,7 @@ export const WorkSpace = memo(() => {
     backgroundColor: token.colorBgElevated,
     borderRadius: token.borderRadiusLG,
     boxShadow: 'none',
-    border: '1px solid var(--color-line)',
+    border: '1px solid var(--color-ghost)',
   };
 
   const menuStyle: React.CSSProperties = {
@@ -71,15 +71,15 @@ export const WorkSpace = memo(() => {
 
   const dropdownContent = (menu: React.ReactNode) => (
     <div style={contentStyle}>
-      <div className="border-b border-line">
+      <div className="border-b border-ghost">
         <Input
           placeholder="搜索工作空间"
-          prefix={<SearchOutlined className="text-faint" />}
+          prefix={<SearchOutlined className="" />}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           allowClear
           variant="filled"
-          classNames={{ root: ' !bg-work' }}
+          classNames={{ root: ' !bg-canvas' }}
           className="!border-transparent"
         />
       </div>
@@ -90,12 +90,12 @@ export const WorkSpace = memo(() => {
         }>,
         { style: menuStyle },
       )}
-      <div className="border-t border-line">
+      <div className="border-t border-ghost">
         <Button
           block
           type="text"
           onClick={handleCreate}
-          className="flex h-9 w-full cursor-pointer items-center gap-2 rounded-none bg-work px-3 text-faint transition-colors"
+          className="flex h-9 w-full cursor-pointer items-center gap-2 rounded-none bg-canvas px-3 transition-colors"
         >
           <PlusOutlined className="text-xs" />
           新建工作空间
@@ -106,9 +106,9 @@ export const WorkSpace = memo(() => {
 
   if (!current) {
     return (
-      <Button block type="text" onClick={handleCreate} classNames={{ root: ' !border-line !px-2' }}>
+      <Button block type="text" onClick={handleCreate} classNames={{ root: ' !border-ghost !px-2' }}>
         <PlusOutlined className="text-standard" />
-        <span className="flex-1 text-left text-faint">新建工作空间</span>
+        <span className="flex-1 text-left">新建工作空间</span>
       </Button>
     );
   }
@@ -126,14 +126,14 @@ export const WorkSpace = memo(() => {
         block
         type="text"
         classNames={{
-          root: ' !border-line !px-2',
+          root: ' !border-ghost !px-2',
         }}
       >
         <Avatar workspace={current} />
         <div className="min-w-0 flex-1 text-left">
-          <div className="truncate font-medium text-ink">{current.name}</div>
+          <div className="truncate font-medium">{current.name}</div>
         </div>
-        <span className="flex shrink-0 items-center gap-0.5 text-[12px] text-faint">
+        <span className="flex shrink-0 items-center gap-0.5 text-[12px]">
           切换
           <SwapOutlined />
         </span>
