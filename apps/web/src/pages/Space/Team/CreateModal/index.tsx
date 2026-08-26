@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { App, Form, Input, Select, Upload } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 
 import {
   CrownOutlined,
@@ -11,7 +11,7 @@ import {
   UserAddOutlined,
 } from '@ant-design/icons';
 import { agents } from '../../../../data/mockData';
-import { Modal } from '@hiveblack/ui';
+import { Modal } from '@brierb/ui';
 
 interface CreateTeamModalProps {
   open: boolean;

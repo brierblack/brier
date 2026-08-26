@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App, Steps, Form, Input, Upload, Select, Divider, Switch, type UploadProps } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 import {
   ArrowLeftOutlined,
   PlusOutlined,
@@ -187,14 +187,14 @@ const New = () => {
               <Form.Item
                 label="标识符"
                 required
-                tooltip="用于事项编号、URL 和 @提及，如 HIVE-123，仅支持大小写字母和数字。"
+                tooltip="用于事项编号、URL 和 @提及，如 BRIER-123，仅支持大小写字母和数字。"
                 name="identifier"
                 rules={[
                   { required: true, message: '请输入标识符' },
                   { pattern: /^[A-Za-z0-9]+$/, message: '仅支持大小写字母和数字' },
                 ]}
               >
-                <Input placeholder="如 HIVE" />
+                <Input placeholder="如 BRIER" />
               </Form.Item>
 
               {/* Bind GitHub repository with tooltip explanation */}

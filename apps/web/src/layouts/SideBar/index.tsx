@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Avatar, Dropdown, Menu, type MenuProps } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 import {
   GithubOutlined,
   LogoutOutlined,

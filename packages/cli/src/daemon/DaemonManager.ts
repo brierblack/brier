@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, unlinkSync } from '
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PidFileData, DaemonStatus } from '../types.js';
-import { HIVE_DIR, PID_FILE } from '../config.js';
+import { BRIER_DIR, PID_FILE } from '../config.js';
 import { logger } from '../logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,7 +30,7 @@ const readPidFile = (): PidFileData | null => {
 };
 
 const writePidFile = (data: PidFileData) => {
-  mkdirSync(HIVE_DIR, { recursive: true });
+  mkdirSync(BRIER_DIR, { recursive: true });
   writeFileSync(PID_FILE, JSON.stringify(data, null, 2));
 };
 
@@ -79,9 +79,9 @@ export const createDaemonManager = (): DaemonManager => {
 
     const childEnv: Record<string, string> = {
       ...process.env,
-      HIVE_TOKEN: options.token,
-      HIVE_SERVER_URL: options.serverUrl,
-      HIVE_DAEMON_MODE: '1',
+      BRIER_TOKEN: options.token,
+      BRIER_SERVER_URL: options.serverUrl,
+      BRIER_DAEMON_MODE: '1',
     };
 
     const child = spawn(process.execPath, [RUNNER_SCRIPT], {

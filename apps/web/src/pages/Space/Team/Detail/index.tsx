@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Input, Tabs, Tooltip } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 import {
   PlusOutlined,
   LockOutlined,
@@ -14,9 +14,8 @@ import {
   CrownOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
-import { Page, Tag } from '@hiveblack/ui';
+import { Page, Tag } from '@brierb/ui';
 import { teams } from '../../../../data/mockData';
-import { StatusBadge } from '@/components/StatusBadge';
 
 interface MemberDetail {
   id: number;

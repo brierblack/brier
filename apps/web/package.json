@@ -1,5 +1,5 @@
 {
-  "name": "@hive/web",
+  "name": "@brierb/web",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.2",
-    "@hiveblack/ui": "workspace:*",
+    "@brierb/ui": "workspace:*",
     "antd": "^6.6.0",
     "react": "^19.2.8",
     "react-dnd": "^16.0.1",

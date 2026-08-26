@@ -1,9 +1,9 @@
 import { memo, useState } from 'react';
 import { App, Collapse, Alert, Typography } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 import type { CollapseProps } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
-import { Card, Tag } from '@hiveblack/ui';
+import { Card, Tag } from '@brierb/ui';
 
 const { Link } = Typography;
 
@@ -49,7 +49,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#f0f0f0] text-xs font-medium">
                 1
               </span>
-              <span className="text-standard font-medium">安装 Hive CLI</span>
+              <span className="text-standard font-medium">安装 Brier CLI</span>
               <Tag
                 style={{
                   background: '#f0f0f0',
@@ -94,7 +94,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
             showIcon={false}
             message={
               <span className="text-xs">
-                HIVE_TOKEN 为临时密钥，请勿分享，有效期约 30 天。过期或不可用时点{' '}
+                BRIER_TOKEN 为临时密钥，请勿分享，有效期约 30 天。过期或不可用时点{' '}
                 <Link onClick={() => handleRefresh()}>刷新</Link> 即可更新。
               </span>
             }
@@ -146,12 +146,12 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
   ];
 
   return (
-    <Card title="Hive CLI 使用">
+    <Card title="Brier CLI 使用">
       <Collapse
         activeKey={activeKeys}
         onChange={(keys) => setActiveKeys(keys as string[])}
         items={cliItems}
-        className="hive-cli-collapse"
+        className="brier-cli-collapse"
         style={{
           background: 'transparent',
           border: 'none',

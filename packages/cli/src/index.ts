@@ -8,17 +8,17 @@ import { statusCommand } from './commands/status.js';
 const program = new Command();
 
 program
-  .name('hiveblack')
-  .description('HiveBlack CLI - Connect to Hive platform via encrypted tunnel')
+  .name('brier')
+  .description('Brier CLI - Connect to Brier platform via encrypted tunnel')
   .version('0.0.1');
 
-const daemon = program.command('daemon').description('Manage the hiveblack background service');
+const daemon = program.command('daemon').description('Manage the brier background service');
 
 daemon
   .command('start')
   .description('Start the background service')
-  .requiredOption('--server-url <url>', 'Hive server URL')
-  .option('--token <token>', 'HIVE_TOKEN (or set HIVE_TOKEN env var)')
+  .requiredOption('--server-url <url>', 'Brier server URL')
+  .option('--token <token>', 'BRIER_TOKEN (or set BRIER_TOKEN env var)')
   .action(async (opts: { serverUrl: string; token?: string }) => {
     try {
       await startCommand(opts);
@@ -43,8 +43,8 @@ daemon
 daemon
   .command('restart')
   .description('Restart the background service')
-  .option('--server-url <url>', 'Hive server URL (defaults to previous config)')
-  .option('--token <token>', 'HIVE_TOKEN (or set HIVE_TOKEN env var)')
+  .option('--server-url <url>', 'Brier server URL (defaults to previous config)')
+  .option('--token <token>', 'BRIER_TOKEN (or set BRIER_TOKEN env var)')
   .action(async (opts: { serverUrl?: string; token?: string }) => {
     try {
       await restartCommand(opts);

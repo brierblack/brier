@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App, Form, Input, Select, Space, Upload } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 import {
   CheckOutlined,
   DesktopOutlined,
@@ -15,7 +15,7 @@ import {
   UploadOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import { Page } from '@hiveblack/ui';
+import { Page } from '@brierb/ui';
 import { workComputers } from '../../../../data/mockData';
 import { MODELS } from '../../../../define';
 

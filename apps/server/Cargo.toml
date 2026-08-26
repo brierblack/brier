@@ -1,13 +1,13 @@
 [package]
-name = "hive"
+name = "brier"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
-hive-api.workspace = true
-hive-config.workspace = true
-hive-database.workspace = true
-hive-error.workspace = true
+brier-api.workspace = true
+brier-config.workspace = true
+brier-database.workspace = true
+brier-error.workspace = true
 axum.workspace = true
 tokio.workspace = true
 tower-http.workspace = true

@@ -1,11 +1,11 @@
 {
-  "name": "hive",
+  "name": "brier",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter @hive/web dev",
-    "build": "pnpm --filter @hiveblack/ui build && pnpm --filter @hiveblack/cli build && pnpm --filter @hive/web build",
-    "preview": "pnpm --filter @hive/web preview",
+    "dev": "pnpm --filter @brierb/web dev",
+    "build": "pnpm --filter @brierb/ui build && pnpm --filter @brierb/cli build && pnpm --filter @brierb/web build",
+    "preview": "pnpm --filter @brierb/web preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

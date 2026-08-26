@@ -1,5 +1,5 @@
 # ============================================================
-# Multi-stage Dockerfile for Hive
+# Multi-stage Dockerfile for Brier
 # Stage 1: Build Frontend (React 19 + Vite + Tailwind CSS 4)
 # Stage 2: Build Backend (Rust + axum, slim image + cargo cache)
 # Stage 3: Runtime (debian-slim, single binary serves API + static files)
@@ -27,11 +27,11 @@ COPY eslint.config.js .prettierrc.json .prettierignore tsconfig.json ./
 COPY apps/web/ apps/web/
 COPY packages/ui/ packages/ui/
 
-RUN pnpm --filter @hiveblack/ui build
+RUN pnpm --filter @brierb/ui build
 
 RUN pnpm run lint && pnpm run format:check
 
-RUN pnpm --filter @hive/web build
+RUN pnpm --filter @brierb/web build
 
 # ---- Stage 2: Build Backend ----
 FROM rust:slim-bookworm AS backend-builder
@@ -49,7 +49,7 @@ COPY crates/ crates/
 RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
     --mount=type=cache,target=/app/target,sharing=locked \
     cargo build --release && \
-    cp /app/target/release/hive /app/hive
+    cp /app/target/release/brier /app/brier
 
 # ---- Stage 3: Runtime ----
 FROM debian:bookworm-slim
@@ -58,7 +58,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 
 WORKDIR /app
 
-COPY --from=backend-builder /app/hive /app/hive
+COPY --from=backend-builder /app/brier /app/brier
 COPY --from=frontend-builder /app/apps/web/dist /app/frontend/dist
 
 ENV HOST=0.0.0.0
@@ -67,4 +67,4 @@ ENV FRONTEND_DIR=/app/frontend/dist
 
 EXPOSE 8090
 
-CMD ["./hive"]
+CMD ["./brier"]

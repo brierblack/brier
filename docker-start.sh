@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# Hive 一键启动脚本
+# Brier 一键启动脚本
 #
 # 用法：
 #   ./docker-start.sh             构建并启动（后台）
@@ -113,7 +113,7 @@ clean() {
 # ---- 状态 ----
 show_status() {
   echo ""
-  echo -e "${CYAN}========== Hive 服务状态 ==========${NC}"
+  echo -e "${CYAN}========== Brier 服务状态 ==========${NC}"
   docker compose ps
   echo ""
   local web_port
@@ -131,7 +131,7 @@ show_status() {
 
 # ---- 帮助 ----
 usage() {
-  echo "Hive Docker 一键启动脚本"
+  echo "Brier Docker 一键启动脚本"
   echo ""
   echo "用法: ./docker-start.sh [命令]"
   echo ""

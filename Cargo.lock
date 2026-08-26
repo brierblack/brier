@@ -289,6 +289,109 @@ dependencies = [
 ]
 
 [[package]]
+name = "brier"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "brier-api",
+ "brier-config",
+ "brier-database",
+ "brier-error",
+ "dotenvy",
+ "tokio",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "brier-api"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "brier-config",
+ "brier-core",
+ "brier-database",
+ "brier-error",
+ "brier-github-auth",
+ "brier-type",
+ "chrono",
+ "cookie",
+ "futures",
+ "jsonwebtoken",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "brier-config"
+version = "0.1.0"
+dependencies = [
+ "brier-error",
+ "serde",
+]
+
+[[package]]
+name = "brier-core"
+version = "0.1.0"
+dependencies = [
+ "brier-error",
+ "brier-type",
+ "serde",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "brier-database"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "brier-error",
+ "brier-type",
+ "chrono",
+ "sea-orm",
+ "sea-orm-migration",
+ "serde",
+ "serde_json",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "brier-error"
+version = "0.1.0"
+dependencies = [
+ "sea-orm",
+ "thiserror",
+]
+
+[[package]]
+name = "brier-github-auth"
+version = "0.1.0"
+dependencies = [
+ "brier-config",
+ "brier-core",
+ "brier-error",
+ "reqwest",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "brier-type"
+version = "0.1.0"
+dependencies = [
+ "brier-error",
+ "chrono",
+ "serde",
+ "uuid",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -954,109 +1057,6 @@ name = "hex"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
-
-[[package]]
-name = "hive"
-version = "0.1.0"
-dependencies = [
- "axum",
- "dotenvy",
- "hive-api",
- "hive-config",
- "hive-database",
- "hive-error",
- "tokio",
- "tower-http",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "hive-api"
-version = "0.1.0"
-dependencies = [
- "axum",
- "chrono",
- "cookie",
- "futures",
- "hive-config",
- "hive-core",
- "hive-database",
- "hive-error",
- "hive-github-auth",
- "hive-type",
- "jsonwebtoken",
- "sea-orm",
- "serde",
- "serde_json",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "hive-config"
-version = "0.1.0"
-dependencies = [
- "hive-error",
- "serde",
-]
-
-[[package]]
-name = "hive-core"
-version = "0.1.0"
-dependencies = [
- "hive-error",
- "hive-type",
- "serde",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "hive-database"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "chrono",
- "hive-error",
- "hive-type",
- "sea-orm",
- "sea-orm-migration",
- "serde",
- "serde_json",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "hive-error"
-version = "0.1.0"
-dependencies = [
- "sea-orm",
- "thiserror",
-]
-
-[[package]]
-name = "hive-github-auth"
-version = "0.1.0"
-dependencies = [
- "hive-config",
- "hive-core",
- "hive-error",
- "reqwest",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "hive-type"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "hive-error",
- "serde",
- "uuid",
-]
 
 [[package]]
 name = "hkdf"

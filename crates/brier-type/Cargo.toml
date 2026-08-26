@@ -1,0 +1,10 @@
+[package]
+name = "brier-type"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+brier-error.workspace = true
+serde = { version = "1", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid.workspace = true

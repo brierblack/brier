@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App, Input, Segmented, Tag } from 'antd';
-import { Button, Page } from '@hiveblack/ui';
+import { Button, Page } from '@brierb/ui';
 import { PlusOutlined, SearchOutlined, FireOutlined } from '@ant-design/icons';
 import { skills } from '../../../data/mockData';
 import { SKILL_TYPE_MAP } from '../../../define';
@@ -22,7 +22,7 @@ const TOP_TABS = [
 const TOP_TAB_CONFIG: Record<string, { title: string; desc: string }> = {
   skill: {
     title: 'Skill 技能',
-    desc: 'Skills 扩展 Hive 的任务特定能力，将指令、资源和可选脚本打包，实现可靠的工作流执行',
+    desc: 'Skills 扩展 Brier 的任务特定能力，将指令、资源和可选脚本打包，实现可靠的工作流执行',
   },
   plugin: {
     title: 'Plugin 插件',
@@ -135,7 +135,7 @@ const Skills = () => {
     if (topTab === 'plugin') result = [];
     if (sourceTab === 'internal') result = result.filter((s) => s.source === 'internal');
     if (sourceTab === 'community') result = result.filter((s) => s.source === 'community');
-    if (filterTab === 'mine') result = result.filter((s) => s.author === 'Hive');
+    if (filterTab === 'mine') result = result.filter((s) => s.author === 'Brier');
     if (filterTab === 'installed') result = result.filter((s) => s.installed);
     if (filterTab === 'not-installed') result = result.filter((s) => !s.installed);
     if (category !== '全部' && category !== '未分类')
@@ -170,7 +170,7 @@ const Skills = () => {
           <div className="mt-6">{TOP_TAB_CONFIG[topTab].desc}</div>
 
           {/* Search bar */}
-          <div className="mt-6 flex items-center gap-3 w-full">
+          <div className="mt-6 flex w-full items-center gap-3">
             <Input
               placeholder="请输入技能名称"
               prefix={<SearchOutlined className="" />}
@@ -190,7 +190,7 @@ const Skills = () => {
         </div>
 
         {/* Featured section */}
-        <div className="mt-12 pb-6 overflow-hidden w-full">
+        <div className="mt-12 w-full overflow-hidden pb-6">
           <div className="mb-3 flex items-center gap-2">
             <FireOutlined style={{ color: '#fe6e00' }} />
             <span className="text-standard font-medium">精选技能</span>

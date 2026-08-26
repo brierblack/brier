@@ -1,8 +1,0 @@
-[package]
-name = "hive-config"
-version.workspace = true
-edition.workspace = true
-
-[dependencies]
-hive-error.workspace = true
-serde = { version = "1", features = ["derive"] }

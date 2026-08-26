@@ -167,8 +167,8 @@ export const createTunnelClient = (
     ws = new WebSocket(wsUrl, {
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'X-Hive-Hostname': config.hostname,
-        'X-Hive-OS': config.os,
+        'X-Brier-Hostname': config.hostname,
+        'X-Brier-OS': config.os,
       },
     });
 

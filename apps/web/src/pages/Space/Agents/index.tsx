@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input, Select, Space, Dropdown, type MenuProps } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 import {
   PlusOutlined,
   SearchOutlined,
@@ -16,7 +16,7 @@ import {
   GlobalOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { Page, Table } from '@hiveblack/ui';
+import { Page, Table } from '@brierb/ui';
 import { StatusBadge } from '../../../components/StatusBadge';
 import { WorkComputerDrawer } from '../../../components/WorkComputer';
 import { agents, workComputers } from '../../../data/mockData';

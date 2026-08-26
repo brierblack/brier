@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Card, Tag } from '@hiveblack/ui';
+import { Card, Tag } from '@brierb/ui';
 
 interface RuntimeCardProps {
   runtimes: string[];

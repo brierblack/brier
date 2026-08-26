@@ -56,9 +56,9 @@ const run = (config: DaemonConfig) => {
 };
 
 const main = () => {
-  if (process.env.HIVE_DAEMON_MODE !== '1') {
+  if (process.env.BRIER_DAEMON_MODE !== '1') {
     console.error(
-      'This script is intended to be run as a daemon. Use "hiveblack daemon start" instead.',
+      'This script is intended to be run as a daemon. Use "brier daemon start" instead.',
     );
     process.exit(1);
   }

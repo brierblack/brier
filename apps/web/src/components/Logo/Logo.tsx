@@ -24,11 +24,11 @@ export const Logo = memo(({ className, style }: LogoProps) => {
           y2="100"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor="#ffb060" />
-          <stop offset="20%" stopColor="#fe6e00" />
-          <stop offset="50%" stopColor="#ff5e7a" />
-          <stop offset="78%" stopColor="#c44ad8" />
-          <stop offset="100%" stopColor="#6f5cf0" />
+          <stop offset="0%" stopColor="#22d3ee" />
+          <stop offset="20%" stopColor="#3b82f6" />
+          <stop offset="50%" stopColor="#a855f7" />
+          <stop offset="78%" stopColor="#d946ef" />
+          <stop offset="100%" stopColor="#ec4899" />
         </linearGradient>
       </defs>
       <path

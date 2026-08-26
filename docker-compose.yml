@@ -1,30 +1,30 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: hive-postgres
+    container_name: brier-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: hive
-      POSTGRES_PASSWORD: hive
-      POSTGRES_DB: hive
+      POSTGRES_USER: brier
+      POSTGRES_PASSWORD: brier
+      POSTGRES_DB: brier
     ports:
       - '127.0.0.1:5433:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U hive']
+      test: ['CMD-SHELL', 'pg_isready -U brier']
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - hive-net
+      - brier-net
 
-  hive:
+  brier:
     build:
       context: .
       dockerfile: Dockerfile
       network: host
-    container_name: hive-app
+    container_name: brier-app
     restart: unless-stopped
     env_file:
       - path: .env
@@ -33,7 +33,7 @@ services:
       - HOST=0.0.0.0
       - PORT=8090
       - FRONTEND_DIR=/app/frontend/dist
-      - DATABASE_URL=postgresql://hive:hive@postgres:5432/hive
+      - DATABASE_URL=postgresql://brier:brier@postgres:5432/brier
     depends_on:
       postgres:
         condition: service_healthy
@@ -55,11 +55,11 @@ services:
         max-size: '10m'
         max-file: '3'
     networks:
-      - hive-net
+      - brier-net
 
 volumes:
   pgdata:
 
 networks:
-  hive-net:
+  brier-net:
     driver: bridge

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dropdown, Input, Space, type MenuProps } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 import {
   PlusOutlined,
   EllipsisOutlined,
@@ -12,7 +12,7 @@ import {
   SearchOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { Page, Table } from '@hiveblack/ui';
+import { Page, Table } from '@brierb/ui';
 import { StatusBadge } from '../../../components/StatusBadge';
 import { CreateTeamModal } from './CreateModal';
 import { teams } from '../../../data/mockData';

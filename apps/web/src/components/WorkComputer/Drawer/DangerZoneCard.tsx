@@ -1,7 +1,7 @@
 import { memo } from 'react';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Card } from '@hiveblack/ui';
+import { Card } from '@brierb/ui';
 
 interface DangerZoneCardProps {
   agentCount: number;

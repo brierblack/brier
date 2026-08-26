@@ -1,0 +1,8 @@
+[package]
+name = "brier-config"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+brier-error.workspace = true
+serde = { version = "1", features = ["derive"] }

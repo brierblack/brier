@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { App as AntApp, Spin } from 'antd';
-import { ThemeProvider } from '@hiveblack/ui';
+import { ThemeProvider } from '@brierb/ui';
 import { AuthProvider } from './auth-context';
 import { Layout as SpaceLayout } from './pages/Space';
 

@@ -1,9 +1,9 @@
 {
-  "name": "@hiveblack/cli",
+  "name": "@brierb/cli",
   "version": "0.0.1",
   "type": "module",
   "bin": {
-    "hiveblack": "./dist/index.js"
+    "brier": "./dist/index.js"
   },
   "exports": {
     ".": {

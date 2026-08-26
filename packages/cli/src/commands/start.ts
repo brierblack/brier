@@ -7,9 +7,9 @@ export interface StartOptions {
 }
 
 export const startCommand = async (options: StartOptions): Promise<void> => {
-  const token = options.token ?? process.env.HIVE_TOKEN;
+  const token = options.token ?? process.env.BRIER_TOKEN;
   if (!token) {
-    throw new Error('HIVE_TOKEN is required. Pass --token or set HIVE_TOKEN env var.');
+    throw new Error('BRIER_TOKEN is required. Pass --token or set BRIER_TOKEN env var.');
   }
 
   const manager = createDaemonManager();

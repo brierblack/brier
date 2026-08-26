@@ -1,7 +1,7 @@
 use axum::Router;
 use axum::extract::DefaultBodyLimit;
-use hive_config::AppConfig;
-use hive_database::{connect, run_migrations};
+use brier_config::AppConfig;
+use brier_database::{connect, run_migrations};
 use tower_http::services::{ServeDir, ServeFile};
 use tower_http::trace::TraceLayer;
 
@@ -21,12 +21,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let db = connect(&config.server.database_url).await?;
     run_migrations(&db).await?;
 
-    let state = hive_api::AppState::new(&config, db);
+    let state = brier_api::AppState::new(&config, db);
 
     let index_path = format!("{}/index.html", config.server.frontend_dir);
     let serve_dir = ServeDir::new(&config.server.frontend_dir).fallback(ServeFile::new(&index_path));
 
-    let api_router = hive_api::router(state);
+    let api_router = brier_api::router(state);
 
     let app = Router::new()
         .merge(api_router)
@@ -36,7 +36,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let addr = format!("{}:{}", config.server.host, config.server.port);
     let listener = tokio::net::TcpListener::bind(&addr).await?;
-    tracing::info!("Hive server listening on http://{}", addr);
+    tracing::info!("Brier server listening on http://{}", addr);
     axum::serve(listener, app).await?;
 
     Ok(())

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Form, Input, Menu, Select, Switch, Upload } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 import {
   PlusOutlined,
   UserOutlined,
@@ -10,7 +10,7 @@ import {
   ToolOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons';
-import { Page, Tag } from '@hiveblack/ui';
+import { Page, Tag } from '@brierb/ui';
 import { skills } from '../../../data/mockData';
 import { SKILL_TYPE_MAP } from '../../../define';
 
@@ -125,14 +125,14 @@ const Settings = () => {
               <Form.Item
                 label="标识符"
                 required
-                tooltip="用于事项编号、URL 和 @提及，如 HIVE-123，仅支持大小写字母和数字。"
+                tooltip="用于事项编号、URL 和 @提及，如 BRIER-123，仅支持大小写字母和数字。"
                 name="identifier"
                 rules={[
                   { required: true, message: '请输入标识符' },
                   { pattern: /^[A-Za-z0-9]+$/, message: '仅支持大小写字母和数字' },
                 ]}
               >
-                <Input placeholder="如 HIVE" />
+                <Input placeholder="如 BRIER" />
               </Form.Item>
 
               <Form.Item
@@ -144,9 +144,9 @@ const Settings = () => {
                   mode="multiple"
                   placeholder="选择 GitHub 仓库"
                   options={[
-                    { value: 'hive/hive-backend', label: 'hive/hive-backend' },
-                    { value: 'hive/hive-frontend', label: 'hive/hive-frontend' },
-                    { value: 'hive/hive-infra', label: 'hive/hive-infra' },
+                    { value: 'brier/brier-backend', label: 'brier/brier-backend' },
+                    { value: 'brier/brier-frontend', label: 'brier/brier-frontend' },
+                    { value: 'brier/brier-infra', label: 'brier/brier-infra' },
                   ]}
                 />
               </Form.Item>

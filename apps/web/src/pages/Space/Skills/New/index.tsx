@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input, Select, Radio, Upload, type UploadProps, App } from 'antd';
-import { Button } from '@hiveblack/ui';
-import { Page } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
+import { Page } from '@brierb/ui';
 import { InboxOutlined, BulbOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 
 const { Dragger } = Upload;
@@ -96,7 +96,7 @@ const New = () => {
         <div className="mb-6">
           <h1 className="mb-1.5 text-2xl font-bold">Skill</h1>
           <p className="text-standard leading-relaxed">
-            Skills 扩展 Hive 的任务特定能力，将指令、资源和可选脚本打包， 实现可靠的工作流执行
+            Skills 扩展 Brier 的任务特定能力，将指令、资源和可选脚本打包， 实现可靠的工作流执行
           </p>
         </div>
 

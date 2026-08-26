@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { App, Space } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 import { DesktopOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
-import { Drawer } from '@hiveblack/ui';
+import { Drawer } from '@brierb/ui';
 import { backendServices, computerAgents, workComputers } from '@/data/mockData';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AddComputerModal } from '../AddModal';
@@ -42,10 +42,10 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
 
   const commands = useMemo(
     () => ({
-      install: 'npm install -g @hiveblack/cli@latest',
-      start: `HIVE_TOKEN='${selectedComputer.hostname}-token' hiveblack daemon start --server-url https://hive.local`,
-      stop: 'hiveblack daemon stop',
-      restart: 'hiveblack daemon restart',
+      install: 'npm install -g @brierb/cli@latest',
+      start: `BRIER_TOKEN='${selectedComputer.hostname}-token' brier daemon start --server-url https://brier.local`,
+      stop: 'brier daemon stop',
+      restart: 'brier daemon restart',
     }),
     [selectedComputer.hostname],
   );

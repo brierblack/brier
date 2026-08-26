@@ -12,16 +12,21 @@ export const Wordmark = memo(({ className, style }: WordmarkProps) => {
       style={{
         fontWeight: 700,
         letterSpacing: '-0.5px',
-        background:
-          'linear-gradient(135deg, #ffb060 0%, #fe6e00 25%, #ff5e7a 50%, #c44ad8 75%, #6f5cf0 100%)',
-        backgroundClip: 'text',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        color: 'transparent',
         ...style,
       }}
     >
-      Hive
+      <span
+        style={{
+          background: 'linear-gradient(135deg, #22d3ee 0%, #3b82f6 33%, #a855f7 66%, #ec4899 100%)',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          color: 'transparent',
+        }}
+      >
+        brier
+      </span>
+      <span style={{ color: '#9ca3af' }}> black</span>
     </span>
   );
 });

@@ -1,8 +1,8 @@
 import { Spin } from 'antd';
-import { Button } from '@hiveblack/ui';
+import { Button } from '@brierb/ui';
 import { useAuth } from '../../auth-context';
 
-const HiveLogo = ({ size = 48 }: { size?: number }) => {
+const BrierLogo = ({ size = 48 }: { size?: number }) => {
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
       <defs>
@@ -14,11 +14,11 @@ const HiveLogo = ({ size = 48 }: { size?: number }) => {
           y2="100"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor="#ffb060" />
-          <stop offset="20%" stopColor="#fe6e00" />
-          <stop offset="50%" stopColor="#ff5e7a" />
-          <stop offset="78%" stopColor="#c44ad8" />
-          <stop offset="100%" stopColor="#6f5cf0" />
+          <stop offset="0%" stopColor="#22d3ee" />
+          <stop offset="20%" stopColor="#3b82f6" />
+          <stop offset="50%" stopColor="#a855f7" />
+          <stop offset="78%" stopColor="#d946ef" />
+          <stop offset="100%" stopColor="#ec4899" />
         </linearGradient>
       </defs>
       <path
@@ -143,9 +143,9 @@ const Login = () => {
         {/* Left brand panel */}
         <div className="hidden h-full w-[52%] flex-col justify-between py-12 pr-8 pl-16 lg:flex">
           <div className="flex items-center gap-3">
-            <HiveLogo size={44} />
+            <BrierLogo size={44} />
             <div>
-              <div className="text-xl font-bold tracking-tight text-white">Hive</div>
+              <div className="text-xl font-bold tracking-tight text-white">Brier</div>
               <div className="text-[11px] text-white/40">AI Agent Workspace</div>
             </div>
           </div>
@@ -188,7 +188,7 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="text-xs text-white/25">© 2026 Hive. All rights reserved.</div>
+          <div className="text-xs text-white/25">© 2026 Brier. All rights reserved.</div>
         </div>
 
         {/* Right login panel */}
@@ -207,8 +207,8 @@ const Login = () => {
             >
               {/* Mobile logo */}
               <div className="mb-6 flex items-center justify-center gap-2.5 lg:hidden">
-                <HiveLogo size={40} />
-                <span className="text-lg font-bold text-white">Hive</span>
+                <BrierLogo size={40} />
+                <span className="text-lg font-bold text-white">Brier</span>
               </div>
 
               <div className="mb-7 text-center">
