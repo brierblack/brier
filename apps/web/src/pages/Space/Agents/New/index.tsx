@@ -17,6 +17,7 @@ import {
 } from '@ant-design/icons';
 import { Page } from '@brierb/ui';
 import { workComputers } from '../../../../data/mockData';
+import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { MODELS } from '../../../../define';
 
 interface MockExtension {
@@ -175,7 +176,7 @@ const NewAgent = () => {
               options={
                 selectedComputer
                   ? selectedComputer.detectedRuntimes.map((r) => ({
-                      label: r,
+                      label: <RuntimeBadge name={r} size={12} />,
                       value: r,
                     }))
                   : []

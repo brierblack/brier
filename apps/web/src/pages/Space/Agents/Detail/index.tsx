@@ -17,6 +17,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { Page, Table, Tag } from '@brierb/ui';
 import { agents, skills as allSkills } from '../../../../data/mockData';
+import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { STATUS_MAP, MODELS, SKILL_TYPE_MAP } from '../../../../define';
 import type { Agent, AgentStatus, Skill } from '../../../../types';
 import { useAuth } from '../../../../auth-context';
@@ -193,7 +194,7 @@ const OverviewTab = ({
               <Select
                 value={runtime}
                 onChange={setRuntime}
-                options={RUNTIMES.map((r) => ({ value: r, label: r }))}
+                options={RUNTIMES.map((r) => ({ value: r, label: <RuntimeBadge name={r} size={12} /> }))}
                 button={{
                   size: 'small',
                   type: 'text',

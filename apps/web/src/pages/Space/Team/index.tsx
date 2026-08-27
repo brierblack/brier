@@ -13,6 +13,7 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { StatusBadge } from '../../../components/StatusBadge';
+import { RuntimeBadge } from '../../../components/RuntimeIcon';
 import { CreateTeamModal } from './CreateModal';
 import { teams } from '../../../data/mockData';
 import type { Team } from '../../../types';
@@ -75,7 +76,11 @@ const Team = () => {
       {
         title: 'Runtime',
         dataIndex: 'runtime',
-        render: (r: string) => <span className="font-mono text-xs font-medium">{r}</span>,
+        render: (r: string) => (
+          <span className="font-mono text-xs font-medium">
+            <RuntimeBadge name={r} />
+          </span>
+        ),
       },
       {
         title: '创建者',

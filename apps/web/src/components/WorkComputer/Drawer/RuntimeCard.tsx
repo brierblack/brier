@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Card, Tag } from '@brierb/ui';
+import { RuntimeIcon } from '../../RuntimeIcon';
 
 interface RuntimeCardProps {
   runtimes: string[];
@@ -18,7 +19,10 @@ export const RuntimeCard = memo(({ runtimes }: RuntimeCardProps) => (
             cursor: 'pointer',
           }}
         >
-          {rt}
+          <span className="inline-flex items-center gap-1.5">
+            <RuntimeIcon name={rt} size={12} />
+            {rt}
+          </span>
         </Tag>
       ))}
     </div>

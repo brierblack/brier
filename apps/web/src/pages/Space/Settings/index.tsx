@@ -6,7 +6,6 @@ import {
   UserOutlined,
   RobotOutlined,
   SearchOutlined,
-  LockOutlined,
   ToolOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons';

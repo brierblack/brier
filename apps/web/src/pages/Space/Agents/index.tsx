@@ -17,6 +17,7 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { StatusBadge } from '../../../components/StatusBadge';
+import { RuntimeBadge } from '../../../components/RuntimeIcon';
 import { WorkComputerDrawer } from '../../../components/WorkComputer';
 import { agents, workComputers } from '../../../data/mockData';
 import type { Agent, AgentStatus, AgentVisibility, PublicScope } from '../../../types';
@@ -109,7 +110,11 @@ const Agents = () => {
       {
         title: 'Runtime',
         dataIndex: 'runtime',
-        render: (r: string) => <span className="text-xs font-medium">{r}</span>,
+        render: (r: string) => (
+          <span className="text-xs font-medium">
+            <RuntimeBadge name={r} />
+          </span>
+        ),
       },
       {
         title: '最近活跃',
