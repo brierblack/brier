@@ -73,11 +73,13 @@ const SOURCE_TABS = [
 
 const SkillCard = ({ skill, compact }: { skill: Skill; compact?: boolean }) => {
   const { message } = App.useApp();
+  const navigate = useNavigate();
   const cfg = SKILL_TYPE_MAP[skill.type];
 
   return (
     <div
-      className={`flex flex-col gap-2 ${compact ? 'w-[280px] shrink-0' : 'w-full'} rounded-xl border border-ghost bg-white p-4 transition-shadow hover:shadow-md`}
+      onClick={() => navigate(`/space/skills/${skill.name}`)}
+      className={`flex cursor-pointer flex-col gap-2 ${compact ? 'w-[280px] shrink-0' : 'w-full'} rounded-xl border border-ghost bg-white p-4 transition-shadow hover:shadow-md`}
     >
       <div className="flex items-start gap-2.5">
         <div
@@ -116,7 +118,10 @@ const SkillCard = ({ skill, compact }: { skill: Skill; compact?: boolean }) => {
           type={skill.installed ? 'default' : 'primary'}
           size="small"
           className="!text-xs"
-          onClick={() => message.info(skill.installed ? '卸载中...' : '安装中...')}
+          onClick={(e) => {
+            e.stopPropagation();
+            message.info(skill.installed ? '卸载中...' : '安装中...');
+          }}
         >
           {skill.installed ? '已安装' : '安装'}
         </Button>

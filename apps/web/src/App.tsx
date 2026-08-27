@@ -14,6 +14,7 @@ const NewAgent = lazy(() => import('./pages/Space/Agents/New'));
 const Team = lazy(() => import('./pages/Space/Team'));
 const TeamDetail = lazy(() => import('./pages/Space/Team/Detail'));
 const Skills = lazy(() => import('./pages/Space/Skills'));
+const SkillDetail = lazy(() => import('./pages/Space/Skills/Detail'));
 const SkillNew = lazy(() => import('./pages/Space/Skills/New'));
 const Settings = lazy(() => import('./pages/Space/Settings'));
 
@@ -51,6 +52,7 @@ const App = () => {
                   <Route path="/space/team" element={<Team />} />
                   <Route path="/space/team/:id" element={<TeamDetail />} />
                   <Route path="/space/skills" element={<Skills />} />
+                  <Route path="/space/skills/:name" element={<SkillDetail />} />
                   <Route path="/space/skills/new" element={<SkillNew />} />
                   <Route path="/space/settings" element={<Settings />} />
                 </Route>
