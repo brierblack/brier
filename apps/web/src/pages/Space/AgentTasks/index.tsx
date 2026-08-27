@@ -9,11 +9,7 @@ import {
   RobotOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons';
-import {
-  MOCK_TASKS,
-  PRIORITY_MAP,
-  STATUS_MAP,
-} from './data';
+import { MOCK_TASKS, PRIORITY_MAP, STATUS_MAP } from './data';
 
 const AgentTasks = () => {
   const navigate = useNavigate();
@@ -48,11 +44,7 @@ const AgentTasks = () => {
       extra={
         <div className="flex items-center gap-3">
           <Button icon={<ScheduleOutlined />}>我的事项</Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleNew}
-          >
+          <Button type="primary" icon={<PlusOutlined />} onClick={handleNew}>
             新建事项
           </Button>
         </div>
@@ -69,7 +61,10 @@ const AgentTasks = () => {
                 label: (
                   <span className="flex items-center gap-1">
                     待处理
-                    <span className="flex size-4 items-center justify-center rounded-full bg-[#fa8c16]/10 text-[10px] font-medium" style={{ color: '#fa8c16' }}>
+                    <span
+                      className="flex size-4 items-center justify-center rounded-full bg-[#fa8c16]/10 text-[10px] font-medium"
+                      style={{ color: '#fa8c16' }}
+                    >
                       {countByStatus.pending}
                     </span>
                   </span>
@@ -80,7 +75,10 @@ const AgentTasks = () => {
                 label: (
                   <span className="flex items-center gap-1">
                     处理中
-                    <span className="flex size-4 items-center justify-center rounded-full bg-[#1677ff]/10 text-[10px] font-medium" style={{ color: '#1677ff' }}>
+                    <span
+                      className="flex size-4 items-center justify-center rounded-full bg-[#1677ff]/10 text-[10px] font-medium"
+                      style={{ color: '#1677ff' }}
+                    >
                       {countByStatus.processing}
                     </span>
                   </span>
@@ -91,7 +89,10 @@ const AgentTasks = () => {
                 label: (
                   <span className="flex items-center gap-1">
                     已完成
-                    <span className="flex size-4 items-center justify-center rounded-full bg-[#52c41a]/10 text-[10px] font-medium" style={{ color: '#52c41a' }}>
+                    <span
+                      className="flex size-4 items-center justify-center rounded-full bg-[#52c41a]/10 text-[10px] font-medium"
+                      style={{ color: '#52c41a' }}
+                    >
                       {countByStatus.completed}
                     </span>
                   </span>
@@ -122,13 +123,17 @@ const AgentTasks = () => {
               >
                 <div
                   className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg text-base"
-                  style={{ background: status.bg, border: `1px solid ${status.color}22`, color: status.color }}
+                  style={{
+                    background: status.bg,
+                    border: `1px solid ${status.color}22`,
+                    color: status.color,
+                  }}
                 >
                   {status.icon}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="truncate font-medium text-standard">{task.title}</span>
+                    <span className="truncate text-standard font-medium">{task.title}</span>
                     <Tag color={priority.color} className="m-0">
                       {priority.label}
                     </Tag>

@@ -25,7 +25,7 @@ export const conversations: Conversation[] = [
         id: 102,
         role: 'agent',
         content:
-          '建议先看执行计划。常见问题是 WHERE 条件里的函数导致索引失效，例如 DATE(create_time) = \'2026-08-01\'。建议改成范围查询 create_time >= ... AND create_time < ...，让索引生效。\n\n如果需要，我可以帮你重写这条 SQL。',
+          "建议先看执行计划。常见问题是 WHERE 条件里的函数导致索引失效，例如 DATE(create_time) = '2026-08-01'。建议改成范围查询 create_time >= ... AND create_time < ...，让索引生效。\n\n如果需要，我可以帮你重写这条 SQL。",
         agentId: 2,
       },
       {

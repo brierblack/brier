@@ -293,7 +293,7 @@ const Skills = () => {
         </div>
 
         {/* All skills section */}
-        <div className="flex-1 w-full">
+        <div className="w-full flex-1">
           <div className="mb-3 flex items-center gap-2">
             <span className="text-standard font-medium">全部技能</span>
           </div>

@@ -40,7 +40,13 @@ const MOCK_DETAILS: Record<string, AutomationDetail> = {
     updatedTime: '今天 08:03',
     status: 'enabled',
     triggerType: 'timer',
-    timerConfig: { preset: 'daily-8', frequency: 'daily', hour: 8, minute: 0, timezone: 'Asia/Shanghai' },
+    timerConfig: {
+      preset: 'daily-8',
+      frequency: 'daily',
+      hour: 8,
+      minute: 0,
+      timezone: 'Asia/Shanghai',
+    },
     filters: [],
     actionType: 'invoke_agent',
     instructions: '请生成今日代码质量报告，包括新增代码、修改文件和潜在问题。',
@@ -52,7 +58,13 @@ const MOCK_DETAILS: Record<string, AutomationDetail> = {
     updatedTime: '2 小时前',
     status: 'enabled',
     triggerType: 'github_push',
-    timerConfig: { preset: 'daily-8', frequency: 'daily', hour: 8, minute: 0, timezone: 'Asia/Shanghai' },
+    timerConfig: {
+      preset: 'daily-8',
+      frequency: 'daily',
+      hour: 8,
+      minute: 0,
+      timezone: 'Asia/Shanghai',
+    },
     filters: [{ id: 'f1', field: 'repository', operator: 'contains', value: '空间所有仓库' }],
     actionType: 'invoke_agent',
     instructions: '请审查以下推送的代码变更，关注代码风格、潜在 bug 和性能问题。',
@@ -64,7 +76,13 @@ const MOCK_DETAILS: Record<string, AutomationDetail> = {
     updatedTime: '昨天 14:30',
     status: 'paused',
     triggerType: 'github_comments',
-    timerConfig: { preset: 'daily-8', frequency: 'daily', hour: 8, minute: 0, timezone: 'Asia/Shanghai' },
+    timerConfig: {
+      preset: 'daily-8',
+      frequency: 'daily',
+      hour: 8,
+      minute: 0,
+      timezone: 'Asia/Shanghai',
+    },
     filters: [],
     actionType: 'create_agent_task',
     instructions: '',
@@ -84,12 +102,72 @@ interface ExecutionRecord {
 }
 
 const MOCK_EXECUTIONS: ExecutionRecord[] = [
-  { id: 'e1', triggerType: 'Push events', triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity', actionType: '调用 Agent', actionObject: '调用 Agent，未生成执行对象', time: '4 分钟前', result: 'failed', errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员', hasParams: true },
-  { id: 'e2', triggerType: 'Push events', triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity', actionType: '调用 Agent', actionObject: '调用 Agent，未生成执行对象', time: '5 分钟前', result: 'failed', errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员', hasParams: true },
-  { id: 'e3', triggerType: 'Push events', triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity', actionType: '调用 Agent', actionObject: '调用 Agent，未生成执行对象', time: '8 分钟前', result: 'failed', errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员', hasParams: true },
-  { id: 'e4', triggerType: 'Push events', triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity', actionType: '调用 Agent', actionObject: '调用 Agent，未生成执行对象', time: '9 分钟前', result: 'failed', errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员', hasParams: true },
-  { id: 'e5', triggerType: 'Push events', triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity', actionType: '调用 Agent', actionObject: '调用 Agent，未生成执行对象', time: '10 分钟前', result: 'failed', errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员', hasParams: true },
-  { id: 'e6', triggerType: 'Push events', triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity', actionType: '调用 Agent', actionObject: '调用 Agent，未生成执行对象', time: '11 分钟前', result: 'failed', errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员', hasParams: true },
+  {
+    id: 'e1',
+    triggerType: 'Push events',
+    triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity',
+    actionType: '调用 Agent',
+    actionObject: '调用 Agent，未生成执行对象',
+    time: '4 分钟前',
+    result: 'failed',
+    errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员',
+    hasParams: true,
+  },
+  {
+    id: 'e2',
+    triggerType: 'Push events',
+    triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity',
+    actionType: '调用 Agent',
+    actionObject: '调用 Agent，未生成执行对象',
+    time: '5 分钟前',
+    result: 'failed',
+    errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员',
+    hasParams: true,
+  },
+  {
+    id: 'e3',
+    triggerType: 'Push events',
+    triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity',
+    actionType: '调用 Agent',
+    actionObject: '调用 Agent，未生成执行对象',
+    time: '8 分钟前',
+    result: 'failed',
+    errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员',
+    hasParams: true,
+  },
+  {
+    id: 'e4',
+    triggerType: 'Push events',
+    triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity',
+    actionType: '调用 Agent',
+    actionObject: '调用 Agent，未生成执行对象',
+    time: '9 分钟前',
+    result: 'failed',
+    errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员',
+    hasParams: true,
+  },
+  {
+    id: 'e5',
+    triggerType: 'Push events',
+    triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity',
+    actionType: '调用 Agent',
+    actionObject: '调用 Agent，未生成执行对象',
+    time: '10 分钟前',
+    result: 'failed',
+    errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员',
+    hasParams: true,
+  },
+  {
+    id: 'e6',
+    triggerType: 'Push events',
+    triggerObject: '[Push] dataphin-fe/dpapp-dev stream_new_capacity',
+    actionType: '调用 Agent',
+    actionObject: '调用 Agent，未生成执行对象',
+    time: '11 分钟前',
+    result: 'failed',
+    errorReason: '调用 Agent 失败，错误人 web-xxx 不是当前空间成员',
+    hasParams: true,
+  },
 ];
 
 interface DailyStat {
@@ -119,8 +197,20 @@ interface ModificationRecord {
 
 const MOCK_MODIFICATIONS: ModificationRecord[] = [
   { id: 'm1', user: '芮杰', action: '创建了自动化', time: '19 分钟前' },
-  { id: 'm2', user: '芮杰', action: '修改了执行指令', detail: '更新了执行指令内容', time: '15 分钟前' },
-  { id: 'm3', user: '芮杰', action: '修改了触发条件', detail: '添加了仓库筛选条件', time: '12 分钟前' },
+  {
+    id: 'm2',
+    user: '芮杰',
+    action: '修改了执行指令',
+    detail: '更新了执行指令内容',
+    time: '15 分钟前',
+  },
+  {
+    id: 'm3',
+    user: '芮杰',
+    action: '修改了触发条件',
+    detail: '添加了仓库筛选条件',
+    time: '12 分钟前',
+  },
 ];
 
 const STATUS_FILTER_OPTIONS = [
@@ -143,13 +233,16 @@ const BarChart = ({ data }: { data: DailyStat[] }) => {
     <div>
       <div className="mb-3 flex items-center gap-4 text-xs">
         <span className="flex items-center gap-1">
-          <span className="size-2 rounded-sm bg-emerald-500" />成功
+          <span className="size-2 rounded-sm bg-emerald-500" />
+          成功
         </span>
         <span className="flex items-center gap-1">
-          <span className="size-2 rounded-sm bg-red-500" />失败
+          <span className="size-2 rounded-sm bg-red-500" />
+          失败
         </span>
         <span className="flex items-center gap-1">
-          <span className="size-2 rounded-sm bg-blue-400" />执行中
+          <span className="size-2 rounded-sm bg-blue-400" />
+          执行中
         </span>
       </div>
       <div className="flex items-end gap-2" style={{ height: 100 }}>
@@ -163,13 +256,22 @@ const BarChart = ({ data }: { data: DailyStat[] }) => {
                 style={{ height: total > 0 ? `${heightPct}%` : '2px', minHeight: '2px' }}
               >
                 {total > 0 && d.running > 0 && (
-                  <div style={{ height: `${(d.running / total) * 100}%` }} className="w-full bg-blue-400" />
+                  <div
+                    style={{ height: `${(d.running / total) * 100}%` }}
+                    className="w-full bg-blue-400"
+                  />
                 )}
                 {total > 0 && d.success > 0 && (
-                  <div style={{ height: `${(d.success / total) * 100}%` }} className="w-full bg-emerald-500" />
+                  <div
+                    style={{ height: `${(d.success / total) * 100}%` }}
+                    className="w-full bg-emerald-500"
+                  />
                 )}
                 {total > 0 && d.failed > 0 && (
-                  <div style={{ height: `${(d.failed / total) * 100}%` }} className="w-full bg-red-500" />
+                  <div
+                    style={{ height: `${(d.failed / total) * 100}%` }}
+                    className="w-full bg-red-500"
+                  />
                 )}
               </div>
               <span className="mt-1 text-xs text-muted">{d.date}</span>
@@ -292,7 +394,7 @@ const ExecutionRecordsTab = () => {
     <div className="p-4">
       <div className="mb-4 flex items-center gap-6">
         <span className="text-sm">
-          执行 <span className="font-bold text-standard">{total}</span> 次, 成功率{' '}
+          执行 <span className="text-standard font-bold">{total}</span> 次, 成功率{' '}
           <span className="font-bold text-red-500">{successRate}%</span>
         </span>
       </div>
@@ -349,12 +451,10 @@ const ModificationRecordsTab = () => {
             </div>
             <div className="flex-1">
               <div className="text-sm">
-                <span className="font-medium text-standard">{record.user}</span>
+                <span className="text-standard font-medium">{record.user}</span>
                 <span className="ml-1 text-standard">{record.action}</span>
               </div>
-              {record.detail && (
-                <div className="mt-1 text-xs text-muted">{record.detail}</div>
-              )}
+              {record.detail && <div className="mt-1 text-xs text-muted">{record.detail}</div>}
             </div>
             <span className="shrink-0 text-xs text-muted">{record.time}</span>
           </div>

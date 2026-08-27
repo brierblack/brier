@@ -14,7 +14,7 @@ import {
   BellOutlined,
   GithubFilled,
   PlusOutlined,
-  LogoutOutlined
+  LogoutOutlined,
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '@/define';
@@ -34,21 +34,22 @@ const menuItems: MenuProps['items'] = [
     icon: <MessageOutlined />,
     className: 'flex! group',
     label: '新会话',
-    extra: <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100">
-          <kbd className="inline-flex items-center justify-center text-xs text-faint font-sans">
+    extra: (
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100">
+        <kbd className="inline-flex items-center justify-center font-sans text-xs text-faint">
           ⌘
         </kbd>
-        <kbd className="inline-flex items-center justify-center text-xs text-faint font-sans">
+        <kbd className="inline-flex items-center justify-center font-sans text-xs text-faint">
           ⇧
         </kbd>
-        <kbd className="inline-flex items-center justify-center text-xs text-faint font-sans">
+        <kbd className="inline-flex items-center justify-center font-sans text-xs text-faint">
           O
         </kbd>
-    </div>
-  ,
+      </div>
+    ),
   },
   { key: 'agent-tasks', icon: <ScheduleOutlined />, label: 'Agent 事项', extra: <PlusOutlined /> },
-  { key: 'automation', icon: <ControlOutlined />, label: '自动化', },
+  { key: 'automation', icon: <ControlOutlined />, label: '自动化' },
   { type: 'divider' },
   ...NAV_ITEMS.map((item) => ({
     key: item.key,
@@ -288,7 +289,12 @@ export const NavMenu = () => {
               if (value === 'message') navigate('/space/message');
             }}
             footer={
-              <Button className='flex! justify-start! p-3! gap-2!' block bordered={false} onClick={logout}>
+              <Button
+                className="flex! justify-start! gap-2! p-3!"
+                block
+                bordered={false}
+                onClick={logout}
+              >
                 <LogoutOutlined className="text-standard" />
                 退出登录
               </Button>

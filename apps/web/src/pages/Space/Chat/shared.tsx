@@ -37,7 +37,7 @@ export const MessageBubble = ({
     return (
       <div className="flex items-start justify-end gap-3">
         <div className="max-w-[75%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-white">
-          <p className="leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
+          <p className="leading-relaxed break-words whitespace-pre-wrap">{message.content}</p>
         </div>
         {user?.avatar_url ? (
           <Avatar
@@ -68,7 +68,7 @@ export const MessageBubble = ({
       <div className="flex max-w-[75%] flex-col gap-1">
         <div className="text-[11px] font-medium">{agent.name}</div>
         <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-2.5">
-          <p className="leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
+          <p className="leading-relaxed break-words whitespace-pre-wrap">{message.content}</p>
         </div>
       </div>
     </div>
@@ -83,9 +83,18 @@ export const TypingIndicator = ({ agent }: { agent: Agent }) => {
         <div className="text-[11px] font-medium">{agent.name}</div>
         <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-3">
           <div className="flex items-center gap-1">
-            <span className="size-1.5 animate-bounce rounded-full" style={{ animationDelay: '0ms' }} />
-            <span className="size-1.5 animate-bounce rounded-full" style={{ animationDelay: '150ms' }} />
-            <span className="size-1.5 animate-bounce rounded-full" style={{ animationDelay: '300ms' }} />
+            <span
+              className="size-1.5 animate-bounce rounded-full"
+              style={{ animationDelay: '0ms' }}
+            />
+            <span
+              className="size-1.5 animate-bounce rounded-full"
+              style={{ animationDelay: '150ms' }}
+            />
+            <span
+              className="size-1.5 animate-bounce rounded-full"
+              style={{ animationDelay: '300ms' }}
+            />
           </div>
         </div>
       </div>
@@ -109,7 +118,7 @@ export const AgentSelector = ({
           label: (
             <div className="flex items-center gap-2.5">
               <AgentAvatar agent={a} size={20} />
-              <span className="font-medium text-standard">{a.name}</span>
+              <span className="text-standard font-medium">{a.name}</span>
               {a.id === agent.id && <CheckOutlined className="ml-auto text-xs text-brand" />}
             </div>
           ),

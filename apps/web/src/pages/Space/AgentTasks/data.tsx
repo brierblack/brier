@@ -1,8 +1,4 @@
-import {
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  SyncOutlined,
-} from '@ant-design/icons';
+import { CheckCircleOutlined, ClockCircleOutlined, SyncOutlined } from '@ant-design/icons';
 
 export type TaskStatus = 'pending' | 'processing' | 'completed';
 export type TaskPriority = 'high' | 'medium' | 'low';
@@ -152,14 +148,38 @@ export const MOCK_ACTIVITIES: Record<string, TaskActivity[]> = {
   t2: [
     { id: 't2-a1', type: 'created', agentId: 1, time: '今天 08:03' },
     { id: 't2-a2', type: 'accepted', agentId: 1, time: '今天 08:05' },
-    { id: 't2-a3', type: 'comment', agentId: 1, content: '正在聚合今日代码变更数据', time: '今天 08:10' },
-    { id: 't2-a4', type: 'comment', agentId: 3, content: '已提供今日全部提交记录清单，共 47 条', time: '今天 08:12' },
+    {
+      id: 't2-a3',
+      type: 'comment',
+      agentId: 1,
+      content: '正在聚合今日代码变更数据',
+      time: '今天 08:10',
+    },
+    {
+      id: 't2-a4',
+      type: 'comment',
+      agentId: 3,
+      content: '已提供今日全部提交记录清单，共 47 条',
+      time: '今天 08:12',
+    },
   ],
   t3: [
     { id: 't3-a1', type: 'created', agentId: 3, time: '今天 10:21' },
     { id: 't3-a2', type: 'accepted', agentId: 3, time: '今天 10:22' },
-    { id: 't3-a3', type: 'comment', agentId: 3, content: '开始分析网关超时日志，定位慢查询', time: '今天 10:25' },
-    { id: 't3-a4', type: 'comment', agentId: 4, content: '已定位到 order_query 慢 SQL，正在重写索引', time: '今天 10:40' },
+    {
+      id: 't3-a3',
+      type: 'comment',
+      agentId: 3,
+      content: '开始分析网关超时日志，定位慢查询',
+      time: '今天 10:25',
+    },
+    {
+      id: 't3-a4',
+      type: 'comment',
+      agentId: 4,
+      content: '已定位到 order_query 慢 SQL，正在重写索引',
+      time: '今天 10:40',
+    },
   ],
   t4: [
     { id: 't4-a1', type: 'created', agentId: 1, time: '昨天 16:40' },
@@ -177,14 +197,26 @@ export const MOCK_ACTIVITIES: Record<string, TaskActivity[]> = {
   t5: [
     { id: 't5-a1', type: 'created', agentId: 5, time: '昨天 14:30' },
     { id: 't5-a2', type: 'accepted', agentId: 5, time: '昨天 14:31' },
-    { id: 't5-a3', type: 'comment', agentId: 5, content: '已整理用户反馈，问题已转交产品团队', time: '昨天 14:35' },
+    {
+      id: 't5-a3',
+      type: 'comment',
+      agentId: 5,
+      content: '已整理用户反馈，问题已转交产品团队',
+      time: '昨天 14:35',
+    },
     { id: 't5-a4', type: 'completed', agentId: 5, time: '昨天 14:36' },
   ],
   t6: [
     { id: 't6-a1', type: 'created', agentId: 1, time: '昨天 11:05' },
     { id: 't6-a2', type: 'assigned', agentId: 1, targetAgentId: 4, time: '昨天 11:07' },
     { id: 't6-a3', type: 'accepted', agentId: 4, time: '昨天 11:10' },
-    { id: 't6-a4', type: 'comment', agentId: 4, content: '预发环境已就绪，等待部署窗口', time: '昨天 11:20' },
+    {
+      id: 't6-a4',
+      type: 'comment',
+      agentId: 4,
+      content: '预发环境已就绪，等待部署窗口',
+      time: '昨天 11:20',
+    },
   ],
 };
 

@@ -134,7 +134,11 @@ const TemplateCard = ({ template }: { template: Template }) => {
     >
       <div
         className="flex size-9 shrink-0 items-center justify-center rounded-lg text-base"
-        style={{ background: `${template.iconColor}0d`, border: `1px solid ${template.iconColor}22`, color: template.iconColor }}
+        style={{
+          background: `${template.iconColor}0d`,
+          border: `1px solid ${template.iconColor}22`,
+          color: template.iconColor,
+        }}
       >
         {template.icon}
       </div>
@@ -143,11 +147,11 @@ const TemplateCard = ({ template }: { template: Template }) => {
         <p className="mt-1 text-xs leading-relaxed">{template.desc}</p>
       </div>
       {template.status === 'enabled' && (
-        <span className="shrink-0 rounded-md bg-[#f0f0f0] px-2 py-0.5 text-xs font-medium">启用</span>
+        <span className="shrink-0 rounded-md bg-[#f0f0f0] px-2 py-0.5 text-xs font-medium">
+          启用
+        </span>
       )}
-      {template.status === 'coming-soon' && (
-        <span className="shrink-0 text-xs">敬请期待</span>
-      )}
+      {template.status === 'coming-soon' && <span className="shrink-0 text-xs">敬请期待</span>}
     </div>
   );
 };
@@ -249,7 +253,7 @@ const Automation = () => {
 
       <button
         onClick={() => navigate('/space/automation/new')}
-        className="fixed bottom-6 right-6 z-50 flex size-12 items-center justify-center rounded-full bg-brand text-white shadow-lg transition-transform hover:scale-110"
+        className="fixed right-6 bottom-6 z-50 flex size-12 items-center justify-center rounded-full bg-brand text-white shadow-lg transition-transform hover:scale-110"
       >
         <PlusOutlined style={{ fontSize: 20 }} />
       </button>

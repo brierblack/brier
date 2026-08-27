@@ -36,13 +36,7 @@ const ACTIVITY_META: Record<
   completed: { text: '完成了事项', icon: <FlagOutlined />, color: '#52c41a' },
 };
 
-const AgentBadge = ({
-  agent,
-  size = 24,
-}: {
-  agent: TaskAgent;
-  size?: number;
-}) => (
+const AgentBadge = ({ agent, size = 24 }: { agent: TaskAgent; size?: number }) => (
   <div
     className="flex shrink-0 items-center justify-center rounded-full"
     style={{
@@ -57,17 +51,9 @@ const AgentBadge = ({
   </div>
 );
 
-const ActivityItem = ({
-  activity,
-  isLast,
-}: {
-  activity: TaskActivity;
-  isLast: boolean;
-}) => {
+const ActivityItem = ({ activity, isLast }: { activity: TaskActivity; isLast: boolean }) => {
   const agent = getTaskAgent(activity.agentId);
-  const targetAgent = activity.targetAgentId
-    ? getTaskAgent(activity.targetAgentId)
-    : undefined;
+  const targetAgent = activity.targetAgentId ? getTaskAgent(activity.targetAgentId) : undefined;
   const meta = ACTIVITY_META[activity.type];
 
   return (
@@ -87,7 +73,7 @@ const ActivityItem = ({
 
       <div className="min-w-0 flex-1 pb-6">
         <div className="flex flex-wrap items-center gap-x-1.5 text-sm">
-          <span className="font-medium text-standard">{agent.name}</span>
+          <span className="text-standard font-medium">{agent.name}</span>
           <span className="text-standard">{meta.text}</span>
           {targetAgent && (
             <span className="flex items-center gap-1">
@@ -169,16 +155,10 @@ const ActivityTimeline = ({
   );
 };
 
-const DetailInfoItem = ({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) => (
+const DetailInfoItem = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div>
     <div className="text-xs text-muted">{label}</div>
-    <div className="mt-1 text-sm font-medium text-standard">{children}</div>
+    <div className="mt-1 text-sm text-standard font-medium">{children}</div>
   </div>
 );
 
@@ -190,7 +170,7 @@ const AgentTaskDetail = () => {
   const task = getTaskById(id ?? '');
   const [status, setStatus] = useState(task?.status ?? 'pending');
   const [activities, setActivities] = useState<TaskActivity[]>(
-    task ? MOCK_ACTIVITIES[task.id] ?? [] : [],
+    task ? (MOCK_ACTIVITIES[task.id] ?? []) : [],
   );
 
   if (!task) {
@@ -288,7 +268,7 @@ const AgentTaskDetail = () => {
         </div>
       }
     >
-      <div className=" p-4">
+      <div className="p-4">
         <div className="mb-6 rounded-xl border border-ghost bg-white p-5">
           <div className="mb-4 flex items-center gap-2">
             <span
@@ -307,7 +287,7 @@ const AgentTaskDetail = () => {
             </div>
           </div>
 
-          <p className="text-sm leading-relaxed text-standard">{task.desc}</p>
+          <p className="text-sm text-standard leading-relaxed">{task.desc}</p>
 
           <div className="mt-5 grid grid-cols-2 gap-4 border-t border-ghost pt-4 sm:grid-cols-3">
             <DetailInfoItem label="状态">

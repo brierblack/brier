@@ -95,11 +95,15 @@ export const WorkSpace = memo(() => {
       notFoundContent="暂无工作空间"
       button={{ block: true }}
       footer={
-        <Button className='flex! justify-start! p-3! gap-2!' block bordered={false} type="text" onClick={() => navigate('/spaces/new')}>
-         
-            <PlusOutlined className="text-standard" />
-            新建工作空间
-          
+        <Button
+          className="flex! justify-start! gap-2! p-3!"
+          block
+          bordered={false}
+          type="text"
+          onClick={() => navigate('/spaces/new')}
+        >
+          <PlusOutlined className="text-standard" />
+          新建工作空间
         </Button>
       }
     />

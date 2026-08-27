@@ -40,18 +40,19 @@ export const TRIGGER_DISPLAY: Record<TriggerType, { icon: ReactNode; label: stri
   github_comments: { icon: <CommentOutlined />, label: 'Comments' },
 };
 
-export const ACTION_DISPLAY: Record<ActionType, { icon: ReactNode; label: string; desc: string }> = {
-  invoke_agent: {
-    icon: <RobotOutlined />,
-    label: '调用 Agent',
-    desc: '按触发条件向指定 Agent 发送执行指令',
-  },
-  create_agent_task: {
-    icon: <ScheduleOutlined />,
-    label: '创建 Agent 事项',
-    desc: '触发时自动创建 Agent 事项并指派给处理人',
-  },
-};
+export const ACTION_DISPLAY: Record<ActionType, { icon: ReactNode; label: string; desc: string }> =
+  {
+    invoke_agent: {
+      icon: <RobotOutlined />,
+      label: '调用 Agent',
+      desc: '按触发条件向指定 Agent 发送执行指令',
+    },
+    create_agent_task: {
+      icon: <ScheduleOutlined />,
+      label: '创建 Agent 事项',
+      desc: '触发时自动创建 Agent 事项并指派给处理人',
+    },
+  };
 
 export const TIME_PRESETS = [
   { key: 'hourly', label: '每小时', frequency: 'hourly' as const, hour: 0, minute: 0 },
@@ -190,15 +191,9 @@ export function getNextExecutions(
   return results;
 }
 
-export const SectionCard = ({
-  title,
-  children,
-}: {
-  title: ReactNode;
-  children: ReactNode;
-}) => (
+export const SectionCard = ({ title, children }: { title: ReactNode; children: ReactNode }) => (
   <div className="mb-6">
-    <div className="mb-3 font-bold text-standard">{title}</div>
+    <div className="mb-3 text-standard font-bold">{title}</div>
     <div className="rounded-xl border border-ghost bg-white p-5">{children}</div>
   </div>
 );
@@ -385,7 +380,7 @@ export const GitHubFiltersPanel = ({
 
   return (
     <div className="mt-4 space-y-3">
-      <div className="font-medium text-standard">筛选条件</div>
+      <div className="text-standard font-medium">筛选条件</div>
       {filters.length === 0 && (
         <div className="text-xs text-muted">未设置筛选条件，将匹配所有事件</div>
       )}
@@ -441,24 +436,22 @@ export const ActionSelector = ({
 }) => {
   const [open, setOpen] = useState(false);
 
-  const menuItems: MenuProps['items'] = (Object.keys(ACTION_DISPLAY) as ActionType[]).map(
-    (key) => {
-      const opt = ACTION_DISPLAY[key];
-      return {
-        key,
-        label: (
-          <div className="flex items-start gap-2.5 py-1">
-            <span className="mt-0.5 text-base text-brand">{opt.icon}</span>
-            <div className="flex-1">
-              <div className="font-medium text-standard">{opt.label}</div>
-              <div className="mt-0.5 text-xs text-muted">{opt.desc}</div>
-            </div>
-            {value === key && <CheckOutlined className="mt-1 text-brand" />}
+  const menuItems: MenuProps['items'] = (Object.keys(ACTION_DISPLAY) as ActionType[]).map((key) => {
+    const opt = ACTION_DISPLAY[key];
+    return {
+      key,
+      label: (
+        <div className="flex items-start gap-2.5 py-1">
+          <span className="mt-0.5 text-base text-brand">{opt.icon}</span>
+          <div className="flex-1">
+            <div className="text-standard font-medium">{opt.label}</div>
+            <div className="mt-0.5 text-xs text-muted">{opt.desc}</div>
           </div>
-        ),
-      };
-    },
-  );
+          {value === key && <CheckOutlined className="mt-1 text-brand" />}
+        </div>
+      ),
+    };
+  });
 
   const selected = value ? ACTION_DISPLAY[value] : null;
 

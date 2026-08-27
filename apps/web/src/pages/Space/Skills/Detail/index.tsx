@@ -18,8 +18,7 @@ const SKILL_ICONS: Record<Skill['type'], string> = {
   custom: '⚡',
 };
 
-const formatInstalls = (n: number) =>
-  n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
+const formatInstalls = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
 
 const SKILL_CONTENT: Record<Skill['type'], string[]> = {
   builtin: [
@@ -51,14 +50,14 @@ const SkillDoc = ({ skill }: { skill: Skill }) => {
   return (
     <>
       <div className="flex flex-col gap-1">
-        <h2 className="text-sm font-semibold text-label">简介</h2>
-        <p className="text-sm leading-relaxed text-standard">{skill.desc}</p>
+        <h2 className="text-label text-sm font-semibold">简介</h2>
+        <p className="text-sm text-standard leading-relaxed">{skill.desc}</p>
       </div>
       <div className="rounded-lg bg-surface px-4 py-3">
-        <h2 className="mb-2 text-sm font-semibold text-label">内容</h2>
+        <h2 className="text-label mb-2 text-sm font-semibold">内容</h2>
         <div className="flex flex-col gap-2">
           {content.map((p, i) => (
-            <p key={i} className="text-sm leading-relaxed text-standard">
+            <p key={i} className="text-sm text-standard leading-relaxed">
               {p}
             </p>
           ))}
@@ -91,13 +90,29 @@ const SkillDetail = () => {
   const cfg = SKILL_TYPE_MAP[skill.type];
 
   const metaItems = [
-    { label: '类型', value: <Tag style={{ background: `${cfg.color}0d`, color: cfg.color, border: 'none' }}>{cfg.label}</Tag> },
+    {
+      label: '类型',
+      value: (
+        <Tag style={{ background: `${cfg.color}0d`, color: cfg.color, border: 'none' }}>
+          {cfg.label}
+        </Tag>
+      ),
+    },
     { label: '分类', value: <span className="text-sm">#{skill.category}</span> },
-    { label: '版本', value: <span className="font-mono text-sm tabular-nums">{(skill.installs % 5) + 1}</span> },
+    {
+      label: '版本',
+      value: <span className="font-mono text-sm tabular-nums">{(skill.installs % 5) + 1}</span>,
+    },
     { label: '最后更新', value: <span className="text-sm">2026/8/27</span> },
-    { label: '来源', value: <span className="text-sm">{skill.source === 'internal' ? '内部' : '社区'}</span> },
+    {
+      label: '来源',
+      value: <span className="text-sm">{skill.source === 'internal' ? '内部' : '社区'}</span>,
+    },
     { label: '作者', value: <span className="text-sm">{skill.author}</span> },
-    { label: '使用中的 Agent', value: <span className="font-mono text-sm tabular-nums">{skill.agents}</span> },
+    {
+      label: '使用中的 Agent',
+      value: <span className="font-mono text-sm tabular-nums">{skill.agents}</span>,
+    },
   ];
 
   return (
@@ -146,7 +161,9 @@ const SkillDetail = () => {
                 <span>{skill.author}</span>
                 <span>·</span>
                 <InfoCircleOutlined />
-                <span className="font-mono tabular-nums">{formatInstalls(skill.installs)} 次安装</span>
+                <span className="font-mono tabular-nums">
+                  {formatInstalls(skill.installs)} 次安装
+                </span>
               </div>
             </div>
           </div>
