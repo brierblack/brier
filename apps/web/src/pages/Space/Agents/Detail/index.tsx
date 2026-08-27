@@ -21,6 +21,7 @@ import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { STATUS_MAP, MODELS, SKILL_TYPE_MAP } from '../../../../define';
 import type { Agent, AgentStatus, Skill } from '../../../../types';
 import { useAuth } from '../../../../auth-context';
+import { StatusBadge } from '@/components/StatusBadge';
 
 const RUNTIMES = ['Claude Code', 'Codex CLI', 'GPT-4o CLI', 'Gemini CLI'];
 
@@ -91,7 +92,7 @@ interface ChatMessage {
 
 const PropertyRow = ({ label, children }: { label: string; children: React.ReactNode }) => {
   return (
-    <div className="flex items-center justify-between py-2">
+    <div className="flex items-center justify-between py-1">
       <span className="text-standard">{label}</span>
       <div className="flex items-center gap-2">{children}</div>
     </div>
@@ -163,7 +164,7 @@ const OverviewTab = ({
   const statusConfig = STATUS_MAP[agent.status as AgentStatus] ?? STATUS_MAP.offline;
 
   return (
-    <div className="flex min-w-0 flex-1 gap-8 overflow-hidden p-4">
+    <div className="flex min-w-0 flex-1 gap-8 overflow-hidden px-4 py-3">
       <div className="w-[300px] min-w-0 shrink-0 overflow-auto rounded-xl border border-ghost">
         <div className="flex flex-col items-start gap-4 border-b border-ghost p-4">
           <div
@@ -175,20 +176,17 @@ const OverviewTab = ({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold">{agent.name}</h1>
-              <span className={`flex items-center gap-1 text-xs font-medium ${statusConfig.color}`}>
-                <span className={`size-1.5 rounded-full ${statusConfig.color}`} />
-                {statusConfig.label}
-              </span>
+              <StatusBadge status={agent.status} />
             </div>
             <p className="mt-0.5 text-standard">{agent.desc}</p>
           </div>
         </div>
 
-        <div className="border-b border-ghost p-4">
+        <div className="border-b border-ghost px-4 py-3">
           <div className="mb-2 text-standard font-bold">属性</div>
           <div>
             <PropertyRow label="工作电脑">
-              <span className="font-mono text-standard font-medium">{agent.workComputer}</span>
+              <Button bordered={false}>{agent.workComputer}</Button>
             </PropertyRow>
             <PropertyRow label="运行时">
               <Select
@@ -199,10 +197,7 @@ const OverviewTab = ({
                   label: <RuntimeBadge name={r} size={12} />,
                 }))}
                 button={{
-                  size: 'small',
-                  type: 'text',
-                  className: 'w-40 justify-between',
-                  classNames: { root: '!border !border-ghost !rounded-md' },
+                  bordered: false,
                 }}
               />
             </PropertyRow>
@@ -212,10 +207,7 @@ const OverviewTab = ({
                 onChange={setModel}
                 options={MODELS.map((m) => ({ value: m, label: m }))}
                 button={{
-                  size: 'small',
-                  type: 'text',
-                  className: 'w-40 justify-between',
-                  classNames: { root: '!border !border-ghost !rounded-md' },
+                  bordered: false,
                 }}
               />
             </PropertyRow>
@@ -225,10 +217,7 @@ const OverviewTab = ({
                 onChange={setVisibility}
                 options={VISIBILITY_OPTIONS}
                 button={{
-                  size: 'small',
-                  type: 'text',
-                  className: 'w-48 justify-between',
-                  classNames: { root: '!border !border-ghost !rounded-md' },
+                  bordered: false,
                 }}
               />
             </PropertyRow>
@@ -245,24 +234,24 @@ const OverviewTab = ({
           </div>
         </div>
 
-        <div className="p-4">
+        <div className="px-4 py-3">
           <div className="mb-2 text-standard font-bold">操作</div>
           <div>
-            <div className="flex items-center justify-between border-b border-ghost pb-2">
+            <div className="flex items-center justify-between gap-2 border-b border-ghost pb-2">
               <div className="flex-1">
                 <div className="text-standard font-medium">默认 Agent</div>
                 <p className="mt-1 text-xs">设为你的"主力" Agent — 接受指派时的默认人选</p>
               </div>
-              <Button size="small">设为默认</Button>
+              <Button>设为默认</Button>
             </div>
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center justify-between gap-2 pt-2">
               <div className="flex-1">
                 <div className="text-standard font-medium">归档 Agent</div>
                 <p className="mt-1 text-xs">
                   归档后 Agent 会从日常列表和指派选项中隐藏，历史任务与会话记录会保留
                 </p>
               </div>
-              <Button size="small">归档</Button>
+              <Button>归档</Button>
             </div>
           </div>
         </div>
