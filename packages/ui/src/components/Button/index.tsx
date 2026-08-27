@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react';
 import { Button as AntdButton, type ButtonProps as AntdButtonProps } from 'antd';
 
 const DEFAULT_CLASS_NAMES = {
-  root: ' hover:!bg-surface-hover active:!bg-surface-hover',
+  root: ' hover:bg-surface-hover! active:!bg-surface-hover!',
 };
 
 export interface ButtonProps extends AntdButtonProps {

@@ -21,6 +21,8 @@ export const ButtonSelect: SelectComponent = memo((props) => {
     defaultOpen,
     onOpenChange,
     placement,
+    header,
+    footer
   } = props;
 
   const [internalSearch, setInternalSearch] = useState('');
@@ -58,7 +60,7 @@ export const ButtonSelect: SelectComponent = memo((props) => {
       filtered.map((o) =>
         o.type === 'divider'
           ? { type: 'divider' as const }
-          : { key: String(o.value), label: o.label },
+          : { key: String(o.value), label: o.label, children: o.children },
       ),
     [filtered],
   );
@@ -87,6 +89,9 @@ export const ButtonSelect: SelectComponent = memo((props) => {
 
   const dropdownContent = (menu: ReactNode) => (
     <div>
+      {
+        header && <div className="p-1 border-b border-ghost">{header}</div>
+      }
       {searchable && (
         <div className="border-b border-ghost p-1">
           <Input
@@ -100,9 +105,14 @@ export const ButtonSelect: SelectComponent = memo((props) => {
           />
         </div>
       )}
-      {filtered.length > 0
-        ? menu
-        : notFoundContent && <div className="px-3 py-2">{notFoundContent}</div>}
+      {filtered.length > 0 ? (
+        menu
+      ) : (
+        notFoundContent && <div className="px-3 py-2">{notFoundContent}</div>
+      )}
+      {
+        footer && <div className="p-1 border-t border-ghost">{footer}</div>
+      }
     </div>
   );
 
@@ -113,7 +123,7 @@ export const ButtonSelect: SelectComponent = memo((props) => {
 
   return (
     <Dropdown
-      menu={{ items: menuItems, onClick: handleMenuClick }}
+          menu={{ items: menuItems, onClick: handleMenuClick }}
       popupRender={dropdownContent}
       trigger={['click']}
       open={open}

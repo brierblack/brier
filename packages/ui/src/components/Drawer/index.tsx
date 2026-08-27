@@ -2,7 +2,7 @@ import { Drawer as AntdDrawer, type DrawerProps as AntdDrawerProps } from 'antd'
 import { memo, useMemo } from 'react';
 
 const DEFAULT_CLASS_NAMES = {
-  header: '!h-12 !py-0 !px-4 !border-b-ghost !flex-none',
+  header: 'h-12! py-0! px-4! border-b-ghost! flex-none!',
 };
 
 export interface DrawerProps extends AntdDrawerProps {}

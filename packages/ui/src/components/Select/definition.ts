@@ -8,6 +8,8 @@ export interface SelectProps<
   P extends BaseOptionType | DefaultOptionType = DefaultOptionType,
 > extends AntdSelectProps<T, P> {
   button?: ButtonProps;
+  header?: ReactNode;
+  footer?: ReactNode;
 }
 
 export type SelectComponent = <

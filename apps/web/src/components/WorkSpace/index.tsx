@@ -27,7 +27,7 @@ export const WorkSpace = memo(() => {
       ...workspaces.map((w) => ({
         value: w.id,
         label: (
-          <div className="flex items-center gap-2 py-0.5">
+          <div className="flex items-center gap-2">
             <Avatar workspace={w} />
             <div className="min-w-0 flex-1">
               <div className="truncate font-medium">{w.name}</div>
@@ -36,16 +36,6 @@ export const WorkSpace = memo(() => {
         ),
         workspace: w,
       })),
-      { type: 'divider' as const, value: '__divider__' },
-      {
-        value: CREATE_VALUE,
-        label: (
-          <span className="flex items-center gap-2 text-brand">
-            <PlusOutlined className="text-xs" />
-            新建工作空间
-          </span>
-        ),
-      },
     ],
     [workspaces],
   );
@@ -104,6 +94,7 @@ export const WorkSpace = memo(() => {
       }}
       notFoundContent="暂无工作空间"
       button={{ block: true }}
+      footer={<Button block bordered={false} type="text" onClick={() => navigate('/spaces/new')}>新建工作空间</Button>}
     />
   );
 });

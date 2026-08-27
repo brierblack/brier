@@ -1,10 +1,11 @@
 import { memo, cloneElement } from 'react';
 import { Dropdown as AntdDropdown, type DropdownProps as AntdDropdownProps } from 'antd';
 
-const DEFAULT_CLASS_NAMES = { item: 'px-2! py-1! m-1!' };
 const DEFAULT_POPUP_CLASS_NAMES =
-  ' bg-canvas! shadow-none! rounded-lg! border! border-ghost! min-w-[320px]';
-const DEFAULT_MENU_CLASS_NAMES = 'bg-transparent! shadow-none! bg-transparent! p-0!';
+  ' bg-canvas! shadow-none! rounded-lg! border! border-ghost!';
+const DEFAULT_SUB_POPUP_CLASS_NAMES =
+  ' bg-canvas! shadow-none! rounded-lg! border! border-ghost!';
+const DEFAULT_MENU_CLASS_NAMES = ' bg-transparent! shadow-none! bg-transparent! flex! flex-col! p-1! gap-1!';
 
 export interface DropdownProps extends AntdDropdownProps {}
 
@@ -17,17 +18,21 @@ export const Dropdown = memo((props: DropdownProps) => {
           return (
             <div className={DEFAULT_POPUP_CLASS_NAMES}>
               {popupRender(
-                cloneElement(originNode as React.ReactElement<{ className: string }>, {
+                cloneElement(
+                  originNode as React.ReactElement<{ className: string, classNames: { popup: string, 'subMenu.list': string } }>, {
                   className: DEFAULT_MENU_CLASS_NAMES,
+                  classNames: {
+                    popup: DEFAULT_SUB_POPUP_CLASS_NAMES,
+                    'subMenu.list': DEFAULT_SUB_POPUP_CLASS_NAMES
+                  },
                 }),
               )}
             </div>
           );
         }}
-        classNames={DEFAULT_CLASS_NAMES}
         {...rest}
       />
     );
   }
-  return <AntdDropdown classNames={DEFAULT_CLASS_NAMES} {...rest} />;
+  return <AntdDropdown {...rest} />;
 });

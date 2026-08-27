@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { Avatar, Dropdown, Menu, type MenuProps } from 'antd';
-import { Button } from '@brierb/ui';
+import { Avatar, Menu, type MenuProps } from 'antd';
+import { Button, Select } from '@brierb/ui';
 
 import {
   GithubOutlined,
-  LogoutOutlined,
   MessageOutlined,
   ControlOutlined,
   CaretDownOutlined,
   CaretRightOutlined,
+  GlobalOutlined,
+  BgColorsOutlined,
+  BellOutlined,
+  GithubFilled
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '@/define';
@@ -58,7 +61,7 @@ export const NavMenu = () => {
   const [recentExpanded, setRecentExpanded] = useState(true);
   const [olderExpanded, setOlderExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [showShadow, setShowShadow] = useState(false);
+  const [, setShowShadow] = useState(false);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -78,8 +81,48 @@ export const NavMenu = () => {
 
   const selectedKey = location.pathname === '/chat' ? 'new-chat' : location.pathname.slice(1);
 
-  const userMenuItems = [
-    { key: 'logout', icon: <LogoutOutlined />, label: '退出登录', onClick: logout },
+  const userOptions = [
+    {
+      value: 'language',
+      label: (
+        <div className="flex items-center gap-2">
+          <GlobalOutlined />
+          <span>语言</span>
+        </div>
+      ),
+      children: [
+        {
+          value: 'en',
+          label: 'English',
+        },
+        {
+          value: 'zh',
+          label: '中文 (简体)',
+        },
+        {
+          value: 'ja',
+          label: '日本語',
+        }
+      ]
+    },
+    {
+      value: 'theme',
+      label: (
+        <div className="flex items-center gap-2">
+          <BgColorsOutlined />
+          <span>主题</span>
+        </div>
+      ),
+    },
+    {
+      value: 'message',
+      label: (
+        <div className="flex items-center gap-2">
+          <BellOutlined />
+          <span>消息</span>
+        </div>
+      ),
+    },
   ];
 
   const recentItems: MenuProps['items'] = recentConversations.map((conv) => ({
@@ -122,7 +165,8 @@ export const NavMenu = () => {
         />
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-1">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-1 [mask-image:linear-gradient(to_top,transparent,black_25%)]
+    [-webkit-mask-image:linear-gradient(to_top,transparent,black_25%)]">
         <div
           className="group flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-standard font-medium hover:bg-[#f5f5f5]"
           onClick={() => setRecentExpanded(!recentExpanded)}
@@ -171,7 +215,7 @@ export const NavMenu = () => {
       </div>
 
       <div
-        className={`shrink-0 px-4 py-3 transition-shadow duration-200 ${showShadow ? 'shadow-[0_-8px_12px_-8px_rgba(0,0,0,0.12)]' : 'shadow-none'}`}
+          className=" pt-3"
       >
         {loading && (
           <div className="flex items-center gap-2.5">
@@ -180,7 +224,7 @@ export const NavMenu = () => {
               className="shrink-0"
               style={{ borderRadius: 6, background: '#e0e0e0' }}
             />
-            <div className="min-w-0">
+            <div className="min-w-0 m-1">
               <div className="text-[13px] font-medium">加载中...</div>
             </div>
           </div>
@@ -192,33 +236,43 @@ export const NavMenu = () => {
           </Button>
         )}
         {!loading && user && (
-          <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="topLeft">
-            <div className="flex cursor-pointer items-center gap-2.5">
-              {user.avatar_url ? (
-                <Avatar
-                  size={32}
-                  src={user.avatar_url}
-                  className="shrink-0"
-                  style={{ borderRadius: 6 }}
-                />
-              ) : (
-                <Avatar
-                  size={32}
-                  className="shrink-0"
-                  style={{
-                    borderRadius: 6,
-                    background: 'linear-gradient(135deg, #8d54ff, #7008e7)',
-                  }}
-                >
-                  {user.login.slice(0, 2).toUpperCase()}
-                </Avatar>
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-[13px] font-medium">{user.name ?? user.login}</div>
-                <div className="truncate text-[11px]">{user.email ?? user.login}</div>
+          <Select
+            defaultValue="language"
+            placement="topLeft"
+            button={{ block: true, bordered: false, className: 'py-2.5', size: "large" }}
+            labelRender={() => (
+              <div className="flex w-full items-center gap-2.5">
+                {user.avatar_url ? (
+                  <Avatar
+                    size={26}
+                    src={user.avatar_url}
+                    className="shrink-0"
+                    style={{ borderRadius: 6 }}
+                  />
+                ) : (
+                  <Avatar
+                    size={26}
+                    className="shrink-0"
+                    style={{
+                      borderRadius: 6,
+                      background: 'linear-gradient(135deg, #8d54ff, #7008e7)',
+                    }}
+                  >
+                    {user.login.slice(0, 2).toUpperCase()}
+                  </Avatar>
+                )}
+                <div className="min-w-0 flex-1 text-left">
+                  <div className="truncate text-sm font-medium">{user.login}</div>
+                </div>
+                <GithubFilled style={{ fontSize: 16 }} />
               </div>
-            </div>
-          </Dropdown>
+            )}
+            options={userOptions}
+            onChange={(value) => {
+              if (value === 'message') navigate('/space/message');
+            }}
+            footer={<Button block bordered={false} onClick={logout}>退出登录</Button>}
+          />
         )}
       </div>
     </div>

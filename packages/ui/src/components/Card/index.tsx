@@ -2,9 +2,9 @@ import { Card as AntdCard, type CardProps as AntdCardProps } from 'antd';
 import { memo, useMemo } from 'react';
 
 const DEFAULT_CLASS_NAMES = {
-  root: '!border-ghost',
-  header: '!border-b-ghost !p-4 !mb-0',
-  body: ' !p-0',
+  root: 'border-ghost!',
+  header: 'border-b-ghost! p-4! mb-0!',
+  body: ' p-0!',
 };
 
 export interface CardProps extends AntdCardProps {}

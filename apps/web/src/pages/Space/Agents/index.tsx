@@ -130,7 +130,7 @@ const Agents = () => {
             }}
             trigger={['click']}
           >
-            <Button type="text" icon={<EllipsisOutlined />} onClick={(e) => e.stopPropagation()} />
+            <Button bordered={false} icon={<EllipsisOutlined />} onClick={(e) => e.stopPropagation()} />
           </Dropdown>
         ),
       },

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Input, Tabs, Tooltip } from 'antd';
+import { Input, Segmented, Tooltip } from 'antd';
 import { Button } from '@brierb/ui';
 import {
   PlusOutlined,
@@ -133,7 +133,7 @@ const MembersTab = ({
   setSharing: (v: string) => void;
 }) => {
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-auto">
       <SharingScope selected={sharing} onSelect={setSharing} />
 
       <div>
@@ -288,31 +288,23 @@ const TeamDetail = () => {
         </Button>
       }
     >
-      {/* Team info header */}
-
-      {/* Tabs */}
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        items={[
-          {
-            key: 'members',
-            label: '成员',
-            icon: <TeamOutlined />,
-            children: (
-              <MembersTab members={MOCK_MEMBERS} sharing={sharing} setSharing={setSharing} />
-            ),
-          },
-          {
-            key: 'instructions',
-            label: '团队指令',
-            icon: <FileTextOutlined />,
-            children: <InstructionsTab />,
-          },
-        ]}
-        tabBarStyle={{ marginBottom: 0 }}
-        classNames={{ header: 'px-4!' }}
-      />
+      <div className=' overflow-hidden'>
+            {/* Tabs */}
+      <div className="px-4 pt-3">
+        <Segmented
+          value={activeTab}
+          onChange={(value) => setActiveTab(value as string)}
+          options={[
+            { label: '成员', value: 'members', icon: <TeamOutlined /> },
+            { label: '团队指令', value: 'instructions', icon: <FileTextOutlined /> },
+          ]}
+        />
+      </div>
+      {activeTab === 'members' && (
+        <MembersTab members={MOCK_MEMBERS} sharing={sharing} setSharing={setSharing} />
+      )}
+      {activeTab === 'instructions' && <InstructionsTab />}
+      </div>
     </Page>
   );
 };

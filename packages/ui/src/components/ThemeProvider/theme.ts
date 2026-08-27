@@ -30,5 +30,9 @@ export const theme: ThemeConfig = {
     Tag: {
       borderRadiusSM: 4,
     },
+    Menu: {
+      colorBgElevated: '#fbfbfb',
+      boxShadowSecondary: 'none'
+    }
   },
 };

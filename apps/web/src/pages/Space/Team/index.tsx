@@ -102,9 +102,8 @@ const Team = () => {
             trigger={['click']}
           >
             <Button
-              type="text"
+              bordered={false}
               icon={<EllipsisOutlined />}
-              className="!p-1"
               onClick={(e) => e.stopPropagation()}
             />
           </Dropdown>
