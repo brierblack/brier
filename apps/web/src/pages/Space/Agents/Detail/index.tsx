@@ -194,7 +194,10 @@ const OverviewTab = ({
               <Select
                 value={runtime}
                 onChange={setRuntime}
-                options={RUNTIMES.map((r) => ({ value: r, label: <RuntimeBadge name={r} size={12} /> }))}
+                options={RUNTIMES.map((r) => ({
+                  value: r,
+                  label: <RuntimeBadge name={r} size={12} />,
+                }))}
                 button={{
                   size: 'small',
                   type: 'text',
