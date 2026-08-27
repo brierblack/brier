@@ -43,8 +43,8 @@ const menuClassNames = {
 };
 
 const menuItems: MenuProps['items'] = [
-  { key: 'new-chat', icon: <MessageOutlined />, label: '新会话' },
-  { key: 'automation', icon: <ControlOutlined />, label: '自动化' },
+  { key: 'new-chat', icon: <MessageOutlined />, label: '新会话', },
+  { key: 'automation', icon: <ControlOutlined />, label: '自动化', },
   { type: 'divider' },
   ...NAV_ITEMS.map((item) => ({
     key: item.key,
@@ -79,7 +79,10 @@ export const NavMenu = () => {
     return () => el.removeEventListener('scroll', checkScroll);
   }, [recentExpanded, olderExpanded]);
 
-  const selectedKey = location.pathname === '/chat' ? 'new-chat' : location.pathname.slice(1);
+  const selectedKey =
+    location.pathname === '/space/chat'
+      ? 'new-chat'
+      : location.pathname.replace('/space/', '').split('/')[0];
 
   const userOptions = [
     {
@@ -113,6 +116,16 @@ export const NavMenu = () => {
           <span>主题</span>
         </div>
       ),
+      children: [
+        {
+          value: 'light',
+          label: '浅色',
+        },
+        {
+          value: 'dark',
+          label: '深色',
+        },
+      ],
     },
     {
       value: 'message',
@@ -154,7 +167,6 @@ export const NavMenu = () => {
           selectedKeys={[selectedKey]}
           items={menuItems}
           onClick={(e) => {
-            if (e.key === 'automation') return;
             if (e.key === 'new-chat') {
               navigate('/space/chat');
               return;

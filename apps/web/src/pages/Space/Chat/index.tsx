@@ -240,7 +240,7 @@ const Chat = () => {
   // Empty state — centered input
   if (messages.length === 0) {
     return (
-      <div className="flex h-full flex-col bg-white">
+      <div className="flex h-full flex-col bg-canvas">
         <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
           <Logo className="h-10 w-14" />
           <h1 className="text-xl font-bold">有什么可以帮你？</h1>
@@ -273,7 +273,7 @@ const Chat = () => {
 
   // Active conversation — messages + bottom input
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col bg-canvas">
       <div className="flex-1 overflow-auto">
         <div className="mx-auto flex max-w-2xl flex-col gap-5 px-4 py-6">
           {messages.map((msg) => (
