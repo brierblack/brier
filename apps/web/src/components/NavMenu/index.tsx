@@ -6,36 +6,21 @@ import {
   GithubOutlined,
   MessageOutlined,
   ControlOutlined,
+  ScheduleOutlined,
   CaretDownOutlined,
   CaretRightOutlined,
   GlobalOutlined,
   BgColorsOutlined,
   BellOutlined,
   GithubFilled,
+  PlusOutlined
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '@/define';
 import { Logo, Wordmark } from '@/components/Logo';
 import { WorkSpace } from '../WorkSpace';
 import { useAuth } from '@/auth-context';
-
-const recentConversations = [
-  { id: 1, title: '优化数据库查询性能' },
-  { id: 2, title: '修复登录页 OAuth 回调' },
-  { id: 3, title: '重构 API 服务层架构' },
-  { id: 4, title: '编写单元测试覆盖率报告' },
-  { id: 5, title: '部署 v2.3 到预发环境' },
-  { id: 6, title: '分析用户留存数据' },
-  { id: 7, title: '设计 Agent 协作流程图' },
-];
-
-const olderConversations = [
-  { id: 8, title: '排查生产环境内存泄漏' },
-  { id: 9, title: '升级 React 到 v19' },
-  { id: 10, title: '设计权限模型重构方案' },
-  { id: 11, title: '优化 Docker 构建缓存' },
-  { id: 12, title: '编写 API 文档自动生成' },
-];
+import { recentConversations, olderConversations } from '../../pages/Space/Chat/conversations';
 
 const menuClassNames = {
   root: ' !border-none !grid !gap-1 !bg-transparent',
@@ -43,7 +28,25 @@ const menuClassNames = {
 };
 
 const menuItems: MenuProps['items'] = [
-  { key: 'new-chat', icon: <MessageOutlined />, label: '新会话', },
+  {
+    key: 'new-chat',
+    icon: <MessageOutlined />,
+    className: 'flex! group',
+    label: '新会话',
+    extra: <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100">
+          <kbd className="inline-flex items-center justify-center text-xs text-faint font-sans">
+          ⌘
+        </kbd>
+        <kbd className="inline-flex items-center justify-center text-xs text-faint font-sans">
+          ⇧
+        </kbd>
+        <kbd className="inline-flex items-center justify-center text-xs text-faint font-sans">
+          O
+        </kbd>
+    </div>
+  ,
+  },
+  { key: 'agent-tasks', icon: <ScheduleOutlined />, label: 'Agent 事项', extra: <PlusOutlined /> },
   { key: 'automation', icon: <ControlOutlined />, label: '自动化', },
   { type: 'divider' },
   ...NAV_ITEMS.map((item) => ({
@@ -80,7 +83,7 @@ export const NavMenu = () => {
   }, [recentExpanded, olderExpanded]);
 
   const selectedKey =
-    location.pathname === '/space/chat'
+    location.pathname === '/space/chat' || location.pathname.startsWith('/space/chat/')
       ? 'new-chat'
       : location.pathname.replace('/space/', '').split('/')[0];
 
@@ -199,7 +202,7 @@ export const NavMenu = () => {
             mode="vertical"
             selectedKeys={[]}
             items={recentItems}
-            onClick={() => {}}
+            onClick={({ key }) => navigate(`/space/chat/${key.replace('conv-', '')}`)}
             classNames={menuClassNames}
           />
         )}
@@ -222,7 +225,7 @@ export const NavMenu = () => {
             mode="vertical"
             selectedKeys={[]}
             items={olderItems}
-            onClick={() => {}}
+            onClick={({ key }) => navigate(`/space/chat/${key.replace('conv-', '')}`)}
             classNames={menuClassNames}
           />
         )}

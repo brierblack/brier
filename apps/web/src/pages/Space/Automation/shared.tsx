@@ -71,13 +71,33 @@ export const FREQUENCY_OPTIONS = [
   { value: 'workday', label: '工作日' },
 ];
 
-export const FIELD_OPTIONS = [
-  { value: 'repository', label: '仓库' },
-  { value: 'branch', label: '分支' },
-  { value: 'path', label: '路径' },
-  { value: 'author', label: '作者' },
-  { value: 'commit_message', label: 'Commit Message' },
-];
+export type GitHubTriggerType = 'github_push' | 'github_pullrequest' | 'github_comments';
+
+export const FIELD_OPTIONS_BY_TRIGGER: Record<
+  GitHubTriggerType,
+  { value: string; label: string }[]
+> = {
+  github_push: [
+    { value: 'committer', label: '提交人' },
+    { value: 'branch', label: '分支' },
+  ],
+  github_pullrequest: [
+    { value: 'committer', label: '提交人' },
+    { value: 'reviewer', label: '评审人' },
+    { value: 'action', label: '动作' },
+    { value: 'updated_action', label: '更新动作' },
+    { value: 'source_branch', label: '源分支' },
+    { value: 'target_branch', label: '目标分支' },
+    { value: 'title', label: '标题' },
+  ],
+  github_comments: [
+    { value: 'repository', label: '仓库' },
+    { value: 'branch', label: '分支' },
+    { value: 'path', label: '路径' },
+    { value: 'author', label: '作者' },
+    { value: 'commit_message', label: 'Commit Message' },
+  ],
+};
 
 export const OPERATOR_OPTIONS = [
   { value: 'contains', label: '包含' },
@@ -338,16 +358,20 @@ export const TimerConfigPanel = ({
 };
 
 export const GitHubFiltersPanel = ({
+  triggerType,
   filters,
   onFiltersChange,
 }: {
+  triggerType: GitHubTriggerType;
   filters: FilterCondition[];
   onFiltersChange: (filters: FilterCondition[]) => void;
 }) => {
+  const fieldOptions = FIELD_OPTIONS_BY_TRIGGER[triggerType];
+
   const addFilter = () => {
     onFiltersChange([
       ...filters,
-      { id: `filter-${Date.now()}`, field: 'repository', operator: 'contains', value: '' },
+      { id: `filter-${Date.now()}`, field: fieldOptions[0].value, operator: 'contains', value: '' },
     ]);
   };
 
@@ -370,7 +394,7 @@ export const GitHubFiltersPanel = ({
           <Select
             value={filter.field}
             onChange={(v) => updateFilter(filter.id, { field: v })}
-            options={FIELD_OPTIONS}
+            options={fieldOptions}
             style={{ width: 140 }}
             variant="filled"
           />
@@ -588,17 +612,37 @@ export const AutomationConfigPanel = ({
   instructions,
   onInstructionsChange,
 }: AutomationConfigPanelProps) => {
-  const isGitHubTrigger = triggerType?.startsWith('github_') ?? false;
+  const isGitHubTrigger = (t: TriggerType | null): t is GitHubTriggerType =>
+    t !== null && t !== 'timer';
+
+  const handleTriggerTypeChange = (v: TriggerType) => {
+    onTriggerTypeChange(v);
+    if (v !== 'timer') {
+      const fieldOptions = FIELD_OPTIONS_BY_TRIGGER[v as GitHubTriggerType];
+      onFiltersChange([
+        {
+          id: `filter-${Date.now()}`,
+          field: fieldOptions[0].value,
+          operator: 'contains',
+          value: '',
+        },
+      ]);
+    }
+  };
 
   return (
     <>
       <SectionCard title="触发条件">
-        <TriggerSelector value={triggerType} onChange={onTriggerTypeChange} />
+        <TriggerSelector value={triggerType} onChange={handleTriggerTypeChange} />
         {triggerType === 'timer' && (
           <TimerConfigPanel config={timerConfig} onConfigChange={onTimerConfigChange} />
         )}
-        {isGitHubTrigger && (
-          <GitHubFiltersPanel filters={filters} onFiltersChange={onFiltersChange} />
+        {isGitHubTrigger(triggerType) && (
+          <GitHubFiltersPanel
+            triggerType={triggerType}
+            filters={filters}
+            onFiltersChange={onFiltersChange}
+          />
         )}
       </SectionCard>
 

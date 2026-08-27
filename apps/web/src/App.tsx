@@ -8,11 +8,13 @@ import { Layout as SpaceLayout } from './pages/Space';
 const Login = lazy(() => import('./pages/Login'));
 const New = lazy(() => import('./pages/Space/New'));
 const Chat = lazy(() => import('./pages/Space/Chat'));
+const ChatDetail = lazy(() => import('./pages/Space/Chat/Detail'));
 const Agents = lazy(() => import('./pages/Space/Agents'));
 const AgentDetail = lazy(() => import('./pages/Space/Agents/Detail'));
 const NewAgent = lazy(() => import('./pages/Space/Agents/New'));
 const Team = lazy(() => import('./pages/Space/Team'));
 const TeamDetail = lazy(() => import('./pages/Space/Team/Detail'));
+const AgentTasks = lazy(() => import('./pages/Space/AgentTasks'));
 const Skills = lazy(() => import('./pages/Space/Skills'));
 const SkillDetail = lazy(() => import('./pages/Space/Skills/Detail'));
 const SkillNew = lazy(() => import('./pages/Space/Skills/New'));
@@ -49,6 +51,8 @@ const App = () => {
                   <Route index element={<Navigate to="/space/chat" replace />} />
                   <Route path="/space/new" element={<New />} />
                   <Route path="/space/chat" element={<Chat />} />
+                  <Route path="/space/chat/:id" element={<ChatDetail />} />
+                  <Route path="/space/agent-tasks" element={<AgentTasks />} />
                   <Route path="/space/agents" element={<Agents />} />
                   <Route path="/space/agents/:id" element={<AgentDetail />} />
                   <Route path="/space/agents/new" element={<NewAgent />} />

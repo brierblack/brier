@@ -33,6 +33,9 @@ export const theme: ThemeConfig = {
     Menu: {
       colorBgElevated: '#fbfbfb',
       boxShadowSecondary: 'none',
+      itemHoverBg: '#ebebeb',
+      itemActiveBg: '#ebebeb',
+      itemSelectedBg: '#ebebeb',
     },
   },
 };

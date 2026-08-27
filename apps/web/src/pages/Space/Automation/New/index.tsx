@@ -52,7 +52,6 @@ const NewAutomation = () => {
             onClick={() => navigate('/space/automation')}
             className="flex items-center gap-1 text-muted hover:text-standard"
           >
-            <ArrowLeftOutlined />
             <span>自动化</span>
           </button>
           <span className="text-muted">/</span>
@@ -67,7 +66,7 @@ const NewAutomation = () => {
       </div>
 
       <div className="flex-1 overflow-auto">
-        <div className="mx-auto max-w-[720px] p-6">
+        <div className="p-4">
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}

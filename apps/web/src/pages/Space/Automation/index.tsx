@@ -159,7 +159,7 @@ const AutomationTaskCard = ({ task }: { task: AutomationTask }) => {
   return (
     <div
       onClick={() => navigate(`/space/automation/${task.id}`)}
-      className="flex cursor-pointer items-start gap-3 rounded-xl border border-ghost bg-white p-4 transition-shadow hover:shadow-md"
+      className="flex cursor-pointer items-start gap-3 rounded-lg border border-ghost bg-white p-4 transition-shadow"
     >
       <div
         className="flex size-9 shrink-0 items-center justify-center rounded-lg text-base"
@@ -218,7 +218,7 @@ const Automation = () => {
         </div>
       }
     >
-      <div className="relative mx-auto max-w-[800px] p-6">
+      <div className="relative mx-auto p-4">
         <div className="mb-6">
           <div className="mb-3 text-standard font-bold">Studio 官方</div>
           <div className="flex flex-col gap-3">
