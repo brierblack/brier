@@ -232,14 +232,13 @@ const Settings = () => {
                     {/* Tab row + add button */}
                     <div className="flex items-center justify-between border-b border-ghost px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="rounded-full px-3 py-1 text-xs font-medium text-white">
+                        <div className="rounded-full px-3 py-1 text-xs font-medium bg-[#f0f0f0]">
                           研发任务 {skills.length}
                         </div>
-                        <div className="flex items-center gap-1 rounded-full bg-[#f0f0f0] px-3 py-1 text-xs">
-                          <LockOutlined className="text-[10px]" />
-                          数字实习生
-                          <span className="text-[10px]">暂未开放</span>
-                        </div>
+
+                                            <p className="px-4 pt-3 pb-2 text-xs">
+                          研发任务启动时会默认加载这里启用的 Skills。
+                        </p>
                       </div>
                       <Button type="primary" icon={<ThunderboltOutlined />}>
                         添加 Skills
@@ -247,12 +246,10 @@ const Settings = () => {
                     </div>
 
                     {/* Description */}
-                    <p className="px-4 pt-3 pb-2 text-xs">
-                      研发任务启动时会默认加载这里启用的 Skills。
-                    </p>
+
 
                     {/* Search */}
-                    <div className="px-4 pb-3">
+                    <div className="px-4 p-3 border-b border-ghost">
                       <Input
                         placeholder="搜索 Skills"
                         prefix={<SearchOutlined className="" />}
