@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { App, Segmented, Input } from 'antd';
 import { Button, Page, Tag } from '@brierb/ui';
 import {
@@ -7,123 +8,15 @@ import {
   ScheduleOutlined,
   RobotOutlined,
   ThunderboltOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  SyncOutlined,
 } from '@ant-design/icons';
-
-type TaskStatus = 'pending' | 'processing' | 'completed';
-type TaskPriority = 'high' | 'medium' | 'low';
-
-interface AgentTask {
-  id: string;
-  title: string;
-  desc: string;
-  status: TaskStatus;
-  priority: TaskPriority;
-  source: 'automation' | 'manual';
-  sourceName: string;
-  agentName: string;
-  createdAt: string;
-}
-
-const STATUS_MAP: Record<TaskStatus, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
-  pending: {
-    label: '待处理',
-    color: '#fa8c16',
-    bg: '#fa8c160f',
-    icon: <ClockCircleOutlined />,
-  },
-  processing: {
-    label: '处理中',
-    color: '#1677ff',
-    bg: '#1677ff0f',
-    icon: <SyncOutlined />,
-  },
-  completed: {
-    label: '已完成',
-    color: '#52c41a',
-    bg: '#52c41a0f',
-    icon: <CheckCircleOutlined />,
-  },
-};
-
-const PRIORITY_MAP: Record<TaskPriority, { label: string; color: string }> = {
-  high: { label: '高优先级', color: '#f5222d' },
-  medium: { label: '中优先级', color: '#fa8c16' },
-  low: { label: '低优先级', color: '#8c8c8c' },
-};
-
-const MOCK_TASKS: AgentTask[] = [
-  {
-    id: 't1',
-    title: '审查 PR #42 的代码变更',
-    desc: '自动审查 dataphin-fe/dpapp-dev 仓库最新推送，关注代码风格、潜在 bug 与性能问题',
-    status: 'pending',
-    priority: 'high',
-    source: 'automation',
-    sourceName: 'PR 推送自动审查',
-    agentName: '纪律监察团 Agent',
-    createdAt: '4 分钟前',
-  },
-  {
-    id: 't2',
-    title: '生成今日代码质量报告',
-    desc: '汇总今日新增代码、修改文件与潜在问题，输出质量报告',
-    status: 'processing',
-    priority: 'medium',
-    source: 'automation',
-    sourceName: '每日代码质量报告',
-    agentName: '总参谋部 Agent',
-    createdAt: '今天 08:03',
-  },
-  {
-    id: 't3',
-    title: '排查线上接口超时告警',
-    desc: '分析日志定位慢查询，给出修复建议并跟进解决',
-    status: 'processing',
-    priority: 'high',
-    source: 'manual',
-    sourceName: '手动创建',
-    agentName: '情报侦察连 Agent',
-    createdAt: '今天 10:21',
-  },
-  {
-    id: 't4',
-    title: '补充单元测试覆盖率报告',
-    desc: '统计核心模块测试覆盖率并生成缺口清单',
-    status: 'completed',
-    priority: 'low',
-    source: 'manual',
-    sourceName: '手动创建',
-    agentName: '工程突击营 Agent',
-    createdAt: '昨天 16:40',
-  },
-  {
-    id: 't5',
-    title: '回复 Issue #88 的评论',
-    desc: '自动响应仓库评论区反馈，整理问题并转交相关人员',
-    status: 'completed',
-    priority: 'medium',
-    source: 'automation',
-    sourceName: '评论自动响应',
-    agentName: '中央兵工厂 Agent',
-    createdAt: '昨天 14:30',
-  },
-  {
-    id: 't6',
-    title: '部署 v2.3 到预发环境',
-    desc: '执行预发部署流程并验证核心功能是否正常',
-    status: 'pending',
-    priority: 'high',
-    source: 'manual',
-    sourceName: '手动创建',
-    agentName: '工程突击营 Agent',
-    createdAt: '昨天 11:05',
-  },
-];
+import {
+  MOCK_TASKS,
+  PRIORITY_MAP,
+  STATUS_MAP,
+} from './data';
 
 const AgentTasks = () => {
+  const navigate = useNavigate();
   const { message } = App.useApp();
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
@@ -224,6 +117,7 @@ const AgentTasks = () => {
             return (
               <div
                 key={task.id}
+                onClick={() => navigate(`/space/agent-tasks/${task.id}`)}
                 className="flex cursor-pointer items-start gap-3 rounded-xl border border-ghost bg-white p-4 transition-shadow hover:shadow-md"
               >
                 <div

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App } from 'antd';
 import { Button } from '@brierb/ui';
-import { ArrowLeftOutlined } from '@ant-design/icons';
 import {
   AutomationConfigPanel,
   type TriggerType,
