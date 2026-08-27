@@ -133,7 +133,7 @@ const MembersTab = ({
   setSharing: (v: string) => void;
 }) => {
   return (
-    <div className="p-4 overflow-auto">
+    <div className="overflow-auto p-4">
       <SharingScope selected={sharing} onSelect={setSharing} />
 
       <div>
@@ -247,6 +247,7 @@ const TeamDetail = () => {
       header={
         <div className="flex items-center gap-3 py-2.5">
           <Button
+            bordered={false}
             icon={
               <ArrowLeftOutlined
                 className="shrink-0 cursor-pointer text-standard hover:text-brand"
@@ -288,22 +289,22 @@ const TeamDetail = () => {
         </Button>
       }
     >
-      <div className=' overflow-hidden'>
-            {/* Tabs */}
-      <div className="px-4 pt-3">
-        <Segmented
-          value={activeTab}
-          onChange={(value) => setActiveTab(value as string)}
-          options={[
-            { label: '成员', value: 'members', icon: <TeamOutlined /> },
-            { label: '团队指令', value: 'instructions', icon: <FileTextOutlined /> },
-          ]}
-        />
-      </div>
-      {activeTab === 'members' && (
-        <MembersTab members={MOCK_MEMBERS} sharing={sharing} setSharing={setSharing} />
-      )}
-      {activeTab === 'instructions' && <InstructionsTab />}
+      <div className="overflow-hidden">
+        {/* Tabs */}
+        <div className="px-4 pt-3">
+          <Segmented
+            value={activeTab}
+            onChange={(value) => setActiveTab(value as string)}
+            options={[
+              { label: '成员', value: 'members', icon: <TeamOutlined /> },
+              { label: '团队指令', value: 'instructions', icon: <FileTextOutlined /> },
+            ]}
+          />
+        </div>
+        {activeTab === 'members' && (
+          <MembersTab members={MOCK_MEMBERS} sharing={sharing} setSharing={setSharing} />
+        )}
+        {activeTab === 'instructions' && <InstructionsTab />}
       </div>
     </Page>
   );

@@ -11,7 +11,7 @@ import {
   GlobalOutlined,
   BgColorsOutlined,
   BellOutlined,
-  GithubFilled
+  GithubFilled,
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '@/define';
@@ -102,8 +102,8 @@ export const NavMenu = () => {
         {
           value: 'ja',
           label: '日本語',
-        }
-      ]
+        },
+      ],
     },
     {
       value: 'theme',
@@ -165,8 +165,10 @@ export const NavMenu = () => {
         />
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-1 [mask-image:linear-gradient(to_top,transparent,black_25%)]
-    [-webkit-mask-image:linear-gradient(to_top,transparent,black_25%)]">
+      <div
+        ref={scrollRef}
+        className="flex-1 scrollbar-none overflow-y-auto [mask-image:linear-gradient(to_top,transparent,black_25%)] px-1 [-webkit-mask-image:linear-gradient(to_top,transparent,black_25%)]"
+      >
         <div
           className="group flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-standard font-medium hover:bg-[#f5f5f5]"
           onClick={() => setRecentExpanded(!recentExpanded)}
@@ -214,9 +216,7 @@ export const NavMenu = () => {
         )}
       </div>
 
-      <div
-          className=" pt-3"
-      >
+      <div className="pt-3">
         {loading && (
           <div className="flex items-center gap-2.5">
             <Avatar
@@ -224,7 +224,7 @@ export const NavMenu = () => {
               className="shrink-0"
               style={{ borderRadius: 6, background: '#e0e0e0' }}
             />
-            <div className="min-w-0 m-1">
+            <div className="m-1 min-w-0">
               <div className="text-[13px] font-medium">加载中...</div>
             </div>
           </div>
@@ -239,7 +239,7 @@ export const NavMenu = () => {
           <Select
             defaultValue="language"
             placement="topLeft"
-            button={{ block: true, bordered: false, className: 'py-2.5', size: "large" }}
+            button={{ block: true, bordered: false, className: 'py-2.5', size: 'large' }}
             labelRender={() => (
               <div className="flex w-full items-center gap-2.5">
                 {user.avatar_url ? (
@@ -271,7 +271,11 @@ export const NavMenu = () => {
             onChange={(value) => {
               if (value === 'message') navigate('/space/message');
             }}
-            footer={<Button block bordered={false} onClick={logout}>退出登录</Button>}
+            footer={
+              <Button block bordered={false} onClick={logout}>
+                退出登录
+              </Button>
+            }
           />
         )}
       </div>

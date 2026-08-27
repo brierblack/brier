@@ -32,7 +32,7 @@ export const theme: ThemeConfig = {
     },
     Menu: {
       colorBgElevated: '#fbfbfb',
-      boxShadowSecondary: 'none'
-    }
+      boxShadowSecondary: 'none',
+    },
   },
 };

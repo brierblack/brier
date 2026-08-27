@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Input, Select, Space, Dropdown, type MenuProps } from 'antd';
-import { Button } from '@brierb/ui';
+import { Input, Dropdown, type MenuProps } from 'antd';
+import { Button, Page, Select, Table } from '@brierb/ui';
 import {
   PlusOutlined,
   SearchOutlined,
@@ -16,7 +16,6 @@ import {
   GlobalOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { Page, Table } from '@brierb/ui';
 import { StatusBadge } from '../../../components/StatusBadge';
 import { WorkComputerDrawer } from '../../../components/WorkComputer';
 import { agents, workComputers } from '../../../data/mockData';
@@ -35,7 +34,8 @@ const actionMenuItems: MenuProps['items'] = [
 const Agents = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter] = useState<string>('all');
+  const [activitySort, setActivitySort] = useState('recent');
   const [computerDrawerOpen, setComputerDrawerOpen] = useState(false);
 
   const filteredAgents = useMemo(
@@ -130,7 +130,11 @@ const Agents = () => {
             }}
             trigger={['click']}
           >
-            <Button bordered={false} icon={<EllipsisOutlined />} onClick={(e) => e.stopPropagation()} />
+            <Button
+              bordered={false}
+              icon={<EllipsisOutlined />}
+              onClick={(e) => e.stopPropagation()}
+            />
           </Dropdown>
         ),
       },
@@ -159,7 +163,7 @@ const Agents = () => {
       }
     >
       <div className="p-4">
-        <Space className="mb-4">
+        <div className="mb-4 flex items-center gap-3">
           <Input
             placeholder="搜索 Agent 名称..."
             prefix={<SearchOutlined />}
@@ -167,18 +171,17 @@ const Agents = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+          <div className="flex-1" />
           <Select
-            value={statusFilter}
-            onChange={setStatusFilter}
-            style={{ width: 120 }}
+            button={{}}
+            value={activitySort}
+            onChange={(v) => setActivitySort(v as string)}
             options={[
-              { value: 'all', label: '全部状态' },
-              { value: 'online', label: '在线' },
-              { value: 'connecting', label: '连接中' },
-              { value: 'offline', label: '离线' },
+              { value: 'recent', label: '最近活跃' },
+              { value: 'oldest', label: '最久未活跃' },
             ]}
           />
-        </Space>
+        </div>
 
         <Table
           bordered

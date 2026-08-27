@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Dropdown, Input, Space, type MenuProps } from 'antd';
-import { Button } from '@brierb/ui';
+import { Dropdown, Input, type MenuProps } from 'antd';
+import { Button, Page, Select, Table } from '@brierb/ui';
 import {
   PlusOutlined,
   EllipsisOutlined,
@@ -12,7 +12,6 @@ import {
   SearchOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { Page, Table } from '@brierb/ui';
 import { StatusBadge } from '../../../components/StatusBadge';
 import { CreateTeamModal } from './CreateModal';
 import { teams } from '../../../data/mockData';
@@ -30,6 +29,7 @@ const Team = () => {
   const navigate = useNavigate();
   const [createOpen, setCreateOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [activitySort, setActivitySort] = useState('recent');
 
   const filteredTeams = useMemo(() => {
     if (!search) return teams;
@@ -124,7 +124,7 @@ const Team = () => {
       }
     >
       <div className="p-4">
-        <Space className="mb-4">
+        <div className="mb-4 flex items-center gap-3">
           <Input
             placeholder="搜索团队名称、描述或创建者..."
             prefix={<SearchOutlined />}
@@ -133,7 +133,17 @@ const Team = () => {
             onChange={(e) => setSearch(e.target.value)}
             allowClear
           />
-        </Space>
+          <div className="flex-1" />
+          <Select
+            button={{}}
+            value={activitySort}
+            onChange={(v) => setActivitySort(v as string)}
+            options={[
+              { value: 'recent', label: '最近活跃' },
+              { value: 'oldest', label: '最久未活跃' },
+            ]}
+          />
+        </div>
 
         <Table
           bordered

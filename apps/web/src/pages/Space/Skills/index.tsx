@@ -1,8 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App, Input, Segmented, Tag } from 'antd';
 import { Button, Page } from '@brierb/ui';
-import { PlusOutlined, SearchOutlined, FireOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  SearchOutlined,
+  FireOutlined,
+  LeftOutlined,
+  RightOutlined,
+} from '@ant-design/icons';
 import { skills } from '../../../data/mockData';
 import { SKILL_TYPE_MAP } from '../../../define';
 import type { Skill } from '../../../types';
@@ -129,6 +135,42 @@ const Skills = () => {
 
   const featuredSkills = useMemo(() => skills.filter((s) => s.featured), []);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollButtons = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 1);
+  };
+
+  useEffect(() => {
+    updateScrollButtons();
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', updateScrollButtons);
+    window.addEventListener('resize', updateScrollButtons);
+    return () => {
+      el.removeEventListener('scroll', updateScrollButtons);
+      window.removeEventListener('resize', updateScrollButtons);
+    };
+  }, []);
+
+  const scrollByDirection = (direction: 'left' | 'right') => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({
+      left: direction === 'left' ? -el.clientWidth * 0.8 : el.clientWidth * 0.8,
+      behavior: 'smooth',
+    });
+  };
+
+  const PAGE_SIZE = 12;
+  const [displayCount, setDisplayCount] = useState(PAGE_SIZE);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
   const filteredSkills = useMemo(() => {
     let result = skills;
     if (topTab === 'mcp') result = result.filter((s) => s.type === 'mcp');
@@ -148,10 +190,32 @@ const Skills = () => {
       );
     }
     return result;
-  }, [sourceTab, filterTab, category, search]);
+  }, [topTab, sourceTab, filterTab, category, search]);
 
   const internalCount = skills.filter((s) => s.source === 'internal').length;
   const communityCount = skills.filter((s) => s.source === 'community').length;
+
+  const visibleSkills = filteredSkills.slice(0, displayCount);
+  const hasMore = displayCount < filteredSkills.length;
+
+  useEffect(() => {
+    setDisplayCount(PAGE_SIZE);
+  }, [topTab, sourceTab, filterTab, category, search]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setDisplayCount((prev) => prev + PAGE_SIZE);
+        }
+      },
+      { rootMargin: '200px' },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore]);
 
   return (
     <Page
@@ -163,10 +227,10 @@ const Skills = () => {
         />
       }
     >
-      <div className="flex flex-col items-center p-4">
+      <div className="flex flex-col items-center p-10">
         <div className="flex max-w-160 flex-col items-center">
           {/* Header */}
-          <div className="mt-6 text-3xl font-bold">{TOP_TAB_CONFIG[topTab].title}</div>
+          <div className="text-3xl font-bold">{TOP_TAB_CONFIG[topTab].title}</div>
           <div className="mt-6">{TOP_TAB_CONFIG[topTab].desc}</div>
 
           {/* Search bar */}
@@ -190,74 +254,101 @@ const Skills = () => {
         </div>
 
         {/* Featured section */}
-        <div className="mt-12 w-full overflow-hidden pb-6">
+        <div className="mt-12 w-full pb-6">
           <div className="mb-3 flex items-center gap-2">
             <FireOutlined style={{ color: '#fe6e00' }} />
             <span className="text-standard font-medium">精选技能</span>
             <span className="text-xs">经过验证的优质技能</span>
           </div>
-          <div className="flex gap-3 overflow-x-auto">
-            {featuredSkills.map((skill) => (
-              <SkillCard key={skill.name} skill={skill} compact />
-            ))}
+          <div className="relative">
+            {canScrollLeft && (
+              <button
+                onClick={() => scrollByDirection('left')}
+                className="absolute top-1/2 -left-4 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-ghost bg-white shadow-md"
+              >
+                <LeftOutlined />
+              </button>
+            )}
+
+            <div ref={scrollRef} className="flex scrollbar-none gap-3 overflow-x-auto">
+              {featuredSkills.map((skill) => (
+                <SkillCard key={skill.name} skill={skill} compact />
+              ))}
+            </div>
+
+            {canScrollRight && (
+              <button
+                onClick={() => scrollByDirection('right')}
+                className="absolute top-1/2 -right-4 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-ghost bg-white shadow-md"
+              >
+                <RightOutlined />
+              </button>
+            )}
           </div>
         </div>
 
         {/* All skills section */}
-        <div className="flex-1 px-6">
-          <div className="rounded-xl border border-ghost">
-            {/* Source tabs + filter tabs */}
-            <div className="flex items-center justify-between border-b border-ghost px-4 pt-3 pb-3">
-              <Segmented
-                options={SOURCE_TABS.map((t) => ({
-                  label: (
-                    <span>
-                      {t.label}{' '}
-                      <span className="font-mono text-xs tabular-nums">
-                        {t.key === 'internal' ? internalCount : communityCount}
-                      </span>
+        <div className="flex-1 w-full">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="text-standard font-medium">全部技能</span>
+          </div>
+          {/* Source tabs + filter tabs */}
+          <div className="flex items-center justify-between pb-3">
+            <Segmented
+              options={SOURCE_TABS.map((t) => ({
+                label: (
+                  <span>
+                    {t.label}{' '}
+                    <span className="font-mono text-xs tabular-nums">
+                      {t.key === 'internal' ? internalCount : communityCount}
                     </span>
-                  ),
-                  value: t.key,
-                }))}
-                value={sourceTab}
-                onChange={(v) => setSourceTab(v as string)}
-              />
-              <Segmented
-                size="small"
-                options={FILTER_TABS.map((t) => ({ label: t.label, value: t.key }))}
-                value={filterTab}
-                onChange={(v) => setFilterTab(v as string)}
-              />
-            </div>
+                  </span>
+                ),
+                value: t.key,
+              }))}
+              value={sourceTab}
+              onChange={(v) => setSourceTab(v as string)}
+            />
+            <Segmented
+              options={FILTER_TABS.map((t) => ({ label: t.label, value: t.key }))}
+              value={filterTab}
+              onChange={(v) => setFilterTab(v as string)}
+            />
+          </div>
 
-            {/* Category tags */}
-            <div className="flex flex-wrap items-center gap-1.5 border-b border-ghost px-4 py-3">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setCategory(cat)}
-                  className={`rounded px-2 py-0.5 text-xs transition-colors ${
-                    category === cat ? 'font-medium text-brand' : ''
-                  }`}
-                >
-                  #{cat}
-                </button>
-              ))}
-            </div>
+          {/* Category tags */}
+          <div className="flex flex-wrap items-center gap-1.5 py-3">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setCategory(cat)}
+                className={`rounded px-2 py-0.5 text-xs transition-colors ${
+                  category === cat ? 'font-medium text-brand' : ''
+                }`}
+              >
+                #{cat}
+              </button>
+            ))}
+          </div>
 
-            {/* Skill list */}
-            <div className="p-4">
-              {filteredSkills.length === 0 ? (
-                <div className="py-12 text-center text-standard">没有找到匹配的技能</div>
-              ) : (
+          {/* Skill list */}
+          <div className="mt-3">
+            {filteredSkills.length === 0 ? (
+              <div className="py-12 text-center text-standard">没有找到匹配的技能</div>
+            ) : (
+              <>
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-                  {filteredSkills.map((skill) => (
+                  {visibleSkills.map((skill) => (
                     <SkillCard key={skill.name} skill={skill} />
                   ))}
                 </div>
-              )}
-            </div>
+                {hasMore && (
+                  <div ref={sentinelRef} className="py-6 text-center text-standard">
+                    加载中...
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

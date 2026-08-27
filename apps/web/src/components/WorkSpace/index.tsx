@@ -94,7 +94,11 @@ export const WorkSpace = memo(() => {
       }}
       notFoundContent="暂无工作空间"
       button={{ block: true }}
-      footer={<Button block bordered={false} type="text" onClick={() => navigate('/spaces/new')}>新建工作空间</Button>}
+      footer={
+        <Button block bordered={false} type="text" onClick={() => navigate('/spaces/new')}>
+          新建工作空间
+        </Button>
+      }
     />
   );
 });

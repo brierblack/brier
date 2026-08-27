@@ -205,6 +205,64 @@ export const teams: Team[] = [
   },
 ];
 
+const SKILL_NAMES = [
+  'pdf-reader', 'excel-processor', 'image-resizer', 'email-sender',
+  'calendar-sync', 'translate-pro', 'summarizer', 'sentiment-analysis',
+  'code-reviewer', 'api-tester', 'db-migrator', 'log-analyzer',
+  'docker-manager', 'k8s-deploy', 'ci-pipeline', 'security-scanner',
+  'doc-converter', 'markdown-editor', 'slide-generator', 'video-trimmer',
+  'audio-mixer', 'podcast-tool', 'research-paper', 'data-mining',
+  'ml-trainer', 'chart-builder', 'dashboard-creator', 'form-builder',
+  'workflow-auto', 'task-scheduler', 'file-compressor', 'qr-generator',
+  'password-manager', 'crypto-wallet', 'blockchain-explorer', 'smart-contract',
+  'recipe-finder', 'travel-planner', 'weather-forecast', 'fitness-tracker',
+  'meditation-guide', 'language-tutor', 'math-solver', 'code-formatter',
+  'git-flow', 'terminal-runner', 'screenshot-tool', 'clipboard-manager',
+];
+
+const SKILL_DESCS = [
+  '高效处理各类文档，支持批量操作和格式转换',
+  '智能分析数据并生成可视化报告，支持多种图表类型',
+  '自动化测试工具，支持单元测试、集成测试和端到端测试',
+  '实时监控和告警系统，支持多渠道通知和自定义规则',
+  '一键部署和管理容器化应用，支持 Docker 和 Kubernetes',
+  '智能代码补全和重构建议，基于 AST 分析',
+  '自动化数据清洗和预处理，支持多种数据源',
+  '强大的搜索引擎，支持全文检索和语义搜索',
+  '可视化工作流设计器，支持拖拽编排和条件分支',
+  '智能客服系统，支持多轮对话和知识库检索',
+];
+
+const SKILL_CATEGORIES = [
+  '工具', '开发', '商业', '设计', '数据/AI', '运维',
+  '测试/安全', '文档', '内容/媒体', '研究', '数据库', '生活',
+  '区块链', '智能',
+];
+
+const SKILL_AUTHORS = [
+  'Brier', '只熊懒', '日林', '月家玄', '木衣', '创作者',
+  '张三', '李四', '王五', '赵六',
+];
+
+const SKILL_TYPES: Skill['type'][] = ['builtin', 'mcp', 'custom'];
+
+const generateSkills = (count: number): Skill[] =>
+  Array.from({ length: count }, (_, i) => {
+    const type = SKILL_TYPES[i % SKILL_TYPES.length];
+    return {
+      name: `${SKILL_NAMES[i % SKILL_NAMES.length]}-${i}`,
+      type,
+      desc: SKILL_DESCS[i % SKILL_DESCS.length],
+      agents: (i * 7) % 20,
+      author: SKILL_AUTHORS[i % SKILL_AUTHORS.length],
+      installs: ((i + 1) * 37) % 2000,
+      category: SKILL_CATEGORIES[i % SKILL_CATEGORIES.length],
+      source: i % 3 === 0 ? 'internal' : 'community',
+      installed: i % 4 === 0,
+      featured: false,
+    };
+  });
+
 export const skills: Skill[] = [
   {
     name: 'agent-browser',
@@ -350,6 +408,7 @@ export const skills: Skill[] = [
     installed: false,
     featured: false,
   },
+  ...generateSkills(48),
 ];
 
 export const workComputers: WorkComputer[] = [
