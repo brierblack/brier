@@ -13,7 +13,8 @@ import {
   BgColorsOutlined,
   BellOutlined,
   GithubFilled,
-  PlusOutlined
+  PlusOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '@/define';
@@ -287,7 +288,8 @@ export const NavMenu = () => {
               if (value === 'message') navigate('/space/message');
             }}
             footer={
-              <Button block bordered={false} onClick={logout}>
+              <Button className='flex! justify-start! p-3! gap-2!' block bordered={false} onClick={logout}>
+                <LogoutOutlined className="text-standard" />
                 退出登录
               </Button>
             }
