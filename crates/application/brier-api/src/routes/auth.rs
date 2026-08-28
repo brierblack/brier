@@ -1,4 +1,4 @@
-use axum::extract::{Query, State};
+use axum::extract::{Path, Query, State};
 use axum::http::{header, HeaderMap, HeaderValue};
 use axum::response::{IntoResponse, Redirect, Response};
 use axum::routing::get;
@@ -19,12 +19,16 @@ struct CallbackParams {
     code: String,
 }
 
-fn build_cookie_header(token: &str) -> String {
-    Cookie::build(("brier_token", token))
+fn build_cookie_header(state: &AppState, token: &str) -> String {
+    let mut builder = Cookie::build(("brier_token", token))
         .http_only(true)
         .path("/")
         .max_age(cookie::time::Duration::seconds(SESSION_TTL_SECS as i64))
-        .to_string()
+        .same_site(cookie::SameSite::Lax);
+    if state.cookie_secure {
+        builder = builder.secure(true);
+    }
+    builder.to_string()
 }
 
 fn clear_cookie_header() -> String {
@@ -46,14 +50,22 @@ pub(crate) fn get_token_from_headers(headers: &HeaderMap) -> Option<String> {
 
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/github", get(github_login))
-        .route("/github/callback", get(github_callback))
+        .route("/{provider}/login", get(provider_login))
+        .route("/{provider}/callback", get(provider_callback))
         .route("/me", get(auth_me))
         .route("/logout", get(logout))
 }
 
-async fn github_login(State(state): State<AppState>) -> Redirect {
-    Redirect::to(&state.github_auth.authorize_url())
+/// 跳转指定 OAuth 提供方的授权页；未注册的 provider 返回 404。
+async fn provider_login(
+    State(state): State<AppState>,
+    Path(provider): Path<String>,
+) -> Result<Redirect, ApiError> {
+    let provider = state
+        .providers
+        .get(&provider)
+        .ok_or_else(|| ApiError(BrierError::NotFound(format!("unknown provider: {provider}"))))?;
+    Ok(Redirect::to(&provider.authorize_url()))
 }
 
 /// 统一 OAuth 登录编排：换码 → 取身份 → 查找/创建账户。
@@ -81,11 +93,16 @@ pub(crate) async fn oauth_login(
     Ok(user)
 }
 
-async fn github_callback(
+async fn provider_callback(
     State(state): State<AppState>,
+    Path(provider): Path<String>,
     Query(params): Query<CallbackParams>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let user = oauth_login(&state, &state.github_auth, &params.code).await?;
+    let provider_obj = state
+        .providers
+        .get(&provider)
+        .ok_or_else(|| ApiError(BrierError::NotFound(format!("unknown provider: {provider}"))))?;
+    let user = oauth_login(&state, provider_obj.as_ref(), &params.code).await?;
 
     let claims = SessionClaims::new(user.id.0)?;
     let jwt = state.jwt_signer.sign(&claims)?;
@@ -99,7 +116,7 @@ async fn github_callback(
     let mut response = Redirect::to(&redirect_url).into_response();
     response.headers_mut().insert(
         header::SET_COOKIE,
-        HeaderValue::from_str(&build_cookie_header(&jwt)).unwrap(),
+        HeaderValue::from_str(&build_cookie_header(&state, &jwt)).unwrap(),
     );
     Ok(response)
 }

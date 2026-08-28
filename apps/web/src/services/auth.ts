@@ -6,8 +6,12 @@ export const fetchCurrentUser = async (): Promise<UserInfo | null> => {
   return res.json();
 };
 
+export function loginWith(provider: string): void {
+  window.location.href = `/api/auth/${provider}/login`;
+}
+
 export function loginWithGithub(): void {
-  window.location.href = '/api/auth/github';
+  loginWith('github');
 }
 
 export function logout(): void {

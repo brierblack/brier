@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use brier_config::GithubConfig;
+use brier_config::OAuthConfig;
 use brier_core::auth::{OAuthProvider, ProviderIdentity};
 use brier_error::{BrierError, Result};
 use serde::{Deserialize, Serialize};
@@ -13,7 +13,7 @@ pub struct RepoInfo {
 
 #[derive(Clone)]
 pub struct GithubAuth {
-    config: GithubConfig,
+    config: OAuthConfig,
     client: reqwest::Client,
     /// OAuth 授权/令牌端点，默认 https://github.com，测试可指向 mock server。
     oauth_base: String,
@@ -22,7 +22,7 @@ pub struct GithubAuth {
 }
 
 impl GithubAuth {
-    pub fn new(config: GithubConfig) -> Self {
+    pub fn new(config: OAuthConfig) -> Self {
         Self {
             config,
             client: reqwest::Client::new(),
@@ -33,7 +33,7 @@ impl GithubAuth {
 
     /// 测试用：所有端点指向 mock server。
     #[cfg(test)]
-    fn with_mock_base(config: GithubConfig, base: &str) -> Self {
+    fn with_mock_base(config: OAuthConfig, base: &str) -> Self {
         Self {
             config,
             client: reqwest::Client::new(),
@@ -118,8 +118,13 @@ impl OAuthProvider for GithubAuth {
             .await
             .map_err(|e| BrierError::Provider(e.to_string()))?;
 
+        let provider_uid = body["id"]
+            .as_u64()
+            .ok_or_else(|| BrierError::Provider("missing user id in provider response".into()))?
+            .to_string();
+
         Ok(ProviderIdentity {
-            provider_uid: body["id"].as_u64().unwrap_or(0).to_string(),
+            provider_uid,
             username: body["login"].as_str().unwrap_or_default().to_string(),
             name: body["name"].as_str().map(|s| s.to_string()),
             email: body["email"].as_str().map(|s| s.to_string()),

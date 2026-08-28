@@ -1,12 +1,12 @@
 use super::GithubAuth;
-use brier_config::GithubConfig;
+use brier_config::OAuthConfig;
 use brier_core::auth::OAuthProvider;
 use brier_error::BrierError;
 use wiremock::matchers::{header, method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
-fn config() -> GithubConfig {
-    GithubConfig {
+fn config() -> OAuthConfig {
+    OAuthConfig {
         client_id: "test-client".to_string(),
         client_secret: "test-secret".to_string(),
         redirect_uri: "http://localhost/callback".to_string(),
@@ -72,17 +72,35 @@ async fn fetch_identity_parses_fields() {
 }
 
 #[tokio::test]
-async fn fetch_identity_missing_fields_fall_back_to_defaults() {
+async fn fetch_identity_missing_id_is_provider_error() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/user"))
-        .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({})))
+        .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+            "login": "octocat"
+        })))
+        .mount(&server)
+        .await;
+
+    let auth = GithubAuth::with_mock_base(config(), &server.uri());
+    let err = auth.fetch_identity("gho_test_123").await.unwrap_err();
+    assert!(matches!(err, BrierError::Provider(_)));
+}
+
+#[tokio::test]
+async fn fetch_identity_missing_login_falls_back_to_empty_username() {
+    let server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/user"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+            "id": 12345678
+        })))
         .mount(&server)
         .await;
 
     let auth = GithubAuth::with_mock_base(config(), &server.uri());
     let identity = auth.fetch_identity("gho_test_123").await.unwrap();
-    assert_eq!(identity.provider_uid, "0");
+    assert_eq!(identity.provider_uid, "12345678");
     assert_eq!(identity.username, "");
     assert_eq!(identity.name, None);
 }
