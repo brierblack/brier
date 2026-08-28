@@ -285,7 +285,7 @@ const TeamDetail = () => {
       }
       extra={
         <Button type="text" danger>
-          归档
+          删除
         </Button>
       }
     >

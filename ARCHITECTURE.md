@@ -23,7 +23,7 @@ Brier 是一个前后端分离的工作空间平台，提供 AI Agent 管理、A
 crates/
 ├── foundation/          # L0 基础层
 │   └── brier-error/     # 统一错误类型 BrierError / Result，零业务依赖
-├── shared/              # L1 共享层
+├── primitives/          # L1 原语层
 │   ├── brier-type/      # 领域类型：User/Workspace/Agent/Team/ID/枚举/隧道消息
 │   └── brier-config/    # 配置加载
 ├── domain/              # L2 领域层

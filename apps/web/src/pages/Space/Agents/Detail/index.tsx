@@ -244,12 +244,12 @@ const OverviewTab = ({
             </div>
             <div className="flex items-center justify-between gap-2 pt-2">
               <div className="flex-1">
-                <div className="text-standard font-medium">归档 Agent</div>
+                <div className="text-standard font-medium">删除 Agent</div>
                 <p className="mt-1 text-xs">
-                  归档后 Agent 会从日常列表和指派选项中隐藏，历史任务与会话记录会保留
+                  删除后 Agent 会从日常列表和指派选项中隐藏，历史任务与会话记录会保留
                 </p>
               </div>
-              <Button>归档</Button>
+              <Button>删除</Button>
             </div>
           </div>
         </div>

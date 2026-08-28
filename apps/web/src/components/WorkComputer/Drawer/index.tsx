@@ -63,7 +63,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
   };
 
   const handleDelete = () => {
-    message.warning('请先归档所有 Agent 再删除');
+    message.warning('请先删除所有 Agent 再删除');
   };
 
   return (
