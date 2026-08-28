@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Avatar, Menu, type MenuProps } from 'antd';
-import { Button, Select } from '@brierb/brier-ui';
+import { Button, Dropdown, Select } from '@brierb/brier-ui';
 
 import {
   GithubOutlined,
@@ -15,6 +15,9 @@ import {
   GithubFilled,
   PlusOutlined,
   LogoutOutlined,
+  EllipsisOutlined,
+  DeleteOutlined,
+  EditOutlined,
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '@/define';
@@ -147,6 +150,31 @@ export const NavMenu = () => {
     key: `conv-${conv.id}`,
     icon: <MessageOutlined />,
     label: conv.title,
+    className: 'flex group',
+    extra: (
+      <div className="opacity-0 group-hover:opacity-100">
+        <Dropdown
+          menu={{
+            items: [
+              { key: 'view', label: '重命名', icon: <EditOutlined /> },
+              { key: 'delete', label: '删除', icon: <DeleteOutlined /> },
+            ],
+            onClick: ({ key }) => {
+              if (key === 'view') navigate(`/space/chat/${conv.id}`);
+            },
+          }}
+          trigger={['click']}
+        >
+          <Button
+            size="small"
+            bordered={false}
+            icon={<EllipsisOutlined />}
+            onClick={(e) => e.stopPropagation()}
+            classNames={{ root: 'hover:bg-ghost! rounded-full!' }}
+          />
+        </Dropdown>
+      </div>
+    ),
   }));
 
   const olderItems: MenuProps['items'] = olderConversations.map((conv) => ({

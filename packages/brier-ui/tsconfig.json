@@ -8,9 +8,8 @@
     "emitDeclarationOnly": true,
     "outDir": "types",
     "rootDir": "src",
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"]
