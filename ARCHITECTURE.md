@@ -27,7 +27,8 @@ crates/
 │   ├── brier-type/      # 领域类型：User/Workspace/Agent/Team/ID/枚举/隧道消息
 │   └── brier-config/    # 配置加载
 ├── domain/              # L2 领域层
-│   └── brier-core/      # 领域抽象：auth(OAuthProvider)、repo(RepositoryProvider)、tunnel(ConnectionRegistry)
+│   ├── brier-contract/  # 领域契约：OAuthProvider/RepositoryProvider trait 及其类型
+│   └── brier-core/      # 领域状态：tunnel(ConnectionRegistry 实时连接注册表)
 ├── infrastructure/      # L3 基础设施层
 │   ├── brier-database/  # 持久化（非用户）：连接、迁移、workspace/agent/team 实体与仓储
 │   ├── brier-user/      # 用户上下文聚合包：users/user_identities 实体、转换、仓储、规则
@@ -47,10 +48,11 @@ apps/
 | brier-error       | L0  | -                                                    |
 | brier-type        | L1  | brier-error                                          |
 | brier-config      | L1  | brier-error                                          |
-| brier-core        | L2  | brier-error, brier-type                              |
-| brier-database    | L3  | brier-error, brier-type                              |
-| brier-user        | L3  | brier-error, brier-type                              |
-| brier-forge       | L3  | brier-error, brier-config, brier-core                |
+| brier-core        | L2  | brier-type                                        |
+| brier-contract    | L2  | brier-error                                       |
+| brier-database    | L3  | brier-error, brier-type                           |
+| brier-user        | L3  | brier-error, brier-type                           |
+| brier-forge       | L3  | brier-error, brier-config, brier-contract         |
 | brier-jwt         | L3  | brier-error                                          |
 | brier-api         | L4  | 全部下层                                             |
 | apps/server       | L5  | brier-api, brier-config, brier-database, brier-error |
@@ -62,12 +64,13 @@ apps/
 - **brier-error**：统一错误枚举（Config/Auth/Provider/Jwt/Server/Database/NotFound/Validation/Io）。`Auth` 表示认证流程失败，`Provider` 表示外部 Provider（GitHub 等）API 通信失败，与具体厂商解耦。错误层不依赖任何业务 crate 与 ORM；数据库错误的转换由 `brier-database` 通过本地 trait `DbErrExt::to_brier` 显式完成
 - **brier-type**：纯数据类型与领域枚举（含 `tunnel::ServerMessage`），跨层共享，无副作用
 - **brier-config**：环境配置读取与校验。`providers: HashMap<String, OAuthConfig>`（github 必填，gitee/gitlab 等三变量齐全才注册）；`cookie_secure` 控制会话 Cookie 的 Secure 属性
-- **brier-core**：领域抽象与状态持有——`auth::OAuthProvider` trait（authorize_url / exchange_code / fetch_identity，返回 `ProviderIdentity`）、`repo::RepositoryProvider` trait（list_repos 等代码资源访问，`RepoInfo` 随 trait 同居）、`tunnel::ConnectionRegistry`（实时连接注册表）
+- **brier-contract**：领域契约包（自包含、零状态、零副作用）——`auth::OAuthProvider` trait（authorize_url / exchange_code / fetch_identity，返回 `ProviderIdentity`）、`repo::RepositoryProvider` trait（list_repos 等代码资源访问，`RepoInfo` 随 trait 同居）。实现层（brier-forge）与消费层（brier-api）共同依赖，是全仓库变更敏感度最低的包之一；与 `brier-type` 的区别：type 是"是什么"（数据形状），contract 是"能做什么"（行为契约）
+- **brier-core**：领域状态与运行时对象——`tunnel::ConnectionRegistry`（实时连接注册表，`Arc<RwLock<HashMap>>` + mpsc，向已注册连接发送 `brier_type::tunnel::ServerMessage`）。与 brier-contract 同层且零依赖
 - **brier-database**：数据库连接、schema 迁移（全部表的 DDL，纯 SQL 集中管理），以及非用户实体的持久化——workspace/agent/team/work_computer 实体、转换与仓储。与 brier-user 零依赖
 - **brier-user**：用户上下文聚合包（自包含）。`users`/`user_identities` 两表的实体映射、entity ↔ `brier-type::User` 转换、`find_or_create_user_by_identity`/`find_user_by_id`/`get_provider_token` 等仓储函数、username 唯一化规则。不感知任何登录厂商，厂商仅作为 provider 字符串参数
 - **brier-forge**：代码托管平台适配层。`GithubProvider` 同时实现 `OAuthProvider` 与 `RepositoryProvider`（`provider_name`=`github`），封装 GitHub OAuth 授权、身份与仓库 API；`oauth_base`/`api_base` 可指向 mock server 以支持单元测试。`ProviderRegistry` 由 `AppConfig` 构建，按 provider 名分发认证与仓库两类能力；新增厂商（Gitee/GitLab…）实现两个 trait 后在 `from_config` 注册一行即可，brier-api 与前端零改动
 - **brier-jwt**：会话令牌的签发与验证（`JwtSigner`/`JwtVerifier`），验证策略（HS256、leeway、必需 exp/iat）集中于此；`SessionClaims` 仅含 `sub`（用户 UUID）/`iat`/`exp`/`jti`，profile 信息一律从数据库读取
-- **brier-api**：Axum 路由（auth/workspace/forge 等）、全局状态、登录编排（何时/给谁签发）、HTTP 错误映射。`AppState.providers` 为代码托管平台适配注册表（`brier_forge::ProviderRegistry`），动态路由 `/api/auth/{provider}/login|callback` 与 `/api/{provider}/repos` 均从注册表分发，未注册的 provider 返回 404；登录编排只依赖 `brier_core::auth::OAuthProvider`，仓库 API 只依赖 `brier_core::repo::RepositoryProvider`，不感知具体厂商实现
+- **brier-api**：Axum 路由（auth/workspace/forge 等）、全局状态、登录编排（何时/给谁签发）、HTTP 错误映射。`AppState.providers` 为代码托管平台适配注册表（`brier_forge::ProviderRegistry`），动态路由 `/api/auth/{provider}/login|callback` 与 `/api/{provider}/repos` 均从注册表分发，未注册的 provider 返回 404；登录编排只依赖 `brier_contract::auth::OAuthProvider`，仓库 API 只依赖 `brier_contract::repo::RepositoryProvider`，实时连接状态来自 `brier_core::tunnel::ConnectionRegistry`，不感知具体厂商实现
 
 ## 3. 关键设计决策
 

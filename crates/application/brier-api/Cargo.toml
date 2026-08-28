@@ -5,6 +5,7 @@ edition.workspace = true
 
 [dependencies]
 brier-core.workspace = true
+brier-contract.workspace = true
 brier-error.workspace = true
 brier-config.workspace = true
 brier-forge.workspace = true

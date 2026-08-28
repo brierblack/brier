@@ -1,0 +1,9 @@
+[package]
+name = "brier-contract"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+brier-error.workspace = true
+async-trait.workspace = true
+serde = { version = "1", features = ["derive"] }

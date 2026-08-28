@@ -1,7 +1,7 @@
 use axum::extract::{Path, State};
 use axum::http::HeaderMap;
 use axum::Json;
-use brier_core::repo::RepoInfo;
+use brier_contract::repo::RepoInfo;
 use brier_error::BrierError;
 
 use crate::error::ApiError;

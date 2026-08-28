@@ -3,7 +3,7 @@ use brier_error::Result;
 use serde::{Deserialize, Serialize};
 
 /// 代码仓库信息（厂商 API 返回的仓库视图，非 Brier 领域概念）。
-/// 与 `RepositoryProvider` 强绑定（trait 方法签名引用），故同居本模块；
+/// 与 `RepositoryProvider` 强绑定（trait 方法签名引用），故随契约同居本包；
 /// 消费方仅限适配层（brier-forge）与应用层（brier-api）两端，不进 brier-type。
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RepoInfo {

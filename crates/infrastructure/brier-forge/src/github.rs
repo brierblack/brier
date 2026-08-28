@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use brier_config::OAuthConfig;
-use brier_core::auth::{OAuthProvider, ProviderIdentity};
-use brier_core::repo::{RepoInfo, RepositoryProvider};
+use brier_contract::auth::{OAuthProvider, ProviderIdentity};
+use brier_contract::repo::{RepoInfo, RepositoryProvider};
 use brier_error::{BrierError, Result};
 
 /// GitHub 厂商适配：同时实现登录认证（`OAuthProvider`）与仓库 API（`RepositoryProvider`）。

@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use brier_config::AppConfig;
-use brier_core::auth::OAuthProvider;
-use brier_core::repo::RepositoryProvider;
+use brier_contract::auth::OAuthProvider;
+use brier_contract::repo::RepositoryProvider;
 
 use crate::GithubProvider;
 

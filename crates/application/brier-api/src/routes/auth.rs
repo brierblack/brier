@@ -5,7 +5,7 @@ use axum::routing::get;
 use axum::Json;
 use axum::Router;
 use cookie::Cookie;
-use brier_core::auth::OAuthProvider;
+use brier_contract::auth::OAuthProvider;
 use brier_error::BrierError;
 use brier_jwt::{SessionClaims, SESSION_TTL_SECS};
 use brier_type::id::UserId;

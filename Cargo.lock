@@ -320,6 +320,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "brier-config",
+ "brier-contract",
  "brier-core",
  "brier-database",
  "brier-error",
@@ -346,13 +347,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "brier-core"
+name = "brier-contract"
 version = "0.1.0"
 dependencies = [
  "async-trait",
  "brier-error",
- "brier-type",
  "serde",
+]
+
+[[package]]
+name = "brier-core"
+version = "0.1.0"
+dependencies = [
+ "brier-type",
  "tokio",
  "tracing",
 ]
@@ -386,7 +393,7 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "brier-config",
- "brier-core",
+ "brier-contract",
  "brier-error",
  "reqwest",
  "serde",

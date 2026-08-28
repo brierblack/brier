@@ -1,7 +1,7 @@
 use super::GithubProvider;
 use brier_config::OAuthConfig;
-use brier_core::auth::OAuthProvider;
-use brier_core::repo::RepositoryProvider;
+use brier_contract::auth::OAuthProvider;
+use brier_contract::repo::RepositoryProvider;
 use brier_error::BrierError;
 use wiremock::matchers::{header, method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
