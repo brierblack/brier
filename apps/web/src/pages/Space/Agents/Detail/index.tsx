@@ -352,7 +352,7 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
                         background: 'linear-gradient(135deg, #8d54ff, #7008e7)',
                       }}
                     >
-                      {user?.login?.slice(0, 2).toUpperCase() ?? 'U'}
+                      {user?.username?.slice(0, 2).toUpperCase() ?? 'U'}
                     </Avatar>
                   )}
                 </div>

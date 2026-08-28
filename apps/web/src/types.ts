@@ -81,10 +81,13 @@ export interface Skill {
 
 export interface UserInfo {
   id: string;
-  login: string;
+  username: string;
   name: string | null;
   email: string | null;
+  phone: string | null;
   avatar_url: string | null;
+  status: 'active' | 'disabled';
+  last_login_at: string | null;
 }
 
 export interface NavItem {

@@ -18,7 +18,7 @@ async fn list_repos(
     headers: HeaderMap,
 ) -> Result<Json<Vec<RepoInfo>>, ApiError> {
     let user = current_user(&state, &headers).await?;
-    let token = brier_database::repository::get_github_token(&state.db, user.id)
+    let token = brier_database::repository::get_provider_token(&state.db, user.id, "github")
         .await?
         .ok_or_else(|| ApiError(brier_error::BrierError::Auth("github token not found".into())))?;
     let repos = state.github_auth.list_repos(&token).await?;

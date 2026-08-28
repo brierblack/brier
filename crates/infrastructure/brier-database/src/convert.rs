@@ -38,35 +38,22 @@ fn vec_to_json(v: &[String]) -> serde_json::Value {
 
 // --- User ---
 
-impl From<user::Model> for User {
-    fn from(m: user::Model) -> Self {
-        Self {
+impl TryFrom<user::Model> for User {
+    type Error = BrierError;
+
+    fn try_from(m: user::Model) -> Result<Self> {
+        Ok(Self {
             id: UserId(m.id),
-            github_id: m.github_id,
-            login: m.login,
+            username: m.username,
             name: m.name,
             email: m.email,
+            phone: m.phone,
             avatar_url: m.avatar_url,
-            github_access_token: m.github_access_token,
+            status: parse_enum(&m.status, "UserStatus")?,
+            last_login_at: m.last_login_at,
             created_at: m.created_at,
             updated_at: m.updated_at,
-        }
-    }
-}
-
-impl From<User> for user::ActiveModel {
-    fn from(u: User) -> Self {
-        Self {
-            id: sea_orm::Set(u.id.0),
-            github_id: sea_orm::Set(u.github_id),
-            login: sea_orm::Set(u.login),
-            name: sea_orm::Set(u.name),
-            email: sea_orm::Set(u.email),
-            avatar_url: sea_orm::Set(u.avatar_url),
-            github_access_token: sea_orm::Set(u.github_access_token),
-            created_at: sea_orm::Set(u.created_at),
-            updated_at: sea_orm::Set(u.updated_at),
-        }
+        })
     }
 }
 

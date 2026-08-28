@@ -52,3 +52,10 @@ pub enum TeamMode {
     Sequential,
     Graph,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum UserStatus {
+    Active,
+    Disabled,
+}

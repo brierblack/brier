@@ -63,13 +63,16 @@ async fn github_callback(
     let access_token = state.github_auth.exchange_code(&params.code).await?;
     let user = state.github_auth.get_user(&access_token).await?;
 
-    let user = brier_database::repository::upsert_user_by_github_id(
+    let user = brier_database::repository::find_or_create_user_by_identity(
         &state.db,
-        user.id as i64,
-        &user.login,
-        user.name.as_deref(),
-        user.email.as_deref(),
-        user.avatar_url.as_deref(),
+        "github",
+        &user.id.to_string(),
+        &brier_database::repository::IdentityProfile {
+            username: &user.login,
+            name: user.name.as_deref(),
+            email: user.email.as_deref(),
+            avatar_url: user.avatar_url.as_deref(),
+        },
         Some(&access_token),
     )
     .await?;

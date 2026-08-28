@@ -105,4 +105,11 @@ apps/web/src/
 
 ## 5. 数据流示例
 
-GitHub 登录：`apps/server` → `brier-api::routes/auth` → `brier-github-auth`（exchange_code/get_user）→ `brier-database::repository`（upsert_user_by_github_id）→ `brier-api` 构造 `SessionClaims`（`sub` = 用户 UUID）并交由 `brier-jwt::JwtSigner` 签发 → 后续 `/api/auth/me` 与 `current_user` 均用 `JwtVerifier` 验证后按 UUID 查库返回最新资料。
+### 账户模型（users + user_identities）
+
+- `users`：账户本体，与具体登录厂商解耦。字段：`username`（唯一）、`name`、`email`、`phone`（唯一，预留手机号登录）、`password_hash`（预留本地凭证）、`avatar_url`、`status`（active/disabled）、`last_login_at`。`password_hash` 属敏感凭证，仅存在于数据库实体，不进入 `brier-type::User` API 模型。
+- `user_identities`：第三方身份，`(provider, provider_uid)` 唯一。`provider` 目前支持 `github`/`gitee`/`gitlab`，`access_token` 随身份存储。接入新 OAuth 厂商时仅需新增身份记录，无需改动 users 表。
+- 登录编排：`find_or_create_user_by_identity(provider, provider_uid, profile, token)`——已存在则更新资料与 `last_login_at`；不存在则在事务内创建 user + identity。
+- 迁移：`migrations/` 目录按序执行（`init` → `identity_split`），迁移文件列表化，后续 schema 变更新增 `m0003_*.sql` 并在 `migration.rs` 注册。
+
+GitHub 登录：`apps/server` → `brier-api::routes/auth` → `brier-github-auth`（exchange_code/get_user）→ `brier-database::repository`（find_or_create_user_by_identity：按 `(provider, provider_uid)` 查找/创建用户与身份，事务内完成）→ `brier-api` 构造 `SessionClaims`（`sub` = 用户 UUID）并交由 `brier-jwt::JwtSigner` 签发 → 后续 `/api/auth/me` 与 `current_user` 均用 `JwtVerifier` 验证后按 UUID 查库返回最新资料。

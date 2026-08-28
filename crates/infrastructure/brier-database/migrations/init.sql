@@ -8,15 +8,28 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE IF NOT EXISTS users (
-    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    github_id           BIGINT NOT NULL UNIQUE,
-    login               TEXT NOT NULL,
-    name                TEXT,
-    email               TEXT,
-    avatar_url          TEXT,
-    github_access_token TEXT,
-    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    username       TEXT NOT NULL UNIQUE,
+    name           TEXT,
+    email          TEXT,
+    phone          TEXT UNIQUE,
+    password_hash  TEXT,
+    avatar_url     TEXT,
+    status         TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'disabled')),
+    last_login_at  TIMESTAMPTZ,
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS user_identities (
+    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    provider     TEXT NOT NULL CHECK (provider IN ('github', 'gitee', 'gitlab')),
+    provider_uid TEXT NOT NULL,
+    access_token TEXT,
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (provider, provider_uid)
 );
 
 CREATE TABLE IF NOT EXISTS workspaces (
@@ -99,3 +112,4 @@ CREATE INDEX idx_agents_work_computer_id      ON agents(work_computer_id);
 CREATE INDEX idx_agent_teams_workspace_id     ON agent_teams(workspace_id);
 CREATE INDEX idx_agent_teams_creator_id       ON agent_teams(creator_id);
 CREATE INDEX idx_agent_teams_primary_agent_id ON agent_teams(primary_agent_id);
+CREATE INDEX idx_user_identities_user_id      ON user_identities(user_id);

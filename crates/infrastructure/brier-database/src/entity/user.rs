@@ -6,12 +6,14 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: Uuid,
     #[sea_orm(unique)]
-    pub github_id: i64,
-    pub login: String,
+    pub username: String,
     pub name: Option<String>,
     pub email: Option<String>,
+    pub phone: Option<String>,
+    pub password_hash: Option<String>,
     pub avatar_url: Option<String>,
-    pub github_access_token: Option<String>,
+    pub status: String,
+    pub last_login_at: Option<DateTimeUtc>,
     pub created_at: DateTimeUtc,
     pub updated_at: DateTimeUtc,
 }
@@ -26,6 +28,8 @@ pub enum Relation {
     Agent,
     #[sea_orm(has_many = "super::agent_team::Entity")]
     AgentTeam,
+    #[sea_orm(has_many = "super::user_identity::Entity")]
+    UserIdentity,
 }
 
 impl Related<super::workspace::Entity> for Entity {
@@ -49,6 +53,12 @@ impl Related<super::agent::Entity> for Entity {
 impl Related<super::agent_team::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::AgentTeam.def()
+    }
+}
+
+impl Related<super::user_identity::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::UserIdentity.def()
     }
 }
 

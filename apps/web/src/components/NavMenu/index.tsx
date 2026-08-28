@@ -275,11 +275,11 @@ export const NavMenu = () => {
                       background: 'linear-gradient(135deg, #8d54ff, #7008e7)',
                     }}
                   >
-                    {user.login.slice(0, 2).toUpperCase()}
+                    {user.username.slice(0, 2).toUpperCase()}
                   </Avatar>
                 )}
                 <div className="min-w-0 flex-1 text-left">
-                  <div className="truncate text-sm font-medium">{user.login}</div>
+                  <div className="truncate text-sm font-medium">{user.username}</div>
                 </div>
                 <GithubFilled style={{ fontSize: 16 }} />
               </div>
