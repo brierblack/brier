@@ -9,6 +9,14 @@ use sea_orm::Statement;
 use crate::convert::DbErrExt;
 use crate::entity::{user, workspace};
 
+pub async fn find_user_by_id(db: &DatabaseConnection, id: UserId) -> Result<Option<User>> {
+    let model = user::Entity::find_by_id(id.0)
+        .one(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    Ok(model.map(User::from))
+}
+
 pub async fn find_user_by_github_id(db: &DatabaseConnection, github_id: i64) -> Result<Option<User>> {
     let model = user::Entity::find()
         .filter(user::Column::GithubId.eq(github_id))

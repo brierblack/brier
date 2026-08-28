@@ -314,11 +314,11 @@ dependencies = [
  "brier-database",
  "brier-error",
  "brier-github-auth",
+ "brier-jwt",
  "brier-type",
  "chrono",
  "cookie",
  "futures",
- "jsonwebtoken",
  "sea-orm",
  "serde",
  "serde_json",
@@ -378,6 +378,16 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "brier-jwt"
+version = "0.1.0"
+dependencies = [
+ "brier-error",
+ "jsonwebtoken",
+ "serde",
+ "uuid",
 ]
 
 [[package]]

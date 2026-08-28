@@ -80,7 +80,7 @@ export interface Skill {
 }
 
 export interface UserInfo {
-  id: number;
+  id: string;
   login: string;
   name: string | null;
   email: string | null;

@@ -1,0 +1,10 @@
+[package]
+name = "brier-jwt"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+brier-error.workspace = true
+jsonwebtoken.workspace = true
+serde.workspace = true
+uuid.workspace = true

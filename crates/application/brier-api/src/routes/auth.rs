@@ -5,11 +5,12 @@ use axum::routing::get;
 use axum::Json;
 use axum::Router;
 use cookie::Cookie;
-use brier_core::auth::UserInfo;
 use brier_error::BrierError;
+use brier_jwt::{SessionClaims, SESSION_TTL_SECS};
+use brier_type::id::UserId;
+use brier_type::User;
 
 use crate::error::ApiError;
-use crate::jwt;
 use crate::AppState;
 
 #[derive(serde::Deserialize)]
@@ -21,7 +22,7 @@ fn build_cookie_header(token: &str) -> String {
     Cookie::build(("brier_token", token))
         .http_only(true)
         .path("/")
-        .max_age(cookie::time::Duration::seconds(86400))
+        .max_age(cookie::time::Duration::seconds(SESSION_TTL_SECS as i64))
         .to_string()
 }
 
@@ -62,7 +63,7 @@ async fn github_callback(
     let access_token = state.github_auth.exchange_code(&params.code).await?;
     let user = state.github_auth.get_user(&access_token).await?;
 
-    brier_database::repository::upsert_user_by_github_id(
+    let user = brier_database::repository::upsert_user_by_github_id(
         &state.db,
         user.id as i64,
         &user.login,
@@ -73,7 +74,8 @@ async fn github_callback(
     )
     .await?;
 
-    let jwt = jwt::create_token(&user, &state.jwt_secret)?;
+    let claims = SessionClaims::new(user.id.0)?;
+    let jwt = state.jwt_signer.sign(&claims)?;
 
     let redirect_url = state
         .frontend_url
@@ -92,18 +94,14 @@ async fn github_callback(
 async fn auth_me(
     State(state): State<AppState>,
     headers: HeaderMap,
-) -> Result<Json<UserInfo>, ApiError> {
+) -> Result<Json<User>, ApiError> {
     let token =
         get_token_from_headers(&headers).ok_or_else(|| ApiError(BrierError::Auth("not logged in".into())))?;
-    let claims = jwt::verify_token(&token, &state.jwt_secret)?;
-
-    Ok(Json(UserInfo {
-        id: claims.sub,
-        login: claims.login,
-        name: claims.name,
-        email: claims.email,
-        avatar_url: claims.avatar_url,
-    }))
+    let claims = state.jwt_verifier.verify(&token)?;
+    let user = brier_database::repository::find_user_by_id(&state.db, UserId(claims.sub))
+        .await?
+        .ok_or_else(|| ApiError(BrierError::NotFound("user not found".into())))?;
+    Ok(Json(user))
 }
 
 async fn logout() -> Response {

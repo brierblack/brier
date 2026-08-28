@@ -7,6 +7,7 @@ members = [
     "crates/domain/brier-core",
     "crates/infrastructure/brier-database",
     "crates/infrastructure/brier-github-auth",
+    "crates/infrastructure/brier-jwt",
     "crates/application/brier-api",
 ]
 resolver = "2"
@@ -22,6 +23,7 @@ brier-config = { path = "crates/primitives/brier-config" }
 brier-core = { path = "crates/domain/brier-core" }
 brier-database = { path = "crates/infrastructure/brier-database" }
 brier-github-auth = { path = "crates/infrastructure/brier-github-auth" }
+brier-jwt = { path = "crates/infrastructure/brier-jwt" }
 brier-api = { path = "crates/application/brier-api" }
 axum = { version = "0.8", features = ["ws"] }
 futures = "0.3"

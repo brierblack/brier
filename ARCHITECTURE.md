@@ -30,9 +30,10 @@ crates/
 │   └── brier-core/      # 领域抽象：auth(UserInfo/AuthProvider)、tunnel(ConnectionRegistry)
 ├── infrastructure/      # L3 基础设施层
 │   ├── brier-database/  # 持久化：连接、迁移、实体、仓储、模型转换
-│   └── brier-github-auth/  # GitHub OAuth 适配
+│   ├── brier-github-auth/  # GitHub OAuth 适配
+│   └── brier-jwt/       # 会话令牌：签发/验证，验证策略集中（HS256）
 └── application/         # L4 应用层
-    └── brier-api/       # HTTP 接口：路由、中间件、应用状态、JWT
+    └── brier-api/       # HTTP 接口：路由、中间件、应用状态、登录编排
 
 apps/
 └── server/              # L5 入口层（二进制）：装配与启动
@@ -48,6 +49,7 @@ apps/
 | brier-core        | L2  | brier-error, brier-type                              |
 | brier-database    | L3  | brier-error, brier-type                              |
 | brier-github-auth | L3  | brier-error, brier-config, brier-core                |
+| brier-jwt         | L3  | brier-error                                          |
 | brier-api         | L4  | 全部下层                                             |
 | apps/server       | L5  | brier-api, brier-config, brier-database, brier-error |
 
@@ -59,7 +61,8 @@ apps/
 - **brier-core**：领域抽象与状态持有——`auth::UserInfo`/`AuthProvider` trait、`tunnel::ConnectionRegistry`（实时连接注册表）
 - **brier-database**：sea-orm 连接、迁移、实体模型、仓储函数，以及 entity ↔ 领域类型转换
 - **brier-github-auth**：实现 `AuthProvider`，封装 GitHub OAuth 授权与 API 调用
-- **brier-api**：Axum 路由（auth/workspace/github 等）、全局状态、JWT 签发、HTTP 错误映射
+- **brier-jwt**：会话令牌的签发与验证（`JwtSigner`/`JwtVerifier`），验证策略（HS256、leeway、必需 exp/iat）集中于此；`SessionClaims` 仅含 `sub`（用户 UUID）/`iat`/`exp`/`jti`，profile 信息一律从数据库读取
+- **brier-api**：Axum 路由（auth/workspace/github 等）、全局状态、登录编排（何时/给谁签发）、HTTP 错误映射
 
 ## 3. 关键设计决策
 
@@ -102,4 +105,4 @@ apps/web/src/
 
 ## 5. 数据流示例
 
-GitHub 登录：`apps/server` → `brier-api::routes/auth` → `brier-github-auth`（exchange_code/get_user）→ `brier-database::repository`（upsert_user）→ 返回 `brier-core::auth::UserInfo` → JWT 签发。
+GitHub 登录：`apps/server` → `brier-api::routes/auth` → `brier-github-auth`（exchange_code/get_user）→ `brier-database::repository`（upsert_user_by_github_id）→ `brier-api` 构造 `SessionClaims`（`sub` = 用户 UUID）并交由 `brier-jwt::JwtSigner` 签发 → 后续 `/api/auth/me` 与 `current_user` 均用 `JwtVerifier` 验证后按 UUID 查库返回最新资料。
