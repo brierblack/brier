@@ -1,0 +1,13 @@
+[package]
+name = "brier-user"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+brier-error.workspace = true
+brier-type.workspace = true
+sea-orm.workspace = true
+chrono.workspace = true
+uuid.workspace = true
+serde.workspace = true
+serde_json.workspace = true

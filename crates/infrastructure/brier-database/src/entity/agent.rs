@@ -30,12 +30,6 @@ pub enum Relation {
     )]
     Workspace,
     #[sea_orm(
-        belongs_to = "super::user::Entity",
-        from = "Column::CreatorId",
-        to = "super::user::Column::Id"
-    )]
-    Creator,
-    #[sea_orm(
         belongs_to = "super::work_computer::Entity",
         from = "Column::WorkComputerId",
         to = "super::work_computer::Column::Id"
@@ -48,12 +42,6 @@ pub enum Relation {
 impl Related<super::workspace::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Workspace.def()
-    }
-}
-
-impl Related<super::user::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Creator.def()
     }
 }
 

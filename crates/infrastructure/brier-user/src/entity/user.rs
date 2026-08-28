@@ -20,40 +20,8 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::workspace::Entity")]
-    Workspace,
-    #[sea_orm(has_many = "super::work_computer::Entity")]
-    WorkComputer,
-    #[sea_orm(has_many = "super::agent::Entity")]
-    Agent,
-    #[sea_orm(has_many = "super::agent_team::Entity")]
-    AgentTeam,
     #[sea_orm(has_many = "super::user_identity::Entity")]
     UserIdentity,
-}
-
-impl Related<super::workspace::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Workspace.def()
-    }
-}
-
-impl Related<super::work_computer::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::WorkComputer.def()
-    }
-}
-
-impl Related<super::agent::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Agent.def()
-    }
-}
-
-impl Related<super::agent_team::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::AgentTeam.def()
-    }
 }
 
 impl Related<super::user_identity::Entity> for Entity {

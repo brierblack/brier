@@ -77,11 +77,11 @@ pub(crate) async fn oauth_login(
 ) -> Result<User, ApiError> {
     let access_token = provider.exchange_code(code).await?;
     let identity = provider.fetch_identity(&access_token).await?;
-    let user = brier_database::repository::find_or_create_user_by_identity(
+    let user = brier_user::repository::find_or_create_user_by_identity(
         &state.db,
         provider.provider_name(),
         &identity.provider_uid,
-        &brier_database::repository::IdentityProfile {
+        &brier_user::repository::IdentityProfile {
             username: &identity.username,
             name: identity.name.as_deref(),
             email: identity.email.as_deref(),
@@ -128,7 +128,7 @@ async fn auth_me(
     let token =
         get_token_from_headers(&headers).ok_or_else(|| ApiError(BrierError::Auth("not logged in".into())))?;
     let claims = state.jwt_verifier.verify(&token)?;
-    let user = brier_database::repository::find_user_by_id(&state.db, UserId(claims.sub))
+    let user = brier_user::repository::find_user_by_id(&state.db, UserId(claims.sub))
         .await?
         .ok_or_else(|| ApiError(BrierError::NotFound("user not found".into())))?;
     Ok(Json(user))

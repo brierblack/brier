@@ -3,7 +3,7 @@ use brier_type::id::*;
 use brier_type::*;
 
 use crate::entity::{
-    agent, agent_team, agent_team_member, user, work_computer, workspace, workspace_member,
+    agent, agent_team, agent_team_member, work_computer, workspace, workspace_member,
 };
 
 pub trait DbErrExt {
@@ -34,27 +34,6 @@ fn json_to_vec(v: &serde_json::Value) -> Vec<String> {
 
 fn vec_to_json(v: &[String]) -> serde_json::Value {
     serde_json::to_value(v).unwrap_or_default()
-}
-
-// --- User ---
-
-impl TryFrom<user::Model> for User {
-    type Error = BrierError;
-
-    fn try_from(m: user::Model) -> Result<Self> {
-        Ok(Self {
-            id: UserId(m.id),
-            username: m.username,
-            name: m.name,
-            email: m.email,
-            phone: m.phone,
-            avatar_url: m.avatar_url,
-            status: parse_enum(&m.status, "UserStatus")?,
-            last_login_at: m.last_login_at,
-            created_at: m.created_at,
-            updated_at: m.updated_at,
-        })
-    }
 }
 
 // --- Workspace ---

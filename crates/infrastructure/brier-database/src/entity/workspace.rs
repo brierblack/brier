@@ -21,24 +21,12 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::user::Entity",
-        from = "Column::CreatorId",
-        to = "super::user::Column::Id"
-    )]
-    Creator,
     #[sea_orm(has_many = "super::agent::Entity")]
     Agent,
     #[sea_orm(has_many = "super::agent_team::Entity")]
     AgentTeam,
     #[sea_orm(has_many = "super::workspace_member::Entity")]
     WorkspaceMember,
-}
-
-impl Related<super::user::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Creator.def()
-    }
 }
 
 impl Related<super::agent::Entity> for Entity {

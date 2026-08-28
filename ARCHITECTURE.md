@@ -27,9 +27,10 @@ crates/
 │   ├── brier-type/      # 领域类型：User/Workspace/Agent/Team/ID/枚举/隧道消息
 │   └── brier-config/    # 配置加载
 ├── domain/              # L2 领域层
-│   └── brier-core/      # 领域抽象：auth(UserInfo/AuthProvider)、tunnel(ConnectionRegistry)
+│   └── brier-core/      # 领域抽象：auth(OAuthProvider)、tunnel(ConnectionRegistry)
 ├── infrastructure/      # L3 基础设施层
-│   ├── brier-database/  # 持久化：连接、迁移、实体、仓储、模型转换
+│   ├── brier-database/  # 持久化（非用户）：连接、迁移、workspace/agent/team 实体与仓储
+│   ├── brier-user/      # 用户上下文聚合包：users/user_identities 实体、转换、仓储、规则
 │   ├── brier-github-auth/  # GitHub OAuth 适配
 │   └── brier-jwt/       # 会话令牌：签发/验证，验证策略集中（HS256）
 └── application/         # L4 应用层
@@ -48,10 +49,13 @@ apps/
 | brier-config      | L1  | brier-error                                          |
 | brier-core        | L2  | brier-error, brier-type                              |
 | brier-database    | L3  | brier-error, brier-type                              |
+| brier-user        | L3  | brier-error, brier-type                              |
 | brier-github-auth | L3  | brier-error, brier-config, brier-core                |
 | brier-jwt         | L3  | brier-error                                          |
 | brier-api         | L4  | 全部下层                                             |
 | apps/server       | L5  | brier-api, brier-config, brier-database, brier-error |
+
+> 注：`brier-database` 与 `brier-user` 同属 L3 且**互不依赖**（零依赖，实测验证）。
 
 ### 2.4 各 crate 职责
 
@@ -59,7 +63,8 @@ apps/
 - **brier-type**：纯数据类型与领域枚举（含 `tunnel::ServerMessage`），跨层共享，无副作用
 - **brier-config**：环境配置读取与校验。`providers: HashMap<String, OAuthConfig>`（github 必填，gitee/gitlab 等三变量齐全才注册）；`cookie_secure` 控制会话 Cookie 的 Secure 属性
 - **brier-core**：领域抽象与状态持有——`auth::OAuthProvider` trait（authorize_url / exchange_code / fetch_identity，返回 `ProviderIdentity`）、`tunnel::ConnectionRegistry`（实时连接注册表）
-- **brier-database**：sea-orm 连接、迁移、实体模型、仓储函数，以及 entity ↔ 领域类型转换
+- **brier-database**：数据库连接、schema 迁移（全部表的 DDL，纯 SQL 集中管理），以及非用户实体的持久化——workspace/agent/team/work_computer 实体、转换与仓储。与 brier-user 零依赖
+- **brier-user**：用户上下文聚合包（自包含）。`users`/`user_identities` 两表的实体映射、entity ↔ `brier-type::User` 转换、`find_or_create_user_by_identity`/`find_user_by_id`/`get_provider_token` 等仓储函数、username 唯一化规则。不感知任何登录厂商，厂商仅作为 provider 字符串参数
 - **brier-github-auth**：实现 `OAuthProvider`（`provider_name`=`github`），封装 GitHub OAuth 授权与 API 调用；`list_repos` 为 GitHub 特有 API 客户端方法，不属于认证抽象。`oauth_base`/`api_base` 可指向 mock server 以支持单元测试
 - **brier-jwt**：会话令牌的签发与验证（`JwtSigner`/`JwtVerifier`），验证策略（HS256、leeway、必需 exp/iat）集中于此；`SessionClaims` 仅含 `sub`（用户 UUID）/`iat`/`exp`/`jti`，profile 信息一律从数据库读取
 - **brier-api**：Axum 路由（auth/workspace/github 等）、全局状态、登录编排（何时/给谁签发）、HTTP 错误映射。`AppState.providers` 为 OAuth 提供方注册表（`HashMap<String, Arc<dyn OAuthProvider>>`），动态路由 `/api/auth/{provider}/login|callback` 从注册表分发，未注册的 provider 返回 404；`github_auth` 具体实例供 `/api/github/*` 特有 API 使用
@@ -112,4 +117,4 @@ apps/web/src/
 - 登录编排：`find_or_create_user_by_identity(provider, provider_uid, profile, token)`——已存在则更新资料与 `last_login_at`；不存在则在事务内创建 user + identity。
 - 迁移：`migrations/` 目录按序执行（`init` → `identity_split`），迁移文件列表化，后续 schema 变更新增 `m0003_*.sql` 并在 `migration.rs` 注册。
 
-GitHub 登录：`apps/server` → `brier-api::routes/auth::provider_login`（`/api/auth/{provider}/login` 从 `AppState.providers` 注册表分发）→ 跳转 GitHub 授权页 → callback 进入 `provider_callback` → `oauth_login`（统一编排：`OAuthProvider::exchange_code` → `fetch_identity`，返回 `ProviderIdentity`）→ `brier-database::repository`（find_or_create_user_by_identity：按 `(provider, provider_uid)` 查找/创建用户与身份，事务内完成）→ `brier-api` 构造 `SessionClaims`（`sub` = 用户 UUID）并交由 `brier-jwt::JwtSigner` 签发 → Set-Cookie（HttpOnly + SameSite=Lax，`cookie_secure` 为 true 时加 Secure）→ 后续 `/api/auth/me` 与 `current_user` 均用 `JwtVerifier` 验证后按 UUID 查库返回最新资料。
+GitHub 登录：`apps/server` → `brier-api::routes/auth::provider_login`（`/api/auth/{provider}/login` 从 `AppState.providers` 注册表分发）→ 跳转 GitHub 授权页 → callback 进入 `provider_callback` → `oauth_login`（统一编排：`OAuthProvider::exchange_code` → `fetch_identity`，返回 `ProviderIdentity`）→ `brier-user::repository`（find_or_create_user_by_identity：按 `(provider, provider_uid)` 查找/创建用户与身份，事务内完成）→ `brier-api` 构造 `SessionClaims`（`sub` = 用户 UUID）并交由 `brier-jwt::JwtSigner` 签发 → Set-Cookie（HttpOnly + SameSite=Lax，`cookie_secure` 为 true 时加 Secure）→ 后续 `/api/auth/me` 与 `current_user` 均用 `JwtVerifier` 验证后由 `brier-user::repository::find_user_by_id` 查库返回最新资料。

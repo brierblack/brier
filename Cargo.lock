@@ -326,6 +326,7 @@ dependencies = [
  "brier-github-auth",
  "brier-jwt",
  "brier-type",
+ "brier-user",
  "chrono",
  "cookie",
  "futures",
@@ -411,6 +412,19 @@ dependencies = [
  "brier-error",
  "chrono",
  "serde",
+ "uuid",
+]
+
+[[package]]
+name = "brier-user"
+version = "0.1.0"
+dependencies = [
+ "brier-error",
+ "brier-type",
+ "chrono",
+ "sea-orm",
+ "serde",
+ "serde_json",
  "uuid",
 ]
 

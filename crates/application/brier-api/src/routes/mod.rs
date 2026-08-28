@@ -25,7 +25,7 @@ pub(crate) async fn current_user(state: &AppState, headers: &HeaderMap) -> Resul
     let token = auth::get_token_from_headers(headers)
         .ok_or_else(|| ApiError(BrierError::Auth("not logged in".into())))?;
     let claims = state.jwt_verifier.verify(&token)?;
-    let user = brier_database::repository::find_user_by_id(&state.db, UserId(claims.sub))
+    let user = brier_user::repository::find_user_by_id(&state.db, UserId(claims.sub))
         .await?
         .ok_or_else(|| ApiError(BrierError::NotFound("user not found".into())))?;
     Ok(user)

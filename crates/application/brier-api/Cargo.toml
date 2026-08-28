@@ -10,6 +10,7 @@ brier-config.workspace = true
 brier-github-auth.workspace = true
 brier-database.workspace = true
 brier-type.workspace = true
+brier-user.workspace = true
 brier-jwt.workspace = true
 axum.workspace = true
 futures.workspace = true
