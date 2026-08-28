@@ -9,7 +9,7 @@ const DEFAULT_MENU_CLASS_NAMES =
 export interface DropdownProps extends AntdDropdownProps {}
 
 export const Dropdown = memo((props: DropdownProps) => {
-  const { popupRender, classNames, ...rest } = props;
+  const { popupRender, ...rest } = props;
   if (popupRender) {
     return (
       <AntdDropdown

@@ -18,8 +18,8 @@ import type { ColumnsType } from 'antd/es/table';
 import { Page, Table, Tag } from '@brierb/ui';
 import { agents, skills as allSkills } from '../../../../data/mockData';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
-import { STATUS_MAP, MODELS, SKILL_TYPE_MAP } from '../../../../define';
-import type { Agent, AgentStatus, Skill } from '../../../../types';
+import { MODELS, SKILL_TYPE_MAP } from '../../../../define';
+import type { Agent, Skill } from '../../../../types';
 import { useAuth } from '../../../../auth-context';
 import { StatusBadge } from '@/components/StatusBadge';
 
@@ -161,8 +161,6 @@ const OverviewTab = ({
   concurrency: number;
   setConcurrency: (v: number) => void;
 }) => {
-  const statusConfig = STATUS_MAP[agent.status as AgentStatus] ?? STATUS_MAP.offline;
-
   return (
     <div className="flex min-w-0 flex-1 gap-8 overflow-hidden px-4 py-3">
       <div className="w-[300px] min-w-0 shrink-0 overflow-auto rounded-xl border border-ghost">

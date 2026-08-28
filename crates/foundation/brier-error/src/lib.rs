@@ -30,7 +30,4 @@ pub enum BrierError {
 
     #[error(transparent)]
     Io(#[from] std::io::Error),
-
-    #[error(transparent)]
-    Db(#[from] sea_orm::DbErr),
 }

@@ -6,6 +6,16 @@ use crate::entity::{
     agent, agent_team, agent_team_member, user, work_computer, workspace, workspace_member,
 };
 
+pub trait DbErrExt {
+    fn to_brier(self) -> BrierError;
+}
+
+impl DbErrExt for sea_orm::DbErr {
+    fn to_brier(self) -> BrierError {
+        BrierError::Database(self.to_string())
+    }
+}
+
 fn parse_enum<T: serde::de::DeserializeOwned>(s: &str, label: &str) -> Result<T> {
     serde_json::from_value(serde_json::Value::String(s.to_string()))
         .map_err(|e| BrierError::Validation(format!("invalid {}: {} ({})", label, s, e)))

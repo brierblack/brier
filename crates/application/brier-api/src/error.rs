@@ -23,7 +23,6 @@ impl IntoResponse for ApiError {
             BrierError::NotFound(msg) => (StatusCode::NOT_FOUND, msg.clone()),
             BrierError::Validation(msg) => (StatusCode::BAD_REQUEST, msg.clone()),
             BrierError::Io(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
-            BrierError::Db(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
         };
         (status, Json(serde_json::json!({ "error": message }))).into_response()
     }

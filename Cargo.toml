@@ -1,13 +1,13 @@
 [workspace]
 members = [
     "apps/server",
-    "crates/brier-core",
-    "crates/brier-error",
-    "crates/brier-type",
-    "crates/brier-database",
-    "crates/brier-config",
-    "crates/brier-github-auth",
-    "crates/brier-api",
+    "crates/foundation/brier-error",
+    "crates/shared/brier-type",
+    "crates/shared/brier-config",
+    "crates/domain/brier-core",
+    "crates/infrastructure/brier-database",
+    "crates/infrastructure/brier-github-auth",
+    "crates/application/brier-api",
 ]
 resolver = "2"
 
@@ -16,13 +16,13 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace.dependencies]
-brier-core = { path = "crates/brier-core" }
-brier-error = { path = "crates/brier-error" }
-brier-type = { path = "crates/brier-type" }
-brier-database = { path = "crates/brier-database" }
-brier-config = { path = "crates/brier-config" }
-brier-github-auth = { path = "crates/brier-github-auth" }
-brier-api = { path = "crates/brier-api" }
+brier-error = { path = "crates/foundation/brier-error" }
+brier-type = { path = "crates/shared/brier-type" }
+brier-config = { path = "crates/shared/brier-config" }
+brier-core = { path = "crates/domain/brier-core" }
+brier-database = { path = "crates/infrastructure/brier-database" }
+brier-github-auth = { path = "crates/infrastructure/brier-github-auth" }
+brier-api = { path = "crates/application/brier-api" }
 axum = { version = "0.8", features = ["ws"] }
 futures = "0.3"
 tokio = { version = "1", features = ["full"] }
