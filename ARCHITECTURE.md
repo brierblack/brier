@@ -32,7 +32,7 @@ crates/
 ├── infrastructure/      # L3 基础设施层
 │   ├── brier-database/  # 持久化（非用户）：连接、迁移、workspace/agent/team 实体与仓储
 │   ├── brier-user/      # 用户上下文聚合包：users/user_identities 实体、转换、仓储、规则
-│   ├── brier-forge/     # 代码托管平台适配：GithubProvider（OAuth+仓库 API）、ProviderRegistry
+│   ├── brier-forge/     # 代码托管平台适配：github/gitee 厂商实现（OAuth+仓库 API）、ProviderRegistry
 │   └── brier-jwt/       # 会话令牌：签发/验证，验证策略集中（HS256）
 └── application/         # L4 应用层
     └── brier-api/       # HTTP 接口：路由、中间件、应用状态、登录编排
@@ -68,7 +68,7 @@ apps/
 - **brier-core**：领域状态与运行时对象——`tunnel::ConnectionRegistry`（实时连接注册表，`Arc<RwLock<HashMap>>` + mpsc，向已注册连接发送 `brier_type::tunnel::ServerMessage`）。与 brier-contract 同层且零依赖
 - **brier-database**：数据库连接、schema 迁移（全部表的 DDL，纯 SQL 集中管理），以及非用户实体的持久化——workspace/agent/team/work_computer 实体、转换与仓储。与 brier-user 零依赖
 - **brier-user**：用户上下文聚合包（自包含）。`users`/`user_identities` 两表的实体映射、entity ↔ `brier-type::User` 转换、`find_or_create_user_by_identity`/`find_user_by_id`/`get_provider_token` 等仓储函数、username 唯一化规则。不感知任何登录厂商，厂商仅作为 provider 字符串参数
-- **brier-forge**：代码托管平台适配层。`GithubProvider` 同时实现 `OAuthProvider` 与 `RepositoryProvider`（`provider_name`=`github`），封装 GitHub OAuth 授权、身份与仓库 API；`oauth_base`/`api_base` 可指向 mock server 以支持单元测试。`ProviderRegistry` 由 `AppConfig` 构建，按 provider 名分发认证与仓库两类能力；新增厂商（Gitee/GitLab…）实现两个 trait 后在 `from_config` 注册一行即可，brier-api 与前端零改动
+- **brier-forge**：代码托管平台适配层。`providers/github` 与 `providers/gitee` 各自实现 `OAuthProvider` 与 `RepositoryProvider`（封装 OAuth 授权、身份与仓库 API；`oauth_base`/`api_base` 可指向 mock server 以支持单元测试）。`ProviderRegistry` 由 `AppConfig` 构建，按 provider 名分发认证与仓库两类能力；新增厂商（GitLab…）实现两个 trait 后在 `from_config` 注册一行即可，brier-api 与前端零改动
 - **brier-jwt**：会话令牌的签发与验证（`JwtSigner`/`JwtVerifier`），验证策略（HS256、leeway、必需 exp/iat）集中于此；`SessionClaims` 仅含 `sub`（用户 UUID）/`iat`/`exp`/`jti`，profile 信息一律从数据库读取
 - **brier-api**：Axum 路由（auth/workspace/forge 等）、全局状态、登录编排（何时/给谁签发）、HTTP 错误映射。`AppState.providers` 为代码托管平台适配注册表（`brier_forge::ProviderRegistry`），动态路由 `/api/auth/{provider}/login|callback` 与 `/api/{provider}/repos` 均从注册表分发，未注册的 provider 返回 404；登录编排只依赖 `brier_contract::auth::OAuthProvider`，仓库 API 只依赖 `brier_contract::repo::RepositoryProvider`，实时连接状态来自 `brier_core::tunnel::ConnectionRegistry`，不感知具体厂商实现
 

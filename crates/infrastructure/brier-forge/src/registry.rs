@@ -6,6 +6,7 @@ use brier_contract::auth::OAuthProvider;
 use brier_contract::repo::RepositoryProvider;
 
 use crate::GithubProvider;
+use crate::providers::gitee::GiteeProvider;
 
 /// 代码托管平台适配器注册表。
 ///
@@ -27,18 +28,18 @@ impl ProviderRegistry {
         let mut auth: HashMap<String, Arc<dyn OAuthProvider>> = HashMap::new();
         let mut repositories: HashMap<String, Arc<dyn RepositoryProvider>> = HashMap::new();
 
-        // 已实现的厂商适配。github 必填（AppConfig 保证），其余按需追加。
+        // 已实现的厂商适配：一个 if 块一个厂商。配置存在才注册（brier-config 保证
+        // github 必填、其余三变量齐全才进 providers）。
         if let Some(cfg) = config.providers.get("github") {
             let provider = Arc::new(GithubProvider::new(cfg.clone()));
             auth.insert("github".to_string(), provider.clone());
             repositories.insert("github".to_string(), provider);
         }
-        // 示例：接入 Gitee 时
-        // if let Some(cfg) = config.providers.get("gitee") {
-        //     let provider = Arc::new(crate::gitee::GiteeProvider::new(cfg.clone()));
-        //     auth.insert("gitee".to_string(), provider.clone());
-        //     repositories.insert("gitee".to_string(), provider);
-        // }
+        if let Some(cfg) = config.providers.get("gitee") {
+            let provider = Arc::new(GiteeProvider::new(cfg.clone()));
+            auth.insert("gitee".to_string(), provider.clone());
+            repositories.insert("gitee".to_string(), provider);
+        }
 
         Self { auth, repositories }
     }
