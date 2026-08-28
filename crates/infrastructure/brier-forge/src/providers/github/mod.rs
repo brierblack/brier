@@ -132,3 +132,6 @@ impl RepositoryProvider for GithubProvider {
         Ok(repos)
     }
 }
+
+#[cfg(test)]
+mod tests;
