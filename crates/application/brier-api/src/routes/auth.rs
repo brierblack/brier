@@ -5,6 +5,7 @@ use axum::routing::get;
 use axum::Json;
 use axum::Router;
 use cookie::Cookie;
+use brier_core::auth::OAuthProvider;
 use brier_error::BrierError;
 use brier_jwt::{SessionClaims, SESSION_TTL_SECS};
 use brier_type::id::UserId;
@@ -52,30 +53,39 @@ pub fn router() -> Router<AppState> {
 }
 
 async fn github_login(State(state): State<AppState>) -> Redirect {
-    let url = state.github_auth.authorize_url();
-    Redirect::to(&url)
+    Redirect::to(&state.github_auth.authorize_url())
+}
+
+/// 统一 OAuth 登录编排：换码 → 取身份 → 查找/创建账户。
+/// 接入新 Provider（Gitee/GitLab 等）时复用本函数，无需重写登录流程。
+pub(crate) async fn oauth_login(
+    state: &AppState,
+    provider: &dyn OAuthProvider,
+    code: &str,
+) -> Result<User, ApiError> {
+    let access_token = provider.exchange_code(code).await?;
+    let identity = provider.fetch_identity(&access_token).await?;
+    let user = brier_database::repository::find_or_create_user_by_identity(
+        &state.db,
+        provider.provider_name(),
+        &identity.provider_uid,
+        &brier_database::repository::IdentityProfile {
+            username: &identity.username,
+            name: identity.name.as_deref(),
+            email: identity.email.as_deref(),
+            avatar_url: identity.avatar_url.as_deref(),
+        },
+        Some(&access_token),
+    )
+    .await?;
+    Ok(user)
 }
 
 async fn github_callback(
     State(state): State<AppState>,
     Query(params): Query<CallbackParams>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let access_token = state.github_auth.exchange_code(&params.code).await?;
-    let user = state.github_auth.get_user(&access_token).await?;
-
-    let user = brier_database::repository::find_or_create_user_by_identity(
-        &state.db,
-        "github",
-        &user.id.to_string(),
-        &brier_database::repository::IdentityProfile {
-            username: &user.login,
-            name: user.name.as_deref(),
-            email: user.email.as_deref(),
-            avatar_url: user.avatar_url.as_deref(),
-        },
-        Some(&access_token),
-    )
-    .await?;
+    let user = oauth_login(&state, &state.github_auth, &params.code).await?;
 
     let claims = SessionClaims::new(user.id.0)?;
     let jwt = state.jwt_signer.sign(&claims)?;

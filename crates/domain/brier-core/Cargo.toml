@@ -6,6 +6,7 @@ edition.workspace = true
 [dependencies]
 brier-error.workspace = true
 brier-type.workspace = true
+async-trait.workspace = true
 serde = { version = "1", features = ["derive"] }
 tokio.workspace = true
 tracing.workspace = true
