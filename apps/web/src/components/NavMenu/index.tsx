@@ -275,7 +275,7 @@ export const NavMenu = () => {
           </div>
         )}
         {!loading && !user && (
-          <Button block onClick={login} className="flex items-center gap-2">
+          <Button block onClick={() => login('github')} className="flex items-center gap-2">
             <GithubOutlined />
             GitHub 登录
           </Button>

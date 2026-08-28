@@ -1,11 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import type { UserInfo } from './types';
-import { fetchCurrentUser, loginWithGithub, logout as apiLogout } from './services/auth';
+import { fetchCurrentUser, loginWith, logout as apiLogout } from './services/auth';
 
 interface AuthContextValue {
   user: UserInfo | null;
   loading: boolean;
-  login: () => void;
+  /** 跳转指定 OAuth 提供方（github/gitee/...）的登录入口。 */
+  login: (provider: string) => void;
   logout: () => void;
 }
 
@@ -26,8 +27,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkAuth();
   }, [checkAuth]);
 
-  const login = useCallback(() => {
-    loginWithGithub();
+  const login = useCallback((provider: string) => {
+    loginWith(provider);
   }, []);
 
   const logout = useCallback(() => {

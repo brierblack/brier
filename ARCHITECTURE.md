@@ -43,19 +43,19 @@ apps/
 
 ### 2.3 依赖矩阵
 
-| crate             | 层  | 内部依赖                                             |
-| ----------------- | --- | ---------------------------------------------------- |
-| brier-error       | L0  | -                                                    |
-| brier-type        | L1  | brier-error                                          |
-| brier-config      | L1  | brier-error                                          |
-| brier-core        | L2  | brier-type                                        |
-| brier-contract    | L2  | brier-error                                       |
-| brier-database    | L3  | brier-error, brier-type                           |
-| brier-user        | L3  | brier-error, brier-type                           |
-| brier-forge       | L3  | brier-error, brier-config, brier-contract         |
-| brier-jwt         | L3  | brier-error                                          |
-| brier-api         | L4  | 全部下层                                             |
-| apps/server       | L5  | brier-api, brier-config, brier-database, brier-error |
+| crate          | 层  | 内部依赖                                             |
+| -------------- | --- | ---------------------------------------------------- |
+| brier-error    | L0  | -                                                    |
+| brier-type     | L1  | brier-error                                          |
+| brier-config   | L1  | brier-error                                          |
+| brier-core     | L2  | brier-type                                           |
+| brier-contract | L2  | brier-error                                          |
+| brier-database | L3  | brier-error, brier-type                              |
+| brier-user     | L3  | brier-error, brier-type                              |
+| brier-forge    | L3  | brier-error, brier-config, brier-contract            |
+| brier-jwt      | L3  | brier-error                                          |
+| brier-api      | L4  | 全部下层                                             |
+| apps/server    | L5  | brier-api, brier-config, brier-database, brier-error |
 
 > 注：`brier-database` 与 `brier-user` 同属 L3 且**互不依赖**（零依赖，实测验证）。
 

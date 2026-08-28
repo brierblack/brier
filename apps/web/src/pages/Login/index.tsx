@@ -59,6 +59,28 @@ const GitHubIcon = ({ className }: { className?: string }) => {
   );
 };
 
+const GiteeIcon = ({ className }: { className?: string }) => {
+  return (
+    <svg className={className} viewBox="0 0 16 16" width="20" height="20">
+      <circle cx="8" cy="8" r="8" fill="#c71d23" />
+      <path
+        d="M4.6 8.1a3.5 3.5 0 0 1 7 0"
+        stroke="#fff"
+        strokeWidth="1.5"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <circle cx="8" cy="8.1" r="1" fill="#fff" />
+    </svg>
+  );
+};
+
+/** 可用的 OAuth 登录提供方。新增厂商（gitlab 等）时在此追加一项。 */
+const PROVIDERS = [
+  { key: 'github', label: 'GitHub', icon: <GitHubIcon /> },
+  { key: 'gitee', label: 'Gitee', icon: <GiteeIcon /> },
+] as const;
+
 const FEATURES = [
   { icon: '🤖', title: '多 Agent 协作', desc: '编排 Agent 团队，自动化复杂工作流' },
   { icon: '💻', title: '工作电脑直连', desc: '连接本地或远程机器，实时执行任务' },
@@ -216,16 +238,21 @@ const Login = () => {
                 <p className="text-standard text-white/45">登录你的账户，继续工作</p>
               </div>
 
-              <Button
-                block
-                size="large"
-                className="!h-12 !rounded-xl !border-white !bg-white font-medium !text-[#1f2328] hover:!border-white/90 hover:!bg-white/90"
-                icon={<GitHubIcon />}
-                iconPosition="start"
-                onClick={login}
-              >
-                使用 GitHub 登录
-              </Button>
+              <div className="space-y-3">
+                {PROVIDERS.map((p) => (
+                  <Button
+                    key={p.key}
+                    block
+                    size="large"
+                    className="!h-12 !rounded-xl !border-white !bg-white font-medium !text-[#1f2328] hover:!border-white/90 hover:!bg-white/90"
+                    icon={p.icon}
+                    iconPosition="start"
+                    onClick={() => login(p.key)}
+                  >
+                    使用 {p.label} 登录
+                  </Button>
+                ))}
+              </div>
 
               <div className="my-5 flex items-center gap-3">
                 <div className="h-px flex-1 bg-white/8" />

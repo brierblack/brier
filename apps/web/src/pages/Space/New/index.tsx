@@ -10,7 +10,7 @@ import {
   CheckOutlined,
 } from '@ant-design/icons';
 import { createWorkspace } from '../../../services/workspace';
-import { fetchGithubRepos, type RepoInfo } from '../../../services/github';
+import { fetchRepos, type RepoInfo } from '../../../services/repos';
 
 const STEPS = [{ title: '基础信息' }, { title: '指令' }, { title: '自动化' }];
 
@@ -47,7 +47,7 @@ const New = () => {
   const handleBack = () => navigate(-1);
 
   useEffect(() => {
-    fetchGithubRepos()
+    fetchRepos('github')
       .then(setRepos)
       .catch(() => {});
   }, []);

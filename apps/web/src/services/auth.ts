@@ -6,12 +6,9 @@ export const fetchCurrentUser = async (): Promise<UserInfo | null> => {
   return res.json();
 };
 
+/** 跳转指定 OAuth 提供方（github/gitee/...）的登录入口。 */
 export function loginWith(provider: string): void {
   window.location.href = `/api/auth/${provider}/login`;
-}
-
-export function loginWithGithub(): void {
-  loginWith('github');
 }
 
 export function logout(): void {
