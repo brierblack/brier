@@ -1,6 +1,7 @@
 export { Button } from './components/Button';
 export { Card } from './components/Card';
 export { Drawer } from './components/Drawer';
+export { Dropdown } from './components/Dropdown';
 export { Modal } from './components/Modal';
 export { Page } from './components/Page';
 export { Resizable, DragLine } from './components/Resizable';

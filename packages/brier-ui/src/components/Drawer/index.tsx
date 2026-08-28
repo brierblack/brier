@@ -1,3 +1,4 @@
+import { obj } from '@/utils';
 import { Drawer as AntdDrawer, type DrawerProps as AntdDrawerProps } from 'antd';
 import { memo, useMemo } from 'react';
 
@@ -8,7 +9,7 @@ const DEFAULT_CLASS_NAMES = {
 export interface DrawerProps extends AntdDrawerProps {}
 
 export const Drawer = memo((props: DrawerProps) => {
-  const { classNames = {}, ...rest } = props;
+  const { classNames = obj, ...rest } = props;
   const cns = useMemo(() => {
     return {
       ...DEFAULT_CLASS_NAMES,

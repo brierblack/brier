@@ -1,3 +1,4 @@
+import { obj } from '@/utils';
 import { Modal as AntdModal, type ModalProps as AntdModalProps } from 'antd';
 import { memo, useMemo } from 'react';
 
@@ -12,7 +13,7 @@ const DEFAULT_CLASS_NAMES = {
 export interface ModalProps extends AntdModalProps {}
 
 export const Modal = memo((props: ModalProps) => {
-  const { classNames = {}, ...rest } = props;
+  const { classNames = obj, ...rest } = props;
   const cns = useMemo(() => {
     return { ...DEFAULT_CLASS_NAMES, ...classNames };
   }, [classNames]);

@@ -1,5 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { Table as AntdTable, type TableProps as AntdTableProps } from 'antd';
+import { obj } from '@/utils';
 
 const DEFAULT_CLASS_NAMES = {
   root: ' !bg-transparent !border-t !border-x !border-ghost rounded-t-md',
@@ -8,7 +9,7 @@ const DEFAULT_CLASS_NAMES = {
 type TableComponent = <T extends object = any>(props: AntdTableProps<T>) => React.ReactNode;
 
 export const Table: TableComponent = memo((props) => {
-  const { bordered, classNames = {}, ...args } = props;
+  const { bordered, classNames = obj, ...args } = props;
   const cns = useMemo(() => {
     if (bordered) {
       return {

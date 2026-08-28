@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Input, Dropdown, type MenuProps } from 'antd';
-import { Button, Page, Select, Table } from '@brierb/brier-ui';
+import { Input, type MenuProps } from 'antd';
+import { Button, Page, Select, Table, Dropdown } from '@brierb/brier-ui';
 import {
   PlusOutlined,
   SearchOutlined,

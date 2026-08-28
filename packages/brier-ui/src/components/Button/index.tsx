@@ -1,5 +1,6 @@
 import { memo, useMemo } from 'react';
 import { Button as AntdButton, type ButtonProps as AntdButtonProps } from 'antd';
+import { obj } from '../../utils';
 
 const DEFAULT_CLASS_NAMES = {
   root: ' hover:bg-surface-hover! active:!bg-surface-hover!',
@@ -11,7 +12,7 @@ export interface ButtonProps extends AntdButtonProps {
 }
 
 export const Button = memo((props: ButtonProps) => {
-  const { type, selected = false, bordered = true, classNames = {}, ...rest } = props;
+  const { type, selected = false, bordered = true, classNames = obj, ...rest } = props;
   const composeType = useMemo(() => {
     if (type === 'primary') {
       return 'primary';

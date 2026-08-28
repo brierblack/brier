@@ -1,5 +1,8 @@
-import { memo, cloneElement } from 'react';
+import { memo, cloneElement, useMemo } from 'react';
 import { Dropdown as AntdDropdown, type DropdownProps as AntdDropdownProps } from 'antd';
+import { obj } from '@/utils';
+
+const DEFAULT_CLASS_NAMES = { root: ' rounded-lg! border! border-ghost!' };
 
 const DEFAULT_POPUP_CLASS_NAMES = ' bg-canvas! shadow-none! rounded-lg! border! border-ghost!';
 const DEFAULT_SUB_POPUP_CLASS_NAMES = ' bg-canvas! shadow-none! rounded-lg! border! border-ghost!';
@@ -9,7 +12,15 @@ const DEFAULT_MENU_CLASS_NAMES =
 export interface DropdownProps extends AntdDropdownProps {}
 
 export const Dropdown = memo((props: DropdownProps) => {
-  const { popupRender, ...rest } = props;
+  const { popupRender, classNames = obj, ...rest } = props;
+
+  const cns = useMemo(() => {
+    return {
+      ...DEFAULT_CLASS_NAMES,
+      ...classNames,
+    };
+  }, [classNames]);
+
   if (popupRender) {
     return (
       <AntdDropdown
@@ -38,5 +49,5 @@ export const Dropdown = memo((props: DropdownProps) => {
       />
     );
   }
-  return <AntdDropdown {...rest} />;
+  return <AntdDropdown classNames={cns} {...rest} />;
 });
