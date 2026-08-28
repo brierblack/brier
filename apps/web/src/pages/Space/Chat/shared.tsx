@@ -1,5 +1,5 @@
-import { Avatar, Dropdown, Input } from 'antd';
-import { Button } from '@brierb/brier-ui';
+import { Avatar, Input } from 'antd';
+import { Button, Dropdown } from '@brierb/brier-ui';
 import { ArrowUpOutlined, DownOutlined, CheckOutlined } from '@ant-design/icons';
 import { agents } from '../../../data/mockData';
 import { useAuth } from '../../../auth-context';

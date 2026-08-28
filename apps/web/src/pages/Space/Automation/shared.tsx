@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
-import { Dropdown, Select, type MenuProps } from 'antd';
+import { Select, type MenuProps } from 'antd';
 import {
   ClockCircleOutlined,
   GithubOutlined,
@@ -14,6 +14,7 @@ import {
   CheckOutlined,
 } from '@ant-design/icons';
 import { agents } from '../../../data/mockData';
+import { Dropdown } from '@brierb/brier-ui';
 
 export type TriggerType = 'timer' | 'github_push' | 'github_pullrequest' | 'github_comments';
 export type ActionType = 'invoke_agent' | 'create_agent_task';
