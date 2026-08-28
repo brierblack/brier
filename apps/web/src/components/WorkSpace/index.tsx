@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useState } from 'react';
-import { Button, Select } from '@brierb/ui';
+import { Button, Select } from '@brierb/brier-ui';
 import { PlusOutlined, SwapOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { Workspace } from '@/types';

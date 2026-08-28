@@ -1,5 +1,5 @@
 import { Spin } from 'antd';
-import { Button } from '@brierb/ui';
+import { Button } from '@brierb/brier-ui';
 import { useAuth } from '../../auth-context';
 
 const BrierLogo = ({ size = 48 }: { size?: number }) => {

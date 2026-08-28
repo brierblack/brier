@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { App } from 'antd';
-import { Button, Page } from '@brierb/ui';
+import { Button, Page } from '@brierb/brier-ui';
 import {
   PlusOutlined,
   SettingOutlined,

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Avatar, Input, InputNumber, Menu } from 'antd';
-import { Button, Select } from '@brierb/ui';
+import { Button, Select } from '@brierb/brier-ui';
 import type { MenuProps } from 'antd';
 import {
   AppstoreOutlined,
@@ -15,7 +15,7 @@ import {
   ToolOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { Page, Table, Tag } from '@brierb/ui';
+import { Page, Table, Tag } from '@brierb/brier-ui';
 import { agents, skills as allSkills } from '../../../../data/mockData';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { MODELS, SKILL_TYPE_MAP } from '../../../../define';

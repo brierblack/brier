@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { App, Tag } from 'antd';
-import { Button, Page } from '@brierb/ui';
+import { Button, Page } from '@brierb/brier-ui';
 import {
   ArrowLeftOutlined,
   ShareAltOutlined,

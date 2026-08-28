@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Form, Input, Menu, Select, Switch, Upload } from 'antd';
-import { Button } from '@brierb/ui';
+import { Button } from '@brierb/brier-ui';
 import {
   PlusOutlined,
   UserOutlined,
@@ -9,7 +9,7 @@ import {
   ToolOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons';
-import { Page, Tag } from '@brierb/ui';
+import { Page, Tag } from '@brierb/brier-ui';
 import { skills } from '../../../data/mockData';
 import { SKILL_TYPE_MAP } from '../../../define';
 

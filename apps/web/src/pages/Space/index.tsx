@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { NavMenu } from '../../components/NavMenu';
-import { Resizable, DragLine } from '@brierb/ui';
+import { Resizable, DragLine } from '@brierb/brier-ui';
 
 export const Layout = () => {
   return (

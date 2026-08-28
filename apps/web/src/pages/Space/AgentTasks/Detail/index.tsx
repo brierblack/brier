@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { App, Input } from 'antd';
-import { Button, Page, Tag } from '@brierb/ui';
+import { Button, Page, Tag } from '@brierb/brier-ui';
 import {
   ArrowLeftOutlined,
   CheckOutlined,

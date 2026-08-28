@@ -41,9 +41,9 @@ importers:
       '@ant-design/icons':
         specifier: ^6.3.2
         version: 6.3.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@brierb/ui':
+      '@brierb/brier-ui':
         specifier: workspace:*
-        version: link:../../packages/ui
+        version: link:../../packages/brier-ui
       antd:
         specifier: ^6.6.0
         version: 6.6.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -85,7 +85,7 @@ importers:
         specifier: ^8.2.1
         version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)
 
-  packages/cli:
+  packages/brier-cli:
     dependencies:
       commander:
         specifier: ^12.1.0
@@ -104,7 +104,7 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
 
-  packages/ui:
+  packages/brier-ui:
     devDependencies:
       '@ant-design/icons':
         specifier: ^6.3.2

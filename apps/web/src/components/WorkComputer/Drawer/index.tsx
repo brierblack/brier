@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { App, Space } from 'antd';
-import { Button } from '@brierb/ui';
+import { Button } from '@brierb/brier-ui';
 import { DesktopOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
-import { Drawer } from '@brierb/ui';
+import { Drawer } from '@brierb/brier-ui';
 import { backendServices, computerAgents, workComputers } from '@/data/mockData';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AddComputerModal } from '../AddModal';
@@ -42,7 +42,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
 
   const commands = useMemo(
     () => ({
-      install: 'npm install -g @brierb/cli@latest',
+      install: 'npm install -g @brierb/brier-cli@latest',
       start: `BRIER_TOKEN='${selectedComputer.hostname}-token' brier daemon start --server-url https://brier.local`,
       stop: 'brier daemon stop',
       restart: 'brier daemon restart',

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App } from 'antd';
-import { Button } from '@brierb/ui';
+import { Button } from '@brierb/brier-ui';
 import {
   AutomationConfigPanel,
   type TriggerType,

@@ -1,10 +1,10 @@
 # Build artifacts
 target/
 apps/web/dist/
-packages/ui/dist/
-packages/ui/types/
-packages/cli/dist/
-packages/cli/types/
+packages/brier-ui/dist/
+packages/brier-ui/types/
+packages/brier-cli/dist/
+packages/brier-cli/types/
 **/node_modules/
 
 # pnpm store

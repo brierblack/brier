@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Avatar, Menu, type MenuProps } from 'antd';
-import { Button, Select } from '@brierb/ui';
+import { Button, Select } from '@brierb/brier-ui';
 
 import {
   GithubOutlined,

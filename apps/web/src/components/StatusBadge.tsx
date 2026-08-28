@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Tag } from '@brierb/ui';
+import { Tag } from '@brierb/brier-ui';
 import { WifiOutlined, SyncOutlined, DisconnectOutlined } from '@ant-design/icons';
 import { STATUS_MAP } from '../define';
 import type { AgentStatus } from '../types';

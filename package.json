@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter @brierb/web dev",
-    "build": "pnpm --filter @brierb/ui build && pnpm --filter @brierb/cli build && pnpm --filter @brierb/web build",
+    "build": "pnpm --filter @brierb/brier-ui build && pnpm --filter @brierb/brier-cli build && pnpm --filter @brierb/web build",
     "preview": "pnpm --filter @brierb/web preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

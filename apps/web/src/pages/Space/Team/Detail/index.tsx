@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Input, Segmented, Tooltip } from 'antd';
-import { Button } from '@brierb/ui';
+import { Button } from '@brierb/brier-ui';
 import {
   PlusOutlined,
   LockOutlined,
@@ -14,7 +14,7 @@ import {
   CrownOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
-import { Page, Tag } from '@brierb/ui';
+import { Page, Tag } from '@brierb/brier-ui';
 import { teams } from '../../../../data/mockData';
 
 interface MemberDetail {

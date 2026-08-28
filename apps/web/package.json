@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.2",
-    "@brierb/ui": "workspace:*",
+    "@brierb/brier-ui": "workspace:*",
     "antd": "^6.6.0",
     "react": "^19.2.8",
     "react-dnd": "^16.0.1",

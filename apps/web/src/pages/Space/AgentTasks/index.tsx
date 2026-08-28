@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App, Segmented, Input } from 'antd';
-import { Button, Page, Tag } from '@brierb/ui';
+import { Button, Page, Tag } from '@brierb/brier-ui';
 import {
   PlusOutlined,
   SearchOutlined,

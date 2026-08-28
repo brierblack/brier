@@ -4,7 +4,7 @@
 
 Brier 是一个前后端分离的工作空间平台，提供 AI Agent 管理、Agent 团队协作、技能市场、自动化任务与实时聊天能力。
 
-- **前端**：React 19 + TypeScript + Vite（`apps/web`），Ant Design v6 + Tailwind CSS v4，组件库位于 `packages/ui`（`@brierb/ui`）
+- **前端**：React 19 + TypeScript + Vite（`apps/web`），Ant Design v6 + Tailwind CSS v4，组件库位于 `packages/brier-ui`（`@brierb/brier-ui`）
 - **后端**：Rust + Axum（`apps/server` 二进制 + `crates/*` 分层库）
 - **包管理**：pnpm workspace（前端）+ Cargo workspace（后端）
 

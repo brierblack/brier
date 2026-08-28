@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { App, Collapse } from 'antd';
-import { Button } from '@brierb/ui';
+import { Button } from '@brierb/brier-ui';
 import type { CollapseProps } from 'antd';
 import { CopyOutlined, DownOutlined, RobotOutlined } from '@ant-design/icons';
-import { Modal } from '@brierb/ui';
+import { Modal } from '@brierb/brier-ui';
 
 interface AddComputerModalProps {
   open: boolean;
@@ -14,7 +14,7 @@ const PROMPT_CONTENT = `请帮我在本机接入 Brier 远程编码池，分两�
 
 【1. 安装 brier CLI】
 - 先确认 Node.js 已装（无则用 nvm 安装 LTS）
-- 执行：npm install -g @brierb/cli@latest
+- 执行：npm install -g @brierb/brier-cli@latest
 - 如 brier 已安装，请升级到 latest
 
 【2. 启动后台服务】
@@ -36,7 +36,7 @@ const MANUAL_ITEMS: CollapseProps['items'] = [
         <div>
           <div className="mb-1 text-xs">1. 安装 brier CLI</div>
           <div className="rounded bg-[#f5f5f5] px-3 py-2">
-            <code className="font-mono text-standard">npm install -g @brierb/cli@latest</code>
+            <code className="font-mono text-standard">npm install -g @brierb/brier-cli@latest</code>
           </div>
         </div>
         <div>

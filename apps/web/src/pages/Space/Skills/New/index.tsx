@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input, Select, Radio, Upload, type UploadProps, App } from 'antd';
-import { Button } from '@brierb/ui';
-import { Page } from '@brierb/ui';
+import { Button } from '@brierb/brier-ui';
+import { Page } from '@brierb/brier-ui';
 import { InboxOutlined, BulbOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 
 const { Dragger } = Upload;

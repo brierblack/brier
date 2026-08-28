@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { RightOutlined } from '@ant-design/icons';
-import { Card } from '@brierb/ui';
+import { Card } from '@brierb/brier-ui';
 import type { ComputerAgent } from '@/types';
 
 interface AgentListCardProps {

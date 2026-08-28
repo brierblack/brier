@@ -1,7 +1,7 @@
 import { memo } from 'react';
-import { Button } from '@brierb/ui';
+import { Button } from '@brierb/brier-ui';
 import { ArrowUpOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { Card, Tag } from '@brierb/ui';
+import { Card, Tag } from '@brierb/brier-ui';
 
 interface ServiceUpgradeCardProps {
   version?: string;

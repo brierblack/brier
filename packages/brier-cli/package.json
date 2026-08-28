@@ -1,5 +1,5 @@
 {
-  "name": "@brierb/cli",
+  "name": "@brierb/brier-cli",
   "version": "0.0.1",
   "type": "module",
   "bin": {

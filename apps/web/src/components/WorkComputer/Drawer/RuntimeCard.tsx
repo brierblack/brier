@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Card, Tag } from '@brierb/ui';
+import { Card, Tag } from '@brierb/brier-ui';
 import { RuntimeIcon } from '../../RuntimeIcon';
 
 interface RuntimeCardProps {

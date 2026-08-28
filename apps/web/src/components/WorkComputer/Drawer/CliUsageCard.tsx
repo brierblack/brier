@@ -1,9 +1,9 @@
 import { memo, useState } from 'react';
 import { App, Collapse, Alert, Typography } from 'antd';
-import { Button } from '@brierb/ui';
+import { Button } from '@brierb/brier-ui';
 import type { CollapseProps } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
-import { Card, Tag } from '@brierb/ui';
+import { Card, Tag } from '@brierb/brier-ui';
 
 const { Link } = Typography;
 

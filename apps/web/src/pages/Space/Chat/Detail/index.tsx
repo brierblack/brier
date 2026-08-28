@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Button, Page } from '@brierb/ui';
+import { Button, Page } from '@brierb/brier-ui';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useAuth } from '../../../../auth-context';
 import { getConversationById, type ChatMessage } from '../conversations';
