@@ -16,7 +16,7 @@ impl IntoResponse for ApiError {
         let (status, message) = match &self.0 {
             BrierError::Config(msg) => (StatusCode::INTERNAL_SERVER_ERROR, msg.clone()),
             BrierError::Auth(msg) => (StatusCode::UNAUTHORIZED, msg.clone()),
-            BrierError::GithubApi(msg) => (StatusCode::BAD_GATEWAY, msg.clone()),
+            BrierError::Provider(msg) => (StatusCode::BAD_GATEWAY, msg.clone()),
             BrierError::Jwt(msg) => (StatusCode::UNAUTHORIZED, msg.clone()),
             BrierError::Server(msg) => (StatusCode::INTERNAL_SERVER_ERROR, msg.clone()),
             BrierError::Database(msg) => (StatusCode::INTERNAL_SERVER_ERROR, msg.clone()),

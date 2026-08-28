@@ -44,12 +44,12 @@ impl GithubAuth {
             }))
             .send()
             .await
-            .map_err(|e| BrierError::GithubApi(e.to_string()))?;
+            .map_err(|e| BrierError::Provider(e.to_string()))?;
 
         let body: serde_json::Value = resp
             .json()
             .await
-            .map_err(|e| BrierError::GithubApi(e.to_string()))?;
+            .map_err(|e| BrierError::Provider(e.to_string()))?;
 
         body["access_token"]
             .as_str()
@@ -65,12 +65,12 @@ impl GithubAuth {
             .header("User-Agent", "brier")
             .send()
             .await
-            .map_err(|e| BrierError::GithubApi(e.to_string()))?;
+            .map_err(|e| BrierError::Provider(e.to_string()))?;
 
         let body: serde_json::Value = resp
             .json()
             .await
-            .map_err(|e| BrierError::GithubApi(e.to_string()))?;
+            .map_err(|e| BrierError::Provider(e.to_string()))?;
 
         Ok(UserInfo {
             id: body["id"].as_u64().unwrap_or(0),
@@ -90,12 +90,12 @@ impl GithubAuth {
             .header("Accept", "application/vnd.github+json")
             .send()
             .await
-            .map_err(|e| BrierError::GithubApi(e.to_string()))?;
+            .map_err(|e| BrierError::Provider(e.to_string()))?;
 
         let repos: Vec<RepoInfo> = resp
             .json()
             .await
-            .map_err(|e| BrierError::GithubApi(e.to_string()))?;
+            .map_err(|e| BrierError::Provider(e.to_string()))?;
 
         Ok(repos)
     }

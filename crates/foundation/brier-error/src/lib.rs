@@ -10,8 +10,8 @@ pub enum BrierError {
     #[error("auth error: {0}")]
     Auth(String),
 
-    #[error("github api error: {0}")]
-    GithubApi(String),
+    #[error("provider api error: {0}")]
+    Provider(String),
 
     #[error("jwt error: {0}")]
     Jwt(String),

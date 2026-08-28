@@ -53,7 +53,7 @@ apps/
 
 ### 2.4 各 crate 职责
 
-- **brier-error**：统一错误枚举（Config/Auth/GithubApi/Jwt/Server/Database/NotFound/Validation/Io）。错误层不依赖任何业务 crate 与 ORM；数据库错误的转换由 `brier-database` 通过本地 trait `DbErrExt::to_brier` 显式完成
+- **brier-error**：统一错误枚举（Config/Auth/Provider/Jwt/Server/Database/NotFound/Validation/Io）。`Auth` 表示认证流程失败，`Provider` 表示外部 Provider（GitHub 等）API 通信失败，与具体厂商解耦。错误层不依赖任何业务 crate 与 ORM；数据库错误的转换由 `brier-database` 通过本地 trait `DbErrExt::to_brier` 显式完成
 - **brier-type**：纯数据类型与领域枚举（含 `tunnel::ServerMessage`），跨层共享，无副作用
 - **brier-config**：环境配置读取与校验
 - **brier-core**：领域抽象与状态持有——`auth::UserInfo`/`AuthProvider` trait、`tunnel::ConnectionRegistry`（实时连接注册表）
