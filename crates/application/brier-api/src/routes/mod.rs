@@ -1,5 +1,5 @@
 mod auth;
-mod github;
+mod forge;
 mod tunnel;
 mod workspace;
 
@@ -17,7 +17,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .nest("/api/auth", auth::router())
         .nest("/api/workspaces", workspace::router())
-        .nest("/api/github", github::router())
+        .route("/api/{provider}/repos", get(forge::list_repos))
         .route("/tunnel", get(tunnel::tunnel_handler))
 }
 

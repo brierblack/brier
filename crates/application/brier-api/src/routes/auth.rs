@@ -63,7 +63,7 @@ async fn provider_login(
 ) -> Result<Redirect, ApiError> {
     let provider = state
         .providers
-        .get(&provider)
+        .get_auth(&provider)
         .ok_or_else(|| ApiError(BrierError::NotFound(format!("unknown provider: {provider}"))))?;
     Ok(Redirect::to(&provider.authorize_url()))
 }
@@ -100,7 +100,7 @@ async fn provider_callback(
 ) -> Result<impl IntoResponse, ApiError> {
     let provider_obj = state
         .providers
-        .get(&provider)
+        .get_auth(&provider)
         .ok_or_else(|| ApiError(BrierError::NotFound(format!("unknown provider: {provider}"))))?;
     let user = oauth_login(&state, provider_obj.as_ref(), &params.code).await?;
 

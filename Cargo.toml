@@ -6,7 +6,7 @@ members = [
     "crates/primitives/brier-config",
     "crates/domain/brier-core",
     "crates/infrastructure/brier-database",
-    "crates/infrastructure/brier-github-auth",
+    "crates/infrastructure/brier-forge",
     "crates/infrastructure/brier-jwt",
     "crates/infrastructure/brier-user",
     "crates/application/brier-api",
@@ -23,7 +23,7 @@ brier-type = { path = "crates/primitives/brier-type" }
 brier-config = { path = "crates/primitives/brier-config" }
 brier-core = { path = "crates/domain/brier-core" }
 brier-database = { path = "crates/infrastructure/brier-database" }
-brier-github-auth = { path = "crates/infrastructure/brier-github-auth" }
+brier-forge = { path = "crates/infrastructure/brier-forge" }
 brier-jwt = { path = "crates/infrastructure/brier-jwt" }
 brier-user = { path = "crates/infrastructure/brier-user" }
 brier-api = { path = "crates/application/brier-api" }

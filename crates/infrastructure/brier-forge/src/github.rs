@@ -1,18 +1,12 @@
 use async_trait::async_trait;
 use brier_config::OAuthConfig;
 use brier_core::auth::{OAuthProvider, ProviderIdentity};
+use brier_core::repo::{RepoInfo, RepositoryProvider};
 use brier_error::{BrierError, Result};
-use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RepoInfo {
-    pub full_name: String,
-    pub name: String,
-    pub private: bool,
-}
-
+/// GitHub 厂商适配：同时实现登录认证（`OAuthProvider`）与仓库 API（`RepositoryProvider`）。
 #[derive(Clone)]
-pub struct GithubAuth {
+pub struct GithubProvider {
     config: OAuthConfig,
     client: reqwest::Client,
     /// OAuth 授权/令牌端点，默认 https://github.com，测试可指向 mock server。
@@ -21,7 +15,7 @@ pub struct GithubAuth {
     api_base: String,
 }
 
-impl GithubAuth {
+impl GithubProvider {
     pub fn new(config: OAuthConfig) -> Self {
         Self {
             config,
@@ -33,7 +27,7 @@ impl GithubAuth {
 
     /// 测试用：所有端点指向 mock server。
     #[cfg(test)]
-    fn with_mock_base(config: OAuthConfig, base: &str) -> Self {
+    pub(crate) fn with_mock_base(config: OAuthConfig, base: &str) -> Self {
         Self {
             config,
             client: reqwest::Client::new(),
@@ -41,31 +35,10 @@ impl GithubAuth {
             api_base: base.to_string(),
         }
     }
-
-    /// GitHub 仓库列表（非认证能力，OAuth 之外的特有 API 客户端方法）。
-    pub async fn list_repos(&self, access_token: &str) -> Result<Vec<RepoInfo>> {
-        let resp = self
-            .client
-            .get(format!("{}/user/repos", self.api_base))
-            .query(&[("per_page", "100"), ("sort", "updated"), ("direction", "desc")])
-            .header("Authorization", format!("Bearer {access_token}"))
-            .header("User-Agent", "brier")
-            .header("Accept", "application/vnd.github+json")
-            .send()
-            .await
-            .map_err(|e| BrierError::Provider(e.to_string()))?;
-
-        let repos: Vec<RepoInfo> = resp
-            .json()
-            .await
-            .map_err(|e| BrierError::Provider(e.to_string()))?;
-
-        Ok(repos)
-    }
 }
 
 #[async_trait]
-impl OAuthProvider for GithubAuth {
+impl OAuthProvider for GithubProvider {
     fn provider_name(&self) -> &str {
         "github"
     }
@@ -133,5 +106,29 @@ impl OAuthProvider for GithubAuth {
     }
 }
 
-#[cfg(test)]
-mod lib_tests;
+#[async_trait]
+impl RepositoryProvider for GithubProvider {
+    fn provider_name(&self) -> &str {
+        "github"
+    }
+
+    async fn list_repos(&self, access_token: &str) -> Result<Vec<RepoInfo>> {
+        let resp = self
+            .client
+            .get(format!("{}/user/repos", self.api_base))
+            .query(&[("per_page", "100"), ("sort", "updated"), ("direction", "desc")])
+            .header("Authorization", format!("Bearer {access_token}"))
+            .header("User-Agent", "brier")
+            .header("Accept", "application/vnd.github+json")
+            .send()
+            .await
+            .map_err(|e| BrierError::Provider(e.to_string()))?;
+
+        let repos: Vec<RepoInfo> = resp
+            .json()
+            .await
+            .map_err(|e| BrierError::Provider(e.to_string()))?;
+
+        Ok(repos)
+    }
+}
