@@ -186,7 +186,7 @@ export const NavMenu = () => {
   return (
     <div className="flex h-full flex-col pr-2">
       <div className="flex shrink-0 items-center gap-1 px-1">
-        <Logo className="h-10 w-10 shrink-0" />
+        <Logo className="h-6 w-6 shrink-0" />
         <Wordmark className="text-[20px] tracking-tight whitespace-nowrap" />
       </div>
 

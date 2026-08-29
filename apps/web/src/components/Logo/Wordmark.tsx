@@ -38,13 +38,13 @@ export const Wordmark = memo(({ className, style }: WordmarkProps) => {
           alignItems: 'center',
           justifyContent: 'center',
           verticalAlign: '0.5em',
-          marginLeft: '0.08em',
           width: '1em',
           height: '1em',
           fontSize: '0.52em',
           borderRadius: '9999px',
           background: '#0f172b',
           color: '#fff',
+          transform: 'translate(0.25em, -0.25em)',
         }}
       >
         <span
