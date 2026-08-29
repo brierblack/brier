@@ -10,11 +10,11 @@ export default defineConfig({
       targets: [
         {
           src: 'assets/*',
-          dest: 'dist/assets',
+          dest: 'es/assets',
         },
         {
           src: 'src/tailwind.css',
-          dest: 'dist',
+          dest: 'es',
         },
       ],
       hook: 'writeBundle',
@@ -29,18 +29,24 @@ export default defineConfig({
     lib: {
       entry: resolve(import.meta.dirname, 'src/index.ts'),
       formats: ['es'],
-      fileName: 'index',
     },
     rollupOptions: {
       external: [
         '@ant-design/icons',
         'antd',
+        'antd/locale/zh_CN',
         'react',
         'react-dom',
         'react/jsx-runtime',
         'react-dnd',
         'react-dnd-html5-backend',
       ],
+      output: {
+        dir: 'es',
+        preserveModules: true,
+        preserveModulesRoot: 'src',
+        entryFileNames: '[name].js',
+      },
     },
   },
 });

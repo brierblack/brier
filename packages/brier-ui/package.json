@@ -5,10 +5,10 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "import": "./es/index.js",
       "types": "./types/index.d.ts"
     },
-    "./tailwind.css": "./dist/tailwind.css"
+    "./tailwind.css": "./es/tailwind.css"
   },
   "files": [
     "dist",
