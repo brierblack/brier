@@ -1,54 +1,10 @@
 import { Spin } from 'antd';
 import { Button } from '@brierb/brier-ui';
 import { useAuth } from '../../auth-context';
+import { Logo } from '@/components/Logo';
 
 const BrierLogo = ({ size = 48 }: { size?: number }) => {
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
-      <defs>
-        <linearGradient
-          id="logoGrad"
-          x1="0"
-          y1="0"
-          x2="100"
-          y2="100"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop offset="0%" stopColor="#22d3ee" />
-          <stop offset="20%" stopColor="#3b82f6" />
-          <stop offset="50%" stopColor="#a855f7" />
-          <stop offset="78%" stopColor="#d946ef" />
-          <stop offset="100%" stopColor="#ec4899" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M50 32 L66 41.5 L66 59.5 L50 69 L34 59.5 L34 41.5 Z"
-        fill="none"
-        stroke="url(#logoGrad)"
-        strokeWidth="4"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M34 41.5 Q19 39 17 50 Q19 61.5 29 56"
-        fill="none"
-        stroke="url(#logoGrad)"
-        strokeWidth="3"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        opacity="0.55"
-      />
-      <path
-        d="M66 41.5 Q81 39 83 50 Q81 61.5 71 56"
-        fill="none"
-        stroke="url(#logoGrad)"
-        strokeWidth="3"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        opacity="0.55"
-      />
-      <circle cx="50" cy="50" r="2.5" fill="url(#logoGrad)" />
-    </svg>
-  );
+  return <Logo style={{ width: size, height: size }} />;
 };
 
 const GitHubIcon = ({ className }: { className?: string }) => {

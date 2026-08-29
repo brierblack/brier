@@ -121,3 +121,11 @@ apps/web/src/
 - 迁移：`migrations/` 目录按序执行（`init` → `identity_split`），迁移文件列表化，后续 schema 变更新增 `m0003_*.sql` 并在 `migration.rs` 注册。
 
 GitHub 登录：`apps/server` → `brier-api::routes/auth::provider_login`（`/api/auth/{provider}/login` 从 `AppState.providers` 注册表分发）→ 跳转 GitHub 授权页 → callback 进入 `provider_callback` → `oauth_login`（统一编排：`OAuthProvider::exchange_code` → `fetch_identity`，返回 `ProviderIdentity`）→ `brier-user::repository`（find_or_create_user_by_identity：按 `(provider, provider_uid)` 查找/创建用户与身份，事务内完成）→ `brier-api` 构造 `SessionClaims`（`sub` = 用户 UUID）并交由 `brier-jwt::JwtSigner` 签发 → Set-Cookie（HttpOnly + SameSite=Lax，`cookie_secure` 为 true 时加 Secure）→ 后续 `/api/auth/me` 与 `current_user` 均用 `JwtVerifier` 验证后由 `brier-user::repository::find_user_by_id` 查库返回最新资料。
+
+## 6. OpenAPI 与 API 文档（utoipa）
+
+- **链路**：handler 加 `#[utoipa::path]` → `brier-api::docs::ApiDoc` 聚合（paths + components）→ Swagger UI 挂载于 `/docs`，spec JSON 暴露于 `/api-docs/openapi.json`
+- **L1/L2 保护**：`brier-type` / `brier-contract` 通过可选 feature `openapi` + `cfg_attr(feature = "openapi", derive(utoipa::ToSchema))` 提供 schema，默认不引入 utoipa；仅 `brier-api`（L4）依赖时显式开启（`brier-type = { workspace = true, features = ["openapi"] }`）
+- **spec 导出**：`OPENAPI_OUT=<path> cargo test -p brier-api export_openapi_json` 生成 `openapi.json`（当前提交在 `apps/web/openapi.json`，供 Orval 等前端代码生成工具消费）；server 启动时也支持 `OPENAPI_OUT` 环境变量导出
+- **前端 client 生成（Orval）**：`apps/web/orval.config.ts` 从 `openapi.json` 生成 `src/api/generated.ts`（类型 + fetch 函数）；自定义 mutator `src/api/custom-instance.ts` 统一 `credentials: 'same-origin'`（会话走 HttpOnly Cookie）与 `{ error }` 错误映射。命令：`pnpm --filter @brierb/web api:gen`（= `npx orval`）
+- **新增接口**：handler 标注 `#[utoipa::path]` + 在 `docs.rs` 的 `paths(...)`/`components(schemas(...))` 注册即可自动进入文档与 spec

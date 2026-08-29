@@ -14,8 +14,9 @@ use brier_type::User;
 use crate::error::ApiError;
 use crate::AppState;
 
-#[derive(serde::Deserialize)]
-struct CallbackParams {
+#[derive(serde::Deserialize, utoipa::IntoParams)]
+pub(crate) struct CallbackParams {
+    /// OAuth 授权码（OAuth 回调携带的 query 参数）。
     code: String,
 }
 
@@ -57,7 +58,16 @@ pub fn router() -> Router<AppState> {
 }
 
 /// 跳转指定 OAuth 提供方的授权页；未注册的 provider 返回 404。
-async fn provider_login(
+#[utoipa::path(
+    get,
+    path = "/api/auth/{provider}/login",
+    params(("provider", description = "OAuth 提供方，如 github / gitee")),
+    responses(
+        (status = 302, description = "跳转到授权页"),
+        (status = 404, description = "未知 provider")
+    )
+)]
+pub(crate) async fn provider_login(
     State(state): State<AppState>,
     Path(provider): Path<String>,
 ) -> Result<Redirect, ApiError> {
@@ -93,7 +103,21 @@ pub(crate) async fn oauth_login(
     Ok(user)
 }
 
-async fn provider_callback(
+/// OAuth 回调：换码 → 取身份 → 查找/创建账户 → 签发会话 Cookie 并跳转前端。
+#[utoipa::path(
+    get,
+    path = "/api/auth/{provider}/callback",
+    params(
+        ("provider", description = "OAuth 提供方，如 github / gitee"),
+        CallbackParams
+    ),
+    responses(
+        (status = 302, description = "登录成功，Set-Cookie 会话令牌并跳转"),
+        (status = 401, description = "换码/取身份失败"),
+        (status = 404, description = "未知 provider")
+    )
+)]
+pub(crate) async fn provider_callback(
     State(state): State<AppState>,
     Path(provider): Path<String>,
     Query(params): Query<CallbackParams>,
@@ -121,7 +145,16 @@ async fn provider_callback(
     Ok(response)
 }
 
-async fn auth_me(
+/// 返回当前登录用户信息。
+#[utoipa::path(
+    get,
+    path = "/api/auth/me",
+    responses(
+        (status = 200, description = "当前用户信息", body = User),
+        (status = 401, description = "未登录")
+    )
+)]
+pub(crate) async fn auth_me(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> Result<Json<User>, ApiError> {
@@ -134,7 +167,13 @@ async fn auth_me(
     Ok(Json(user))
 }
 
-async fn logout() -> Response {
+/// 登出：清除会话 Cookie 并跳转首页。
+#[utoipa::path(
+    get,
+    path = "/api/auth/logout",
+    responses((status = 302, description = "清除 Cookie 并跳转"))
+)]
+pub(crate) async fn logout() -> Response {
     let mut response = Redirect::to("/").into_response();
     response.headers_mut().insert(
         header::SET_COOKIE,

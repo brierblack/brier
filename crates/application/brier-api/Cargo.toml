@@ -5,12 +5,12 @@ edition.workspace = true
 
 [dependencies]
 brier-core.workspace = true
-brier-contract.workspace = true
+brier-contract = { workspace = true, features = ["openapi"] }
 brier-error.workspace = true
 brier-config.workspace = true
 brier-forge.workspace = true
 brier-database.workspace = true
-brier-type.workspace = true
+brier-type = { workspace = true, features = ["openapi"] }
 brier-user.workspace = true
 brier-jwt.workspace = true
 axum.workspace = true
@@ -22,3 +22,5 @@ cookie.workspace = true
 tracing.workspace = true
 sea-orm.workspace = true
 chrono.workspace = true
+utoipa.workspace = true
+utoipa-swagger-ui.workspace = true

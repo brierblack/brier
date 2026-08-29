@@ -5,6 +5,7 @@ use crate::id::UserId;
 
 /// 账户本体。第三方身份（OAuth）与本地凭证（手机号/密码）统一挂载在
 /// `id`（用户 UUID）之下；password_hash 属敏感凭证，永不进入该 API 模型。
+#[cfg_attr(feature = "openapi", derive(utoipa::ToSchema))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct User {
     pub id: UserId,

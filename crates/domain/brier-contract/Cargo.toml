@@ -7,3 +7,8 @@ edition.workspace = true
 brier-error.workspace = true
 async-trait.workspace = true
 serde = { version = "1", features = ["derive"] }
+# 可选：由需要生成 OpenAPI 的消费方（brier-api）开启，契约层不默认引入框架依赖。
+utoipa = { version = "5", optional = true }
+
+[features]
+openapi = ["dep:utoipa"]

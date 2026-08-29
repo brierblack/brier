@@ -59,6 +59,9 @@ def main() -> int:
 
     for toml in sorted((ROOT / "crates").glob("*/*/Cargo.toml")):
         text = toml.read_text()
+        # 去除注释行，避免注释文字（如"由 brier-api 开启"）被误判为依赖
+        lines = [l for l in text.splitlines() if not l.strip().startswith("#")]
+        text = "\n".join(lines)
         name_m = NAME_RE.search(text)
         if not name_m:
             continue

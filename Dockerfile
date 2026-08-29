@@ -37,7 +37,7 @@ RUN pnpm --filter @brierb/web build
 FROM rust:slim-bookworm AS backend-builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential pkg-config libssl-dev ca-certificates \
+    build-essential pkg-config libssl-dev ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -45,6 +45,11 @@ WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY apps/server/ apps/server/
 COPY crates/ crates/
+
+# utoipa-swagger-ui 构建期需下载 swagger-ui 资源，GitHub 直连不稳定：
+# 预置 zip 到镜像内，用 file:// 指向，绕开构建期外网依赖。
+COPY vendor/swagger-ui/swagger-ui-v5.17.14.zip /app/vendor/swagger-ui/
+ENV SWAGGER_UI_DOWNLOAD_URL=file:///app/vendor/swagger-ui/swagger-ui-v5.17.14.zip
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
     --mount=type=cache,target=/app/target,sharing=locked \

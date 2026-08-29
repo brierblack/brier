@@ -6,3 +6,6 @@ package-lock.json
 pnpm-lock.yaml
 *.svg
 *.png
+# 生成物（机器产出，不参与 prettier 格式约束）
+apps/web/openapi.json
+apps/web/src/api/generated.ts

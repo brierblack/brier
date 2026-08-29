@@ -1,7 +1,7 @@
-mod auth;
-mod forge;
-mod tunnel;
-mod workspace;
+pub(crate) mod auth;
+pub(crate) mod forge;
+pub(crate) mod tunnel;
+pub(crate) mod workspace;
 
 use axum::http::HeaderMap;
 use axum::routing::get;
@@ -19,6 +19,7 @@ pub fn router() -> Router<AppState> {
         .nest("/api/workspaces", workspace::router())
         .route("/api/{provider}/repos", get(forge::list_repos))
         .route("/tunnel", get(tunnel::tunnel_handler))
+        .route("/api-docs/openapi.json", get(crate::docs::serve_openapi_json))
 }
 
 pub(crate) async fn current_user(state: &AppState, headers: &HeaderMap) -> Result<User, ApiError> {

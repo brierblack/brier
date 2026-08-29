@@ -23,6 +23,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let state = brier_api::AppState::new(&config, db);
 
+    // 可选导出：OPENAPI_OUT=<path> cargo run 时把 OpenAPI spec 写入指定文件
+    // （供 Orval 等工具消费，如 OPENAPI_OUT=apps/web/openapi.json）。
+    if let Ok(path) = std::env::var("OPENAPI_OUT") {
+        std::fs::write(&path, brier_api::docs::ApiDoc::json())?;
+        tracing::info!("OpenAPI spec exported to {}", path);
+    }
+
     let index_path = format!("{}/index.html", config.server.frontend_dir);
     let serve_dir = ServeDir::new(&config.server.frontend_dir).fallback(ServeFile::new(&index_path));
 

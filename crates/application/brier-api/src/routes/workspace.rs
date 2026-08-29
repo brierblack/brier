@@ -11,8 +11,8 @@ use crate::error::ApiError;
 use crate::routes::current_user;
 use crate::AppState;
 
-#[derive(Deserialize)]
-struct CreateWorkspaceRequest {
+#[derive(Deserialize, utoipa::ToSchema)]
+pub(crate) struct CreateWorkspaceRequest {
     name: String,
     slug: String,
     description: Option<String>,
@@ -28,7 +28,18 @@ pub fn router() -> Router<AppState> {
         .route("/", get(list_workspaces).post(create_workspace))
 }
 
-async fn create_workspace(
+/// 创建空间（需登录）。
+#[utoipa::path(
+    post,
+    path = "/api/workspaces/",
+    request_body = CreateWorkspaceRequest,
+    responses(
+        (status = 200, description = "创建成功，返回空间", body = Workspace),
+        (status = 401, description = "未登录"),
+        (status = 400, description = "请求体不合法")
+    )
+)]
+pub(crate) async fn create_workspace(
     State(state): State<AppState>,
     headers: HeaderMap,
     Json(req): Json<CreateWorkspaceRequest>,
@@ -53,7 +64,16 @@ async fn create_workspace(
     Ok(Json(created))
 }
 
-async fn list_workspaces(
+/// 列出当前用户的全部空间（需登录）。
+#[utoipa::path(
+    get,
+    path = "/api/workspaces/",
+    responses(
+        (status = 200, description = "空间列表", body = [Workspace]),
+        (status = 401, description = "未登录")
+    )
+)]
+pub(crate) async fn list_workspaces(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> Result<Json<Vec<Workspace>>, ApiError> {

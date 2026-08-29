@@ -4,6 +4,7 @@ use uuid::Uuid;
 macro_rules! define_id {
     ($name:ident, $doc:expr) => {
         #[doc = $doc]
+        #[cfg_attr(feature = "openapi", derive(utoipa::ToSchema))]
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
         pub struct $name(pub Uuid);
 
