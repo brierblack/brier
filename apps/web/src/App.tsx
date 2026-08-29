@@ -25,8 +25,6 @@ const AutomationDetail = lazy(() => import('./pages/Space/Automation/Detail'));
 const Settings = lazy(() => import('./pages/Space/Settings'));
 import { FullScreen } from './components/Fallback';
 
-
-
 const App = () => {
   return (
     <ThemeProvider>

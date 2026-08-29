@@ -92,4 +92,4 @@
   --color-hover: #ebebeb; /* 卡片/容器悬停 */
 }
 
-@source '../dist';
+@source '../es';
