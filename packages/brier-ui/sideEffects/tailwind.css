@@ -3,7 +3,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 100 900;
-  src: url('../fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+  src: url('./fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -14,7 +14,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 100 900;
-  src: url('../fonts/inter-latin-ext-wght-normal.woff2') format('woff2-variations');
+  src: url('./fonts/inter-latin-ext-wght-normal.woff2') format('woff2-variations');
   unicode-range:
     U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
     U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
@@ -26,7 +26,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 100 800;
-  src: url('../fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2-variations');
+  src: url('./fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2-variations');
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -87,9 +87,9 @@
   --color-ghost: #e2e2e2; /* 边框/分割线 */
 
   /* 背景空间 */
-  --color-canvas: #fbfbfb; /* 页面底层 */
-  --color-surface: #f4f4f4; /* 卡片/容器 */
-  --color-surface-hover: #ebebeb; /* 卡片/容器悬停 */
+  --color-surface: #f4f4f4; /* 页面底层 */
+  --color-canvas: #fbfbfb; /* 卡片/容器 */
+  --color-hover: #ebebeb; /* 卡片/容器悬停 */
 }
 
 @source '../dist';

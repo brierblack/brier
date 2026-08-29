@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { App as AntApp, Spin } from 'antd';
+import { App as AntApp } from 'antd';
 import { ThemeProvider } from '@brierb/brier-ui';
 import { AuthProvider } from './auth-context';
 import { Layout as SpaceLayout } from './pages/Space';
@@ -23,14 +23,9 @@ const Automation = lazy(() => import('./pages/Space/Automation'));
 const NewAutomation = lazy(() => import('./pages/Space/Automation/New'));
 const AutomationDetail = lazy(() => import('./pages/Space/Automation/Detail'));
 const Settings = lazy(() => import('./pages/Space/Settings'));
+import { FullScreen } from './components/Fallback';
 
-const PageLoading = () => {
-  return (
-    <div className="flex h-screen items-center justify-center">
-      <Spin size="large" />
-    </div>
-  );
-};
+
 
 const App = () => {
   return (
@@ -38,7 +33,7 @@ const App = () => {
       <AntApp>
         <AuthProvider>
           <BrowserRouter>
-            <Suspense fallback={<PageLoading />}>
+            <Suspense fallback={<FullScreen />}>
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route

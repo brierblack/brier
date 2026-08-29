@@ -9,11 +9,7 @@ export default defineConfig({
     copy({
       targets: [
         {
-          src: 'assets/*',
-          dest: 'es/assets',
-        },
-        {
-          src: 'src/tailwind.css',
+          src: 'sideEffects/*',
           dest: 'es',
         },
       ],

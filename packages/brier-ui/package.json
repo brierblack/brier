@@ -10,6 +10,7 @@
     },
     "./tailwind.css": "./es/tailwind.css"
   },
+  "sideEffects":["./sideEffects/tailwind.css"],
   "files": [
     "dist",
     "types"
