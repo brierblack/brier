@@ -33,7 +33,6 @@ const App = () => {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/space" element={<SpaceLayout />}>
-                <Route index element={<Navigate to="/space/chat" replace />} />
                 <Route path="/space/new" element={<New />} />
                 <Route path="/space/chat" element={<Chat />} />
                 <Route path="/space/chat/:id" element={<ChatDetail />} />
@@ -52,6 +51,7 @@ const App = () => {
                 <Route path="/space/automation/:id" element={<AutomationDetail />} />
                 <Route path="/space/settings" element={<Settings />} />
               </Route>
+              <Route path="*" element={<Navigate to="/space/chat" replace />} />
             </Routes>
           </AuthProvider>
         </Suspense>
