@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Button, Page } from '@brierb/brier-ui';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useAuth } from '../../../../auth-context';
+import { useAuth } from '@/context/AuthContext';
 import { getConversationById, type ChatMessage } from '../conversations';
 import { AVAILABLE_AGENTS, InputBox, MessageBubble, TypingIndicator, getAgent } from '../shared';
 

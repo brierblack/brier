@@ -1,9 +1,9 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { App as AntApp } from 'antd';
-import { ThemeProvider } from '@brierb/brier-ui';
-import { AuthProvider } from './auth-context';
+import { AntdProvider } from '@brierb/brier-ui';
+import { AuthProvider } from './context/AuthContext/Provider';
 import { Layout as SpaceLayout } from './pages/Space';
+import { FullScreen } from './components/Fallback';
 
 const Login = lazy(() => import('./pages/Login'));
 const New = lazy(() => import('./pages/Space/New'));
@@ -23,50 +23,40 @@ const Automation = lazy(() => import('./pages/Space/Automation'));
 const NewAutomation = lazy(() => import('./pages/Space/Automation/New'));
 const AutomationDetail = lazy(() => import('./pages/Space/Automation/Detail'));
 const Settings = lazy(() => import('./pages/Space/Settings'));
-import { FullScreen } from './components/Fallback';
 
 const App = () => {
   return (
-    <ThemeProvider>
-      <AntApp>
-        <AuthProvider>
-          <BrowserRouter>
-            <Suspense fallback={<FullScreen />}>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route
-                  path="/space"
-                  element={
-                    //<AuthGuard>
-                    <SpaceLayout />
-                    //</AuthGuard>
-                  }
-                >
-                  <Route index element={<Navigate to="/space/chat" replace />} />
-                  <Route path="/space/new" element={<New />} />
-                  <Route path="/space/chat" element={<Chat />} />
-                  <Route path="/space/chat/:id" element={<ChatDetail />} />
-                  <Route path="/space/agent-tasks" element={<AgentTasks />} />
-                  <Route path="/space/agent-tasks/:id" element={<AgentTaskDetail />} />
-                  <Route path="/space/agents" element={<Agents />} />
-                  <Route path="/space/agents/:id" element={<AgentDetail />} />
-                  <Route path="/space/agents/new" element={<NewAgent />} />
-                  <Route path="/space/team" element={<Team />} />
-                  <Route path="/space/team/:id" element={<TeamDetail />} />
-                  <Route path="/space/skills" element={<Skills />} />
-                  <Route path="/space/skills/:name" element={<SkillDetail />} />
-                  <Route path="/space/skills/new" element={<SkillNew />} />
-                  <Route path="/space/automation" element={<Automation />} />
-                  <Route path="/space/automation/new" element={<NewAutomation />} />
-                  <Route path="/space/automation/:id" element={<AutomationDetail />} />
-                  <Route path="/space/settings" element={<Settings />} />
-                </Route>
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </AuthProvider>
-      </AntApp>
-    </ThemeProvider>
+    <AntdProvider>
+      <BrowserRouter>
+        <Suspense fallback={<FullScreen />}>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/space" element={<SpaceLayout />}>
+                <Route index element={<Navigate to="/space/chat" replace />} />
+                <Route path="/space/new" element={<New />} />
+                <Route path="/space/chat" element={<Chat />} />
+                <Route path="/space/chat/:id" element={<ChatDetail />} />
+                <Route path="/space/agent-tasks" element={<AgentTasks />} />
+                <Route path="/space/agent-tasks/:id" element={<AgentTaskDetail />} />
+                <Route path="/space/agents" element={<Agents />} />
+                <Route path="/space/agents/:id" element={<AgentDetail />} />
+                <Route path="/space/agents/new" element={<NewAgent />} />
+                <Route path="/space/team" element={<Team />} />
+                <Route path="/space/team/:id" element={<TeamDetail />} />
+                <Route path="/space/skills" element={<Skills />} />
+                <Route path="/space/skills/:name" element={<SkillDetail />} />
+                <Route path="/space/skills/new" element={<SkillNew />} />
+                <Route path="/space/automation" element={<Automation />} />
+                <Route path="/space/automation/new" element={<NewAutomation />} />
+                <Route path="/space/automation/:id" element={<AutomationDetail />} />
+                <Route path="/space/settings" element={<Settings />} />
+              </Route>
+            </Routes>
+          </AuthProvider>
+        </Suspense>
+      </BrowserRouter>
+    </AntdProvider>
   );
 };
 export default App;

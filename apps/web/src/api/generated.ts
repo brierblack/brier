@@ -99,18 +99,6 @@ export type ProviderCallbackParams = {
 code: string;
 };
 
-export type logoutResponse302 = {
-  data: void
-  status: 302
-}
-
-;
-export type logoutResponseError = (logoutResponse302) & {
-  headers: Headers;
-};
-
-export type logoutResponse = (logoutResponseError)
-
 export const getLogoutUrl = () => {
 
 
@@ -122,9 +110,9 @@ export const getLogoutUrl = () => {
 /**
  * @summary 登出：清除会话 Cookie 并跳转首页。
  */
-export const logout = async ( options?: Parameters<typeof customFetch>[1]): Promise<logoutResponse> => {
+export const logout = async ( options?: Parameters<typeof customFetch>[1]): Promise<unknown> => {
 
-  return customFetch<logoutResponse>(getLogoutUrl(),
+  return customFetch<unknown>(getLogoutUrl(),
   {
     ...options,
     method: 'GET'
@@ -134,25 +122,6 @@ export const logout = async ( options?: Parameters<typeof customFetch>[1]): Prom
 );}
 
 
-
-export type authMeResponse200 = {
-  data: User
-  status: 200
-}
-
-export type authMeResponse401 = {
-  data: void
-  status: 401
-}
-
-export type authMeResponseSuccess = (authMeResponse200) & {
-  headers: Headers;
-};
-export type authMeResponseError = (authMeResponse401) & {
-  headers: Headers;
-};
-
-export type authMeResponse = (authMeResponseSuccess | authMeResponseError)
 
 export const getAuthMeUrl = () => {
 
@@ -165,9 +134,9 @@ export const getAuthMeUrl = () => {
 /**
  * @summary 返回当前登录用户信息。
  */
-export const authMe = async ( options?: Parameters<typeof customFetch>[1]): Promise<authMeResponse> => {
+export const authMe = async ( options?: Parameters<typeof customFetch>[1]): Promise<User> => {
 
-  return customFetch<authMeResponse>(getAuthMeUrl(),
+  return customFetch<User>(getAuthMeUrl(),
   {
     ...options,
     method: 'GET'
@@ -177,28 +146,6 @@ export const authMe = async ( options?: Parameters<typeof customFetch>[1]): Prom
 );}
 
 
-
-export type providerCallbackResponse302 = {
-  data: void
-  status: 302
-}
-
-export type providerCallbackResponse401 = {
-  data: void
-  status: 401
-}
-
-export type providerCallbackResponse404 = {
-  data: void
-  status: 404
-}
-
-;
-export type providerCallbackResponseError = (providerCallbackResponse302 | providerCallbackResponse401 | providerCallbackResponse404) & {
-  headers: Headers;
-};
-
-export type providerCallbackResponse = (providerCallbackResponseError)
 
 export const getProviderCallbackUrl = (provider: string,
     params: ProviderCallbackParams,) => {
@@ -220,9 +167,9 @@ export const getProviderCallbackUrl = (provider: string,
  * @summary OAuth 回调：换码 → 取身份 → 查找/创建账户 → 签发会话 Cookie 并跳转前端。
  */
 export const providerCallback = async (provider: string,
-    params: ProviderCallbackParams, options?: Parameters<typeof customFetch>[1]): Promise<providerCallbackResponse> => {
+    params: ProviderCallbackParams, options?: Parameters<typeof customFetch>[1]): Promise<unknown> => {
 
-  return customFetch<providerCallbackResponse>(getProviderCallbackUrl(provider,params),
+  return customFetch<unknown>(getProviderCallbackUrl(provider,params),
   {
     ...options,
     method: 'GET'
@@ -232,23 +179,6 @@ export const providerCallback = async (provider: string,
 );}
 
 
-
-export type providerLoginResponse302 = {
-  data: void
-  status: 302
-}
-
-export type providerLoginResponse404 = {
-  data: void
-  status: 404
-}
-
-;
-export type providerLoginResponseError = (providerLoginResponse302 | providerLoginResponse404) & {
-  headers: Headers;
-};
-
-export type providerLoginResponse = (providerLoginResponseError)
 
 export const getProviderLoginUrl = (provider: string,) => {
 
@@ -261,9 +191,9 @@ export const getProviderLoginUrl = (provider: string,) => {
 /**
  * @summary 跳转指定 OAuth 提供方的授权页；未注册的 provider 返回 404。
  */
-export const providerLogin = async (provider: string, options?: Parameters<typeof customFetch>[1]): Promise<providerLoginResponse> => {
+export const providerLogin = async (provider: string, options?: Parameters<typeof customFetch>[1]): Promise<unknown> => {
 
-  return customFetch<providerLoginResponse>(getProviderLoginUrl(provider),
+  return customFetch<unknown>(getProviderLoginUrl(provider),
   {
     ...options,
     method: 'GET'
@@ -273,25 +203,6 @@ export const providerLogin = async (provider: string, options?: Parameters<typeo
 );}
 
 
-
-export type listWorkspacesResponse200 = {
-  data: Workspace[]
-  status: 200
-}
-
-export type listWorkspacesResponse401 = {
-  data: void
-  status: 401
-}
-
-export type listWorkspacesResponseSuccess = (listWorkspacesResponse200) & {
-  headers: Headers;
-};
-export type listWorkspacesResponseError = (listWorkspacesResponse401) & {
-  headers: Headers;
-};
-
-export type listWorkspacesResponse = (listWorkspacesResponseSuccess | listWorkspacesResponseError)
 
 export const getListWorkspacesUrl = () => {
 
@@ -304,9 +215,9 @@ export const getListWorkspacesUrl = () => {
 /**
  * @summary 列出当前用户的全部空间（需登录）。
  */
-export const listWorkspaces = async ( options?: Parameters<typeof customFetch>[1]): Promise<listWorkspacesResponse> => {
+export const listWorkspaces = async ( options?: Parameters<typeof customFetch>[1]): Promise<Workspace[]> => {
 
-  return customFetch<listWorkspacesResponse>(getListWorkspacesUrl(),
+  return customFetch<Workspace[]>(getListWorkspacesUrl(),
   {
     ...options,
     method: 'GET'
@@ -316,30 +227,6 @@ export const listWorkspaces = async ( options?: Parameters<typeof customFetch>[1
 );}
 
 
-
-export type createWorkspaceResponse200 = {
-  data: Workspace
-  status: 200
-}
-
-export type createWorkspaceResponse400 = {
-  data: void
-  status: 400
-}
-
-export type createWorkspaceResponse401 = {
-  data: void
-  status: 401
-}
-
-export type createWorkspaceResponseSuccess = (createWorkspaceResponse200) & {
-  headers: Headers;
-};
-export type createWorkspaceResponseError = (createWorkspaceResponse400 | createWorkspaceResponse401) & {
-  headers: Headers;
-};
-
-export type createWorkspaceResponse = (createWorkspaceResponseSuccess | createWorkspaceResponseError)
 
 export const getCreateWorkspaceUrl = () => {
 
@@ -352,7 +239,7 @@ export const getCreateWorkspaceUrl = () => {
 /**
  * @summary 创建空间（需登录）。
  */
-export const createWorkspace = async (createWorkspaceRequest: CreateWorkspaceRequest, options?: Parameters<typeof customFetch>[1]): Promise<createWorkspaceResponse> => {
+export const createWorkspace = async (createWorkspaceRequest: CreateWorkspaceRequest, options?: Parameters<typeof customFetch>[1]): Promise<Workspace> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -360,7 +247,7 @@ export const createWorkspace = async (createWorkspaceRequest: CreateWorkspaceReq
     if (Array.isArray(h)) return Object.fromEntries(h);
     return h;
   };
-return customFetch<createWorkspaceResponse>(getCreateWorkspaceUrl(),
+return customFetch<Workspace>(getCreateWorkspaceUrl(),
   {
     ...options,
     method: 'POST',
@@ -370,30 +257,6 @@ return customFetch<createWorkspaceResponse>(getCreateWorkspaceUrl(),
 );}
 
 
-
-export type listReposResponse200 = {
-  data: RepoInfo[]
-  status: 200
-}
-
-export type listReposResponse401 = {
-  data: void
-  status: 401
-}
-
-export type listReposResponse404 = {
-  data: void
-  status: 404
-}
-
-export type listReposResponseSuccess = (listReposResponse200) & {
-  headers: Headers;
-};
-export type listReposResponseError = (listReposResponse401 | listReposResponse404) & {
-  headers: Headers;
-};
-
-export type listReposResponse = (listReposResponseSuccess | listReposResponseError)
 
 export const getListReposUrl = (provider: string,) => {
 
@@ -407,9 +270,9 @@ export const getListReposUrl = (provider: string,) => {
  * @summary 列出指定 provider 下当前用户的仓库（需登录 + 已绑定该 provider 令牌）。
 未注册的 provider 返回 404；provider 有配置但未绑定令牌返回 Auth 错误。
  */
-export const listRepos = async (provider: string, options?: Parameters<typeof customFetch>[1]): Promise<listReposResponse> => {
+export const listRepos = async (provider: string, options?: Parameters<typeof customFetch>[1]): Promise<RepoInfo[]> => {
 
-  return customFetch<listReposResponse>(getListReposUrl(provider),
+  return customFetch<RepoInfo[]>(getListReposUrl(provider),
   {
     ...options,
     method: 'GET'

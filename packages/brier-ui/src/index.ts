@@ -8,4 +8,4 @@ export { Resizable, DragLine } from './components/Resizable';
 export { Select } from './components/Select';
 export { Table } from './components/Table';
 export { Tag } from './components/Tag';
-export { ThemeProvider, theme } from './components/ThemeProvider';
+export { AntdProvider } from './context/AntdContext';

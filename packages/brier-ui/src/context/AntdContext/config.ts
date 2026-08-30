@@ -1,6 +1,6 @@
 import type { ThemeConfig } from 'antd';
 
-export const theme: ThemeConfig = {
+export const config: ThemeConfig = {
   token: {
     fontFamily: "'Inter Variable', -apple-system, sans-serif",
     fontSize: 13,

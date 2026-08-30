@@ -23,7 +23,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '@/define';
 import { Logo, Wordmark } from '@/components/Logo';
 import { WorkSpace } from '../WorkSpace';
-import { useAuth } from '@/auth-context';
+import { useAuth } from '@/context/AuthContext';
 import { recentConversations, olderConversations } from '../../pages/Space/Chat/conversations';
 
 const menuClassNames = {
@@ -65,7 +65,7 @@ const menuItems: MenuProps['items'] = [
 export const NavMenu = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, loading, login, logout } = useAuth();
+  const { user, login, logout } = useAuth();
   const [recentExpanded, setRecentExpanded] = useState(true);
   const [olderExpanded, setOlderExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -262,25 +262,13 @@ export const NavMenu = () => {
       </div>
 
       <div className="pt-3">
-        {loading && (
-          <div className="flex items-center gap-2.5">
-            <Avatar
-              size={32}
-              className="shrink-0"
-              style={{ borderRadius: 6, background: '#e0e0e0' }}
-            />
-            <div className="m-1 min-w-0">
-              <div className="text-[13px] font-medium">加载中...</div>
-            </div>
-          </div>
-        )}
-        {!loading && !user && (
+        {!user && (
           <Button block onClick={() => login('github')} className="flex items-center gap-2">
             <GithubOutlined />
             GitHub 登录
           </Button>
         )}
-        {!loading && user && (
+        {user && (
           <Select
             defaultValue="language"
             placement="topLeft"

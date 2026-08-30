@@ -2,7 +2,7 @@ import { Avatar, Input } from 'antd';
 import { Button, Dropdown } from '@brierb/brier-ui';
 import { ArrowUpOutlined, DownOutlined, CheckOutlined } from '@ant-design/icons';
 import { agents } from '../../../data/mockData';
-import { useAuth } from '../../../auth-context';
+import { useAuth } from '@/context/AuthContext';
 import type { Agent } from '../../../types';
 import type { ChatMessage } from './conversations';
 

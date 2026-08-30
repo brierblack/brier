@@ -1,6 +1,5 @@
-import { Spin } from 'antd';
 import { Button } from '@brierb/brier-ui';
-import { useAuth } from '../../auth-context';
+import { useAuth } from '@/context/AuthContext';
 import { Logo } from '@/components/Logo';
 
 const BrierLogo = ({ size = 48 }: { size?: number }) => {
@@ -44,15 +43,7 @@ const FEATURES = [
 ];
 
 const Login = () => {
-  const { user, loading, login } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Spin size="large" />
-      </div>
-    );
-  }
+  const { user, login } = useAuth();
 
   if (user) {
     window.location.href = '/';

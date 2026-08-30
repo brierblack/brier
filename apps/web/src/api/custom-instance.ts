@@ -4,8 +4,9 @@
  * - credentials: 'same-origin' —— 会话凭证走 HttpOnly Cookie，必须随请求携带
  * - 错误映射 —— 后端错误响应为 { error: string }，解析后抛出可读错误
  *
- * 签名约定（Orval）：返回 Promise<T>，T 为生成的响应联合类型
- * （如 logoutResponse = { data, status, headers } 判别联合）。
+ * 约定：本层只处理 2xx JSON 接口（登录/登出等 302 跳转接口不走 fetch，
+ * 由 AuthContext 用整页跳转完成）。配合 `includeHttpResponseReturnType: false`，
+ * 泛型 T 即接口的数据类型，调用方拿到的就是纯数据（User / Workspace[] / ...）。
  */
 export const customFetch = async <T>(url: string, options: RequestInit): Promise<T> => {
   const response = await fetch(url, {
@@ -27,6 +28,5 @@ export const customFetch = async <T>(url: string, options: RequestInit): Promise
   }
 
   const body = [204, 205, 304].includes(response.status) ? null : await response.text();
-  const data = body ? JSON.parse(body) : {};
-  return { data, status: response.status, headers: response.headers } as T;
+  return body ? (JSON.parse(body) as T) : ({} as T);
 };

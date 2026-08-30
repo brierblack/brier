@@ -20,7 +20,7 @@ import { agents, skills as allSkills } from '../../../../data/mockData';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { MODELS, SKILL_TYPE_MAP } from '../../../../define';
 import type { Agent, Skill } from '../../../../types';
-import { useAuth } from '../../../../auth-context';
+import { useAuth } from '@/context/AuthContext';
 import { StatusBadge } from '@/components/StatusBadge';
 
 const RUNTIMES = ['Claude Code', 'Codex CLI', 'GPT-4o CLI', 'Gemini CLI'];

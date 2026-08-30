@@ -2,6 +2,8 @@
 **/types
 **/node_modules
 **/target
+# brier-ui 构建产物（输出到 es/，非 dist/）
+packages/brier-ui/es
 package-lock.json
 pnpm-lock.yaml
 *.svg
