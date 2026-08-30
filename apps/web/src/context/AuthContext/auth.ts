@@ -2,7 +2,7 @@ import { authMe } from '@/api/generated';
 
 export const getUser = async () => {
   try {
-    return await authMe();
+    return authMe();
   } catch {
     return null;
   }

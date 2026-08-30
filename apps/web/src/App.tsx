@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AntdProvider } from '@brierb/brier-ui';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './Layout';
 import { Layout as SpaceLayout } from './pages/Space';
 
@@ -26,33 +27,35 @@ const Settings = lazy(() => import('./pages/Space/Settings'));
 const App = () => {
   return (
     <AntdProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/space" element={<SpaceLayout />}>
-              <Route path="/space/new" element={<New />} />
-              <Route path="/space/chat" element={<Chat />} />
-              <Route path="/space/chat/:id" element={<ChatDetail />} />
-              <Route path="/space/agent-tasks" element={<AgentTasks />} />
-              <Route path="/space/agent-tasks/:id" element={<AgentTaskDetail />} />
-              <Route path="/space/agents" element={<Agents />} />
-              <Route path="/space/agents/:id" element={<AgentDetail />} />
-              <Route path="/space/agents/new" element={<NewAgent />} />
-              <Route path="/space/team" element={<Team />} />
-              <Route path="/space/team/:id" element={<TeamDetail />} />
-              <Route path="/space/skills" element={<Skills />} />
-              <Route path="/space/skills/:name" element={<SkillDetail />} />
-              <Route path="/space/skills/new" element={<SkillNew />} />
-              <Route path="/space/automation" element={<Automation />} />
-              <Route path="/space/automation/new" element={<NewAutomation />} />
-              <Route path="/space/automation/:id" element={<AutomationDetail />} />
-              <Route path="/space/settings" element={<Settings />} />
+      <ErrorBoundary>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/space" element={<SpaceLayout />}>
+                <Route path="/space/new" element={<New />} />
+                <Route path="/space/chat" element={<Chat />} />
+                <Route path="/space/chat/:id" element={<ChatDetail />} />
+                <Route path="/space/agent-tasks" element={<AgentTasks />} />
+                <Route path="/space/agent-tasks/:id" element={<AgentTaskDetail />} />
+                <Route path="/space/agents" element={<Agents />} />
+                <Route path="/space/agents/:id" element={<AgentDetail />} />
+                <Route path="/space/agents/new" element={<NewAgent />} />
+                <Route path="/space/team" element={<Team />} />
+                <Route path="/space/team/:id" element={<TeamDetail />} />
+                <Route path="/space/skills" element={<Skills />} />
+                <Route path="/space/skills/:name" element={<SkillDetail />} />
+                <Route path="/space/skills/new" element={<SkillNew />} />
+                <Route path="/space/automation" element={<Automation />} />
+                <Route path="/space/automation/new" element={<NewAutomation />} />
+                <Route path="/space/automation/:id" element={<AutomationDetail />} />
+                <Route path="/space/settings" element={<Settings />} />
+              </Route>
             </Route>
-          </Route>
-          <Route path="*" element={<Navigate to="/space/chat" replace />} />
-        </Routes>
-      </BrowserRouter>
+            <Route path="*" element={<Navigate to="/space/chat" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </ErrorBoundary>
     </AntdProvider>
   );
 };
