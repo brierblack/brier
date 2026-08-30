@@ -21,12 +21,7 @@ const FEATURES = [
 ];
 
 const Login = () => {
-  const { user, login } = useAuth();
-
-  if (user) {
-    window.location.href = '/';
-    return null;
-  }
+  const { login } = useAuth();
 
   return (
     <div className="relative flex h-screen overflow-hidden bg-[#0a0e1a]">

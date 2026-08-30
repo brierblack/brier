@@ -1,8 +1,7 @@
-import { Suspense, use, useState, type ReactNode } from 'react';
+import { use, useMemo, type ReactNode } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { getLogoutUrl, getProviderLoginUrl, type User } from '@/api/generated';
 import { AuthContext } from '.';
-import { getUser } from './auth';
-import { FullScreen } from '@/components/Fallback';
 
 /** 登录：整页跳转授权页（浏览器跟随 302 并落 Set-Cookie，fetch 无法替代导航语义）。 */
 const login = (provider: string) => {
@@ -14,28 +13,20 @@ const logout = () => {
   window.location.href = getLogoutUrl();
 };
 
-export const AuthProviderUse = ({
+export const AuthProvider = ({
   promiseUser,
   children,
 }: {
   promiseUser: Promise<User | null>;
   children: ReactNode;
 }) => {
+  const location = useLocation();
   const user = use(promiseUser);
+  const value = useMemo(() => ({ user, login, logout }), [user]);
 
-  return (
-    <AuthContext.Provider value={{ user: user || null, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  if (!value.user && location.pathname !== '/login') {
+    return <Navigate to="/login" replace />;
+  }
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // 走 getUser（内部 catch 401 等错误并返回 null），未登录视为正常状态而非崩溃
-  const [promiseUser] = useState(() => getUser());
-  return (
-    <Suspense fallback={<FullScreen />}>
-      <AuthProviderUse promiseUser={promiseUser}>{children}</AuthProviderUse>
-    </Suspense>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
