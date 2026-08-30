@@ -1,5 +1,5 @@
 import { Component, useEffect, useReducer, useRef, type ErrorInfo, type ReactNode } from 'react';
-import { ExclamationCircleFilled, ReloadOutlined } from '@ant-design/icons';
+import { ReloadOutlined } from '@ant-design/icons';
 
 export interface ErrorBoundaryProps {
   children: ReactNode;
@@ -11,7 +11,7 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-/** 全局错误边界：渲染异常时展示恐龙跳跃小游戏 */
+/** 全局错误边界：渲染异常时展示单色线描恐龙小游戏 */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { error: null };
 
@@ -33,17 +33,17 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 }
 
 /* ----------------------------- 游戏常量 ----------------------------- */
-const GAME_W = 800;
-const GAME_H = 200;
-const GROUND_Y = 168;
-const DINO_X = 92;
+const GAME_W = 480;
+const GAME_H = 320;
+const GROUND_Y = 272;
+const DINO_X = 64;
 const DINO_W = 40;
 const DINO_H = 40;
 const GRAVITY = 0.6;
 const JUMP = -11;
 const CACTUS_VB = 22;
 const CACTUS_VH = 36;
-const BASE_SPEED = 5;
+const BASE_SPEED = 4.5;
 
 interface Obstacle {
   x: number;
@@ -59,6 +59,7 @@ interface GameState {
   speed: number;
   nextSpawn: number;
   clouds: { x: number; y: number; s: number; v: number }[];
+  stars: { x: number; y: number; t: number }[];
   hillScroll: number;
   frame: number;
   scroll: number;
@@ -72,11 +73,19 @@ const initialState = (best: number): GameState => ({
   velocity: 0,
   obstacles: [],
   speed: BASE_SPEED,
-  nextSpawn: 300,
+  nextSpawn: 280,
   clouds: [
-    { x: 600, y: 28, s: 1, v: 0.22 },
-    { x: 340, y: 12, s: 0.7, v: 0.16 },
-    { x: 150, y: 42, s: 0.85, v: 0.19 },
+    { x: 360, y: 50, s: 1, v: 0.22 },
+    { x: 220, y: 30, s: 0.7, v: 0.16 },
+    { x: 90, y: 70, s: 0.85, v: 0.19 },
+  ],
+  stars: [
+    { x: 60, y: 40, t: 0 },
+    { x: 180, y: 90, t: 1 },
+    { x: 300, y: 30, t: 0 },
+    { x: 410, y: 110, t: 1 },
+    { x: 140, y: 150, t: 0 },
+    { x: 350, y: 170, t: 1 },
   ],
   hillScroll: 0,
   frame: 0,
@@ -101,7 +110,7 @@ const step = (s: GameState) => {
   s.frame += 1;
   s.scroll += s.speed;
   s.hillScroll += s.speed * 0.35;
-  s.speed = BASE_SPEED + Math.min(5, s.score / 60);
+  s.speed = BASE_SPEED + Math.min(4.5, s.score / 60);
 
   s.velocity += GRAVITY;
   s.dinoY += s.velocity;
@@ -116,7 +125,7 @@ const step = (s: GameState) => {
   s.nextSpawn -= s.speed;
   if (s.nextSpawn <= 0) {
     s.obstacles.push({ x: GAME_W + 20, h: 28 + Math.random() * 16 });
-    s.nextSpawn = 220 + Math.random() * 200;
+    s.nextSpawn = 200 + Math.random() * 200;
   }
 
   for (const c of s.clouds) {
@@ -139,7 +148,7 @@ const step = (s: GameState) => {
   }
 };
 
-/* ----------------------------- 图形 ----------------------------- */
+/* ----------------------------- 图形（单色线描） ----------------------------- */
 const Dino = ({ frame, jumping }: { frame: number; jumping: boolean }) => (
   <g fill="currentColor">
     <path d="M6 21 Q1 22 2 25 Q4 26 8 24 Z" />
@@ -162,9 +171,8 @@ const Dino = ({ frame, jumping }: { frame: number; jumping: boolean }) => (
         <rect x="19" y="30" width="5" height="10" rx="2.5" />
       </>
     )}
-    <circle cx="32" cy="9" r="2.1" fill="#fff" />
-    <circle cx="32.6" cy="9" r="1.1" fill="#0f172b" />
-    <circle cx="24" cy="14" r="1.6" fill="#ffd9bf" />
+    <circle cx="32" cy="9" r="2.1" fill="var(--color-surface)" />
+    <circle cx="32.6" cy="9" r="1.1" fill="var(--color-ink)" />
   </g>
 );
 
@@ -179,16 +187,32 @@ const Cactus = () => (
 );
 
 const Cloud = () => (
-  <g fill="currentColor">
+  <g fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
     <circle cx="8" cy="10" r="5.5" />
     <circle cx="17" cy="7" r="7.5" />
     <circle cx="28" cy="9" r="6.5" />
-    <ellipse cx="18" cy="13" rx="16" ry="3.5" />
+    <path d="M2 13 Q18 17 34 13" />
   </g>
 );
 
+/** 装饰小星：十字闪光 / 圆点 */
+const Star = ({ x, y, t }: { x: number; y: number; t: number }) =>
+  t === 0 ? (
+    <g
+      stroke="var(--color-faint)"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      transform={`translate(${x} ${y})`}
+    >
+      <line x1="0" y1="-4" x2="0" y2="4" />
+      <line x1="-4" y1="0" x2="4" y2="0" />
+    </g>
+  ) : (
+    <circle cx={x} cy={y} r="2" fill="var(--color-faint)" opacity="0.6" />
+  );
+
 const Hills = ({ offset }: { offset: number }) => {
-  const w = 320;
+  const w = 200;
   const shift = -(((offset % w) + w) % w);
   return (
     <g>
@@ -197,9 +221,9 @@ const Hills = ({ offset }: { offset: number }) => {
         return (
           <path
             key={i}
-            d={`M${x} ${GROUND_Y} Q${x + 80} ${GROUND_Y - 24} ${x + 160} ${GROUND_Y} Z`}
-            fill="var(--color-hover)"
-            opacity="0.6"
+            d={`M${x} ${GROUND_Y} Q${x + 50} ${GROUND_Y - 22} ${x + 100} ${GROUND_Y} Z`}
+            fill="var(--color-ghost)"
+            opacity="0.55"
           />
         );
       })}
@@ -258,29 +282,17 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
   const frame = Math.floor(s.frame / 6);
 
   return (
-    <div role="alert" className="flex min-h-dvh flex-col items-center bg-surface px-6 py-10">
+    <div role="alert" className="flex min-h-dvh items-center justify-center bg-surface px-6 py-10">
       <style>{`
         .crash-fade { animation: crash-fade .5s cubic-bezier(.22,.61,.36,1) both; }
-        @keyframes crash-fade { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+        @keyframes crash-fade { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform:none; } }
         @media (prefers-reduced-motion: reduce) { .crash-fade { animation: none; } }
       `}</style>
 
-      <div className="flex w-full max-w-3xl flex-1 flex-col">
-        {/* 错误标题：明显告知用户 */}
-        <header className="crash-fade flex flex-col items-center gap-2 pb-6 text-center">
-          <div className="flex items-center gap-2">
-            <ExclamationCircleFilled
-              className="text-base"
-              style={{ color: 'var(--color-brand)' }}
-            />
-            <h1 className="m-0 text-lg font-semibold text-ink">页面开小差了</h1>
-          </div>
-          <p className="m-0 text-sm text-muted">渲染遇到了问题，可以先陪小恐龙跳一局，或直接重试</p>
-        </header>
-
-        {/* 游戏画面：与背景融为一体 */}
+      <div className="grid w-full max-w-4xl grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
+        {/* 左：线描游戏插画 */}
         <div
-          className="flex flex-1 items-center"
+          className="crash-fade cursor-pointer touch-none select-none"
           onMouseDown={(e) => {
             e.preventDefault();
             jump();
@@ -292,14 +304,19 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
         >
           <svg
             viewBox={`0 0 ${GAME_W} ${GAME_H}`}
-            className="crash-fade block w-full cursor-pointer select-none"
+            className="block w-full"
             style={{ aspectRatio: `${GAME_W} / ${GAME_H}` }}
           >
-            {/* 云 */}
+            {/* 星星装饰 */}
+            {s.stars.map((st, i) => (
+              <Star key={i} x={st.x} y={st.y} t={st.t} />
+            ))}
+
+            {/* 云（线描） */}
             {s.clouds.map((c, i) => (
               <g
                 key={i}
-                style={{ color: 'var(--color-ghost)' }}
+                style={{ color: 'var(--color-faint)' }}
                 transform={`translate(${c.x} ${c.y}) scale(${c.s})`}
               >
                 <Cloud />
@@ -309,28 +326,28 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
             {/* 远景丘陵 */}
             <Hills offset={s.hillScroll} />
 
-            {/* 地面：淡色带，无强分隔线 */}
-            <rect
-              x="0"
-              y={GROUND_Y}
-              width={GAME_W}
-              height={GAME_H - GROUND_Y}
-              fill="var(--color-hover)"
-              opacity="0.4"
+            {/* 地面：细线 */}
+            <line
+              x1="0"
+              y1={GROUND_Y}
+              x2={GAME_W}
+              y2={GROUND_Y}
+              stroke="var(--color-ink)"
+              strokeWidth="1.5"
             />
             <g transform={`translate(${-s.scroll % 44} 0)`}>
-              {Array.from({ length: 20 }).map((_, i) => (
-                <circle key={i} cx={i * 44} cy={GROUND_Y + 9} r="1.5" fill="var(--color-ghost)" />
+              {Array.from({ length: 12 }).map((_, i) => (
+                <circle key={i} cx={i * 44} cy={GROUND_Y + 10} r="1.5" fill="var(--color-ghost)" />
               ))}
             </g>
 
-            {/* 仙人掌 */}
+            {/* 仙人掌（墨色剪影） */}
             {s.obstacles.map((o, i) => {
               const scale = o.h / CACTUS_VH;
               return (
                 <g
                   key={i}
-                  style={{ color: 'var(--color-success)' }}
+                  style={{ color: 'var(--color-ink)' }}
                   transform={`translate(${o.x} ${GROUND_Y - o.h}) scale(${scale})`}
                 >
                   <Cactus />
@@ -338,26 +355,23 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
               );
             })}
 
-            {/* 恐龙 */}
-            <g
-              style={{ color: 'var(--color-brand)' }}
-              transform={`translate(${DINO_X} ${dinoTopY})`}
-            >
+            {/* 恐龙（墨色剪影） */}
+            <g style={{ color: 'var(--color-ink)' }} transform={`translate(${DINO_X} ${dinoTopY})`}>
               <Dino frame={frame} jumping={s.dinoY < 0} />
             </g>
 
-            {/* 右上：分数 */}
+            {/* 分数 */}
             <text
-              x={GAME_W - 20}
+              x={GAME_W - 16}
               y="30"
               textAnchor="end"
               fill="var(--color-muted)"
-              style={{ font: '700 15px var(--font-mono)' }}
+              style={{ font: '700 16px var(--font-mono)' }}
             >
               {scoreStr}
             </text>
             <text
-              x={GAME_W - 20}
+              x={GAME_W - 16}
               y="46"
               textAnchor="end"
               fill="var(--color-faint)"
@@ -366,14 +380,14 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
               HI {bestStr}
             </text>
 
-            {/* 居中提示 */}
+            {/* 提示 */}
             {s.phase !== 'running' && (
               <text
                 x={GAME_W / 2}
-                y={GROUND_Y - 56}
+                y={GROUND_Y - 40}
                 textAnchor="middle"
                 fill="var(--color-faint)"
-                style={{ font: '500 13px var(--font-sans)' }}
+                style={{ font: '500 14px var(--font-sans)' }}
               >
                 {s.phase === 'idle' ? '按空格 / 点击开始' : `撞上了  ${scoreStr}  按空格再来`}
               </text>
@@ -381,20 +395,27 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
           </svg>
         </div>
 
-        {/* 底部：重试 */}
-        <footer className="crash-fade flex flex-col items-center gap-3 pt-6">
+        {/* 右：文字 + 按钮 */}
+        <div className="crash-fade flex flex-col items-start gap-4">
+          <span className="text-xs font-semibold tracking-widest text-faint uppercase">
+            Something went wrong
+          </span>
+          <h1 className="m-0 text-3xl font-bold tracking-tight text-ink">页面开小差了</h1>
+          <p className="m-0 max-w-sm text-sm leading-relaxed text-muted">
+            渲染过程中遇到了问题。你可以点击左侧的小恐龙玩一局，或直接重试恢复页面。
+          </p>
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-2.5 text-sm font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-brand-dark focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none active:translate-y-0"
+            className="mt-2 inline-flex items-center gap-2 rounded-lg border-2 border-brand bg-transparent px-6 py-2.5 text-sm font-semibold text-brand transition-all hover:bg-brand hover:text-white focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
           >
             <ReloadOutlined className="text-sm" />
             重试
           </button>
-          <code className="max-w-full truncate font-mono text-[11px] text-faint/70">
+          <code className="mt-2 max-w-sm truncate font-mono text-[11px] text-faint/70">
             {error.message || error.name}
           </code>
-        </footer>
+        </div>
       </div>
     </div>
   );

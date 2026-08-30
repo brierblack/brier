@@ -30,33 +30,7 @@ export const Wordmark = memo(({ className, style }: WordmarkProps) => {
           color: 'transparent',
         }}
       >
-        brier
-      </span>
-      <span
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          verticalAlign: '0.5em',
-          width: '1em',
-          height: '1em',
-          fontSize: '0.52em',
-          borderRadius: '9999px',
-          background: '#0f172b',
-          color: '#fff',
-          transform: 'translate(0.25em, -0.25em)',
-        }}
-      >
-        <span
-          style={{
-            fontSize: '0.62em',
-            fontWeight: 700,
-            lineHeight: 1,
-            transform: 'translateY(0.01em)',
-          }}
-        >
-          B
-        </span>
+        Brier
       </span>
     </span>
   );
