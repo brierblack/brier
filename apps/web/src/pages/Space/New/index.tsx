@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { App, Steps, Form, Input, Upload, Select, Divider, Switch, type UploadProps } from 'antd';
+import { App, Steps, Form, Input, Select, Switch, type UploadProps } from 'antd';
 import { Button } from '@brierb/brier-ui';
 import {
   ArrowLeftOutlined,
-  PlusOutlined,
   PullRequestOutlined,
   BugOutlined,
   CheckOutlined,
 } from '@ant-design/icons';
 import { createWorkspace, listRepos, type RepoInfo } from '@/api/generated';
+import { AvatarUpload } from '@/components/AvatarUpload';
 
 const STEPS = [{ title: '基础信息' }, { title: '指令' }, { title: '自动化' }];
 
@@ -100,27 +100,24 @@ const New = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-canvas">
+    <div className="flex h-dvh flex-col bg-surface">
       {/* Header: back button (left) + centered title */}
-      <div className="shrink-0 px-6 py-4">
-        <div className="flex items-center">
-          <div className="flex-1">
-            <Button type="text" icon={<ArrowLeftOutlined />} onClick={handleBack}>
+      <div className="shrink-0 border-b border-ghost px-6 py-4">
+        <div className="flex items-center justify-center">
+          <div className="absolute top-4 left-6">
+            <Button bordered={false} type="text" icon={<ArrowLeftOutlined />} onClick={handleBack}>
               返回
             </Button>
           </div>
           <div className="text-center">
-            <h1 className="m-0 text-lg font-bold tracking-tight">新建空间</h1>
+            <div className="text-lg font-bold tracking-tight">新建空间</div>
           </div>
-          <div className="flex-1" />
         </div>
         <p className="mt-1 text-center text-xs">协作空间，承载团队协作所需的全部上下文</p>
       </div>
 
-      <Divider className="!m-0" />
-
       {/* Horizontal timeline */}
-      <div className="flex shrink-0 justify-center px-16 py-6">
+      <div className="flex flex-1 shrink-0 flex-col items-center justify-start overflow-auto px-6 py-4">
         <Steps
           current={currentStep}
           items={STEPS}
@@ -128,11 +125,8 @@ const New = () => {
           className={'w-75'}
           responsive={false}
         />
-      </div>
 
-      {/* Form content */}
-      <div className="flex-1 overflow-auto px-8 pb-6">
-        <div className="mx-auto max-w-[720px]">
+        <div className="mx-auto mt-6 w-full max-w-180">
           <Form form={form} layout="vertical" requiredMark>
             {/* Step 0: Basic info - kept mounted via CSS to preserve field values */}
             <div className={currentStep === 0 ? 'block' : 'hidden'}>
@@ -140,7 +134,7 @@ const New = () => {
 
               {/* Avatar + Name (required, same row) */}
               <Form.Item label="空间头像和名称" required>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                   <Form.Item
                     name="avatar"
                     valuePropName="fileList"
@@ -148,19 +142,7 @@ const New = () => {
                     noStyle
                     rules={[{ required: true, message: '请上传空间头像' }]}
                   >
-                    <Upload {...uploadProps} showUploadList={false}>
-                      <div className="relative flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded border border-dashed border-ghost transition-colors hover:border-brand">
-                        {avatarUrl ? (
-                          <img
-                            src={avatarUrl}
-                            alt="avatar"
-                            className="absolute inset-0 h-full w-full object-cover"
-                          />
-                        ) : (
-                          <PlusOutlined className="text-standard" />
-                        )}
-                      </div>
-                    </Upload>
+                    <AvatarUpload size={32} avatarUrl={avatarUrl} {...uploadProps} />
                   </Form.Item>
                   <Form.Item
                     name="name"
@@ -292,7 +274,7 @@ const New = () => {
       </div>
 
       {/* Footer: step-dependent action buttons */}
-      <div className="flex shrink-0 justify-end gap-3 border-t border-ghost px-8 py-4">
+      <div className="flex shrink-0 justify-center gap-3 border-t border-ghost px-6 py-4">
         {currentStep > 0 && <Button onClick={handlePrev}>上一步</Button>}
         {currentStep < STEPS.length - 1 ? (
           <Button type="primary" onClick={handleNext}>

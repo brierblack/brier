@@ -576,7 +576,7 @@ const AgentDetail = () => {
         <div className="flex h-full items-center justify-center">
           <div className="text-center">
             <p className="mb-3 text-standard">未找到该 Agent</p>
-            <Button onClick={() => navigate('/agents')}>返回列表</Button>
+            <Button onClick={() => navigate('/space/agents')}>返回列表</Button>
           </div>
         </div>
       </Page>
@@ -587,7 +587,7 @@ const AgentDetail = () => {
     <Page
       header={
         <>
-          <span className="cursor-pointer" onClick={() => navigate('/agents')}>
+          <span className="cursor-pointer" onClick={() => navigate('/space/agents')}>
             Agents
           </span>
           <span className="">/</span>

@@ -32,8 +32,8 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route path="/login" element={<Login />} />
+              <Route path="/space/new" element={<New />} />
               <Route path="/space" element={<SpaceLayout />}>
-                <Route path="/space/new" element={<New />} />
                 <Route path="/space/chat" element={<Chat />} />
                 <Route path="/space/chat/:id" element={<ChatDetail />} />
                 <Route path="/space/agent-tasks" element={<AgentTasks />} />

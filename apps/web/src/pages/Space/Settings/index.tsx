@@ -93,6 +93,7 @@ const Settings = () => {
                         reader.readAsDataURL(file);
                         return false;
                       }}
+                      style={{ display: 'flex', alignItems: 'center' }}
                     >
                       <div className="flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded border border-dashed border-ghost transition-colors hover:border-brand">
                         {avatarUrl ? (

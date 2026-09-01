@@ -100,6 +100,7 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
               return false;
             }}
             accept="image/png,image/jpeg"
+            style={{ display: 'flex', alignItems: 'center' }}
           >
             {avatarUrl ? (
               <div className="size-20 cursor-pointer overflow-hidden rounded-full border border-ghost">

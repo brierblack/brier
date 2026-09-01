@@ -112,7 +112,7 @@ const NewAgent = () => {
   const handleCreate = () => {
     form.validateFields().then(() => {
       message.success('Agent 创建成功');
-      navigate('/agents');
+      navigate('/space/agents');
     });
   };
 
@@ -124,7 +124,7 @@ const NewAgent = () => {
     <Page
       header={
         <>
-          <span className="cursor-pointer" onClick={() => navigate('/agents')}>
+          <span className="cursor-pointer" onClick={() => navigate('/space/agents')}>
             Agents
           </span>
           <span className="">/</span>
@@ -133,7 +133,7 @@ const NewAgent = () => {
       }
       extra={
         <Space>
-          <Button onClick={() => navigate('/agents')}>取消</Button>
+          <Button onClick={() => navigate('/space/agents')}>取消</Button>
           <Button type="primary" onClick={handleCreate}>
             创建
           </Button>
@@ -196,6 +196,7 @@ const NewAgent = () => {
                   return false;
                 }}
                 accept="image/*"
+                style={{ display: 'flex', alignItems: 'center' }}
               >
                 {avatarUrl ? (
                   <img

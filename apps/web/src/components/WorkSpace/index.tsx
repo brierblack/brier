@@ -41,7 +41,7 @@ export const WorkSpace = memo(() => {
 
   const handleChange = (val: string) => {
     if (val === CREATE_VALUE) {
-      navigate('/spaces/new');
+      navigate('/space/new');
       return;
     }
     setCurrentId(val);
@@ -52,7 +52,7 @@ export const WorkSpace = memo(() => {
       <Button
         block
         type="text"
-        onClick={() => navigate('/spaces/new')}
+        onClick={() => navigate('/space/new')}
         classNames={{ root: ' !border-ghost !px-2' }}
       >
         <PlusOutlined className="text-standard" />
@@ -92,14 +92,14 @@ export const WorkSpace = memo(() => {
         );
       }}
       notFoundContent="暂无工作空间"
-      button={{ block: true }}
+      button={{ block: true, className: 'px-2!' }}
       footer={
         <Button
           className="flex! justify-start! gap-2! p-3!"
           block
           bordered={false}
           type="text"
-          onClick={() => navigate('/spaces/new')}
+          onClick={() => navigate('/space/new')}
         >
           <PlusOutlined className="text-standard" />
           新建工作空间

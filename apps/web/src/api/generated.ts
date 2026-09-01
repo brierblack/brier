@@ -204,12 +204,37 @@ export const providerLogin = async (provider: string, options?: Parameters<typeo
 
 
 
+export const getListReposUrl = (provider: string,) => {
+
+
+
+
+  return `/api/${provider}/repos`
+}
+
+/**
+ * @summary 列出指定 provider 下当前用户的仓库（需登录 + 已绑定该 provider 令牌）。
+未注册的 provider 返回 404；provider 有配置但未绑定令牌返回 Auth 错误。
+ */
+export const listRepos = async (provider: string, options?: Parameters<typeof customFetch>[1]): Promise<RepoInfo[]> => {
+
+  return customFetch<RepoInfo[]>(getListReposUrl(provider),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export const getListWorkspacesUrl = () => {
 
 
 
 
-  return `/api/workspaces/`
+  return `/api/workspaces`
 }
 
 /**
@@ -233,7 +258,7 @@ export const getCreateWorkspaceUrl = () => {
 
 
 
-  return `/api/workspaces/`
+  return `/api/workspaces`
 }
 
 /**
@@ -253,30 +278,5 @@ return customFetch<Workspace>(getCreateWorkspaceUrl(),
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(createWorkspaceRequest)
-  }
-);}
-
-
-
-export const getListReposUrl = (provider: string,) => {
-
-
-
-
-  return `/api/${provider}/repos`
-}
-
-/**
- * @summary 列出指定 provider 下当前用户的仓库（需登录 + 已绑定该 provider 令牌）。
-未注册的 provider 返回 404；provider 有配置但未绑定令牌返回 Auth 错误。
- */
-export const listRepos = async (provider: string, options?: Parameters<typeof customFetch>[1]): Promise<RepoInfo[]> => {
-
-  return customFetch<RepoInfo[]>(getListReposUrl(provider),
-  {
-    ...options,
-    method: 'GET'
-
-
   }
 );}

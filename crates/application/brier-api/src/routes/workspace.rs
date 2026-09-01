@@ -31,7 +31,7 @@ pub fn router() -> Router<AppState> {
 /// 创建空间（需登录）。
 #[utoipa::path(
     post,
-    path = "/api/workspaces/",
+    path = "/api/workspaces",
     request_body = CreateWorkspaceRequest,
     responses(
         (status = 200, description = "创建成功，返回空间", body = Workspace),
@@ -67,7 +67,7 @@ pub(crate) async fn create_workspace(
 /// 列出当前用户的全部空间（需登录）。
 #[utoipa::path(
     get,
-    path = "/api/workspaces/",
+    path = "/api/workspaces",
     responses(
         (status = 200, description = "空间列表", body = [Workspace]),
         (status = 401, description = "未登录")

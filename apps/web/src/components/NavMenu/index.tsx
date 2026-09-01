@@ -258,7 +258,7 @@ export const NavMenu = () => {
           <Select
             defaultValue="language"
             placement="topLeft"
-            button={{ block: true, bordered: false, className: 'py-2.5', size: 'large' }}
+            button={{ block: true, bordered: false, className: 'py-2.5! px-2!', size: 'large' }}
             labelRender={() => (
               <div className="flex w-full items-center gap-2.5">
                 {user.avatar_url ? (

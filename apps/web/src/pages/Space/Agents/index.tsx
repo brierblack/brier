@@ -57,7 +57,7 @@ const Agents = () => {
         render: (_, r) => (
           <div
             className="flex cursor-pointer items-center gap-2.5"
-            onClick={() => navigate(`/agents/${r.id}`)}
+            onClick={() => navigate(`/space/agents/${r.id}`)}
           >
             <div
               className="flex size-9 shrink-0 items-center justify-center rounded-md text-lg"
@@ -130,7 +130,7 @@ const Agents = () => {
             menu={{
               items: actionMenuItems,
               onClick: ({ key }) => {
-                if (key === 'view') navigate(`/agents/${r.id}`);
+                if (key === 'view') navigate(`/space/agents/${r.id}`);
               },
             }}
             trigger={['click']}
