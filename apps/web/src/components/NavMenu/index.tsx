@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Avatar, Menu, type MenuProps } from 'antd';
-import { Button, Dropdown, Select } from '@brierb/brier-ui';
+import { Avatar } from 'antd';
+import { Button, Dropdown, Select, Menu, type MenuProps } from '@brierb/brier-ui';
 
 import {
   GithubOutlined,
@@ -25,11 +25,6 @@ import { Logo, Wordmark } from '@/components/Logo';
 import { WorkSpace } from '../WorkSpace';
 import { useAuth } from '@/context/AuthContext';
 import { recentConversations, olderConversations } from '../../pages/Space/Chat/conversations';
-
-const menuClassNames = {
-  root: ' !border-none !grid !gap-1 !bg-transparent',
-  item: ' !px-2 !m-0 !h-8 !leading-8 !text-standard !w-full',
-};
 
 const menuItems: MenuProps['items'] = [
   {
@@ -200,7 +195,6 @@ export const NavMenu = () => {
             }
             navigate(`/space/${e.key}`);
           }}
-          classNames={menuClassNames}
         />
       </div>
 
@@ -227,7 +221,6 @@ export const NavMenu = () => {
             selectedKeys={[]}
             items={recentItems}
             onClick={({ key }) => navigate(`/space/chat/${key.replace('conv-', '')}`)}
-            classNames={menuClassNames}
           />
         )}
 
@@ -250,7 +243,6 @@ export const NavMenu = () => {
             selectedKeys={[]}
             items={olderItems}
             onClick={({ key }) => navigate(`/space/chat/${key.replace('conv-', '')}`)}
-            classNames={menuClassNames}
           />
         )}
       </div>

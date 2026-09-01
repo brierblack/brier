@@ -2,15 +2,8 @@ import { memo } from 'react';
 import type { IconProps } from '../definition';
 
 /** GitLab 品牌图标（官方三色狐狸头：深橙/橙/浅橙）。 */
-export const GitLab = memo(({ size = 16, className, style }: IconProps) => (
-  <svg
-    viewBox="0 0 128 128"
-    width={size}
-    height={size}
-    className={className}
-    style={style}
-    aria-hidden="true"
-  >
+export const GitLab = memo(({ size = 16, ...props }: IconProps) => (
+  <svg viewBox="0 0 128 128" width={size} height={size} {...props}>
     <path
       fill="#e24329"
       d="m124.755 51.382l-.177-.452L107.47 6.282a4.46 4.46 0 0 0-1.761-2.121a4.58 4.58 0 0 0-5.236.281a4.6 4.6 0 0 0-1.518 2.304L87.404 42.088H40.629L29.077 6.746a4.5 4.5 0 0 0-1.518-2.31a4.58 4.58 0 0 0-5.236-.281a4.5 4.5 0 0 0-1.761 2.121L3.422 50.904l-.17.452c-5.059 13.219-.763 28.192 10.537 36.716l.059.046l.157.111l26.061 19.516l12.893 9.758l7.854 5.93a5.28 5.28 0 0 0 6.388 0l7.854-5.93l12.893-9.758l26.218-19.634l.065-.052c11.273-8.526 15.562-23.472 10.524-36.677"

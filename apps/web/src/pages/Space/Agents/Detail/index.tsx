@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Avatar, Input, InputNumber, Menu } from 'antd';
-import { Button, Select } from '@brierb/brier-ui';
-import type { MenuProps } from 'antd';
+import { Avatar, Input, InputNumber } from 'antd';
+import { Button, Select, Menu, type MenuProps } from '@brierb/brier-ui';
 import {
   AppstoreOutlined,
   PlusOutlined,
@@ -56,11 +55,6 @@ const menuItems: MenuProps['items'] = [
     ],
   },
 ];
-
-const menuClassNames = {
-  root: '!border-none !bg-transparent',
-  item: '!px-2 !m-0 !h-8 !leading-8 !text-standard !w-full !rounded-md',
-};
 
 const INSTRUCTION_TEMPLATE = `# 角色定义
 你是一个专业的 AI Agent，负责协助团队完成日常工作。
@@ -602,13 +596,12 @@ const AgentDetail = () => {
       }
     >
       <div className="flex h-full overflow-hidden">
-        <div className="w-52 shrink-0 overflow-auto border-r border-ghost px-2 py-3">
+        <div className="w-52 shrink-0 overflow-auto border-r border-ghost p-2">
           <Menu
             mode="inline"
             selectedKeys={[activeKey]}
             onClick={({ key }) => setActiveKey(key)}
             items={menuItems}
-            classNames={menuClassNames}
           />
         </div>
 

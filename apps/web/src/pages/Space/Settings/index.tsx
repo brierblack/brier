@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Form, Input, Menu, Select, Switch, Upload } from 'antd';
-import { Button } from '@brierb/brier-ui';
+import { Form, Input, Select, Switch, Upload } from 'antd';
+import { Button, Menu } from '@brierb/brier-ui';
 import {
   PlusOutlined,
   UserOutlined,
@@ -75,10 +75,6 @@ const Settings = () => {
             selectedKeys={[activeKey]}
             onClick={({ key }) => setActiveKey(key)}
             items={SETTINGS_NAV}
-            classNames={{
-              root: ' flex! flex-col! !border-none !gap-1 !bg-transparent',
-              item: ' !px-2 !m-0 !h-8 !leading-8 !text-standard !w-full',
-            }}
           />
         </div>
 

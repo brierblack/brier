@@ -7,7 +7,7 @@ const DEFAULT_CLASS_NAMES = { root: ' rounded-lg! border! border-ghost!' };
 const DEFAULT_POPUP_CLASS_NAMES = ' bg-canvas! shadow-none! rounded-lg! border! border-ghost!';
 const DEFAULT_SUB_POPUP_CLASS_NAMES = ' bg-canvas! shadow-none! rounded-lg! border! border-ghost!';
 const DEFAULT_MENU_CLASS_NAMES =
-  ' bg-transparent! shadow-none! bg-transparent! flex! flex-col! p-1! gap-1!';
+  ' bg-transparent! shadow-none! bg-transparent! flex! flex-col! p-1! gap-0.5!';
 
 export interface DropdownProps extends AntdDropdownProps {}
 

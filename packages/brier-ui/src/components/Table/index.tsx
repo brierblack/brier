@@ -6,7 +6,9 @@ const DEFAULT_CLASS_NAMES = {
   root: ' !bg-transparent !border-t !border-x !border-ghost rounded-t-md',
 };
 
-type TableComponent = <T extends object = any>(props: AntdTableProps<T>) => React.ReactNode;
+export interface TableProps<T extends object = any> extends AntdTableProps<T> {}
+
+type TableComponent = <T extends object = any>(props: TableProps<T>) => React.ReactNode;
 
 export const Table: TableComponent = memo((props) => {
   const { bordered, classNames = obj, ...args } = props;

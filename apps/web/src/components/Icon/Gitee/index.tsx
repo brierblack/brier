@@ -2,15 +2,8 @@ import { memo } from 'react';
 import type { IconProps } from '../definition';
 
 /** Gitee 品牌图标（官方红圆 + 白色 G 形鸟）。 */
-export const Gitee = memo(({ size = 16, className, style }: IconProps) => (
-  <svg
-    viewBox="0 0 89.7088726 89.7088726"
-    width={size}
-    height={size}
-    className={className}
-    style={style}
-    aria-hidden="true"
-  >
+export const Gitee = memo(({ size = 16, ...props }: IconProps) => (
+  <svg viewBox="0 0 89.7088726 89.7088726" width={size} height={size} {...props}>
     <circle fill="#C71D23" cx="44.8544363" cy="44.8544363" r="44.8544363" />
     <path
       fill="#FFFFFF"
