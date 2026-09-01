@@ -35,9 +35,9 @@ export interface TaskActivity {
 
 export const TASK_AGENTS: TaskAgent[] = [
   { id: 1, name: '总参谋部 Agent', icon: '📋', color: '#1677ff' },
-  { id: 2, name: '纪律监察团 Agent', icon: '🔍', color: '#8d54ff' },
+  { id: 2, name: '纪律监察团 Agent', icon: '🔍', color: '#4b5563' },
   { id: 3, name: '情报侦察连 Agent', icon: '📡', color: '#00c758' },
-  { id: 4, name: '工程突击营 Agent', icon: '⚙️', color: '#fe6e00' },
+  { id: 4, name: '工程突击营 Agent', icon: '⚙️', color: '#111111' },
   { id: 5, name: '中央兵工厂 Agent', icon: '🛡️', color: '#fb2c36' },
 ];
 

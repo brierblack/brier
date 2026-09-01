@@ -242,7 +242,7 @@ const New = () => {
                 <div className="flex items-start gap-3 rounded-lg border border-ghost bg-white p-4">
                   <div
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
-                    style={{ background: '#fe6e000d', border: '1px solid #fe6e0022' }}
+                    style={{ background: '#1111110d', border: '1px solid #11111122' }}
                   >
                     <PullRequestOutlined className="text-brand" />
                   </div>
@@ -270,7 +270,7 @@ const New = () => {
                 <div className="flex items-start gap-3 rounded-lg border border-ghost bg-white p-4">
                   <div
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
-                    style={{ background: '#8d54ff0d', border: '1px solid #8d54ff22' }}
+                    style={{ background: '#4b55630d', border: '1px solid #4b556322' }}
                   >
                     <BugOutlined className="text-iris" />
                   </div>

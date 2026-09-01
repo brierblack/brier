@@ -14,21 +14,21 @@ export const STATUS_MAP = {
 } as const;
 
 export const MODE_MAP = {
-  coordinator: { label: '协调者', color: '#fe6e00' },
-  sequential: { label: '顺序流转', color: '#8d54ff' },
-  graph: { label: '图编排', color: '#f99c00' },
+  coordinator: { label: '协调者', color: '#111111' },
+  sequential: { label: '顺序流转', color: '#4b5563' },
+  graph: { label: '图编排', color: '#9ca3af' },
 } as const;
 
 export const SKILL_TYPE_MAP = {
-  builtin: { label: '内置', color: '#fe6e00' },
-  mcp: { label: 'MCP', color: '#00c758' },
-  custom: { label: '自定义', color: '#f99c00' },
+  builtin: { label: '内置', color: '#111111' },
+  mcp: { label: 'MCP', color: '#4b5563' },
+  custom: { label: '自定义', color: '#9ca3af' },
 } as const;
 
 export const WS_TYPE_MAP = {
-  local: { label: '本地', color: '#fe6e00' },
-  ssh: { label: 'SSH', color: '#8d54ff' },
-  cloud: { label: '云主机', color: '#f99c00' },
+  local: { label: '本地', color: '#111111' },
+  ssh: { label: 'SSH', color: '#4b5563' },
+  cloud: { label: '云主机', color: '#9ca3af' },
 } as const;
 
 export const PAGE_TITLES: Record<PageKey, { title: string; subtitle: string }> = {

@@ -71,12 +71,12 @@
 
   --text-standard: 0.8125rem;
 
-  --color-brand: #fe6e00;
-  --color-brand-dark: #f05100;
+  --color-brand: #111111;
+  --color-brand-dark: #000000;
   --color-success: #00c758;
   --color-warn: #f99c00;
   --color-danger: #fb2c36;
-  --color-iris: #8d54ff;
+  --color-iris: #4b5563;
 
   /* 前景内容（文字） */
   --color-ink: #0f172b; /* 主文本 */

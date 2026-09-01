@@ -261,7 +261,7 @@ const Skills = () => {
         {/* Featured section */}
         <div className="mt-12 w-full pb-6">
           <div className="mb-3 flex items-center gap-2">
-            <FireOutlined style={{ color: '#fe6e00' }} />
+            <FireOutlined style={{ color: '#111111' }} />
             <span className="text-standard font-medium">精选技能</span>
             <span className="text-xs">经过验证的优质技能</span>
           </div>

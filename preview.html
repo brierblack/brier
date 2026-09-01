@@ -102,6 +102,12 @@
         background: #33363f;
         color: #fff;
       }
+      .palette-wrap { display: flex; flex-direction: column; gap: 24px; width: 100%; max-width: 760px; }
+      .palette-group { border: 1px solid #e8eaef; border-radius: 14px; background: #fff; padding: 18px 20px; }
+      .group-title { font-size: 12px; font-weight: 600; color: #5b6372; margin-bottom: 14px; }
+      .swatches { display: flex; flex-wrap: wrap; gap: 20px; }
+      .swatch { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #1f2329; line-height: 1.35; }
+      .chip { width: 40px; height: 40px; border-radius: 10px; display: inline-block; flex-shrink: 0; }
     </style>
   </head>
   <body>
@@ -166,6 +172,39 @@
           白叶 · 黑圆底 <span class="tag white">logo-leaf-white-on-black.svg</span>
         </div>
       </div>
+  </div>
+
+  <div class="sec-title">Theme Palette · 单色主题</div>
+  <div class="palette-wrap">
+    <div class="palette-group">
+      <div class="group-title">品牌色 Brand</div>
+      <div class="swatches">
+        <div class="swatch"><span class="chip" style="background:#111111"></span><span>brand 主色<br>#111111</span></div>
+        <div class="swatch"><span class="chip" style="background:#000000;box-shadow:inset 0 0 0 1px #d5d7dd"></span><span>brand-dark<br>#000000</span></div>
+        <div class="swatch"><span class="chip" style="background:#4b5563"></span><span>iris 次级<br>#4b5563</span></div>
+      </div>
     </div>
-  </body>
+    <div class="palette-group">
+      <div class="group-title">中性色 Neutral</div>
+      <div class="swatches">
+        <div class="swatch"><span class="chip" style="background:#0f172b"></span><span>ink 主文本<br>#0f172b</span></div>
+        <div class="swatch"><span class="chip" style="background:#62748e"></span><span>muted<br>#62748e</span></div>
+        <div class="swatch"><span class="chip" style="background:#868686"></span><span>faint<br>#868686</span></div>
+        <div class="swatch"><span class="chip" style="background:#e2e2e2;box-shadow:inset 0 0 0 1px #d5d7dd"></span><span>ghost<br>#e2e2e2</span></div>
+        <div class="swatch"><span class="chip" style="background:#f4f4f4;box-shadow:inset 0 0 0 1px #e2e2e2"></span><span>surface<br>#f4f4f4</span></div>
+        <div class="swatch"><span class="chip" style="background:#fbfbfb;box-shadow:inset 0 0 0 1px #e2e2e2"></span><span>canvas<br>#fbfbfb</span></div>
+        <div class="swatch"><span class="chip" style="background:#ebebeb;box-shadow:inset 0 0 0 1px #e2e2e2"></span><span>hover<br>#ebebeb</span></div>
+      </div>
+    </div>
+    <div class="palette-group">
+      <div class="group-title">功能状态色 Status（保留）</div>
+      <div class="swatches">
+        <div class="swatch"><span class="chip" style="background:#00c758"></span><span>success<br>#00c758</span></div>
+        <div class="swatch"><span class="chip" style="background:#f99c00"></span><span>warn<br>#f99c00</span></div>
+        <div class="swatch"><span class="chip" style="background:#fb2c36"></span><span>danger<br>#fb2c36</span></div>
+        <div class="swatch"><span class="chip" style="background:#1677ff"></span><span>info<br>#1677ff</span></div>
+      </div>
+    </div>
+  </div>
+</body>
 </html>

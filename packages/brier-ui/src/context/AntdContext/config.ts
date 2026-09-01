@@ -4,7 +4,7 @@ export const config: ThemeConfig = {
   token: {
     fontFamily: "'Inter Variable', -apple-system, sans-serif",
     fontSize: 13,
-    colorPrimary: '#fe6e00',
+    colorPrimary: '#111111',
     colorBgContainer: '#fbfbfb',
     colorBorder: '#e2e2e2',
     borderRadiusSM: 4,

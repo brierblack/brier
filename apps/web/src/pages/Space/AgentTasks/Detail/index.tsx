@@ -130,7 +130,7 @@ const ActivityTimeline = ({
         ))}
       </div>
       <div className="flex items-center gap-2 pt-1">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#8d54ff] to-[#7008e7] text-xs font-medium text-white">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#0a0a0a] to-[#3a3a3a] text-xs font-medium text-white">
           RJ
         </span>
         <Input

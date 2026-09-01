@@ -31,7 +31,7 @@ const Login = () => {
           className="absolute inset-0 opacity-40"
           style={{
             background:
-              'radial-gradient(ellipse 80% 60% at 20% 40%, rgba(254,110,0,0.25), transparent), radial-gradient(ellipse 70% 50% at 80% 60%, rgba(111,92,240,0.25), transparent), radial-gradient(ellipse 60% 40% at 50% 20%, rgba(196,74,216,0.15), transparent)',
+              'radial-gradient(ellipse 80% 60% at 20% 40%, rgba(255,255,255,0.08), transparent), radial-gradient(ellipse 70% 50% at 80% 60%, rgba(255,255,255,0.06), transparent), radial-gradient(ellipse 60% 40% at 50% 20%, rgba(255,255,255,0.05), transparent)',
           }}
         />
         {/* Flowing light orbs */}
@@ -42,7 +42,7 @@ const Login = () => {
             height: 500,
             top: '-10%',
             left: '5%',
-            background: 'radial-gradient(circle, rgba(254,110,0,0.3), transparent 70%)',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%)',
             animation: 'float1 18s ease-in-out infinite',
           }}
         />
@@ -53,7 +53,7 @@ const Login = () => {
             height: 400,
             bottom: '-5%',
             right: '10%',
-            background: 'radial-gradient(circle, rgba(111,92,240,0.3), transparent 70%)',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%)',
             animation: 'float2 22s ease-in-out infinite',
           }}
         />
@@ -64,7 +64,7 @@ const Login = () => {
             height: 350,
             top: '40%',
             left: '40%',
-            background: 'radial-gradient(circle, rgba(196,74,216,0.2), transparent 70%)',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.06), transparent 70%)',
             animation: 'float3 15s ease-in-out infinite',
           }}
         />
@@ -96,7 +96,7 @@ const Login = () => {
             <div
               className="mb-4 text-5xl leading-[1.15] font-bold tracking-tight text-white"
               style={{
-                background: 'linear-gradient(135deg, #fff 0%, #fff 40%, #fe6e00 70%, #c44ad8 100%)',
+                background: 'linear-gradient(135deg, #fff 0%, #fff 45%, #9ca3af 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}

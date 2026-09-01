@@ -2,11 +2,11 @@ import type { Workspace } from '@/types';
 import { memo } from 'react';
 
 const COLORS = [
-  'linear-gradient(135deg, #fe6e00, #f05100)',
-  'linear-gradient(135deg, #8d54ff, #7008e7)',
-  'linear-gradient(135deg, #00c758, #009a44)',
-  'linear-gradient(135deg, #1677ff, #0050b3)',
-  'linear-gradient(135deg, #f99c00, #d97706)',
+  'linear-gradient(135deg, #0a0a0a, #262626)',
+  'linear-gradient(135deg, #262626, #404040)',
+  'linear-gradient(135deg, #404040, #595959)',
+  'linear-gradient(135deg, #1f2937, #111827)',
+  'linear-gradient(135deg, #3f3f46, #27272a)',
 ];
 
 export const Avatar = memo(({ workspace }: { workspace: Workspace }) => {

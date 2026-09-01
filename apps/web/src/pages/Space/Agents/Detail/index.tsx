@@ -349,7 +349,7 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
                       className="shrink-0"
                       style={{
                         borderRadius: 8,
-                        background: 'linear-gradient(135deg, #8d54ff, #7008e7)',
+                        background: 'linear-gradient(135deg, #0a0a0a, #3a3a3a)',
                       }}
                     >
                       {user?.username?.slice(0, 2).toUpperCase() ?? 'U'}

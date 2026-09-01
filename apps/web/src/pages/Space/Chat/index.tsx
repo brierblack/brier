@@ -42,7 +42,7 @@ const NewChat = () => {
             <div
               key={i}
               onClick={() => setInput(s.text)}
-              className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-ghost bg-white p-3 transition-all hover:border-brand hover:bg-[#fff5ed]"
+              className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-ghost bg-white p-3 transition-all hover:border-brand hover:bg-[#f5f5f5]"
             >
               <span className="shrink-0 text-base">{s.icon}</span>
               <span className="text-standard">{s.text}</span>

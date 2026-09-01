@@ -288,7 +288,7 @@ export const NavMenu = () => {
                     className="shrink-0"
                     style={{
                       borderRadius: 6,
-                      background: 'linear-gradient(135deg, #8d54ff, #7008e7)',
+                      background: 'linear-gradient(135deg, #0a0a0a, #3a3a3a)',
                     }}
                   >
                     {user.username.slice(0, 2).toUpperCase()}

@@ -41,7 +41,7 @@ const MOCK_MEMBERS: MemberDetail[] = [
     id: 2,
     name: '纪律监察团 Agent',
     icon: '🔍',
-    color: '#8d54ff',
+    color: '#4b5563',
     role: 'reviewer',
     status: 'online',
   },
@@ -49,7 +49,7 @@ const MOCK_MEMBERS: MemberDetail[] = [
     id: 3,
     name: '工程突击营 Agent',
     icon: '⚙️',
-    color: '#fe6e00',
+    color: '#111111',
     role: 'frontend',
     status: 'online',
   },
@@ -106,7 +106,7 @@ const SharingScope = ({
             onClick={() => onSelect(opt.value)}
             className={`flex flex-1 cursor-pointer items-center gap-3 rounded-lg border p-3 transition-all ${
               selected === opt.value
-                ? 'border-brand bg-[#fff5ed]'
+                ? 'border-brand bg-[#f5f5f5]'
                 : 'border-ghost bg-white hover:border-ghost'
             }`}
           >
@@ -157,7 +157,7 @@ const MembersTab = ({
               <div className="flex min-w-0 flex-1 flex-col justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-standard font-medium">{m.name}</span>
-                  {m.isMain && <Tag color="#a855f7">主 Agent</Tag>}
+                  {m.isMain && <Tag color="#111111">主 Agent</Tag>}
                 </div>
                 <div>
                   {m.role ? (
@@ -264,7 +264,7 @@ const TeamDetail = () => {
                 className="size-7 shrink-0 rounded-md object-cover"
               />
               <h1 className="m-0 text-lg font-bold">{team.name}</h1>
-              <Tag color="#a855f7">
+              <Tag color="#111111">
                 {sharing === 'space' ? <GlobalOutlined /> : <LockOutlined />}
                 <span className="ml-1">{sharingOption.label}</span>
               </Tag>
