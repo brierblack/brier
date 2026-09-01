@@ -9,8 +9,7 @@ import {
   BugOutlined,
   CheckOutlined,
 } from '@ant-design/icons';
-import { createWorkspace } from '../../../services/workspace';
-import { fetchRepos, type RepoInfo } from '../../../services/repos';
+import { createWorkspace, listRepos, type RepoInfo } from '@/api/generated';
 
 const STEPS = [{ title: '基础信息' }, { title: '指令' }, { title: '自动化' }];
 
@@ -47,7 +46,7 @@ const New = () => {
   const handleBack = () => navigate(-1);
 
   useEffect(() => {
-    fetchRepos('github')
+    listRepos('github')
       .then(setRepos)
       .catch(() => {});
   }, []);

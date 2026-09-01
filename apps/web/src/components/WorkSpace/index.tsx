@@ -2,9 +2,8 @@ import { memo, useEffect, useMemo, useState } from 'react';
 import { Button, Select } from '@brierb/brier-ui';
 import { PlusOutlined, SwapOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import type { Workspace } from '@/types';
-import { fetchWorkspaces } from '@/services/workspace';
 import { Avatar } from './Avatar';
+import { listWorkspaces, type Workspace } from '@/api/generated';
 
 const CREATE_VALUE = '__create__';
 
@@ -14,7 +13,7 @@ export const WorkSpace = memo(() => {
   const [currentId, setCurrentId] = useState<string>('');
 
   useEffect(() => {
-    fetchWorkspaces().then((data) => {
+    listWorkspaces().then((data) => {
       setWorkspaces(data);
       setCurrentId(data[0]?.id ?? '');
     });

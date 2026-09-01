@@ -1,4 +1,4 @@
-import type { Workspace } from '@/types';
+import type { Workspace } from '@/api/generated';
 import { memo } from 'react';
 
 const COLORS = [
