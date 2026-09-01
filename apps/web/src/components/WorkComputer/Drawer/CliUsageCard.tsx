@@ -53,7 +53,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
               <Tag className="!border-ghost !bg-[#f0f0f0] !text-[#999]">已安装过可跳过</Tag>
             </div>
             <div className="flex items-center gap-2 rounded bg-[#f5f5f5] px-3 py-2">
-              <code className="flex-1 font-mono text-standard">{commands.install}</code>
+              <code className="flex-1 text-standard">{commands.install}</code>
               <Button
                 type="text"
                 size="small"
@@ -71,7 +71,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
               <span className="text-standard font-medium">启动后台服务</span>
             </div>
             <div className="flex items-center gap-2 rounded bg-[#f5f5f5] px-3 py-2">
-              <code className="flex-1 font-mono text-standard break-all">{commands.start}</code>
+              <code className="flex-1 text-standard break-all">{commands.start}</code>
               <Button
                 type="text"
                 size="small"
@@ -105,7 +105,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
       ),
       children: (
         <div className="flex items-center gap-2 rounded bg-[#f5f5f5] px-3 py-2">
-          <code className="flex-1 font-mono text-standard">{commands.stop}</code>
+          <code className="flex-1 text-standard">{commands.stop}</code>
           <Button
             type="text"
             size="small"
@@ -125,7 +125,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
       ),
       children: (
         <div className="flex items-center gap-2 rounded bg-[#f5f5f5] px-3 py-2">
-          <code className="flex-1 font-mono text-standard">{commands.restart}</code>
+          <code className="flex-1 text-standard">{commands.restart}</code>
           <Button
             type="text"
             size="small"

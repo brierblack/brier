@@ -2,7 +2,7 @@ import type { ThemeConfig } from 'antd';
 
 export const config: ThemeConfig = {
   token: {
-    fontFamily: "'Inter Variable', -apple-system, sans-serif",
+    fontFamily: "'Noto Sans SC Variable', -apple-system, sans-serif",
     fontSize: 13,
     colorText: '#1f2328',
     colorPrimary: '#111111',

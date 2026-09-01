@@ -39,15 +39,9 @@ const menuItems: MenuProps['items'] = [
     label: '新会话',
     extra: (
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100">
-        <kbd className="inline-flex items-center justify-center font-sans text-xs text-faint">
-          ⌘
-        </kbd>
-        <kbd className="inline-flex items-center justify-center font-sans text-xs text-faint">
-          ⇧
-        </kbd>
-        <kbd className="inline-flex items-center justify-center font-sans text-xs text-faint">
-          O
-        </kbd>
+        <kbd className="inline-flex items-center justify-center text-xs text-faint">⌘</kbd>
+        <kbd className="inline-flex items-center justify-center text-xs text-faint">⇧</kbd>
+        <kbd className="inline-flex items-center justify-center text-xs text-faint">O</kbd>
       </div>
     ),
   },

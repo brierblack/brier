@@ -105,7 +105,7 @@ const New = () => {
           <BulbOutlined className="mt-0.5 text-[#1677ff]" />
           <div className="text-standard leading-relaxed">
             <span className="">推荐使用 </span>
-            <code className="rounded bg-[#e6f4ff] px-1.5 py-0.5 font-mono text-xs text-[#1677ff]">
+            <code className="rounded bg-[#e6f4ff] px-1.5 py-0.5 text-xs text-[#1677ff]">
               /skill-creator
             </code>
             <span className=""> 命令让 AI 辅助你创建技能，手动上传适合已有技能包的用户。</span>

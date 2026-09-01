@@ -36,13 +36,13 @@ const MANUAL_ITEMS: CollapseProps['items'] = [
         <div>
           <div className="mb-1 text-xs">1. 安装 brier CLI</div>
           <div className="rounded bg-[#f5f5f5] px-3 py-2">
-            <code className="font-mono text-standard">npm install -g @brierb/brier-cli@latest</code>
+            <code className="text-standard">npm install -g @brierb/brier-cli@latest</code>
           </div>
         </div>
         <div>
           <div className="mb-1 text-xs">2. 启动后台服务</div>
           <div className="rounded bg-[#f5f5f5] px-3 py-2">
-            <code className="font-mono text-standard break-all">
+            <code className="text-standard break-all">
               BRIER_TOKEN='your-token' brier daemon start --server-url https://brier.local
             </code>
           </div>
@@ -133,7 +133,7 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
         {/* 展开后的 Prompt 内容 */}
         {showPrompt && (
           <div className="px-3 py-2">
-            <pre className="m-0 font-mono text-xs leading-relaxed whitespace-pre-wrap text-[#86909c]">
+            <pre className="m-0 text-xs leading-relaxed whitespace-pre-wrap text-[#86909c]">
               {PROMPT_CONTENT}
             </pre>
           </div>

@@ -383,7 +383,7 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
                 y={GROUND_Y - 40}
                 textAnchor="middle"
                 fill="var(--color-faint)"
-                className="font-sans text-[14px] font-medium"
+                className="text-[14px] font-medium"
               >
                 {s.phase === 'idle' ? '按空格 / 点击开始' : `撞上了  ${scoreStr}  按空格再来`}
               </text>
@@ -408,7 +408,7 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
             <ReloadOutlined className="text-sm" />
             重试
           </button>
-          <code className="mt-2 max-w-sm truncate font-mono text-[11px] text-faint/70">
+          <code className="mt-2 max-w-sm truncate text-[11px] text-faint/70">
             {error.message || error.name}
           </code>
         </div>
