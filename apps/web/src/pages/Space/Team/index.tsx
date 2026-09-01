@@ -133,7 +133,7 @@ const Team = () => {
           <Input
             placeholder="搜索团队名称、描述或创建者..."
             prefix={<SearchOutlined />}
-            style={{ width: 320 }}
+            className="!w-[320px]"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             allowClear

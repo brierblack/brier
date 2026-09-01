@@ -167,7 +167,7 @@ const MembersTab = ({
                   )}
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-full" style={{ background: '#389e0d' }} />
+                  <span className="size-1.5 rounded-full bg-[#389e0d]" />
                   <span>在线</span>
                 </div>
               </div>

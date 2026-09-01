@@ -316,7 +316,7 @@ export const TimerConfigPanel = ({
               onConfigChange({ ...config, preset: null, frequency: v as TimerConfig['frequency'] })
             }
             options={FREQUENCY_OPTIONS}
-            style={{ width: 120 }}
+            className="!w-[120px]"
           />
         </div>
         <div className="flex items-center gap-1">
@@ -324,14 +324,14 @@ export const TimerConfigPanel = ({
             value={config.hour}
             onChange={(v) => onConfigChange({ ...config, preset: null, hour: v })}
             options={HOUR_OPTIONS}
-            style={{ width: 64 }}
+            className="!w-[64px]"
           />
           <span className="text-standard">:</span>
           <Select
             value={config.minute}
             onChange={(v) => onConfigChange({ ...config, preset: null, minute: v })}
             options={MINUTE_OPTIONS}
-            style={{ width: 64 }}
+            className="!w-[64px]"
           />
         </div>
       </div>
@@ -391,14 +391,14 @@ export const GitHubFiltersPanel = ({
             value={filter.field}
             onChange={(v) => updateFilter(filter.id, { field: v })}
             options={fieldOptions}
-            style={{ width: 140 }}
+            className="!w-[140px]"
             variant="filled"
           />
           <Select
             value={filter.operator}
             onChange={(v) => updateFilter(filter.id, { operator: v })}
             options={OPERATOR_OPTIONS}
-            style={{ width: 120 }}
+            className="!w-[120px]"
             variant="filled"
           />
           <input
@@ -536,7 +536,7 @@ export const InstructionEditor = ({
               </span>
             ),
           }))}
-          style={{ width: 240 }}
+          className="!w-[240px]"
         />
       </div>
 

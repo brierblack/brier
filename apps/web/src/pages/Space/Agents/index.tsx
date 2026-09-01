@@ -172,7 +172,7 @@ const Agents = () => {
           <Input
             placeholder="搜索 Agent 名称..."
             prefix={<SearchOutlined />}
-            style={{ width: 320 }}
+            className="!w-[320px]"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />

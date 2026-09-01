@@ -75,7 +75,6 @@ const Settings = () => {
             selectedKeys={[activeKey]}
             onClick={({ key }) => setActiveKey(key)}
             items={SETTINGS_NAV}
-            style={{ borderInlineEnd: 'none' }}
             classNames={{
               root: ' flex! flex-col! !border-none !gap-1 !bg-transparent',
               item: ' !px-2 !m-0 !h-8 !leading-8 !text-standard !w-full',
@@ -123,11 +122,7 @@ const Settings = () => {
                 </Form.Item>
 
                 <Form.Item label="描述" name="description">
-                  <Input.TextArea
-                    placeholder="简单介绍下空间"
-                    rows={3}
-                    style={{ resize: 'none' }}
-                  />
+                  <Input.TextArea placeholder="简单介绍下空间" rows={3} className="resize-none" />
                 </Form.Item>
 
                 <Form.Item
@@ -218,7 +213,7 @@ const Settings = () => {
                       '默认使用中文回复\n回复保持简洁，结论优先\n修改代码后运行项目检查\n在已授权仓库内可以直接完成代码修改'
                     }
                     rows={12}
-                    style={{ resize: 'none' }}
+                    className="resize-none"
                   />
                 </Form.Item>
 

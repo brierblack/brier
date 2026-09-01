@@ -12,15 +12,8 @@ export interface WordmarkProps {
  */
 export const Wordmark = memo(({ className, style }: WordmarkProps) => {
   return (
-    <span
-      className={className}
-      style={{
-        fontWeight: 700,
-        letterSpacing: '-0.02em',
-        ...style,
-      }}
-    >
-      <span style={{ color: '#0f172b' }}>Brier</span>
+    <span className={`font-bold tracking-tight ${className ?? ''}`} style={style}>
+      <span className="text-ink">Brier</span>
     </span>
   );
 });

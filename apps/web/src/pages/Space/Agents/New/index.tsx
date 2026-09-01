@@ -188,7 +188,7 @@ const NewAgent = () => {
         {/* 基本信息 */}
         <SectionCard title="基本信息">
           <div className="flex gap-5">
-            <Form.Item label="头像" className="shrink-0" style={{ marginBottom: 0 }}>
+            <Form.Item label="头像" className="!mb-0 shrink-0">
               <Upload
                 showUploadList={false}
                 beforeUpload={(file) => {
@@ -311,7 +311,7 @@ const NewAgent = () => {
               prefix={<SearchOutlined className="" />}
               value={extSearch}
               onChange={(e) => setExtSearch(e.target.value)}
-              style={{ width: 240 }}
+              className="!w-[240px]"
             />
             <Button size="small" type="text" icon={<AppstoreOutlined />}>
               发现扩展

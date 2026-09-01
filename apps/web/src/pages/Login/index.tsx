@@ -27,58 +27,15 @@ const Login = () => {
     <div className="relative flex h-screen overflow-hidden bg-[#0a0e1a]">
       {/* Animated flowing background */}
       <div className="absolute inset-0">
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            background:
-              'radial-gradient(ellipse 80% 60% at 20% 40%, rgba(255,255,255,0.08), transparent), radial-gradient(ellipse 70% 50% at 80% 60%, rgba(255,255,255,0.06), transparent), radial-gradient(ellipse 60% 40% at 50% 20%, rgba(255,255,255,0.05), transparent)',
-          }}
-        />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_20%_40%,rgba(255,255,255,0.08),transparent),radial-gradient(ellipse_70%_50%_at_80%_60%,rgba(255,255,255,0.06),transparent),radial-gradient(ellipse_60%_40%_at_50%_20%,rgba(255,255,255,0.05),transparent)] opacity-40" />
         {/* Flowing light orbs */}
-        <div
-          className="absolute rounded-full blur-3xl"
-          style={{
-            width: 500,
-            height: 500,
-            top: '-10%',
-            left: '5%',
-            background: 'radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%)',
-            animation: 'float1 18s ease-in-out infinite',
-          }}
-        />
-        <div
-          className="absolute rounded-full blur-3xl"
-          style={{
-            width: 400,
-            height: 400,
-            bottom: '-5%',
-            right: '10%',
-            background: 'radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%)',
-            animation: 'float2 22s ease-in-out infinite',
-          }}
-        />
-        <div
-          className="absolute rounded-full blur-3xl"
-          style={{
-            width: 350,
-            height: 350,
-            top: '40%',
-            left: '40%',
-            background: 'radial-gradient(circle, rgba(255,255,255,0.06), transparent 70%)',
-            animation: 'float3 15s ease-in-out infinite',
-          }}
-        />
+        <div className="absolute top-[-10%] left-[5%] size-[500px] [animation:float1_18s_ease-in-out_infinite] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.1),transparent_70%)] blur-3xl" />
+        <div className="absolute right-[10%] bottom-[-5%] size-[400px] [animation:float2_22s_ease-in-out_infinite] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.08),transparent_70%)] blur-3xl" />
+        <div className="absolute top-[40%] left-[40%] size-[350px] [animation:float3_15s_ease-in-out_infinite] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.06),transparent_70%)] blur-3xl" />
       </div>
 
       {/* Grid overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
-        }}
-      />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] bg-[length:48px_48px] opacity-[0.03]" />
 
       {/* Content layer */}
       <div className="relative z-10 flex w-full items-center">
@@ -93,14 +50,7 @@ const Login = () => {
           </div>
 
           <div className="-mt-10 flex flex-1 flex-col justify-center">
-            <div
-              className="mb-4 text-5xl leading-[1.15] font-bold tracking-tight text-white"
-              style={{
-                background: 'linear-gradient(135deg, #fff 0%, #fff 45%, #9ca3af 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
+            <div className="mb-4 bg-[linear-gradient(135deg,#fff_0%,#fff_45%,#9ca3af_100%)] bg-clip-text text-5xl leading-[1.15] font-bold tracking-tight text-transparent">
               让 AI Agent
               <br />
               真正参与开发
@@ -135,18 +85,9 @@ const Login = () => {
 
         {/* Right login panel */}
         <div className="flex h-full flex-1 items-center justify-center px-8">
-          <div className="w-full max-w-sm" style={{ animation: 'fadeUp 0.7s ease-out 0.2s both' }}>
+          <div className="w-full max-w-sm [animation:fadeUp_0.7s_ease-out_0.2s_both]">
             {/* Glass card */}
-            <div
-              className="rounded-[28px] p-9"
-              style={{
-                background: 'rgba(255,255,255,0.04)',
-                backdropFilter: 'blur(24px)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                boxShadow:
-                  '0 24px 48px -12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)',
-              }}
-            >
+            <div className="rounded-[28px] border border-white/8 bg-[rgba(255,255,255,0.04)] p-9 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
               {/* Mobile logo */}
               <div className="mb-6 flex items-center justify-center gap-2.5 lg:hidden">
                 <BrierLogo size={40} />
@@ -182,7 +123,7 @@ const Login = () => {
 
               <div className="space-y-2.5">
                 <div className="flex items-center justify-center gap-2 text-xs text-white/40">
-                  <span className="size-1.5 rounded-full" style={{ background: '#00c758' }} />
+                  <span className="size-1.5 rounded-full bg-success" />
                   <span>所有服务运行正常</span>
                 </div>
                 <p className="text-center text-xs leading-relaxed text-white/30">

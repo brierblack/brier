@@ -81,7 +81,7 @@ const New = () => {
           <span className="text-xs">创建类型</span>
           <Select
             defaultValue="skill"
-            style={{ width: 120 }}
+            className="!w-[120px]"
             options={[
               { label: 'Skill', value: 'skill' },
               { label: 'Plugin', value: 'plugin', disabled: true },
@@ -101,17 +101,11 @@ const New = () => {
         </div>
 
         {/* Info banner */}
-        <div
-          className="mb-6 flex items-start gap-3 rounded-lg p-3.5"
-          style={{ background: '#eff8ff', border: '1px solid #91caff' }}
-        >
-          <BulbOutlined style={{ color: '#1677ff', marginTop: 2 }} />
+        <div className="mb-6 flex items-start gap-3 rounded-lg border border-[#91caff] bg-[#eff8ff] p-3.5">
+          <BulbOutlined className="mt-0.5 text-[#1677ff]" />
           <div className="text-standard leading-relaxed">
             <span className="">推荐使用 </span>
-            <code
-              className="rounded px-1.5 py-0.5 font-mono text-xs"
-              style={{ background: '#e6f4ff', color: '#1677ff' }}
-            >
+            <code className="rounded bg-[#e6f4ff] px-1.5 py-0.5 font-mono text-xs text-[#1677ff]">
               /skill-creator
             </code>
             <span className=""> 命令让 AI 辅助你创建技能，手动上传适合已有技能包的用户。</span>

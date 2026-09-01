@@ -73,7 +73,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
       open={open}
       onClose={onClose}
       destroyOnHidden
-      styles={{ body: { padding: 0 } }}
+      classNames={{ body: '!p-0' }}
       extra={
         <Space>
           <Button icon={<ReloadOutlined />} onClick={handleRefresh} loading={refreshing}>

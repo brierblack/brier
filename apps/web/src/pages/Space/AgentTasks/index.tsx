@@ -61,10 +61,7 @@ const AgentTasks = () => {
                 label: (
                   <span className="flex items-center gap-1">
                     待处理
-                    <span
-                      className="flex size-4 items-center justify-center rounded-full bg-[#fa8c16]/10 text-[10px] font-medium"
-                      style={{ color: '#fa8c16' }}
-                    >
+                    <span className="flex size-4 items-center justify-center rounded-full bg-[#fa8c16]/10 text-[10px] font-medium text-[#fa8c16]">
                       {countByStatus.pending}
                     </span>
                   </span>
@@ -75,10 +72,7 @@ const AgentTasks = () => {
                 label: (
                   <span className="flex items-center gap-1">
                     处理中
-                    <span
-                      className="flex size-4 items-center justify-center rounded-full bg-[#1677ff]/10 text-[10px] font-medium"
-                      style={{ color: '#1677ff' }}
-                    >
+                    <span className="flex size-4 items-center justify-center rounded-full bg-[#1677ff]/10 text-[10px] font-medium text-[#1677ff]">
                       {countByStatus.processing}
                     </span>
                   </span>
@@ -89,10 +83,7 @@ const AgentTasks = () => {
                 label: (
                   <span className="flex items-center gap-1">
                     已完成
-                    <span
-                      className="flex size-4 items-center justify-center rounded-full bg-[#52c41a]/10 text-[10px] font-medium"
-                      style={{ color: '#52c41a' }}
-                    >
+                    <span className="flex size-4 items-center justify-center rounded-full bg-[#52c41a]/10 text-[10px] font-medium text-[#52c41a]">
                       {countByStatus.completed}
                     </span>
                   </span>
@@ -104,7 +95,7 @@ const AgentTasks = () => {
           <Input
             placeholder="搜索事项..."
             prefix={<SearchOutlined />}
-            style={{ width: 260 }}
+            className="!w-[260px]"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             allowClear

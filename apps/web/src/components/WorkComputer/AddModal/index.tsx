@@ -106,7 +106,7 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
             size="small"
             icon={<CopyOutlined />}
             onClick={handleCopyPrompt}
-            style={{ background: '#1677ff', borderColor: '#1677ff', color: '#fff' }}
+            className="!border-[#1677ff] !bg-[#1677ff] !text-white"
           >
             复制 Prompt
           </Button>

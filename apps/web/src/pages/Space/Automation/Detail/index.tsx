@@ -245,7 +245,7 @@ const BarChart = ({ data }: { data: DailyStat[] }) => {
           执行中
         </span>
       </div>
-      <div className="flex items-end gap-2" style={{ height: 100 }}>
+      <div className="flex h-[100px] items-end gap-2">
         {data.map((d) => {
           const total = d.success + d.failed + d.running;
           const heightPct = total > 0 ? (total / maxValue) * 100 : 0;
@@ -408,7 +408,7 @@ const ExecutionRecordsTab = () => {
           value={statusFilter}
           onChange={setStatusFilter}
           options={STATUS_FILTER_OPTIONS}
-          style={{ width: 120 }}
+          className="!w-[120px]"
         />
         <span className="text-xs text-muted">8/21 - 8/27</span>
         <Button type="text" icon={<ReloadOutlined />} className="ml-auto">

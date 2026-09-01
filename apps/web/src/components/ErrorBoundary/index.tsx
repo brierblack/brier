@@ -302,11 +302,7 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
             jump();
           }}
         >
-          <svg
-            viewBox={`0 0 ${GAME_W} ${GAME_H}`}
-            className="block w-full"
-            style={{ aspectRatio: `${GAME_W} / ${GAME_H}` }}
-          >
+          <svg viewBox={`0 0 ${GAME_W} ${GAME_H}`} className="block aspect-[3/2] w-full">
             {/* 星星装饰 */}
             {s.stars.map((st, i) => (
               <Star key={i} x={st.x} y={st.y} t={st.t} />
@@ -316,7 +312,7 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
             {s.clouds.map((c, i) => (
               <g
                 key={i}
-                style={{ color: 'var(--color-faint)' }}
+                className="text-faint"
                 transform={`translate(${c.x} ${c.y}) scale(${c.s})`}
               >
                 <Cloud />
@@ -347,7 +343,7 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
               return (
                 <g
                   key={i}
-                  style={{ color: 'var(--color-ink)' }}
+                  className="text-ink"
                   transform={`translate(${o.x} ${GROUND_Y - o.h}) scale(${scale})`}
                 >
                   <Cactus />
@@ -356,7 +352,7 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
             })}
 
             {/* 恐龙（墨色剪影） */}
-            <g style={{ color: 'var(--color-ink)' }} transform={`translate(${DINO_X} ${dinoTopY})`}>
+            <g className="text-ink" transform={`translate(${DINO_X} ${dinoTopY})`}>
               <Dino frame={frame} jumping={s.dinoY < 0} />
             </g>
 
@@ -366,7 +362,7 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
               y="30"
               textAnchor="end"
               fill="var(--color-muted)"
-              style={{ font: '700 16px var(--font-mono)' }}
+              className="font-mono text-[16px] font-bold"
             >
               {scoreStr}
             </text>
@@ -375,7 +371,7 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
               y="46"
               textAnchor="end"
               fill="var(--color-faint)"
-              style={{ font: '500 10px var(--font-mono)' }}
+              className="font-mono text-[10px] font-medium"
             >
               HI {bestStr}
             </text>
@@ -387,7 +383,7 @@ const CrashScreen = ({ error, onRetry }: { error: Error; onRetry: () => void }) 
                 y={GROUND_Y - 40}
                 textAnchor="middle"
                 fill="var(--color-faint)"
-                style={{ font: '500 14px var(--font-sans)' }}
+                className="font-sans text-[14px] font-medium"
               >
                 {s.phase === 'idle' ? '按空格 / 点击开始' : `撞上了  ${scoreStr}  按空格再来`}
               </text>

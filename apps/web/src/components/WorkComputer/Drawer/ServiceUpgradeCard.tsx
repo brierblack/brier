@@ -20,11 +20,7 @@ export const ServiceUpgradeCard = memo(
         {isLatest ? (
           <Tag
             icon={<CheckCircleOutlined />}
-            style={{
-              background: '#389e0d1a',
-              borderColor: '#389e0d33',
-              color: '#389e0d',
-            }}
+            className="!border-[#389e0d33] !bg-[#389e0d1a] !text-[#389e0d]"
           >
             已是最新
           </Tag>

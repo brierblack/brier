@@ -136,7 +136,7 @@ const New = () => {
         <div className="mx-auto max-w-[720px]">
           <Form form={form} layout="vertical" requiredMark>
             {/* Step 0: Basic info - kept mounted via CSS to preserve field values */}
-            <div style={{ display: currentStep === 0 ? 'block' : 'none' }}>
+            <div className={currentStep === 0 ? 'block' : 'hidden'}>
               <p className="mb-6 text-standard">完善空间基础信息</p>
 
               {/* Avatar + Name (required, same row) */}
@@ -179,7 +179,7 @@ const New = () => {
                 <Input.TextArea
                   placeholder="描述空间的用途和目标"
                   rows={3}
-                  style={{ resize: 'none' }}
+                  className="resize-none"
                 />
               </Form.Item>
 
@@ -215,7 +215,7 @@ const New = () => {
             </div>
 
             {/* Step 1: Instructions */}
-            <div style={{ display: currentStep === 1 ? 'block' : 'none' }}>
+            <div className={currentStep === 1 ? 'block' : 'hidden'}>
               <div className="mb-1 flex items-center justify-between">
                 <span className="text-standard font-medium">指令（可选）</span>
                 <Button size="small" onClick={handleInsertTemplate}>
@@ -224,12 +224,12 @@ const New = () => {
               </div>
               <p className="mb-4 text-xs">为所有在空间内工作的 Agent 提供自定义指令和上下文</p>
               <Form.Item name="instructions">
-                <Input.TextArea placeholder="模版内容" rows={12} style={{ resize: 'none' }} />
+                <Input.TextArea placeholder="模版内容" rows={12} className="resize-none" />
               </Form.Item>
             </div>
 
             {/* Step 2: Automation */}
-            <div style={{ display: currentStep === 2 ? 'block' : 'none' }}>
+            <div className={currentStep === 2 ? 'block' : 'hidden'}>
               <div className="mb-1 flex items-center justify-between">
                 <span className="text-standard font-medium">开启自动化（可选）</span>
               </div>
@@ -240,10 +240,7 @@ const New = () => {
               <div className="flex flex-col gap-3">
                 {/* Card 1: PR auto review */}
                 <div className="flex items-start gap-3 rounded-lg border border-ghost bg-white p-4">
-                  <div
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
-                    style={{ background: '#1111110d', border: '1px solid #11111122' }}
-                  >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#11111122] bg-[#1111110d]">
                     <PullRequestOutlined className="text-brand" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -268,10 +265,7 @@ const New = () => {
 
                 {/* Card 2: Issue auto assign */}
                 <div className="flex items-start gap-3 rounded-lg border border-ghost bg-white p-4">
-                  <div
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
-                    style={{ background: '#4b55630d', border: '1px solid #4b556322' }}
-                  >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#4b556322] bg-[#4b55630d]">
                     <BugOutlined className="text-iris" />
                   </div>
                   <div className="min-w-0 flex-1">

@@ -175,11 +175,7 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
               name="mainAgent"
               rules={[{ required: true, message: '请选择主 Agent' }]}
             >
-              <Select
-                placeholder="选择一个主 Agent"
-                style={{ width: '100%' }}
-                options={AGENT_OPTIONS}
-              />
+              <Select placeholder="选择一个主 Agent" className="!w-full" options={AGENT_OPTIONS} />
             </Form.Item>
           </div>
 
@@ -193,7 +189,7 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
             <Form.Item noStyle name="members">
               <Select
                 placeholder="添加协作 Agent"
-                style={{ width: '100%' }}
+                className="!w-full"
                 options={AGENT_OPTIONS}
                 mode="multiple"
               />

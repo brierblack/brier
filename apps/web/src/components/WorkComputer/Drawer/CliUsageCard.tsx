@@ -50,15 +50,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
                 1
               </span>
               <span className="text-standard font-medium">安装 Brier CLI</span>
-              <Tag
-                style={{
-                  background: '#f0f0f0',
-                  borderColor: 'var(--color-ghost)',
-                  color: '#999',
-                }}
-              >
-                已安装过可跳过
-              </Tag>
+              <Tag className="!border-ghost !bg-[#f0f0f0] !text-[#999]">已安装过可跳过</Tag>
             </div>
             <div className="flex items-center gap-2 rounded bg-[#f5f5f5] px-3 py-2">
               <code className="flex-1 font-mono text-standard">{commands.install}</code>
@@ -98,7 +90,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
                 <Link onClick={() => handleRefresh()}>刷新</Link> 即可更新。
               </span>
             }
-            style={{ padding: '8px 12px' }}
+            className="!px-3 !py-2"
           />
         </div>
       ),
@@ -151,12 +143,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
         activeKey={activeKeys}
         onChange={(keys) => setActiveKeys(keys as string[])}
         items={cliItems}
-        className="brier-cli-collapse"
-        style={{
-          background: 'transparent',
-          border: 'none',
-          borderBottom: '1px solid var(--color-ghost)',
-        }}
+        className="brier-cli-collapse !border-0 !border-b !border-b-ghost !bg-transparent"
       />
     </Card>
   );

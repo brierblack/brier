@@ -40,20 +40,11 @@ export const MessageBubble = ({
           <p className="leading-relaxed break-words whitespace-pre-wrap">{message.content}</p>
         </div>
         {user?.avatar_url ? (
-          <Avatar
-            size={32}
-            src={user.avatar_url}
-            className="shrink-0"
-            style={{ borderRadius: 8 }}
-          />
+          <Avatar size={32} src={user.avatar_url} className="shrink-0 !rounded-[8px]" />
         ) : (
           <Avatar
             size={32}
-            className="shrink-0"
-            style={{
-              borderRadius: 8,
-              background: 'linear-gradient(135deg, #0a0a0a, #3a3a3a)',
-            }}
+            className="shrink-0 !rounded-[8px] !bg-[linear-gradient(135deg,#0a0a0a,#3a3a3a)]"
           >
             {user?.username?.slice(0, 2).toUpperCase() ?? 'U'}
           </Avatar>
@@ -83,18 +74,9 @@ export const TypingIndicator = ({ agent }: { agent: Agent }) => {
         <div className="text-[11px] font-medium">{agent.name}</div>
         <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-3">
           <div className="flex items-center gap-1">
-            <span
-              className="size-1.5 animate-bounce rounded-full"
-              style={{ animationDelay: '0ms' }}
-            />
-            <span
-              className="size-1.5 animate-bounce rounded-full"
-              style={{ animationDelay: '150ms' }}
-            />
-            <span
-              className="size-1.5 animate-bounce rounded-full"
-              style={{ animationDelay: '300ms' }}
-            />
+            <span className="size-1.5 animate-bounce rounded-full [animation-delay:0ms]" />
+            <span className="size-1.5 animate-bounce rounded-full [animation-delay:150ms]" />
+            <span className="size-1.5 animate-bounce rounded-full [animation-delay:300ms]" />
           </div>
         </div>
       </div>

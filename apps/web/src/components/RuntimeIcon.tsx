@@ -72,8 +72,7 @@ export const RuntimeIcon = ({ name, size = 14 }: { name: string; size?: number }
       width={size}
       height={size}
       alt={vendor.vendor}
-      className="shrink-0"
-      style={{ borderRadius: 2 }}
+      className="shrink-0 rounded-[2px]"
       onError={() => setFailed(true)}
     />
   );

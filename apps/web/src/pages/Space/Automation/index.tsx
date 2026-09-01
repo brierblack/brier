@@ -255,7 +255,7 @@ const Automation = () => {
         onClick={() => navigate('/space/automation/new')}
         className="fixed right-6 bottom-6 z-50 flex size-12 items-center justify-center rounded-full bg-brand text-white shadow-lg transition-transform hover:scale-110"
       >
-        <PlusOutlined style={{ fontSize: 20 }} />
+        <PlusOutlined className="text-[20px]" />
       </button>
     </Page>
   );

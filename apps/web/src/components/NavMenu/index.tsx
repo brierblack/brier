@@ -276,20 +276,11 @@ export const NavMenu = () => {
             labelRender={() => (
               <div className="flex w-full items-center gap-2.5">
                 {user.avatar_url ? (
-                  <Avatar
-                    size={26}
-                    src={user.avatar_url}
-                    className="shrink-0"
-                    style={{ borderRadius: 6 }}
-                  />
+                  <Avatar size={26} src={user.avatar_url} className="shrink-0 !rounded-[6px]" />
                 ) : (
                   <Avatar
                     size={26}
-                    className="shrink-0"
-                    style={{
-                      borderRadius: 6,
-                      background: 'linear-gradient(135deg, #0a0a0a, #3a3a3a)',
-                    }}
+                    className="shrink-0 !rounded-[6px] !bg-[linear-gradient(135deg,#0a0a0a,#3a3a3a)]"
                   >
                     {user.username.slice(0, 2).toUpperCase()}
                   </Avatar>
@@ -297,7 +288,7 @@ export const NavMenu = () => {
                 <div className="min-w-0 flex-1 text-left">
                   <div className="truncate text-sm font-medium">{user.username}</div>
                 </div>
-                <GithubFilled style={{ fontSize: 16 }} />
+                <GithubFilled className="text-[16px]" />
               </div>
             )}
             options={userOptions}

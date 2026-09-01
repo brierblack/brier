@@ -337,20 +337,11 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
                     </p>
                   </div>
                   {user?.avatar_url ? (
-                    <Avatar
-                      size={32}
-                      src={user.avatar_url}
-                      className="shrink-0"
-                      style={{ borderRadius: 8 }}
-                    />
+                    <Avatar size={32} src={user.avatar_url} className="shrink-0 !rounded-[8px]" />
                   ) : (
                     <Avatar
                       size={32}
-                      className="shrink-0"
-                      style={{
-                        borderRadius: 8,
-                        background: 'linear-gradient(135deg, #0a0a0a, #3a3a3a)',
-                      }}
+                      className="shrink-0 !rounded-[8px] !bg-[linear-gradient(135deg,#0a0a0a,#3a3a3a)]"
                     >
                       {user?.username?.slice(0, 2).toUpperCase() ?? 'U'}
                     </Avatar>
@@ -377,18 +368,9 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
                   <div className="text-[11px] font-medium">{agent.name}</div>
                   <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-3">
                     <div className="flex items-center gap-1">
-                      <span
-                        className="size-1.5 animate-bounce rounded-full"
-                        style={{ animationDelay: '0ms' }}
-                      />
-                      <span
-                        className="size-1.5 animate-bounce rounded-full"
-                        style={{ animationDelay: '150ms' }}
-                      />
-                      <span
-                        className="size-1.5 animate-bounce rounded-full"
-                        style={{ animationDelay: '300ms' }}
-                      />
+                      <span className="size-1.5 animate-bounce rounded-full [animation-delay:0ms]" />
+                      <span className="size-1.5 animate-bounce rounded-full [animation-delay:150ms]" />
+                      <span className="size-1.5 animate-bounce rounded-full [animation-delay:300ms]" />
                     </div>
                   </div>
                 </div>
@@ -554,7 +536,7 @@ const InstructionsTab = () => {
             '默认使用中文回复\n回复保持简洁，结论优先\n修改代码后运行项目检查\n在已授权仓库内可以直接完成代码修改'
           }
           rows={12}
-          style={{ resize: 'none' }}
+          className="resize-none"
         />
       </div>
     </div>
@@ -626,7 +608,6 @@ const AgentDetail = () => {
             selectedKeys={[activeKey]}
             onClick={({ key }) => setActiveKey(key)}
             items={menuItems}
-            style={{ borderInlineEnd: 'none' }}
             classNames={menuClassNames}
           />
         </div>
