@@ -43,6 +43,10 @@
     padding: 0;
   }
 
+  html {
+    @apply text-ink;
+  }
+
   body {
     font-family: var(--font-sans);
     font-size: 14px;
@@ -79,7 +83,7 @@
   --color-iris: #4b5563;
 
   /* 前景内容（文字） */
-  --color-ink: #0f172b; /* 主文本 */
+  --color-ink: #1f2328; /* 主文本 */
   --color-muted: #62748e; /* 次要文本 */
   --color-faint: #868686; /* 占位/禁用 */
 
