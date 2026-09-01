@@ -1,5 +1,5 @@
 use brier_error::Result;
-use brier_type::id::UserId;
+use brier_type::id::{UserId, WorkspaceId};
 use brier_type::Workspace;
 use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait};
 use sea_orm::DatabaseBackend;
@@ -12,6 +12,24 @@ pub async fn create_workspace(db: &DatabaseConnection, ws: Workspace) -> Result<
     let active: workspace::ActiveModel = ws.into();
     let model = active.insert(db).await.map_err(DbErrExt::to_brier)?;
     Ok(model.into())
+}
+
+pub async fn get_workspace_for_user(
+    db: &DatabaseConnection,
+    workspace_id: &WorkspaceId,
+    user_id: &UserId,
+) -> Result<Option<Workspace>> {
+    let stmt = Statement::from_sql_and_values(
+        DatabaseBackend::Postgres,
+        "SELECT w.* FROM workspaces w LEFT JOIN workspace_members wm ON wm.workspace_id = w.id WHERE w.id = $1 AND (w.creator_id = $2 OR wm.user_id = $2)",
+        [workspace_id.0.into(), user_id.0.into()],
+    );
+    let result = workspace::Entity::find()
+        .from_raw_sql(stmt)
+        .one(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    Ok(result.map(Workspace::from))
 }
 
 pub async fn list_workspaces_for_user(db: &DatabaseConnection, user_id: UserId) -> Result<Vec<Workspace>> {

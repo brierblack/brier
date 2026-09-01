@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Form, Input, Select, Switch, Upload } from 'antd';
 import { Button, Menu } from '@brierb/brier-ui';
 import {
@@ -12,6 +12,7 @@ import {
 import { Page, Tag } from '@brierb/brier-ui';
 import { skills } from '../../../data/mockData';
 import { SKILL_TYPE_MAP } from '../../../define';
+import { getWorkspace, listWorkspaces } from '@/api/generated';
 
 const SETTINGS_NAV = [
   { key: 'basic', label: '基础信息', icon: <UserOutlined /> },
@@ -53,6 +54,33 @@ const Settings = () => {
   const handleInsertTemplate = () => {
     form.setFieldValue('instructions', INSTRUCTION_TEMPLATE);
   };
+
+  // 加载当前空间（与顶部工作空间切换器默认选中一致：取列表第一个），回填表单
+  useEffect(() => {
+    let cancelled = false;
+    listWorkspaces()
+      .then((list) => {
+        if (cancelled) return;
+        const ws = list[0];
+        if (!ws) return;
+        return getWorkspace(ws.id).then((detail) => {
+          if (cancelled) return;
+          setAvatarUrl(detail.avatar ?? '');
+          setPublicSpace(false);
+          form.setFieldsValue({
+            name: detail.name,
+            description: detail.description ?? '',
+            identifier: detail.slug,
+            repositories: detail.repositories ?? [],
+            instructions: detail.instructions ?? '',
+          });
+        });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <Page

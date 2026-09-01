@@ -1,8 +1,9 @@
-use axum::extract::State;
+use axum::extract::{Path, State};
 use axum::http::HeaderMap;
 use axum::routing::get;
 use axum::{Json, Router};
 use chrono::Utc;
+use brier_error::BrierError;
 use brier_type::id::WorkspaceId;
 use brier_type::Workspace;
 use serde::Deserialize;
@@ -26,6 +27,31 @@ pub(crate) struct CreateWorkspaceRequest {
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_workspaces).post(create_workspace))
+        .route("/{workspace_id}", get(get_workspace))
+}
+
+/// 获取工作空间详情（需登录 + 空间成员或创建者）。
+#[utoipa::path(
+    get,
+    path = "/api/workspaces/{workspace_id}",
+    params(("workspace_id" = WorkspaceId, Path, description = "工作空间 ID")),
+    responses(
+        (status = 200, description = "工作空间详情", body = Workspace),
+        (status = 401, description = "未登录"),
+        (status = 404, description = "空间不存在或无权限")
+    )
+)]
+pub(crate) async fn get_workspace(
+    State(state): State<AppState>,
+    Path(workspace_id): Path<WorkspaceId>,
+    headers: HeaderMap,
+) -> Result<Json<Workspace>, ApiError> {
+    let user = current_user(&state, &headers).await?;
+    let workspace =
+        brier_database::repository::get_workspace_for_user(&state.db, &workspace_id, &user.id)
+            .await?
+            .ok_or_else(|| ApiError(BrierError::NotFound("workspace not found".into())))?;
+    Ok(Json(workspace))
 }
 
 /// 创建空间（需登录）。

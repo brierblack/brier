@@ -24,6 +24,7 @@ use crate::routes::workspace::CreateWorkspaceRequest;
         crate::routes::auth::logout,
         crate::routes::workspace::create_workspace,
         crate::routes::workspace::list_workspaces,
+        crate::routes::workspace::get_workspace,
         crate::routes::forge::list_repos,
     ),
     components(schemas(User, Workspace, RepoInfo, CreateWorkspaceRequest))
