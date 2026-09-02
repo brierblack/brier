@@ -9,7 +9,7 @@ brier-contract = { workspace = true, features = ["openapi"] }
 brier-error.workspace = true
 brier-config.workspace = true
 brier-forge.workspace = true
-brier-database.workspace = true
+brier-workspace.workspace = true
 brier-type = { workspace = true, features = ["openapi"] }
 brier-user.workspace = true
 brier-jwt.workspace = true

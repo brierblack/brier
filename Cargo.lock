@@ -333,6 +333,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "brier-agent"
+version = "0.1.0"
+dependencies = [
+ "brier-error",
+ "brier-type",
+ "chrono",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "brier-api"
 version = "0.1.0"
 dependencies = [
@@ -340,12 +354,12 @@ dependencies = [
  "brier-config",
  "brier-contract",
  "brier-core",
- "brier-database",
  "brier-error",
  "brier-forge",
  "brier-jwt",
  "brier-type",
  "brier-user",
+ "brier-workspace",
  "chrono",
  "cookie",
  "futures",
@@ -391,14 +405,9 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "brier-error",
- "brier-type",
- "chrono",
  "sea-orm",
  "sea-orm-migration",
- "serde",
- "serde_json",
  "tracing",
- "uuid",
 ]
 
 [[package]]
@@ -454,6 +463,20 @@ dependencies = [
  "sea-orm",
  "serde",
  "serde_json",
+ "uuid",
+]
+
+[[package]]
+name = "brier-workspace"
+version = "0.1.0"
+dependencies = [
+ "brier-error",
+ "brier-type",
+ "chrono",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "tracing",
  "uuid",
 ]
 

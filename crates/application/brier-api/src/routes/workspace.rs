@@ -48,7 +48,7 @@ pub(crate) async fn get_workspace(
 ) -> Result<Json<Workspace>, ApiError> {
     let user = current_user(&state, &headers).await?;
     let workspace =
-        brier_database::repository::get_workspace_for_user(&state.db, &workspace_id, &user.id)
+        brier_workspace::repository::get_workspace_for_user(&state.db, &workspace_id, &user.id)
             .await?
             .ok_or_else(|| ApiError(BrierError::NotFound("workspace not found".into())))?;
     Ok(Json(workspace))
@@ -86,7 +86,7 @@ pub(crate) async fn create_workspace(
         created_at: now,
         updated_at: now,
     };
-    let created = brier_database::repository::create_workspace(&state.db, workspace).await?;
+    let created = brier_workspace::repository::create_workspace(&state.db, workspace).await?;
     Ok(Json(created))
 }
 
@@ -105,6 +105,6 @@ pub(crate) async fn list_workspaces(
 ) -> Result<Json<Vec<Workspace>>, ApiError> {
     let user = current_user(&state, &headers).await?;
     let workspaces =
-        brier_database::repository::list_workspaces_for_user(&state.db, user.id).await?;
+        brier_workspace::repository::list_workspaces_for_user(&state.db, user.id).await?;
     Ok(Json(workspaces))
 }
