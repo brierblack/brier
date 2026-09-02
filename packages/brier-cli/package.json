@@ -1,6 +1,14 @@
 {
   "name": "@brierb/brier-cli",
-  "version": "0.0.1",
+  "version": "0.0.4",
+  "description": "Brier 平台接入命令行工具：通过加密隧道将本机接入 Brier 远程编码池，接收并执行远程任务",
+  "keywords": [
+    "brier",
+    "cli",
+    "tunnel",
+    "agent"
+  ],
+  "license": "MIT",
   "type": "module",
   "bin": {
     "brier": "./dist/index.js"
@@ -19,10 +27,16 @@
     "dist",
     "types"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "pnpm run build",
+    "release:patch": "npm version patch --no-git-tag-version && npm publish --access public",
+    "release:minor": "npm version minor --no-git-tag-version && npm publish --access public",
+    "release:major": "npm version major --no-git-tag-version && npm publish --access public"
   },
   "publishConfig": {
     "access": "public"
