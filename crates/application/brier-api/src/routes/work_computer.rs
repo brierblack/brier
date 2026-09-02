@@ -1,14 +1,18 @@
 use axum::extract::{Path, State};
 use axum::http::HeaderMap;
+use axum::response::sse::{Event as SseEvent, Sse};
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use chrono::Utc;
+use futures::stream::{self, Stream};
 use serde::{Deserialize, Serialize};
+use std::convert::Infallible;
+use tokio::sync::broadcast::error::RecvError;
 
 use brier_error::BrierError;
 use brier_type::enums::{WorkComputerStatus, WorkComputerType};
-use brier_type::id::WorkComputerId;
-use brier_type::WorkComputer;
+use brier_type::id::{UserId, WorkComputerId};
+use brier_type::{WorkComputer, WorkComputerEvent};
 
 use crate::error::ApiError;
 use crate::routes::current_user;
@@ -37,6 +41,10 @@ pub fn router() -> Router<AppState> {
         .route(
             "/api/work-computers/connect-token",
             post(create_connect_token),
+        )
+        .route(
+            "/api/work-computers/events",
+            get(stream_work_computer_events),
         )
         .route(
             "/api/work-computers/{computer_id}",
@@ -92,6 +100,7 @@ pub(crate) async fn create_work_computer(
         updated_at: now,
     };
     let created = brier_agent::repository::create_work_computer(&state.db, wc).await?;
+    publish_wc_event(&state, user.id, WorkComputerEvent::Updated { computer_id: created.id }).await;
     Ok(Json(created))
 }
 
@@ -165,5 +174,38 @@ pub(crate) async fn delete_work_computer(
         return Err(ApiError(BrierError::NotFound("work computer not found".into())));
     }
     brier_agent::repository::delete_work_computer(&state.db, computer_id).await?;
+    publish_wc_event(&state, user.id, WorkComputerEvent::Deleted { computer_id }).await;
     Ok(Json(()))
+}
+
+/// 向用户推送工作电脑状态事件（JSON 字符串；无订阅者时静默）。
+async fn publish_wc_event(state: &AppState, user_id: UserId, event: WorkComputerEvent) {
+    if let Ok(payload) = serde_json::to_string(&event) {
+        state.event_bus.publish(user_id.0, payload).await;
+    }
+}
+
+/// 工作电脑事件 SSE：电脑上线/下线/删除时推送，前端收到后刷新列表。
+/// 鉴权走会话 Cookie（EventSource 同源自动携带），未登录返回 401。
+pub(crate) async fn stream_work_computer_events(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> Result<Sse<impl Stream<Item = Result<SseEvent, Infallible>>>, ApiError> {
+    let user = current_user(&state, &headers).await?;
+    let rx = state.event_bus.subscribe(user.id.0).await;
+
+    let stream = stream::unfold(rx, |mut rx| async move {
+        loop {
+            match rx.recv().await {
+                Ok(payload) => {
+                    return Some((Ok::<_, Infallible>(SseEvent::default().data(payload)), rx));
+                }
+                // 订阅者积压落后：跳过旧事件，等待最新（列表拉取是全量，不依赖增量）
+                Err(RecvError::Lagged(_)) => continue,
+                Err(RecvError::Closed) => return None,
+            }
+        }
+    });
+
+    Ok(Sse::new(stream))
 }

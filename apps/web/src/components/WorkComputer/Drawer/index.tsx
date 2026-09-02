@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { App, Space } from 'antd';
 import { Button, Drawer } from '@brierb/brier-ui';
 import { DesktopOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { createConnectToken, deleteWorkComputer, listWorkComputers } from '@/api/generated';
 import type { WorkComputer } from '@/types';
 import { useApi } from '@/hooks/useApi';
+import { useWorkComputerEvents } from '@/hooks/useWorkComputerEvents';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AddComputerModal } from '../AddModal';
 import { buildCliCommands } from '../commands';
@@ -167,12 +168,8 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
   const [refreshTick, setRefreshTick] = useState(0);
   const [addModalOpen, setAddModalOpen] = useState(false);
 
-  // 打开期间每 5s 轮询：自动发现新接入电脑、刷新在线/离线状态
-  useEffect(() => {
-    if (!open) return;
-    const timer = setInterval(() => setRefreshTick((t) => t + 1), 5000);
-    return () => clearInterval(timer);
-  }, [open]);
+  // SSE 事件驱动：电脑上线/下线/删除时刷新一次列表，替代定时轮询
+  useWorkComputerEvents(open, () => setRefreshTick((t) => t + 1));
 
   const handleRefresh = () => {
     setRefreshTick((t) => t + 1);

@@ -1,4 +1,5 @@
 use brier_config::AppConfig;
+use brier_core::event_bus::EventBus;
 use brier_core::tunnel::ConnectionRegistry;
 use brier_crypto::TokenCipher;
 use brier_forge::ProviderRegistry;
@@ -19,6 +20,8 @@ pub struct AppState {
     pub cookie_secure: bool,
     pub frontend_url: Option<String>,
     pub tunnel_registry: ConnectionRegistry,
+    /// 每用户 SSE 事件广播：工作电脑状态变更推送给前端（替代轮询）。
+    pub event_bus: EventBus,
     /// 第三方 OAuth 令牌加解密器（AES-256-GCM），加密存储在 user_identities.access_token。
     pub token_cipher: TokenCipher,
 }
@@ -33,6 +36,7 @@ impl AppState {
             cookie_secure: config.server.cookie_secure,
             frontend_url: config.server.frontend_url.clone(),
             tunnel_registry: ConnectionRegistry::new(),
+            event_bus: EventBus::new(),
             token_cipher: TokenCipher::from_key_str(&config.server.token_encryption_key)
                 .expect("TOKEN_ENCRYPTION_KEY must be valid and non-empty"),
         }

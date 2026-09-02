@@ -434,6 +434,7 @@ dependencies = [
  "brier-type",
  "tokio",
  "tracing",
+ "uuid",
 ]
 
 [[package]]

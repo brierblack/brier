@@ -3,8 +3,9 @@ use axum::extract::State;
 use axum::http::{header, HeaderMap, StatusCode};
 use axum::response::{IntoResponse, Response};
 use brier_crypto::hash_token;
-use brier_type::id::WorkComputerId;
+use brier_type::id::{UserId, WorkComputerId};
 use brier_type::tunnel::{ClientMessage, ServerMessage};
+use brier_type::WorkComputerEvent;
 use chrono::Utc;
 use futures::{SinkExt, StreamExt};
 use tokio::sync::mpsc;
@@ -46,8 +47,8 @@ async fn handle_connection(socket: WebSocket, state: AppState, token: String) {
 
     let (tx, mut rx) = mpsc::unbounded_channel::<ServerMessage>();
     let token_hash = hash_token(&token);
-    // 鉴权通过前不占用 registry；断开清理依赖 computer id
-    let mut computer: Option<WorkComputerId> = None;
+    // 鉴权通过前不占用 registry；(computer_id, user_id) 供断开清理与事件推送
+    let mut computer: Option<(WorkComputerId, UserId)> = None;
 
     loop {
         tokio::select! {
@@ -82,17 +83,26 @@ async fn handle_connection(socket: WebSocket, state: AppState, token: String) {
         }
     }
 
-    if let Some(cid) = computer {
+    if let Some((cid, user_id)) = computer {
         state.tunnel_registry.unregister(&cid.to_string(), &tx).await;
-        // 顶号场景：同 key 已被新连接持有时不置 offline
+        // 顶号场景：同 key 已被新连接持有时不置 offline、不推事件
         if !state.tunnel_registry.is_online(&cid.to_string()).await {
             if let Err(e) =
                 brier_agent::repository::mark_work_computer_offline(&state.db, cid).await
             {
                 tracing::warn!(computer_id = %cid, error = %e, "failed to mark work computer offline");
             }
+            publish_wc_event(&state, user_id, WorkComputerEvent::Updated { computer_id: cid })
+                .await;
         }
         tracing::info!(computer_id = %cid, "work computer tunnel disconnected");
+    }
+}
+
+/// 向用户推送工作电脑状态事件（JSON 字符串；无订阅者时静默）。
+async fn publish_wc_event(state: &AppState, user_id: UserId, event: WorkComputerEvent) {
+    if let Ok(payload) = serde_json::to_string(&event) {
+        state.event_bus.publish(user_id.0, payload).await;
     }
 }
 
@@ -101,7 +111,7 @@ async fn handle_client_message(
     state: &AppState,
     tx: &mpsc::UnboundedSender<ServerMessage>,
     token_hash: &str,
-    computer: &mut Option<WorkComputerId>,
+    computer: &mut Option<(WorkComputerId, UserId)>,
     msg: ClientMessage,
 ) {
     match msg {
@@ -153,7 +163,7 @@ async fn handle_client_message(
                 Ok(model) => {
                     let cid = WorkComputerId(model.id);
                     state.tunnel_registry.register(&cid.to_string(), tx.clone()).await;
-                    *computer = Some(cid);
+                    *computer = Some((cid, user_id));
                     let _ = tx.send(ServerMessage::AuthOk {
                         computer_id: cid.to_string(),
                     });
@@ -161,6 +171,8 @@ async fn handle_client_message(
                         user_id = %user_id, computer_id = %cid, hostname,
                         "work computer authenticated"
                     );
+                    publish_wc_event(&state, user_id, WorkComputerEvent::Updated { computer_id: cid })
+                        .await;
                 }
                 Err(e) => {
                     tracing::error!(error = %e, "work computer upsert failed");
@@ -171,7 +183,7 @@ async fn handle_client_message(
             }
         }
         ClientMessage::Heartbeat { timestamp } => {
-            if let Some(cid) = *computer {
+            if let Some((cid, _)) = *computer {
                 let now = Utc::now();
                 if let Err(e) =
                     brier_agent::repository::touch_work_computer_heartbeat(&state.db, cid, now)
