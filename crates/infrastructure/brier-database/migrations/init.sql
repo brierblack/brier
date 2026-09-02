@@ -55,9 +55,22 @@ CREATE TABLE IF NOT EXISTS work_computers (
     host          TEXT NOT NULL,
     os            TEXT NOT NULL,
     status        TEXT NOT NULL CHECK (status IN ('online', 'offline')),
+    last_seen_at  TIMESTAMPTZ,
+    runtimes      TEXT,
     created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- 用户接入令牌（BRIER_TOKEN）：每用户一个活动令牌，刷新即替换，哈希存储
+CREATE TABLE IF NOT EXISTS user_connect_tokens (
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id    UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    token_hash TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_work_computers_user_host
+    ON work_computers(user_id, host);
 
 CREATE TABLE IF NOT EXISTS agents (
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),

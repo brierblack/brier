@@ -111,6 +111,13 @@ export interface AgentTeam {
   workspace_id: WorkspaceId;
 }
 
+/**
+ * 接入令牌响应：原文只在生成时返回一次，服务端仅存哈希。
+ */
+export interface ConnectTokenResponse {
+  token: string;
+}
+
 export interface CreateAgentRequest {
   /** @nullable */
   color?: string | null;
@@ -223,6 +230,8 @@ export interface WorkComputer {
   created_at: string;
   host: string;
   id: WorkComputerId;
+  /** @nullable */
+  last_seen_at?: string | null;
   name: string;
   os: string;
   status: WorkComputerStatus;
@@ -408,6 +417,31 @@ return customFetch<WorkComputer>(getCreateWorkComputerUrl(),
 
 
 
+export const getCreateConnectTokenUrl = () => {
+
+
+
+
+  return `/api/work-computers/connect-token`
+}
+
+/**
+ * @summary 生成/刷新当前用户的接入令牌（BRIER_TOKEN），供 CLI 隧道连接使用。
+每用户仅保留一个活动令牌：再次调用即旧令牌失效。
+ */
+export const createConnectToken = async ( options?: Parameters<typeof customFetch>[1]): Promise<ConnectTokenResponse> => {
+
+  return customFetch<ConnectTokenResponse>(getCreateConnectTokenUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
 export const getGetWorkComputerUrl = (computerId: WorkComputerId,) => {
 
 
@@ -422,6 +456,30 @@ export const getWorkComputer = async (computerId: WorkComputerId, options?: Para
   {
     ...options,
     method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getDeleteWorkComputerUrl = (computerId: WorkComputerId,) => {
+
+
+
+
+  return `/api/work-computers/${computerId}`
+}
+
+/**
+ * @summary 删除工作电脑（需本人；关联的 Agent 自动解除绑定）。
+ */
+export const deleteWorkComputer = async (computerId: WorkComputerId, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteWorkComputerUrl(computerId),
+  {
+    ...options,
+    method: 'DELETE'
 
 
   }

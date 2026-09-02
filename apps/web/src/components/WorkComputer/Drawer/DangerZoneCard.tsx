@@ -1,14 +1,13 @@
 import { memo } from 'react';
-import { Button } from '@brierb/brier-ui';
+import { Button, Card } from '@brierb/brier-ui';
 import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Card } from '@brierb/brier-ui';
 
 interface DangerZoneCardProps {
-  agentCount: number;
+  deleting?: boolean;
   onDelete: () => void;
 }
 
-export const DangerZoneCard = memo(({ agentCount, onDelete }: DangerZoneCardProps) => (
+export const DangerZoneCard = memo(({ deleting, onDelete }: DangerZoneCardProps) => (
   <Card title="危险操作">
     <div className="flex items-center justify-between p-4">
       <div className="flex items-start gap-2">
@@ -16,11 +15,11 @@ export const DangerZoneCard = memo(({ agentCount, onDelete }: DangerZoneCardProp
         <div>
           <div className="text-standard font-medium">删除 Agent 工作电脑</div>
           <div className="mt-1 text-xs">
-            该 Agent 工作电脑上还有 {agentCount} 个 Agent，请先删除所有 Agent 再删除。
+            删除后该电脑将无法接入平台；其上关联的 Agent 会自动解绑，需重新接入。
           </div>
         </div>
       </div>
-      <Button danger icon={<DeleteOutlined />} onClick={onDelete}>
+      <Button danger icon={<DeleteOutlined />} loading={deleting} onClick={onDelete}>
         删除 Agent 工作电脑
       </Button>
     </div>

@@ -13,7 +13,7 @@ use utoipa::OpenApi;
 
 use crate::routes::agent::CreateAgentRequest;
 use crate::routes::team::CreateTeamRequest;
-use crate::routes::work_computer::CreateWorkComputerRequest;
+use crate::routes::work_computer::{ConnectTokenResponse, CreateWorkComputerRequest};
 use crate::routes::workspace::CreateWorkspaceRequest;
 
 #[derive(OpenApi)]
@@ -41,13 +41,16 @@ use crate::routes::workspace::CreateWorkspaceRequest;
         crate::routes::team::get_team,
         crate::routes::work_computer::list_work_computers,
         crate::routes::work_computer::create_work_computer,
+        crate::routes::work_computer::create_connect_token,
         crate::routes::work_computer::get_work_computer,
+        crate::routes::work_computer::delete_work_computer,
     ),
     components(schemas(
         User, Workspace, RepoInfo, CreateWorkspaceRequest,
         Agent, AgentTeam, WorkComputer,
         AgentId, AgentTeamId, WorkComputerId, WorkspaceId,
         CreateAgentRequest, CreateTeamRequest, CreateWorkComputerRequest,
+        ConnectTokenResponse,
     ))
 )]
 pub struct ApiDoc;

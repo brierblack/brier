@@ -2,23 +2,21 @@ import { memo, useState } from 'react';
 import { App, Collapse, Alert, Typography } from 'antd';
 import { Button } from '@brierb/brier-ui';
 import type { CollapseProps } from 'antd';
-import { CopyOutlined } from '@ant-design/icons';
+import { CopyOutlined, KeyOutlined } from '@ant-design/icons';
 import { Card, Tag } from '@brierb/brier-ui';
+import type { CliCommands } from '../commands';
 
 const { Link } = Typography;
 
-interface CliCommands {
-  install: string;
-  start: string;
-  stop: string;
-  restart: string;
-}
-
 interface CliUsageCardProps {
-  commands: CliCommands;
+  /** 接入命令；未获取令牌时为 undefined（卡片引导先获取令牌）。 */
+  commands?: CliCommands;
+  /** 获取/刷新接入令牌（user 级：新令牌会使旧连接失效，需用新命令重启）。 */
+  onRefreshToken: () => Promise<void>;
+  refreshing?: boolean;
 }
 
-export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
+export const CliUsageCard = memo(({ commands, onRefreshToken, refreshing }: CliUsageCardProps) => {
   const { message } = App.useApp();
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
 
@@ -27,9 +25,40 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
     message.success('已复制到剪贴板');
   };
 
-  const handleRefresh = () => {
-    message.success('已刷新');
+  const handleRefresh = async () => {
+    try {
+      await onRefreshToken();
+      message.success('已生成新接入令牌');
+    } catch {
+      // 错误提示由调用方处理
+    }
   };
+
+  const startBlock = commands ? (
+    <div className="flex items-center gap-2 rounded bg-[#f5f5f5] px-3 py-2">
+      <code className="flex-1 text-standard break-all">{commands.start}</code>
+      <Button
+        type="text"
+        size="small"
+        icon={<CopyOutlined />}
+        onClick={() => handleCopy(commands.start)}
+      />
+    </div>
+  ) : (
+    <div className="flex items-center gap-2 rounded bg-[#f5f5f5] px-3 py-2">
+      <span className="flex-1 text-xs text-[#86909c]">尚未获取接入令牌，点击右侧按钮生成</span>
+      <Button
+        type="primary"
+        size="small"
+        ghost
+        icon={<KeyOutlined />}
+        loading={refreshing}
+        onClick={handleRefresh}
+      >
+        获取令牌
+      </Button>
+    </div>
+  );
 
   const cliItems: CollapseProps['items'] = [
     {
@@ -38,7 +67,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
         <div>
           <div className="text-standard font-medium">连接命令</div>
           <div className="mt-0.5 text-xs">
-            与"添加我的电脑"使用同一套接入命令，临时密钥过期后可刷新
+            与"添加我的电脑"使用同一套接入命令，令牌过期或失效后可刷新
           </div>
         </div>
       ),
@@ -53,13 +82,17 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
               <Tag className="!border-ghost !bg-[#f0f0f0] !text-[#999]">已安装过可跳过</Tag>
             </div>
             <div className="flex items-center gap-2 rounded bg-[#f5f5f5] px-3 py-2">
-              <code className="flex-1 text-standard">{commands.install}</code>
-              <Button
-                type="text"
-                size="small"
-                icon={<CopyOutlined />}
-                onClick={() => handleCopy(commands.install)}
-              />
+              <code className="flex-1 text-standard">
+                {commands?.install ?? 'npm install -g @brierb/brier-cli@latest'}
+              </code>
+              {commands && (
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<CopyOutlined />}
+                  onClick={() => handleCopy(commands.install)}
+                />
+              )}
             </div>
           </div>
 
@@ -70,15 +103,7 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
               </span>
               <span className="text-standard font-medium">启动后台服务</span>
             </div>
-            <div className="flex items-center gap-2 rounded bg-[#f5f5f5] px-3 py-2">
-              <code className="flex-1 text-standard break-all">{commands.start}</code>
-              <Button
-                type="text"
-                size="small"
-                icon={<CopyOutlined />}
-                onClick={() => handleCopy(commands.start)}
-              />
-            </div>
+            {startBlock}
           </div>
 
           <Alert
@@ -86,8 +111,8 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
             showIcon={false}
             message={
               <span className="text-xs">
-                BRIER_TOKEN 为临时密钥，请勿分享，有效期约 30 天。过期或不可用时点{' '}
-                <Link onClick={() => handleRefresh()}>刷新</Link> 即可更新。
+                BRIER_TOKEN 为临时密钥，请勿分享。失效或更换电脑后点{' '}
+                <Link onClick={handleRefresh}>刷新令牌</Link> 重新生成（会断开旧连接）。
               </span>
             }
             className="!px-3 !py-2"
@@ -105,13 +130,15 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
       ),
       children: (
         <div className="flex items-center gap-2 rounded bg-[#f5f5f5] px-3 py-2">
-          <code className="flex-1 text-standard">{commands.stop}</code>
-          <Button
-            type="text"
-            size="small"
-            icon={<CopyOutlined />}
-            onClick={() => handleCopy(commands.stop)}
-          />
+          <code className="flex-1 text-standard">{commands?.stop ?? 'brier daemon stop'}</code>
+          {commands && (
+            <Button
+              type="text"
+              size="small"
+              icon={<CopyOutlined />}
+              onClick={() => handleCopy(commands.stop)}
+            />
+          )}
         </div>
       ),
     },
@@ -125,13 +152,17 @@ export const CliUsageCard = memo(({ commands }: CliUsageCardProps) => {
       ),
       children: (
         <div className="flex items-center gap-2 rounded bg-[#f5f5f5] px-3 py-2">
-          <code className="flex-1 text-standard">{commands.restart}</code>
-          <Button
-            type="text"
-            size="small"
-            icon={<CopyOutlined />}
-            onClick={() => handleCopy(commands.restart)}
-          />
+          <code className="flex-1 text-standard">
+            {commands?.restart ?? 'brier daemon restart'}
+          </code>
+          {commands && (
+            <Button
+              type="text"
+              size="small"
+              icon={<CopyOutlined />}
+              onClick={() => handleCopy(commands.restart)}
+            />
+          )}
         </div>
       ),
     },

@@ -1,8 +1,9 @@
-//! 令牌加解密工具（AES-256-GCM）。
+//! 令牌加解密与接入令牌哈希工具。
 //!
-//! 用于透明加密存储在 user_identities.access_token 中的第三方 OAuth 令牌。
-//! 密钥从环境变量 TOKEN_ENCRYPTION_KEY 读取，经 SHA-256 派生为 32 字节 AES 密钥，
-//! 与 JWT_SECRET 独立，不复用。
+//! - `TokenCipher`：AES-256-GCM 可逆加密（用于 user_identities.access_token 等
+//!   需要读回明文的第三方 OAuth 令牌），密钥经 SHA-256 派生，与 JWT_SECRET 独立。
+//! - `hash_token`：SHA-256 不可逆哈希（用于 BRIER_TOKEN 接入令牌的落库存储，
+//!   原文只在生成时返回一次，校验时比对哈希）。
 
 use aes_gcm::aead::{Aead, KeyInit};
 use aes_gcm::{Aes256Gcm, Key, Nonce};
@@ -10,6 +11,20 @@ use base64::Engine;
 use brier_error::{BrierError, Result};
 use rand::RngCore;
 use sha2::{Digest, Sha256};
+
+/// 对接入令牌做不可逆哈希（SHA-256 → base64），用于 user_connect_tokens 落库。
+pub fn hash_token(token: &str) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(token.as_bytes());
+    base64::engine::general_purpose::STANDARD.encode(hasher.finalize())
+}
+
+/// 生成高强度随机接入令牌（32 字节 → base64url，不含 padding）。
+pub fn generate_token() -> String {
+    use rand::Rng;
+    let bytes: [u8; 32] = rand::thread_rng().gen();
+    base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(bytes)
+}
 
 #[derive(Clone)]
 pub struct TokenCipher {

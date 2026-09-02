@@ -13,6 +13,7 @@ pub struct WorkComputer {
     pub host: String,
     pub os: String,
     pub status: WorkComputerStatus,
+    pub last_seen_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

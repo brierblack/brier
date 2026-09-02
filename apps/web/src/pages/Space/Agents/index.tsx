@@ -142,6 +142,7 @@ const AgentsTable = ({ wsId, workComputers }: { wsId: string; workComputers: Wor
               items: actionMenuItems,
               onClick: ({ key }) => {
                 if (key === 'view') navigate(`/space/agents/${r.id}`);
+                if (key === 'computer') setComputerDrawerOpen(true);
               },
             }}
             trigger={['click']}

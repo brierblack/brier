@@ -1,10 +1,14 @@
 use brier_error::Result;
 use brier_type::id::*;
 use brier_type::{Agent, AgentTeam, WorkComputer};
-use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use chrono::{DateTime, Utc};
+use sea_orm::sea_query::OnConflict;
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set,
+};
 
 use crate::convert::DbErrExt;
-use crate::entity::{agent, agent_team, work_computer};
+use crate::entity::{agent, agent_team, user_connect_token, work_computer};
 
 // ---- Agent ----
 
@@ -108,4 +112,150 @@ pub async fn create_work_computer(
     let active: work_computer::ActiveModel = wc.into();
     let model = active.insert(db).await.map_err(DbErrExt::to_brier)?;
     WorkComputer::try_from(model)
+}
+
+// ---- WorkComputer：隧道接入（BRIER_TOKEN）----
+
+/// 写入/刷新用户的接入令牌哈希（每用户一个活动令牌，冲突即覆盖）。
+pub async fn set_connect_token(
+    db: &DatabaseConnection,
+    user_id: UserId,
+    token_hash: &str,
+) -> Result<()> {
+    let now = Utc::now();
+    user_connect_token::Entity::insert(user_connect_token::ActiveModel {
+        id: Set(uuid::Uuid::new_v4()),
+        user_id: Set(user_id.0),
+        token_hash: Set(token_hash.to_string()),
+        created_at: Set(now),
+    })
+    .on_conflict(
+        OnConflict::column(user_connect_token::Column::UserId)
+            .update_column(user_connect_token::Column::TokenHash)
+            .update_column(user_connect_token::Column::CreatedAt)
+            .to_owned(),
+    )
+    .exec(db)
+    .await
+    .map_err(DbErrExt::to_brier)?;
+    Ok(())
+}
+
+/// 按令牌哈希反查所属用户（隧道握手鉴权）。
+pub async fn find_user_by_connect_token(
+    db: &DatabaseConnection,
+    token_hash: &str,
+) -> Result<Option<UserId>> {
+    let model = user_connect_token::Entity::find()
+        .filter(user_connect_token::Column::TokenHash.eq(token_hash))
+        .one(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    Ok(model.map(|m| UserId(m.user_id)))
+}
+
+/// 按 (user_id, hostname) 查找电脑（upsert 前置查询）。
+pub async fn find_work_computer_by_user_host(
+    db: &DatabaseConnection,
+    user_id: UserId,
+    host: &str,
+) -> Result<Option<work_computer::Model>> {
+    let model = work_computer::Entity::find()
+        .filter(work_computer::Column::UserId.eq(user_id.0))
+        .filter(work_computer::Column::Host.eq(host))
+        .one(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    Ok(model)
+}
+
+/// CLI Auth 上报：按 hostname 有则更新、无则创建，置 online 并回写心跳。
+pub async fn upsert_online_work_computer(
+    db: &DatabaseConnection,
+    user_id: UserId,
+    hostname: &str,
+    os: &str,
+    runtimes: Option<&[String]>,
+    now: DateTime<Utc>,
+) -> Result<work_computer::Model> {
+    let runtimes_json = runtimes
+        .map(|r| serde_json::to_string(r).unwrap_or_default());
+
+    if let Some(existing) =
+        find_work_computer_by_user_host(db, user_id, hostname).await?
+    {
+        let active = work_computer::ActiveModel {
+            id: Set(existing.id),
+            os: Set(os.to_string()),
+            status: Set("online".to_string()),
+            last_seen_at: Set(Some(now)),
+            runtimes: Set(runtimes_json),
+            updated_at: Set(now),
+            ..Default::default()
+        };
+        let model = active.update(db).await.map_err(DbErrExt::to_brier)?;
+        return Ok(model);
+    }
+
+    let model = work_computer::ActiveModel {
+        id: Set(uuid::Uuid::new_v4()),
+        user_id: Set(user_id.0),
+        name: Set(hostname.to_string()),
+        computer_type: Set("local".to_string()),
+        host: Set(hostname.to_string()),
+        os: Set(os.to_string()),
+        status: Set("online".to_string()),
+        last_seen_at: Set(Some(now)),
+        runtimes: Set(runtimes_json),
+        created_at: Set(now),
+        updated_at: Set(now),
+    }
+    .insert(db)
+    .await
+    .map_err(DbErrExt::to_brier)?;
+    Ok(model)
+}
+
+/// 心跳落点：更新 last_seen_at（registry 在线由连接维护）。
+pub async fn touch_work_computer_heartbeat(
+    db: &DatabaseConnection,
+    computer_id: WorkComputerId,
+    now: DateTime<Utc>,
+) -> Result<()> {
+    let active = work_computer::ActiveModel {
+        id: Set(computer_id.0),
+        last_seen_at: Set(Some(now)),
+        updated_at: Set(now),
+        ..Default::default()
+    };
+    active.update(db).await.map_err(DbErrExt::to_brier)?;
+    Ok(())
+}
+
+/// 断开连接时置 offline。
+pub async fn mark_work_computer_offline(
+    db: &DatabaseConnection,
+    computer_id: WorkComputerId,
+) -> Result<()> {
+    let now = Utc::now();
+    let active = work_computer::ActiveModel {
+        id: Set(computer_id.0),
+        status: Set("offline".to_string()),
+        updated_at: Set(now),
+        ..Default::default()
+    };
+    active.update(db).await.map_err(DbErrExt::to_brier)?;
+    Ok(())
+}
+
+/// 删除工作电脑（关联 agents.work_computer_id 由 FK ON DELETE SET NULL 自动清空）。
+pub async fn delete_work_computer(
+    db: &DatabaseConnection,
+    computer_id: WorkComputerId,
+) -> Result<()> {
+    work_computer::Entity::delete_by_id(computer_id.0)
+        .exec(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    Ok(())
 }

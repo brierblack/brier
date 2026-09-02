@@ -2,8 +2,11 @@ use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
 use axum::extract::State;
 use axum::http::{header, HeaderMap, StatusCode};
 use axum::response::{IntoResponse, Response};
-use futures::{SinkExt, StreamExt};
+use brier_crypto::hash_token;
+use brier_type::id::WorkComputerId;
 use brier_type::tunnel::{ClientMessage, ServerMessage};
+use chrono::Utc;
+use futures::{SinkExt, StreamExt};
 use tokio::sync::mpsc;
 
 use crate::AppState;
@@ -36,13 +39,15 @@ pub async fn tunnel_handler(
     ws.on_upgrade(move |socket| handle_connection(socket, state, token))
 }
 
+/// 隧道主循环：先收 Auth 鉴权（令牌哈希反查用户 → 按 hostname upsert 电脑 →
+/// 注册连接 → 回 AuthOk），之后心跳落库 + 转发下行；断开时置 offline。
 async fn handle_connection(socket: WebSocket, state: AppState, token: String) {
     let (mut sender, mut receiver) = socket.split();
 
     let (tx, mut rx) = mpsc::unbounded_channel::<ServerMessage>();
-    state.tunnel_registry.register(&token, tx).await;
-
-    tracing::info!(token = %token, "tunnel connected");
+    let token_hash = hash_token(&token);
+    // 鉴权通过前不占用 registry；断开清理依赖 computer id
+    let mut computer: Option<WorkComputerId> = None;
 
     loop {
         tokio::select! {
@@ -50,7 +55,7 @@ async fn handle_connection(socket: WebSocket, state: AppState, token: String) {
                 match msg {
                     Some(Ok(Message::Text(text))) => {
                         if let Ok(client_msg) = serde_json::from_str::<ClientMessage>(&text) {
-                            handle_client_message(&state, &token, client_msg).await;
+                            handle_client_message(&state, &tx, &token_hash, &mut computer, client_msg).await;
                         }
                     }
                     Some(Ok(Message::Close(_))) | None => break,
@@ -77,41 +82,124 @@ async fn handle_connection(socket: WebSocket, state: AppState, token: String) {
         }
     }
 
-    state.tunnel_registry.unregister(&token).await;
-    tracing::info!(token = %token, "tunnel disconnected");
+    if let Some(cid) = computer {
+        state.tunnel_registry.unregister(&cid.to_string(), &tx).await;
+        // 顶号场景：同 key 已被新连接持有时不置 offline
+        if !state.tunnel_registry.is_online(&cid.to_string()).await {
+            if let Err(e) =
+                brier_agent::repository::mark_work_computer_offline(&state.db, cid).await
+            {
+                tracing::warn!(computer_id = %cid, error = %e, "failed to mark work computer offline");
+            }
+        }
+        tracing::info!(computer_id = %cid, "work computer tunnel disconnected");
+    }
 }
 
-async fn handle_client_message(_state: &AppState, token: &str, msg: ClientMessage) {
+#[allow(clippy::too_many_arguments)]
+async fn handle_client_message(
+    state: &AppState,
+    tx: &mpsc::UnboundedSender<ServerMessage>,
+    token_hash: &str,
+    computer: &mut Option<WorkComputerId>,
+    msg: ClientMessage,
+) {
     match msg {
         ClientMessage::Auth {
-            token: _,
             hostname,
             os,
             runtimes,
+            ..
         } => {
-            tracing::info!(token, hostname, os, ?runtimes, "work computer authenticated");
+            if computer.is_some() {
+                tracing::info!(hostname, "duplicate auth ignored");
+                return;
+            }
+
+            // 1. 令牌鉴权：哈希反查用户
+            let user_id =
+                match brier_agent::repository::find_user_by_connect_token(&state.db, token_hash)
+                    .await
+                {
+                    Ok(Some(uid)) => uid,
+                    Ok(None) => {
+                        tracing::warn!(hostname, "connect token not found");
+                        let _ = tx.send(ServerMessage::AuthFailed {
+                            reason: "invalid token".into(),
+                        });
+                        return;
+                    }
+                    Err(e) => {
+                        tracing::error!(error = %e, "connect token lookup failed");
+                        let _ = tx.send(ServerMessage::AuthFailed {
+                            reason: "internal error".into(),
+                        });
+                        return;
+                    }
+                };
+
+            // 2. 按 hostname upsert 电脑（首连创建 / 重连更新），置 online
+            let now = Utc::now();
+            match brier_agent::repository::upsert_online_work_computer(
+                &state.db,
+                user_id,
+                &hostname,
+                &os,
+                Some(&runtimes),
+                now,
+            )
+            .await
+            {
+                Ok(model) => {
+                    let cid = WorkComputerId(model.id);
+                    state.tunnel_registry.register(&cid.to_string(), tx.clone()).await;
+                    *computer = Some(cid);
+                    let _ = tx.send(ServerMessage::AuthOk {
+                        computer_id: cid.to_string(),
+                    });
+                    tracing::info!(
+                        user_id = %user_id, computer_id = %cid, hostname,
+                        "work computer authenticated"
+                    );
+                }
+                Err(e) => {
+                    tracing::error!(error = %e, "work computer upsert failed");
+                    let _ = tx.send(ServerMessage::AuthFailed {
+                        reason: "internal error".into(),
+                    });
+                }
+            }
         }
         ClientMessage::Heartbeat { timestamp } => {
-            tracing::trace!(token, timestamp, "heartbeat received");
+            if let Some(cid) = *computer {
+                let now = Utc::now();
+                if let Err(e) =
+                    brier_agent::repository::touch_work_computer_heartbeat(&state.db, cid, now)
+                        .await
+                {
+                    tracing::warn!(computer_id = %cid, error = %e, "heartbeat persist failed");
+                }
+                let _ = tx.send(ServerMessage::HeartbeatAck { timestamp });
+            }
         }
         ClientMessage::TaskOutput {
             task_id,
             stream,
             data,
         } => {
-            tracing::info!(token, task_id, ?stream, data_len = data.len(), "task output");
+            tracing::info!(task_id, ?stream, data_len = data.len(), "task output");
         }
         ClientMessage::TaskComplete {
             task_id,
             exit_code,
         } => {
-            tracing::info!(token, task_id, exit_code, "task completed");
+            tracing::info!(task_id, exit_code, "task completed");
         }
         ClientMessage::TaskError { task_id, error } => {
-            tracing::warn!(token, task_id, error, "task error");
+            tracing::warn!(task_id, error, "task error");
         }
         ClientMessage::RuntimeInfo { runtimes } => {
-            tracing::info!(token, ?runtimes, "runtime info updated");
+            tracing::info!(?runtimes, "runtime info updated");
         }
     }
 }

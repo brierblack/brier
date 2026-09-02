@@ -28,10 +28,16 @@ impl ConnectionRegistry {
         }
     }
 
-    pub async fn unregister(&self, key: &str) {
-        let removed = self.connections.write().await.remove(key);
-        if removed.is_some() {
-            tracing::info!(key, "tunnel connection unregistered");
+    pub async fn unregister(&self, key: &str, sender: &ConnectionSender) {
+        let mut conns = self.connections.write().await;
+        // 仅在仍由同一 sender 持有该 key 时移除：顶号后旧连接断开不得删除新连接
+        if let Some(cur) = conns.get(key) {
+            if cur.same_channel(sender) {
+                conns.remove(key);
+                tracing::info!(key, "tunnel connection unregistered");
+            } else {
+                tracing::info!(key, "stale connection cleanup skipped (replaced)");
+            }
         }
     }
 

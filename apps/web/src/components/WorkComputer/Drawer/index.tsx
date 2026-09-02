@@ -1,12 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { App, Space } from 'antd';
-import { Button } from '@brierb/brier-ui';
+import { Button, Drawer } from '@brierb/brier-ui';
 import { DesktopOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
-import { Drawer } from '@brierb/brier-ui';
-import { listWorkComputers } from '@/api/generated';
+import { createConnectToken, deleteWorkComputer, listWorkComputers } from '@/api/generated';
+import type { WorkComputer } from '@/types';
 import { useApi } from '@/hooks/useApi';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AddComputerModal } from '../AddModal';
+import { buildCliCommands } from '../commands';
 import { ServiceUpgradeCard } from './ServiceUpgradeCard';
 import { RuntimeCard } from './RuntimeCard';
 import { AgentListCard } from './AgentListCard';
@@ -18,10 +19,15 @@ interface WorkComputerDrawerProps {
   onClose: () => void;
 }
 
-const DrawerBody = () => {
-  const { data: workComputers } = useApi(listWorkComputers, []);
+const DrawerBody = ({ refreshTick }: { refreshTick: number }) => {
+  const { message, modal } = App.useApp();
+  const [localTick, setLocalTick] = useState(0);
+  const { data: workComputers, loading } = useApi(listWorkComputers, [refreshTick, localTick]);
 
   const [selectedComputerId, setSelectedComputerId] = useState<string | undefined>();
+  const [token, setToken] = useState<string | undefined>(undefined);
+  const [tokenLoading, setTokenLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const selectedComputer = useMemo(
     () =>
@@ -29,20 +35,52 @@ const DrawerBody = () => {
     [workComputers, selectedComputerId],
   );
 
-  const commands = useMemo(
-    () => ({
-      install: 'npm install -g @brierb/brier-cli@latest',
-      start: `BRIER_TOKEN='${selectedComputer?.host ?? ''}-token' brier daemon start --server-url https://brier.local`,
-      stop: 'brier daemon stop',
-      restart: 'brier daemon restart',
-    }),
-    [selectedComputer?.host],
-  );
+  const commands = useMemo(() => (token ? buildCliCommands(token) : undefined), [token]);
+
+  // 获取/刷新接入令牌（user 级：新令牌会使旧连接失效）
+  const handleRefreshToken = async () => {
+    setTokenLoading(true);
+    try {
+      const res = await createConnectToken();
+      setToken(res.token);
+    } catch (e) {
+      message.error(e instanceof Error ? e.message : '获取接入令牌失败');
+    } finally {
+      setTokenLoading(false);
+    }
+  };
+
+  // 删除电脑（确认后调 DELETE，成功后本地刷新）
+  const handleDelete = (computer: WorkComputer) => {
+    modal.confirm({
+      title: '删除 Agent 工作电脑',
+      content: `确定删除「${computer.name}」吗？该电脑将无法接入平台，关联 Agent 自动解绑。`,
+      okText: '删除',
+      okButtonProps: { danger: true },
+      cancelText: '取消',
+      onOk: async () => {
+        setDeleting(true);
+        try {
+          await deleteWorkComputer(computer.id);
+          message.success('已删除');
+          if (selectedComputerId === computer.id) setSelectedComputerId(undefined);
+          setLocalTick((t) => t + 1);
+        } catch (e) {
+          message.error(e instanceof Error ? e.message : '删除失败');
+        } finally {
+          setDeleting(false);
+        }
+      },
+    });
+  };
 
   if (!selectedComputer) {
     return (
-      <div className="flex h-full items-center justify-center text-sm text-muted">
-        暂无工作电脑，点击右上角「添加」
+      <div className="flex h-full flex-col items-center justify-center gap-3 text-sm text-muted">
+        <span>{loading ? '加载中...' : '暂无工作电脑，点击右上角「添加」接入你的电脑'}</span>
+        {!loading && !workComputers?.length && (
+          <span className="text-xs">接入后约 1 分钟内自动发现</span>
+        )}
       </div>
     );
   }
@@ -90,7 +128,11 @@ const DrawerBody = () => {
               <span className="text-base font-semibold">{selectedComputer.name}</span>
               <div className="flex items-center gap-3">
                 <StatusBadge status={selectedComputer.status} />
-                <span className="text-xs">最后更新: {selectedComputer.updated_at}</span>
+                {selectedComputer.last_seen_at && (
+                  <span className="text-xs">
+                    最后心跳: {new Date(selectedComputer.last_seen_at).toLocaleString()}
+                  </span>
+                )}
               </div>
               <div className="mb-5 font-mono text-standard">
                 {selectedComputer.host}, {selectedComputer.os}
@@ -107,9 +149,13 @@ const DrawerBody = () => {
 
           <AgentListCard agents={[]} />
 
-          <CliUsageCard commands={commands} />
+          <CliUsageCard
+            commands={commands}
+            onRefreshToken={handleRefreshToken}
+            refreshing={tokenLoading}
+          />
 
-          <DangerZoneCard agentCount={0} onDelete={() => {}} />
+          <DangerZoneCard deleting={deleting} onDelete={() => handleDelete(selectedComputer)} />
         </div>
       </div>
     </div>
@@ -118,15 +164,19 @@ const DrawerBody = () => {
 
 export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) => {
   const { message } = App.useApp();
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshTick, setRefreshTick] = useState(0);
   const [addModalOpen, setAddModalOpen] = useState(false);
 
+  // 打开期间每 5s 轮询：自动发现新接入电脑、刷新在线/离线状态
+  useEffect(() => {
+    if (!open) return;
+    const timer = setInterval(() => setRefreshTick((t) => t + 1), 5000);
+    return () => clearInterval(timer);
+  }, [open]);
+
   const handleRefresh = () => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-      message.success('已刷新');
-    }, 1000);
+    setRefreshTick((t) => t + 1);
+    message.success('已刷新');
   };
 
   return (
@@ -139,7 +189,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
       classNames={{ body: '!p-0' }}
       extra={
         <Space>
-          <Button icon={<ReloadOutlined />} onClick={handleRefresh} loading={refreshing}>
+          <Button icon={<ReloadOutlined />} onClick={handleRefresh}>
             刷新
           </Button>
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setAddModalOpen(true)}>
@@ -148,7 +198,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
         </Space>
       }
     >
-      {open && <DrawerBody />}
+      {open && <DrawerBody refreshTick={refreshTick} />}
       <AddComputerModal open={addModalOpen} onClose={() => setAddModalOpen(false)} />
     </Drawer>
   );

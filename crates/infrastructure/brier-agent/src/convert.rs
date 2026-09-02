@@ -40,6 +40,7 @@ impl TryFrom<work_computer::Model> for WorkComputer {
             host: m.host,
             os: m.os,
             status: parse_enum(&m.status, "WorkComputerStatus")?,
+            last_seen_at: m.last_seen_at,
             created_at: m.created_at,
             updated_at: m.updated_at,
         })
@@ -56,6 +57,9 @@ impl From<WorkComputer> for work_computer::ActiveModel {
             host: sea_orm::Set(wc.host),
             os: sea_orm::Set(wc.os),
             status: sea_orm::Set(enum_to_string(&wc.status)),
+            last_seen_at: sea_orm::Set(wc.last_seen_at),
+            // runtimes 属内部上报数据，领域模型不承载；insert 时由 DB 默认 NULL
+            runtimes: sea_orm::NotSet,
             created_at: sea_orm::Set(wc.created_at),
             updated_at: sea_orm::Set(wc.updated_at),
         }
