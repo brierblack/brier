@@ -1,25 +1,23 @@
 import { Avatar, Input } from 'antd';
 import { Button, Dropdown } from '@brierb/brier-ui';
 import { ArrowUpOutlined, DownOutlined, CheckOutlined } from '@ant-design/icons';
-import { agents } from '../../../data/mockData';
 import { useAuth } from '@/context/AuthContext';
 import type { Agent } from '../../../types';
-import type { ChatMessage } from './conversations';
-
-export const AVAILABLE_AGENTS = agents.filter((a) => a.status !== 'offline');
+import type { ChatMessage } from '../../../data/conversations';
 
 export const AgentAvatar = ({ agent, size = 32 }: { agent: Agent; size?: number }) => {
+  const color = agent.color ?? '#666666';
   return (
     <div
       className="flex shrink-0 items-center justify-center rounded-md"
       style={{
         width: size,
         height: size,
-        backgroundColor: agent.color + '1a',
+        backgroundColor: color + '1a',
         fontSize: size * 0.5,
       }}
     >
-      {agent.icon}
+      {agent.icon ?? agent.name.charAt(0).toUpperCase()}
     </div>
   );
 };
@@ -86,16 +84,19 @@ export const TypingIndicator = ({ agent }: { agent: Agent }) => {
 
 export const AgentSelector = ({
   agent,
+  agents,
   onSelect,
 }: {
   agent: Agent;
+  agents: Agent[];
   onSelect: (a: Agent) => void;
 }) => {
+  const availableAgents = agents.filter((a) => a.status !== 'offline');
   return (
     <Dropdown
       trigger={['click']}
       menu={{
-        items: AVAILABLE_AGENTS.map((a) => ({
+        items: availableAgents.map((a) => ({
           key: String(a.id),
           label: (
             <div className="flex items-center gap-2.5">
@@ -106,7 +107,7 @@ export const AgentSelector = ({
           ),
         })),
         onClick: ({ key }) => {
-          const next = AVAILABLE_AGENTS.find((a) => String(a.id) === key);
+          const next = availableAgents.find((a) => String(a.id) === key);
           if (next) onSelect(next);
         },
       }}
@@ -122,6 +123,7 @@ export const AgentSelector = ({
 
 export const InputBox = ({
   agent,
+  agents,
   value,
   onChange,
   onSend,
@@ -129,6 +131,7 @@ export const InputBox = ({
   onAgentSelect,
 }: {
   agent: Agent;
+  agents: Agent[];
   value: string;
   onChange: (v: string) => void;
   onSend: () => void;
@@ -154,7 +157,7 @@ export const InputBox = ({
         className="!px-4 !py-3 !text-standard"
       />
       <div className="flex items-center justify-between px-2 pb-2">
-        <AgentSelector agent={agent} onSelect={onAgentSelect} />
+        <AgentSelector agent={agent} agents={agents} onSelect={onAgentSelect} />
         <Button
           type="primary"
           shape="circle"
@@ -169,9 +172,9 @@ export const InputBox = ({
   );
 };
 
-export const getAgent = (message: ChatMessage, fallback: Agent): Agent => {
+export const getAgent = (message: ChatMessage, fallback: Agent, agents: Agent[] = []): Agent => {
   if (message.agentId) {
-    return agents.find((a) => a.id === message.agentId) ?? fallback;
+    return agents.find((a) => String(a.id) === String(message.agentId)) ?? fallback;
   }
   return fallback;
 };

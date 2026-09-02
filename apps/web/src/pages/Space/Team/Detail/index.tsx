@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Suspense, useState, use } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Input, Segmented, Tooltip } from 'antd';
 import { Button } from '@brierb/brier-ui';
@@ -15,7 +15,8 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 import { Page, Tag } from '@brierb/brier-ui';
-import { teams } from '../../../../data/mockData';
+import { getTeam } from '@/api/generated';
+import { useWorkspace } from '@/context/WorkspaceContext';
 
 interface MemberDetail {
   id: number;
@@ -218,15 +219,13 @@ const InstructionsTab = () => {
   );
 };
 
-const TeamDetail = () => {
+const TeamDetailBody = ({ wsId }: { wsId: string }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('members');
   const [sharing, setSharing] = useState('space');
 
-  const team = teams.find((t) => t.id === Number(id));
-
-  if (!team) {
+  if (!id) {
     return (
       <Page header={<span className="">团队未找到</span>}>
         <div className="flex h-full items-center justify-center">
@@ -238,6 +237,7 @@ const TeamDetail = () => {
       </Page>
     );
   }
+  const team = use(getTeam(wsId, id));
 
   const mainAgent = MOCK_MEMBERS.find((m) => m.isMain);
   const sharingOption = SHARING_OPTIONS.find((o) => o.value === sharing) ?? SHARING_OPTIONS[0];
@@ -270,7 +270,7 @@ const TeamDetail = () => {
               </Tag>
             </div>
             <div className="mt-1 flex items-center justify-between">
-              <p className="text-standard">{team.desc}</p>
+              <p className="text-standard">{team.description ?? '—'}</p>
               <div className="ml-4 flex shrink-0 items-center gap-1 text-xs">
                 <RobotOutlined />
                 <span>主 Agent:</span>
@@ -307,6 +307,38 @@ const TeamDetail = () => {
         {activeTab === 'instructions' && <InstructionsTab />}
       </div>
     </Page>
+  );
+};
+
+const TeamDetailContent = () => {
+  const navigate = useNavigate();
+  const { currentWsId } = useWorkspace();
+  if (!currentWsId) {
+    return (
+      <Page header={<span className="">团队未找到</span>}>
+        <div className="flex h-full items-center justify-center">
+          <div className="text-center">
+            <p className="mb-3 text-standard">请先创建工作空间</p>
+            <Button onClick={() => navigate('/space/team')}>返回列表</Button>
+          </div>
+        </div>
+      </Page>
+    );
+  }
+  return <TeamDetailBody wsId={currentWsId} />;
+};
+
+const TeamDetail = () => {
+  return (
+    <Suspense
+      fallback={
+        <Page header={<span className="">加载中...</span>}>
+          <div className="flex h-full items-center justify-center text-standard">加载中...</div>
+        </Page>
+      }
+    >
+      <TeamDetailContent />
+    </Suspense>
   );
 };
 export default TeamDetail;

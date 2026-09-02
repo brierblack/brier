@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { Suspense, useMemo, useState, use } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { App, Segmented, Select, Table } from 'antd';
+import { App, Segmented, Select, Spin, Table } from 'antd';
 import { Button, Page, Tag } from '@brierb/brier-ui';
 import {
   ArrowLeftOutlined,
@@ -11,6 +11,9 @@ import {
   ApiOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import { listAgents } from '@/api/generated';
+import { useWorkspace } from '@/context/WorkspaceContext';
+import type { Agent } from '../../../../types';
 import {
   AutomationConfigPanel,
   type TriggerType,
@@ -283,9 +286,10 @@ const BarChart = ({ data }: { data: DailyStat[] }) => {
   );
 };
 
-const ConfigTab = ({ automation }: { automation: AutomationDetail }) => {
+const ConfigTabBody = ({ automation, wsId }: { automation: AutomationDetail; wsId: string }) => {
   const navigate = useNavigate();
   const { message } = App.useApp();
+  const agents: Agent[] = use(listAgents(wsId));
   const [title, setTitle] = useState(automation.title);
   const [triggerType, setTriggerType] = useState<TriggerType>(automation.triggerType);
   const [timerConfig, setTimerConfig] = useState<TimerConfig>(automation.timerConfig);
@@ -323,9 +327,18 @@ const ConfigTab = ({ automation }: { automation: AutomationDetail }) => {
         onActionTypeChange={setActionType}
         instructions={instructions}
         onInstructionsChange={setInstructions}
+        agents={agents}
       />
     </div>
   );
+};
+
+const ConfigTab = ({ automation }: { automation: AutomationDetail }) => {
+  const { currentWsId } = useWorkspace();
+  if (!currentWsId) {
+    return <div className="py-10 text-center text-sm text-muted">请先创建工作空间</div>;
+  }
+  return <ConfigTabBody automation={automation} wsId={currentWsId} />;
 };
 
 const ExecutionRecordsTab = () => {
@@ -559,7 +572,17 @@ const AutomationDetail = () => {
         </div>
 
         <div className="flex-1 overflow-auto">
-          {activeTab === 'config' && <ConfigTab automation={automation} />}
+          {activeTab === 'config' && (
+            <Suspense
+              fallback={
+                <div className="flex h-full items-center justify-center">
+                  <Spin />
+                </div>
+              }
+            >
+              <ConfigTab automation={automation} />
+            </Suspense>
+          )}
           {activeTab === 'executions' && <ExecutionRecordsTab />}
           {activeTab === 'history' && <ModificationRecordsTab />}
         </div>

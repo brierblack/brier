@@ -1,21 +1,27 @@
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState, use } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Button, Page } from '@brierb/brier-ui';
+import { Spin } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useAuth } from '@/context/AuthContext';
-import { getConversationById, type ChatMessage } from '../conversations';
-import { AVAILABLE_AGENTS, InputBox, MessageBubble, TypingIndicator, getAgent } from '../shared';
+import { useWorkspace } from '@/context/WorkspaceContext';
+import { listAgents } from '@/api/generated';
+import type { Agent } from '../../../../types';
+import { getConversationById, type ChatMessage } from '../../../../data/conversations';
+import { InputBox, MessageBubble, TypingIndicator, getAgent } from '../shared';
 
-const ConversationDetail = () => {
+const ConversationBody = ({ wsId }: { wsId: string }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
 
+  const agents: Agent[] = use(listAgents(wsId));
+
   const firstMessage = (location.state as { firstMessage?: string } | null)?.firstMessage;
   const conversation = getConversationById(Number(id));
 
-  const [selectedAgent, setSelectedAgent] = useState(AVAILABLE_AGENTS[0]);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(agents[0]);
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     if (conversation) return [...conversation.messages];
     if (firstMessage) {
@@ -46,13 +52,23 @@ const ConversationDetail = () => {
       const agentMsg: ChatMessage = {
         id: Date.now() + 1,
         role: 'agent',
-        content: `收到！我是${selectedAgent.name}，正在处理你的请求："${text.slice(0, 50)}${text.length > 50 ? '...' : ''}"\n\n这是一个模拟响应，实际接入 Agent 后将返回真实结果。`,
-        agentId: selectedAgent.id,
+        content: `收到！我是${selectedAgent?.name ?? 'Agent'}，正在处理你的请求："${text.slice(0, 50)}${text.length > 50 ? '...' : ''}"\n\n这是一个模拟响应，实际接入 Agent 后将返回真实结果。`,
+        agentId: selectedAgent ? Number(selectedAgent.id) : undefined,
       };
       setMessages((prev) => [...prev, agentMsg]);
       setLoading(false);
     }, 1200);
   };
+
+  if (!selectedAgent) {
+    return (
+      <Page header={<span>无可用 Agent</span>}>
+        <div className="flex h-full items-center justify-center text-sm text-muted">
+          暂无可用 Agent
+        </div>
+      </Page>
+    );
+  }
 
   return (
     <Page
@@ -80,7 +96,7 @@ const ConversationDetail = () => {
               <MessageBubble
                 key={msg.id}
                 message={msg}
-                agent={getAgent(msg, selectedAgent)}
+                agent={getAgent(msg, selectedAgent, agents)}
                 user={user}
               />
             ))}
@@ -93,6 +109,7 @@ const ConversationDetail = () => {
           <div className="mx-auto max-w-2xl">
             <InputBox
               agent={selectedAgent}
+              agents={agents}
               value={input}
               onChange={setInput}
               onSend={handleSend}
@@ -104,6 +121,34 @@ const ConversationDetail = () => {
         </div>
       </div>
     </Page>
+  );
+};
+
+const ConversationDetailContent = () => {
+  const { currentWsId } = useWorkspace();
+  if (!currentWsId) {
+    return (
+      <Page header={<span>无可用空间</span>}>
+        <div className="flex h-full items-center justify-center text-sm text-muted">
+          请先创建工作空间
+        </div>
+      </Page>
+    );
+  }
+  return <ConversationBody wsId={currentWsId} />;
+};
+
+const ConversationDetail = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-full items-center justify-center">
+          <Spin />
+        </div>
+      }
+    >
+      <ConversationDetailContent />
+    </Suspense>
   );
 };
 

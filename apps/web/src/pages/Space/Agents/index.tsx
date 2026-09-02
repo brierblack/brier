@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { use, useMemo, useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input, type MenuProps } from 'antd';
 import { Button, Page, Select, Table, Dropdown } from '@brierb/brier-ui';
@@ -19,8 +19,15 @@ import type { ColumnsType } from 'antd/es/table';
 import { StatusBadge } from '../../../components/StatusBadge';
 import { RuntimeBadge } from '../../../components/RuntimeIcon';
 import { WorkComputerDrawer } from '../../../components/WorkComputer';
-import { agents, workComputers } from '../../../data/mockData';
-import type { Agent, AgentStatus, AgentVisibility, PublicScope } from '../../../types';
+import { listAgents, listWorkComputers } from '@/api/generated';
+import { useWorkspace } from '@/context/WorkspaceContext';
+import type {
+  Agent,
+  AgentStatus,
+  AgentVisibility,
+  PublicScope,
+  WorkComputer,
+} from '../../../types';
 
 const actionMenuItems: MenuProps['items'] = [
   { key: 'view', label: '查看详情', icon: <EyeOutlined /> },
@@ -32,12 +39,14 @@ const actionMenuItems: MenuProps['items'] = [
   { key: 'delete', label: '删除', icon: <DeleteOutlined />, danger: true },
 ];
 
-const Agents = () => {
+const AgentsTable = ({ wsId, workComputers }: { wsId: string; workComputers: WorkComputer[] }) => {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [statusFilter] = useState<string>('all');
   const [activitySort, setActivitySort] = useState('recent');
   const [computerDrawerOpen, setComputerDrawerOpen] = useState(false);
+
+  const agents = use(listAgents(wsId));
 
   const filteredAgents = useMemo(
     () =>
@@ -46,7 +55,7 @@ const Agents = () => {
         const matchStatus = statusFilter === 'all' || a.status === statusFilter;
         return matchSearch && matchStatus;
       }),
-    [search, statusFilter],
+    [agents, search, statusFilter],
   );
 
   const columns: ColumnsType<Agent> = useMemo(
@@ -61,9 +70,12 @@ const Agents = () => {
           >
             <div
               className="flex size-9 shrink-0 items-center justify-center rounded-md text-lg"
-              style={{ background: `${r.color}0d`, border: `1px solid ${r.color}22` }}
+              style={{
+                background: `${r.color ?? '#90a1b9'}0d`,
+                border: `1px solid ${r.color ?? '#90a1b9'}22`,
+              }}
             >
-              {r.icon}
+              {r.icon ?? '🤖'}
             </div>
             <div>
               <div className="font-medium transition-colors hover:text-brand">{r.name}</div>
@@ -93,7 +105,7 @@ const Agents = () => {
             joined_spaces: '我加入的所有空间',
             specified_spaces: '指定空间',
           };
-          const scope = r.publicScope ?? 'all';
+          const scope = r.public_scope ?? 'all';
           return (
             <span className="flex items-center gap-1 text-xs font-medium">
               <GlobalOutlined />
@@ -103,23 +115,21 @@ const Agents = () => {
         },
       },
       {
-        title: '工作电脑',
-        dataIndex: 'workComputer',
-        render: (w: string) => <span className="text-xs font-medium">{w}</span>,
-      },
-      {
         title: 'Runtime',
         dataIndex: 'runtime',
-        render: (r: string) => (
-          <span className="text-xs font-medium">
-            <RuntimeBadge name={r} />
-          </span>
-        ),
+        render: (r: string | null) =>
+          r ? (
+            <span className="text-xs font-medium">
+              <RuntimeBadge name={r} />
+            </span>
+          ) : (
+            <span className="text-xs text-[#90a1b9]">—</span>
+          ),
       },
       {
         title: '最近活跃',
-        dataIndex: 'lastActive',
-        render: (t: string) => <span className="text-xs font-medium">{t}</span>,
+        dataIndex: 'last_active',
+        render: (t: string | null) => <span className="text-xs font-medium">{t ?? '—'}</span>,
       },
       {
         title: '操作',
@@ -200,6 +210,23 @@ const Agents = () => {
 
       <WorkComputerDrawer open={computerDrawerOpen} onClose={() => setComputerDrawerOpen(false)} />
     </Page>
+  );
+};
+
+const AgentsContent = () => {
+  const { currentWsId } = useWorkspace();
+  const workComputers = use(listWorkComputers());
+  if (!currentWsId) {
+    return <div className="p-4 text-standard">请先创建工作空间</div>;
+  }
+  return <AgentsTable wsId={currentWsId} workComputers={workComputers} />;
+};
+
+const Agents = () => {
+  return (
+    <Suspense fallback={<div className="p-4 text-standard">加载中...</div>}>
+      <AgentsContent />
+    </Suspense>
   );
 };
 export default Agents;

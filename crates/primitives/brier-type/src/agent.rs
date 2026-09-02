@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::enums::{AgentStatus, AgentVisibility, PublicScope};
 use crate::id::{AgentId, UserId, WorkComputerId, WorkspaceId};
 
+#[cfg_attr(feature = "openapi", derive(utoipa::ToSchema))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Agent {
     pub id: AgentId,

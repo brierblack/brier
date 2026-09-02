@@ -1,49 +1,61 @@
-import { useMemo, useState } from 'react';
+import { Suspense, useMemo, useState, use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input, type MenuProps } from 'antd';
-import { Button, Dropdown, Page, Select, Table } from '@brierb/brier-ui';
+import { Button, Dropdown, Page, Select, Table, Tag } from '@brierb/brier-ui';
 import {
   PlusOutlined,
   EllipsisOutlined,
   EyeOutlined,
-  DesktopOutlined,
-  UserOutlined,
   DeleteOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { StatusBadge } from '../../../components/StatusBadge';
-import { RuntimeBadge } from '../../../components/RuntimeIcon';
 import { CreateTeamModal } from './CreateModal';
-import { teams } from '../../../data/mockData';
-import type { Team } from '../../../types';
+import { listTeams } from '@/api/generated';
+import { useWorkspace } from '@/context/WorkspaceContext';
+import { MODE_MAP } from '../../../define';
+import type { AgentTeam } from '../../../types';
+
+const TEAM_STATUS_MAP: Record<AgentTeam['status'], { label: string; color: string }> = {
+  available: { label: '可用', color: '!text-emerald-700 !bg-emerald-500/10' },
+  unavailable: { label: '不可用', color: '!text-[#90a1b9] !bg-[#90a1b9]/10' },
+};
 
 const actionMenuItems: MenuProps['items'] = [
   { key: 'view', label: '查看详情', icon: <EyeOutlined /> },
-  { key: 'computer', label: '查看工作电脑', icon: <DesktopOutlined /> },
-  { key: 'main-agent', label: '查看主 Agent', icon: <UserOutlined /> },
   { type: 'divider' },
   { key: 'delete', label: '删除', icon: <DeleteOutlined />, danger: true },
 ];
 
-const Team = () => {
+const TeamsTable = ({ wsId }: { wsId: string }) => {
   const navigate = useNavigate();
   const [createOpen, setCreateOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [activitySort, setActivitySort] = useState('recent');
 
-  const filteredTeams = useMemo(() => {
-    if (!search) return teams;
-    const q = search.toLowerCase();
-    return teams.filter(
-      (t) =>
-        t.name.toLowerCase().includes(q) ||
-        t.desc.toLowerCase().includes(q) ||
-        t.creator.toLowerCase().includes(q),
-    );
-  }, [search]);
+  const teams = use(listTeams(wsId));
 
-  const columns: ColumnsType<Team> = useMemo(
+  const filteredTeams = useMemo(() => {
+    let result = teams;
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (t) => t.name.toLowerCase().includes(q) || (t.description ?? '').toLowerCase().includes(q),
+      );
+    }
+    if (activitySort === 'oldest') {
+      result = [...result].sort(
+        (a, b) => new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime(),
+      );
+    } else {
+      result = [...result].sort(
+        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+      );
+    }
+    return result;
+  }, [teams, search, activitySort]);
+
+  const columns: ColumnsType<AgentTeam> = useMemo(
     () => [
       {
         title: '名称',
@@ -58,7 +70,7 @@ const Team = () => {
             </div>
             <div>
               <div className="font-medium transition-colors hover:text-brand">{r.name}</div>
-              <div className="text-[11px]">{r.desc}</div>
+              <div className="text-[11px]">{r.description ?? '—'}</div>
             </div>
           </div>
         ),
@@ -66,31 +78,25 @@ const Team = () => {
       {
         title: '状态',
         dataIndex: 'status',
-        render: (s) => <StatusBadge status={s} />,
+        render: (s: AgentTeam['status']) => {
+          const cfg = TEAM_STATUS_MAP[s];
+          return cfg ? <Tag className={cfg.color}>{cfg.label}</Tag> : <span>{s}</span>;
+        },
       },
       {
-        title: '工作电脑',
-        dataIndex: 'workComputer',
-        render: (w: string) => <span className="font-mono text-xs font-medium">{w}</span>,
+        title: '模式',
+        dataIndex: 'mode',
+        render: (m: AgentTeam['mode']) => {
+          const cfg = MODE_MAP[m];
+          return cfg ? <Tag color={cfg.color}>{cfg.label}</Tag> : <span>{m}</span>;
+        },
       },
       {
-        title: 'Runtime',
-        dataIndex: 'runtime',
-        render: (r: string) => (
-          <span className="font-mono text-xs font-medium">
-            <RuntimeBadge name={r} />
-          </span>
+        title: '更新时间',
+        dataIndex: 'updated_at',
+        render: (t: string) => (
+          <span className="text-xs font-medium">{new Date(t).toLocaleString()}</span>
         ),
-      },
-      {
-        title: '创建者',
-        dataIndex: 'creator',
-        render: (c: string) => <span className="text-standard font-medium">{c}</span>,
-      },
-      {
-        title: '最近活跃',
-        dataIndex: 'lastActive',
-        render: (t: string) => <span className="text-xs font-medium">{t}</span>,
       },
       {
         title: '操作',
@@ -115,7 +121,7 @@ const Team = () => {
         ),
       },
     ],
-    [],
+    [navigate],
   );
 
   return (
@@ -131,7 +137,7 @@ const Team = () => {
       <div className="p-4">
         <div className="mb-4 flex items-center gap-3">
           <Input
-            placeholder="搜索团队名称、描述或创建者..."
+            placeholder="搜索团队名称或描述..."
             prefix={<SearchOutlined />}
             className="!w-[320px]"
             value={search}
@@ -163,6 +169,34 @@ const Team = () => {
         <CreateTeamModal open={createOpen} onCancel={() => setCreateOpen(false)} />
       </div>
     </Page>
+  );
+};
+
+const TeamContent = () => {
+  const { currentWsId } = useWorkspace();
+  if (!currentWsId) {
+    return (
+      <Page title="Agent 团队" subtitle="编排多 Agent 协作，实现复杂工作流">
+        <div className="flex h-full items-center justify-center text-standard">
+          请先创建工作空间
+        </div>
+      </Page>
+    );
+  }
+  return <TeamsTable wsId={currentWsId} />;
+};
+
+const Team = () => {
+  return (
+    <Suspense
+      fallback={
+        <Page title="Agent 团队" subtitle="编排多 Agent 协作，实现复杂工作流">
+          <div className="flex h-full items-center justify-center text-standard">加载中...</div>
+        </Page>
+      }
+    >
+      <TeamContent />
+    </Suspense>
   );
 };
 export default Team;

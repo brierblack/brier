@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, use, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Avatar, Input, InputNumber } from 'antd';
 import { Button, Select, Menu, type MenuProps } from '@brierb/brier-ui';
@@ -15,7 +15,9 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page, Table, Tag } from '@brierb/brier-ui';
-import { agents, skills as allSkills } from '../../../../data/mockData';
+import { skills as allSkills } from '../../../../data/mockData';
+import { listAgents } from '@/api/generated';
+import { useWorkspace } from '@/context/WorkspaceContext';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { MODELS, SKILL_TYPE_MAP } from '../../../../define';
 import type { Agent, Skill } from '../../../../types';
@@ -125,11 +127,11 @@ const AgentAvatar = ({ agent, size = 32 }: { agent: Agent; size?: number }) => {
       style={{
         width: size,
         height: size,
-        backgroundColor: agent.color + '1a',
+        backgroundColor: (agent.color ?? '#90a1b9') + '1a',
         fontSize: size * 0.5,
       }}
     >
-      {agent.icon}
+      {agent.icon ?? '🤖'}
     </div>
   );
 };
@@ -161,16 +163,19 @@ const OverviewTab = ({
         <div className="flex flex-col items-start gap-4 border-b border-ghost p-4">
           <div
             className="flex size-14 shrink-0 items-center justify-center rounded-xl text-3xl"
-            style={{ background: `${agent.color}0d`, border: `1px solid ${agent.color}22` }}
+            style={{
+              background: `${agent.color ?? '#90a1b9'}0d`,
+              border: `1px solid ${agent.color ?? '#90a1b9'}22`,
+            }}
           >
-            {agent.icon}
+            {agent.icon ?? '🤖'}
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold">{agent.name}</h1>
               <StatusBadge status={agent.status} />
             </div>
-            <p className="mt-0.5 text-standard">{agent.desc}</p>
+            <p className="mt-0.5 text-standard">{agent.description ?? ''}</p>
           </div>
         </div>
 
@@ -178,7 +183,7 @@ const OverviewTab = ({
           <div className="mb-2 text-standard font-bold">属性</div>
           <div>
             <PropertyRow label="工作电脑">
-              <Button bordered={false}>{agent.workComputer}</Button>
+              <Button bordered={false}>{agent.work_computer_id ?? '—'}</Button>
             </PropertyRow>
             <PropertyRow label="运行时">
               <Select
@@ -260,9 +265,7 @@ const OverviewTab = ({
           <div className="mb-3 text-standard font-bold">近 30 天</div>
           <div className="rounded-lg border border-ghost p-4">
             <div className="flex items-baseline gap-1">
-              <span className="font-mono text-2xl font-bold tabular-nums">
-                {agent.runs > 0 ? agent.runs : 1}
-              </span>
+              <span className="font-mono text-2xl font-bold tabular-nums">0</span>
               <span className="text-xs">次运行</span>
             </div>
             <div className="mt-2">
@@ -317,7 +320,7 @@ const NewChatTab = ({ agent }: { agent: Agent }) => {
         <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4">
           <AgentAvatar agent={agent} size={48} />
           <div className="text-lg font-bold">{agent.name}</div>
-          <p className="text-standard">{agent.desc}</p>
+          <p className="text-standard">{agent.description ?? ''}</p>
         </div>
       ) : (
         <div className="flex-1 overflow-auto">
@@ -454,10 +457,8 @@ const ConversationsTab = () => {
   );
 };
 
-const SkillsTab = ({ agent }: { agent: Agent }) => {
-  const [boundSkills, setBoundSkills] = useState<Skill[]>(
-    allSkills.filter((_, i) => i < agent.skills),
-  );
+const SkillsTab = () => {
+  const [boundSkills, setBoundSkills] = useState<Skill[]>(allSkills.filter((_, i) => i < 3));
 
   const handleRemove = (name: string) => {
     setBoundSkills((prev) => prev.filter((s) => s.name !== name));
@@ -559,7 +560,7 @@ const WorkDirTab = () => {
   );
 };
 
-const AgentDetail = () => {
+const AgentDetailBody = ({ wsId }: { wsId: string }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeKey, setActiveKey] = useState('overview');
@@ -568,7 +569,9 @@ const AgentDetail = () => {
   const [visibility, setVisibility] = useState(VISIBILITY_OPTIONS[1].value);
   const [concurrency, setConcurrency] = useState(6);
 
-  const agent = agents.find((a) => a.id === Number(id));
+  const agents = use(listAgents(wsId));
+
+  const agent = agents.find((a) => a.id === id);
 
   if (!agent) {
     return (
@@ -620,11 +623,33 @@ const AgentDetail = () => {
         )}
         {activeKey === 'new-chat' && <NewChatTab agent={agent} />}
         {activeKey === 'conversations' && <ConversationsTab />}
-        {activeKey === 'skills' && <SkillsTab agent={agent} />}
+        {activeKey === 'skills' && <SkillsTab />}
         {activeKey === 'instructions' && <InstructionsTab />}
         {activeKey === 'workdir' && <WorkDirTab />}
       </div>
     </Page>
+  );
+};
+
+const AgentDetailContent = () => {
+  const { currentWsId } = useWorkspace();
+  if (!currentWsId) {
+    return (
+      <Page header={<span>无可用空间</span>}>
+        <div className="flex h-full items-center justify-center text-sm text-muted">
+          请先创建工作空间
+        </div>
+      </Page>
+    );
+  }
+  return <AgentDetailBody wsId={currentWsId} />;
+};
+
+const AgentDetail = () => {
+  return (
+    <Suspense fallback={<div className="p-4 text-standard">加载中...</div>}>
+      <AgentDetailContent />
+    </Suspense>
   );
 };
 export default AgentDetail;

@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { Suspense, use, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Spin } from 'antd';
 import { Logo } from '@/components/Logo';
-import { AVAILABLE_AGENTS, InputBox } from './shared';
+import { listAgents } from '@/api/generated';
+import { useWorkspace } from '@/context/WorkspaceContext';
+import type { Agent } from '../../../types';
+import { InputBox } from './shared';
 
 const SUGGESTIONS = [
   { icon: '📊', text: '帮我分析数据并生成可视化报告' },
@@ -10,9 +14,10 @@ const SUGGESTIONS = [
   { icon: '📄', text: '根据需求文档生成技术方案' },
 ];
 
-const NewChat = () => {
+const NewChatBoard = ({ wsId }: { wsId: string }) => {
+  const agents: Agent[] = use(listAgents(wsId));
   const navigate = useNavigate();
-  const [selectedAgent, setSelectedAgent] = useState(AVAILABLE_AGENTS[0]);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(agents[0]);
   const [input, setInput] = useState('');
 
   const handleSend = () => {
@@ -22,6 +27,14 @@ const NewChat = () => {
     navigate(`/space/chat/${Date.now()}`, { state: { firstMessage: text } });
   };
 
+  if (!selectedAgent) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm text-muted">
+        暂无可用 Agent
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full flex-col bg-canvas">
       <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
@@ -30,6 +43,7 @@ const NewChat = () => {
         <div className="w-full max-w-2xl">
           <InputBox
             agent={selectedAgent}
+            agents={agents}
             value={input}
             onChange={setInput}
             onSend={handleSend}
@@ -51,6 +65,32 @@ const NewChat = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const NewChatContent = () => {
+  const { currentWsId } = useWorkspace();
+  if (!currentWsId) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm text-muted">
+        请先创建工作空间
+      </div>
+    );
+  }
+  return <NewChatBoard wsId={currentWsId} />;
+};
+
+const NewChat = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-full items-center justify-center">
+          <Spin />
+        </div>
+      }
+    >
+      <NewChatContent />
+    </Suspense>
   );
 };
 

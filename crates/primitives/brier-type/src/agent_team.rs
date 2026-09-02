@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::enums::{TeamMode, TeamStatus};
 use crate::id::{AgentId, AgentTeamId, UserId, WorkspaceId};
 
+#[cfg_attr(feature = "openapi", derive(utoipa::ToSchema))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AgentTeam {
     pub id: AgentTeamId,

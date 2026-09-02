@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { Suspense, useState, use } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { App } from 'antd';
+import { App, Spin } from 'antd';
 import { Button } from '@brierb/brier-ui';
+import { listAgents } from '@/api/generated';
+import { useWorkspace } from '@/context/WorkspaceContext';
+import type { Agent } from '../../../../types';
 import {
   AutomationConfigPanel,
   type TriggerType,
@@ -10,9 +13,10 @@ import {
   type TimerConfig,
 } from '../shared';
 
-const NewAutomation = () => {
+const NewAutomationBody = ({ wsId }: { wsId: string }) => {
   const navigate = useNavigate();
   const { message } = App.useApp();
+  const agents: Agent[] = use(listAgents(wsId));
 
   const [title, setTitle] = useState('未命名自动化');
   const [triggerType, setTriggerType] = useState<TriggerType | null>(null);
@@ -85,11 +89,38 @@ const NewAutomation = () => {
               onActionTypeChange={setActionType}
               instructions={instructions}
               onInstructionsChange={setInstructions}
+              agents={agents}
             />
           </div>
         </div>
       </div>
     </div>
+  );
+};
+
+const NewAutomationContent = () => {
+  const { currentWsId } = useWorkspace();
+  if (!currentWsId) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm text-muted">
+        请先创建工作空间
+      </div>
+    );
+  }
+  return <NewAutomationBody wsId={currentWsId} />;
+};
+
+const NewAutomation = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-full items-center justify-center">
+          <Spin />
+        </div>
+      }
+    >
+      <NewAutomationContent />
+    </Suspense>
   );
 };
 

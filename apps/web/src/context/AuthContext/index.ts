@@ -9,11 +9,7 @@ export interface AuthContextValue {
   logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextValue>({
-  user: null,
-  login: () => {},
-  logout: () => {},
-});
+export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

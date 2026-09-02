@@ -22,11 +22,11 @@ Brier 是一个前后端分离的工作空间平台，提供 AI Agent 管理、A
 ```
 crates/
 ├── foundation/          # L0 基础层
-│   ├── brier-error/     # 统一错误类型 BrierError / Result，零业务依赖
-│   └── brier-crypto/    # 令牌加解密工具（AES-256-GCM），密钥经 SHA-256 派生
+│   └── brier-error/     # 统一错误类型 BrierError / Result，零业务依赖
 ├── primitives/          # L1 原语层
 │   ├── brier-type/      # 领域类型：User/Workspace/Agent/Team/ID/枚举/隧道消息
-│   └── brier-config/    # 配置加载
+│   ├── brier-config/    # 配置加载
+│   └── brier-crypto/    # 令牌加解密工具（AES-256-GCM），密钥经 SHA-256 派生
 ├── domain/              # L2 领域层
 │   ├── brier-contract/  # 领域契约：OAuthProvider/RepositoryProvider trait 及其类型
 │   └── brier-core/      # 领域状态：tunnel(ConnectionRegistry 实时连接注册表)
@@ -46,31 +46,31 @@ apps/
 
 ### 2.3 依赖矩阵
 
-| crate           | 层  | 内部依赖                                                                                                              |
-| --------------- | --- | --------------------------------------------------------------------------------------------------------------------- |
-| brier-error     | L0  | -                                                                                                                     |
-| brier-crypto    | L0  | brier-error                                                                                                           |
-| brier-type      | L1  | brier-error                                                                                                           |
-| brier-config    | L1  | brier-error                                                                                                           |
-| brier-core      | L2  | brier-type                                                                                                            |
-| brier-contract  | L2  | brier-error                                                                                                           |
-| brier-database  | L3  | brier-error                                                                                                           |
-| brier-user      | L3  | brier-error, brier-crypto, brier-type                                                                                 |
-| brier-workspace | L3  | brier-error, brier-type                                                                                               |
-| brier-agent     | L3  | brier-error, brier-type                                                                                               |
-| brier-forge     | L3  | brier-error, brier-config, brier-contract                                                                             |
-| brier-jwt       | L3  | brier-error                                                                                                           |
+| crate           | 层  | 内部依赖                                                                                                                             |
+| --------------- | --- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| brier-error     | L0  | -                                                                                                                                    |
+| brier-type      | L1  | brier-error                                                                                                                          |
+| brier-config    | L1  | brier-error                                                                                                                          |
+| brier-crypto    | L1  | brier-error                                                                                                                          |
+| brier-core      | L2  | brier-type                                                                                                                           |
+| brier-contract  | L2  | brier-error                                                                                                                          |
+| brier-database  | L3  | brier-error                                                                                                                          |
+| brier-user      | L3  | brier-error, brier-crypto, brier-type                                                                                                |
+| brier-workspace | L3  | brier-error, brier-type                                                                                                              |
+| brier-agent     | L3  | brier-error, brier-type                                                                                                              |
+| brier-forge     | L3  | brier-error, brier-config, brier-contract                                                                                            |
+| brier-jwt       | L3  | brier-error                                                                                                                          |
 | brier-api       | L4  | brier-core, brier-contract, brier-error, brier-config, brier-crypto, brier-forge, brier-workspace, brier-type, brier-user, brier-jwt |
-| apps/server     | L5  | brier-api, brier-config, brier-database, brier-error                                                                  |
+| apps/server     | L5  | brier-api, brier-config, brier-database, brier-error                                                                                 |
 
 > 注：L3 上下文聚合包（brier-user / brier-workspace / brier-agent）同层且**互不依赖**，各自自包含实体/转换/仓储。brier-database 仅承载 schema 与连接管理，不含业务实体。brier-api 不直接依赖 brier-database——连接与迁移由 apps/server 调用，业务数据访问走 brier-workspace / brier-user 等聚合包。
 
 ### 2.4 各 crate 职责
 
 - **brier-error**：统一错误枚举（Config/Auth/Provider/Jwt/Server/Database/NotFound/Validation/Io）。`Auth` 表示认证流程失败，`Provider` 表示外部 Provider（GitHub 等）API 通信失败，与具体厂商解耦。错误层不依赖任何业务 crate 与 ORM；数据库错误的转换由各上下文聚合包通过本地 trait `DbErrExt::to_brier` 显式完成
-- **brier-crypto**：令牌加解密工具（AES-256-GCM）。`TokenCipher` 从 `TOKEN_ENCRYPTION_KEY` 环境变量经 SHA-256 派生 32 字节密钥，提供 `encrypt` / `decrypt` / `decrypt_or_raw`（兼容历史明文令牌，下次登录自动加密）。与 `JWT_SECRET` 独立，不复用
 - **brier-type**：纯数据类型与领域枚举（含 `tunnel::ServerMessage`），跨层共享，无副作用
 - **brier-config**：环境配置读取与校验。`providers: HashMap<String, OAuthConfig>`（github 必填，gitee/gitlab 等三变量齐全才注册）；`cookie_secure` 控制会话 Cookie 的 Secure 属性
+- **brier-crypto**：令牌加解密工具（AES-256-GCM）。`TokenCipher` 从 `TOKEN_ENCRYPTION_KEY` 环境变量经 SHA-256 派生 32 字节密钥，提供 `encrypt` / `decrypt` / `decrypt_or_raw`（兼容历史明文令牌，下次登录自动加密）。与 `JWT_SECRET` 独立，不复用
 - **brier-contract**：领域契约包（自包含、零状态、零副作用）——`auth::OAuthProvider` trait（authorize_url / exchange_code / fetch_identity，返回 `ProviderIdentity`）、`repo::RepositoryProvider` trait（list_repos 等代码资源访问，`RepoInfo` 随 trait 同居）。实现层（brier-forge）与消费层（brier-api）共同依赖，是全仓库变更敏感度最低的包之一；与 `brier-type` 的区别：type 是"是什么"（数据形状），contract 是"能做什么"（行为契约）
 - **brier-core**：领域状态与运行时对象——`tunnel::ConnectionRegistry`（实时连接注册表，`Arc<RwLock<HashMap>>` + mpsc，向已注册连接发送 `brier_type::tunnel::ServerMessage`）。与 brier-contract 同层且零依赖
 - **brier-database**：仅承载数据库 schema（SQL 迁移文件集中管理）、连接建立与迁移执行。不含任何业务实体、类型转换或仓储逻辑——各上下文聚合包（brier-user / brier-workspace / brier-agent）各自管理实体与仓储。`DbErrExt` 内联于 `connection.rs`，仅服务于连接与迁移的错误转换

@@ -6,6 +6,152 @@
  * OpenAPI spec version: 0.1.0
  */
 import { customFetch } from './custom-instance';
+/**
+ * 用户唯一标识
+ */
+export type UserId = string;
+
+/**
+ * Agent 唯一标识
+ */
+export type AgentId = string;
+
+export type PublicScope = typeof PublicScope[keyof typeof PublicScope];
+
+
+export const PublicScope = {
+  all: 'all',
+  joined_spaces: 'joined_spaces',
+  specified_spaces: 'specified_spaces',
+} as const;
+
+export type AgentStatus = typeof AgentStatus[keyof typeof AgentStatus];
+
+
+export const AgentStatus = {
+  online: 'online',
+  offline: 'offline',
+  connecting: 'connecting',
+} as const;
+
+export type AgentVisibility = typeof AgentVisibility[keyof typeof AgentVisibility];
+
+
+export const AgentVisibility = {
+  private: 'private',
+  public: 'public',
+} as const;
+
+/**
+ * 工作电脑唯一标识
+ */
+export type WorkComputerId = string;
+
+/**
+ * 工作空间唯一标识
+ */
+export type WorkspaceId = string;
+
+export interface Agent {
+  /** @nullable */
+  color?: string | null;
+  created_at: string;
+  creator_id: UserId;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  icon?: string | null;
+  id: AgentId;
+  /** @nullable */
+  last_active?: string | null;
+  name: string;
+  public_scope?: null | PublicScope;
+  /** @nullable */
+  runtime?: string | null;
+  status: AgentStatus;
+  updated_at: string;
+  visibility: AgentVisibility;
+  work_computer_id?: null | WorkComputerId;
+  workspace_id: WorkspaceId;
+}
+
+/**
+ * Agent 团队唯一标识
+ */
+export type AgentTeamId = string;
+
+export type TeamMode = typeof TeamMode[keyof typeof TeamMode];
+
+
+export const TeamMode = {
+  coordinator: 'coordinator',
+  sequential: 'sequential',
+  graph: 'graph',
+} as const;
+
+export type TeamStatus = typeof TeamStatus[keyof typeof TeamStatus];
+
+
+export const TeamStatus = {
+  available: 'available',
+  unavailable: 'unavailable',
+} as const;
+
+export interface AgentTeam {
+  created_at: string;
+  creator_id: UserId;
+  /** @nullable */
+  description?: string | null;
+  id: AgentTeamId;
+  mode: TeamMode;
+  name: string;
+  primary_agent_id?: null | AgentId;
+  status: TeamStatus;
+  updated_at: string;
+  workspace_id: WorkspaceId;
+}
+
+export interface CreateAgentRequest {
+  /** @nullable */
+  color?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  icon?: string | null;
+  name: string;
+  public_scope?: null | PublicScope;
+  /** @nullable */
+  runtime?: string | null;
+  visibility?: null | AgentVisibility;
+  /** @nullable */
+  work_computer_id?: string | null;
+}
+
+export interface CreateTeamRequest {
+  /** @nullable */
+  description?: string | null;
+  mode?: null | TeamMode;
+  name: string;
+  /** @nullable */
+  primary_agent_id?: string | null;
+}
+
+export type WorkComputerType = typeof WorkComputerType[keyof typeof WorkComputerType];
+
+
+export const WorkComputerType = {
+  local: 'local',
+  ssh: 'ssh',
+  cloud: 'cloud',
+} as const;
+
+export interface CreateWorkComputerRequest {
+  computer_type: WorkComputerType;
+  host: string;
+  name: string;
+  os: string;
+}
+
 export interface CreateWorkspaceRequest {
   /** @nullable */
   auto_issue_assign?: boolean | null;
@@ -33,11 +179,6 @@ export interface RepoInfo {
   name: string;
   private: boolean;
 }
-
-/**
- * 用户唯一标识
- */
-export type UserId = string;
 
 export type UserStatus = typeof UserStatus[keyof typeof UserStatus];
 
@@ -69,10 +210,25 @@ export interface User {
   username: string;
 }
 
-/**
- * 工作空间唯一标识
- */
-export type WorkspaceId = string;
+export type WorkComputerStatus = typeof WorkComputerStatus[keyof typeof WorkComputerStatus];
+
+
+export const WorkComputerStatus = {
+  online: 'online',
+  offline: 'offline',
+} as const;
+
+export interface WorkComputer {
+  computer_type: WorkComputerType;
+  created_at: string;
+  host: string;
+  id: WorkComputerId;
+  name: string;
+  os: string;
+  status: WorkComputerStatus;
+  updated_at: string;
+  user_id: UserId;
+}
 
 export interface Workspace {
   auto_issue_assign: boolean;
@@ -204,6 +360,75 @@ export const providerLogin = async (provider: string, options?: Parameters<typeo
 
 
 
+export const getListWorkComputersUrl = () => {
+
+
+
+
+  return `/api/work-computers`
+}
+
+export const listWorkComputers = async ( options?: Parameters<typeof customFetch>[1]): Promise<WorkComputer[]> => {
+
+  return customFetch<WorkComputer[]>(getListWorkComputersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateWorkComputerUrl = () => {
+
+
+
+
+  return `/api/work-computers`
+}
+
+export const createWorkComputer = async (createWorkComputerRequest: CreateWorkComputerRequest, options?: Parameters<typeof customFetch>[1]): Promise<WorkComputer> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+return customFetch<WorkComputer>(getCreateWorkComputerUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createWorkComputerRequest)
+  }
+);}
+
+
+
+export const getGetWorkComputerUrl = (computerId: WorkComputerId,) => {
+
+
+
+
+  return `/api/work-computers/${computerId}`
+}
+
+export const getWorkComputer = async (computerId: WorkComputerId, options?: Parameters<typeof customFetch>[1]): Promise<WorkComputer> => {
+
+  return customFetch<WorkComputer>(getGetWorkComputerUrl(computerId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export const getListWorkspacesUrl = () => {
 
 
@@ -272,6 +497,173 @@ export const getGetWorkspaceUrl = (workspaceId: WorkspaceId,) => {
 export const getWorkspace = async (workspaceId: WorkspaceId, options?: Parameters<typeof customFetch>[1]): Promise<Workspace> => {
 
   return customFetch<Workspace>(getGetWorkspaceUrl(workspaceId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListAgentsUrl = (workspaceId: WorkspaceId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/agents`
+}
+
+export const listAgents = async (workspaceId: WorkspaceId, options?: Parameters<typeof customFetch>[1]): Promise<Agent[]> => {
+
+  return customFetch<Agent[]>(getListAgentsUrl(workspaceId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateAgentUrl = (workspaceId: WorkspaceId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/agents`
+}
+
+export const createAgent = async (workspaceId: WorkspaceId,
+    createAgentRequest: CreateAgentRequest, options?: Parameters<typeof customFetch>[1]): Promise<Agent> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+return customFetch<Agent>(getCreateAgentUrl(workspaceId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createAgentRequest)
+  }
+);}
+
+
+
+export const getGetAgentUrl = (workspaceId: WorkspaceId,
+    agentId: AgentId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/agents/${agentId}`
+}
+
+export const getAgent = async (workspaceId: WorkspaceId,
+    agentId: AgentId, options?: Parameters<typeof customFetch>[1]): Promise<Agent> => {
+
+  return customFetch<Agent>(getGetAgentUrl(workspaceId,agentId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getDeleteAgentUrl = (workspaceId: WorkspaceId,
+    agentId: AgentId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/agents/${agentId}`
+}
+
+export const deleteAgent = async (workspaceId: WorkspaceId,
+    agentId: AgentId, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteAgentUrl(workspaceId,agentId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getListTeamsUrl = (workspaceId: WorkspaceId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/teams`
+}
+
+export const listTeams = async (workspaceId: WorkspaceId, options?: Parameters<typeof customFetch>[1]): Promise<AgentTeam[]> => {
+
+  return customFetch<AgentTeam[]>(getListTeamsUrl(workspaceId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateTeamUrl = (workspaceId: WorkspaceId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/teams`
+}
+
+export const createTeam = async (workspaceId: WorkspaceId,
+    createTeamRequest: CreateTeamRequest, options?: Parameters<typeof customFetch>[1]): Promise<AgentTeam> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+return customFetch<AgentTeam>(getCreateTeamUrl(workspaceId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createTeamRequest)
+  }
+);}
+
+
+
+export const getGetTeamUrl = (workspaceId: WorkspaceId,
+    teamId: AgentTeamId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/teams/${teamId}`
+}
+
+export const getTeam = async (workspaceId: WorkspaceId,
+    teamId: AgentTeamId, options?: Parameters<typeof customFetch>[1]): Promise<AgentTeam> => {
+
+  return customFetch<AgentTeam>(getGetTeamUrl(workspaceId,teamId),
   {
     ...options,
     method: 'GET'

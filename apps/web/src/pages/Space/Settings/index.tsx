@@ -12,7 +12,8 @@ import {
 import { Page, Tag } from '@brierb/brier-ui';
 import { skills } from '../../../data/mockData';
 import { SKILL_TYPE_MAP } from '../../../define';
-import { getWorkspace, listWorkspaces } from '@/api/generated';
+import { getWorkspace } from '@/api/generated';
+import { useWorkspace } from '@/context/WorkspaceContext';
 
 const SETTINGS_NAV = [
   { key: 'basic', label: '基础信息', icon: <UserOutlined /> },
@@ -39,6 +40,7 @@ const Settings = () => {
   const [activeKey, setActiveKey] = useState('basic');
   const [form] = Form.useForm();
   const [avatarUrl, setAvatarUrl] = useState('');
+  const { currentWsId } = useWorkspace();
   const [publicSpace, setPublicSpace] = useState(false);
   const [skillSearch, setSkillSearch] = useState('');
   const [enabledSkills, setEnabledSkills] = useState<Record<string, boolean>>(
@@ -55,32 +57,28 @@ const Settings = () => {
     form.setFieldValue('instructions', INSTRUCTION_TEMPLATE);
   };
 
-  // 加载当前空间（与顶部工作空间切换器默认选中一致：取列表第一个），回填表单
+  // 加载当前选中的空间（与顶部工作空间切换器联动），回填表单
   useEffect(() => {
+    if (!currentWsId) return;
     let cancelled = false;
-    listWorkspaces()
-      .then((list) => {
+    getWorkspace(currentWsId)
+      .then((detail) => {
         if (cancelled) return;
-        const ws = list[0];
-        if (!ws) return;
-        return getWorkspace(ws.id).then((detail) => {
-          if (cancelled) return;
-          setAvatarUrl(detail.avatar ?? '');
-          setPublicSpace(false);
-          form.setFieldsValue({
-            name: detail.name,
-            description: detail.description ?? '',
-            identifier: detail.slug,
-            repositories: detail.repositories ?? [],
-            instructions: detail.instructions ?? '',
-          });
+        setAvatarUrl(detail.avatar ?? '');
+        setPublicSpace(false);
+        form.setFieldsValue({
+          name: detail.name,
+          description: detail.description ?? '',
+          identifier: detail.slug,
+          repositories: detail.repositories ?? [],
+          instructions: detail.instructions ?? '',
         });
       })
       .catch(() => {});
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [currentWsId]);
 
   return (
     <Page

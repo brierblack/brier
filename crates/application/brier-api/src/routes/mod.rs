@@ -1,6 +1,9 @@
+pub(crate) mod agent;
 pub(crate) mod auth;
 pub(crate) mod forge;
+pub(crate) mod team;
 pub(crate) mod tunnel;
+pub(crate) mod work_computer;
 pub(crate) mod workspace;
 
 use axum::http::HeaderMap;
@@ -17,6 +20,9 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .nest("/api/auth", auth::router())
         .nest("/api/workspaces", workspace::router())
+        .merge(agent::router())
+        .merge(team::router())
+        .merge(work_computer::router())
         .route("/api/{provider}/repos", get(forge::list_repos))
         .route("/tunnel", get(tunnel::tunnel_handler))
         .route("/api-docs/openapi.json", get(crate::docs::serve_openapi_json))

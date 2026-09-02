@@ -386,6 +386,7 @@ name = "brier-api"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "brier-agent",
  "brier-config",
  "brier-contract",
  "brier-core",

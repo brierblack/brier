@@ -1,50 +1,30 @@
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo } from 'react';
 import { Button, Select } from '@brierb/brier-ui';
 import { PlusOutlined, SwapOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from './Avatar';
-import { listWorkspaces, type Workspace } from '@/api/generated';
-
-const CREATE_VALUE = '__create__';
+import { useWorkspace } from '@/context/WorkspaceContext';
 
 export const WorkSpace = memo(() => {
   const navigate = useNavigate();
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [currentId, setCurrentId] = useState<string>('');
+  const { workspaces, currentWsId, setCurrentWsId } = useWorkspace();
 
-  useEffect(() => {
-    listWorkspaces().then((data) => {
-      setWorkspaces(data);
-      setCurrentId(data[0]?.id ?? '');
-    });
-  }, []);
+  const current = workspaces.find((w) => w.id === currentWsId);
 
-  const current = workspaces.find((w) => w.id === currentId) ?? workspaces[0];
-
-  const options = useMemo(
-    () => [
-      ...workspaces.map((w) => ({
-        value: w.id,
-        label: (
-          <div className="flex items-center gap-2">
-            <Avatar workspace={w} />
-            <div className="min-w-0 flex-1">
-              <div className="truncate font-medium">{w.name}</div>
-            </div>
-          </div>
-        ),
-        workspace: w,
-      })),
-    ],
-    [workspaces],
-  );
+  const options = workspaces.map((w) => ({
+    value: w.id,
+    label: (
+      <div className="flex items-center gap-2">
+        <Avatar workspace={w} />
+        <div className="min-w-0 flex-1">
+          <div className="truncate font-medium">{w.name}</div>
+        </div>
+      </div>
+    ),
+  }));
 
   const handleChange = (val: string) => {
-    if (val === CREATE_VALUE) {
-      navigate('/space/new');
-      return;
-    }
-    setCurrentId(val);
+    setCurrentWsId(val);
   };
 
   if (!current) {
@@ -63,12 +43,11 @@ export const WorkSpace = memo(() => {
 
   return (
     <Select
-      value={currentId}
+      value={current.id}
       onChange={(val) => handleChange(val as string)}
       options={options}
       showSearch={{
         filterOption: (input, option) => {
-          if (option?.value === CREATE_VALUE) return true;
           const w = workspaces.find((ws) => ws.id === option?.value);
           if (!w) return false;
           const q = input.toLowerCase();

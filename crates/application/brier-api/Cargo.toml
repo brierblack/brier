@@ -11,6 +11,7 @@ brier-config.workspace = true
 brier-crypto.workspace = true
 brier-forge.workspace = true
 brier-workspace.workspace = true
+brier-agent.workspace = true
 brier-type = { workspace = true, features = ["openapi"] }
 brier-user.workspace = true
 brier-jwt.workspace = true

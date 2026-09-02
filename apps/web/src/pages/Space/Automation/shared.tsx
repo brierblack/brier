@@ -13,7 +13,7 @@ import {
   DeleteOutlined,
   CheckOutlined,
 } from '@ant-design/icons';
-import { agents } from '../../../data/mockData';
+import type { Agent } from '../../../types';
 import { Dropdown } from '@brierb/brier-ui';
 
 export type TriggerType = 'timer' | 'github_push' | 'github_pullrequest' | 'github_comments';
@@ -492,12 +492,14 @@ export const ActionSelector = ({
 export const InstructionEditor = ({
   value,
   onChange,
+  agents,
 }: {
   value: string;
   onChange: (v: string) => void;
+  agents: Agent[];
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [selectedAgent, setSelectedAgent] = useState<number | undefined>();
+  const [selectedAgent, setSelectedAgent] = useState<string | undefined>();
 
   const insertVariable = (variable: string) => {
     const textarea = textareaRef.current;
@@ -531,7 +533,7 @@ export const InstructionEditor = ({
             value: a.id,
             label: (
               <span className="flex items-center gap-2">
-                <span>{a.icon}</span>
+                <span>{a.icon ?? a.name.charAt(0).toUpperCase()}</span>
                 <span>{a.name}</span>
               </span>
             ),
@@ -592,6 +594,7 @@ export interface AutomationConfigPanelProps {
   onActionTypeChange: (v: ActionType) => void;
   instructions: string;
   onInstructionsChange: (v: string) => void;
+  agents: Agent[];
 }
 
 export const AutomationConfigPanel = ({
@@ -605,6 +608,7 @@ export const AutomationConfigPanel = ({
   onActionTypeChange,
   instructions,
   onInstructionsChange,
+  agents,
 }: AutomationConfigPanelProps) => {
   const isGitHubTrigger = (t: TriggerType | null): t is GitHubTriggerType =>
     t !== null && t !== 'timer';
@@ -643,7 +647,7 @@ export const AutomationConfigPanel = ({
       <SectionCard title="执行动作">
         <ActionSelector value={actionType} onChange={onActionTypeChange} />
         {actionType === 'invoke_agent' && (
-          <InstructionEditor value={instructions} onChange={onInstructionsChange} />
+          <InstructionEditor value={instructions} onChange={onInstructionsChange} agents={agents} />
         )}
         {actionType === 'create_agent_task' && (
           <div className="mt-4 rounded-lg border border-dashed border-ghost p-4 text-center text-sm text-muted">

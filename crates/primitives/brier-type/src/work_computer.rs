@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::enums::{WorkComputerStatus, WorkComputerType};
 use crate::id::{UserId, WorkComputerId};
 
+#[cfg_attr(feature = "openapi", derive(utoipa::ToSchema))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct WorkComputer {
     pub id: WorkComputerId,

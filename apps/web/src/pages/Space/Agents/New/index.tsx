@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { use, useMemo, useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App, Form, Input, Select, Space, Upload } from 'antd';
 import { Button } from '@brierb/brier-ui';
@@ -16,9 +16,11 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import { Page } from '@brierb/brier-ui';
-import { workComputers } from '../../../../data/mockData';
+import { listWorkComputers } from '@/api/generated';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { MODELS } from '../../../../define';
+
+const RUNTIMES = ['Claude Code', 'Codex CLI', 'GPT-4o CLI', 'Gemini CLI'];
 
 interface MockExtension {
   id: string;
@@ -89,19 +91,21 @@ const SectionCard = ({
   );
 };
 
-const NewAgent = () => {
+const NewAgentContent = () => {
   const { message } = App.useApp();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [selectedComputerId, setSelectedComputerId] = useState<number | undefined>(undefined);
+  const [selectedComputerId, setSelectedComputerId] = useState<string | undefined>(undefined);
   const [visibility, setVisibility] = useState<string>('personal');
   const [extensions, setExtensions] = useState<MockExtension[]>(DEFAULT_EXTENSIONS);
   const [extSearch, setExtSearch] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
 
+  const workComputers = use(listWorkComputers());
+
   const selectedComputer = useMemo(
     () => workComputers.find((c) => c.id === selectedComputerId),
-    [selectedComputerId],
+    [workComputers, selectedComputerId],
   );
 
   const filteredExtensions = useMemo(
@@ -175,7 +179,7 @@ const NewAgent = () => {
               disabled={!selectedComputer}
               options={
                 selectedComputer
-                  ? selectedComputer.detectedRuntimes.map((r) => ({
+                  ? RUNTIMES.map((r) => ({
                       label: <RuntimeBadge name={r} size={12} />,
                       value: r,
                     }))
@@ -350,6 +354,14 @@ const NewAgent = () => {
         </SectionCard>
       </Form>
     </Page>
+  );
+};
+
+const NewAgent = () => {
+  return (
+    <Suspense fallback={<div className="p-4 text-standard">加载中...</div>}>
+      <NewAgentContent />
+    </Suspense>
   );
 };
 export default NewAgent;

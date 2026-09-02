@@ -5,9 +5,15 @@
 //! 也可通过 `ApiDoc::json()` 在构建期导出 `openapi.json`（供 Orval 等工具消费）。
 
 use brier_contract::repo::RepoInfo;
-use brier_type::{User, Workspace};
+use brier_type::{
+    id::{AgentId, AgentTeamId, WorkComputerId, WorkspaceId},
+    Agent, AgentTeam, User, WorkComputer, Workspace,
+};
 use utoipa::OpenApi;
 
+use crate::routes::agent::CreateAgentRequest;
+use crate::routes::team::CreateTeamRequest;
+use crate::routes::work_computer::CreateWorkComputerRequest;
 use crate::routes::workspace::CreateWorkspaceRequest;
 
 #[derive(OpenApi)]
@@ -26,8 +32,23 @@ use crate::routes::workspace::CreateWorkspaceRequest;
         crate::routes::workspace::list_workspaces,
         crate::routes::workspace::get_workspace,
         crate::routes::forge::list_repos,
+        crate::routes::agent::list_agents,
+        crate::routes::agent::create_agent,
+        crate::routes::agent::get_agent,
+        crate::routes::agent::delete_agent,
+        crate::routes::team::list_teams,
+        crate::routes::team::create_team,
+        crate::routes::team::get_team,
+        crate::routes::work_computer::list_work_computers,
+        crate::routes::work_computer::create_work_computer,
+        crate::routes::work_computer::get_work_computer,
     ),
-    components(schemas(User, Workspace, RepoInfo, CreateWorkspaceRequest))
+    components(schemas(
+        User, Workspace, RepoInfo, CreateWorkspaceRequest,
+        Agent, AgentTeam, WorkComputer,
+        AgentId, AgentTeamId, WorkComputerId, WorkspaceId,
+        CreateAgentRequest, CreateTeamRequest, CreateWorkComputerRequest,
+    ))
 )]
 pub struct ApiDoc;
 
@@ -55,6 +76,12 @@ mod tests {
         assert!(json.contains("/api/{provider}/repos"));
         assert!(json.contains("RepoInfo"));
         assert!(json.contains("Workspace"));
+        assert!(json.contains("/api/work-computers"));
+        assert!(json.contains("/api/workspaces/{workspace_id}/agents"));
+        assert!(json.contains("/api/workspaces/{workspace_id}/teams"));
+        assert!(json.contains("Agent"));
+        assert!(json.contains("AgentTeam"));
+        assert!(json.contains("WorkComputer"));
     }
 
     /// 导出 spec 到文件：`OPENAPI_OUT=apps/web/openapi.json cargo test -p brier-api export_openapi_json`

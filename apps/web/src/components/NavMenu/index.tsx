@@ -24,7 +24,7 @@ import { NAV_ITEMS } from '@/define';
 import { Logo, Wordmark } from '@/components/Logo';
 import { WorkSpace } from '../WorkSpace';
 import { useAuth } from '@/context/AuthContext';
-import { recentConversations, olderConversations } from '../../pages/Space/Chat/conversations';
+import { recentConversations, olderConversations } from '../../data/conversations';
 
 const menuItems: MenuProps['items'] = [
   {
