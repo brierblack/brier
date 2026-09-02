@@ -1,9 +1,9 @@
-import { Suspense, use, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Spin } from 'antd';
 import { Logo } from '@/components/Logo';
 import { listAgents } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
+import { useApi } from '@/hooks/useApi';
 import type { Agent } from '../../../types';
 import { InputBox } from './shared';
 
@@ -15,10 +15,17 @@ const SUGGESTIONS = [
 ];
 
 const NewChatBoard = ({ wsId }: { wsId: string }) => {
-  const agents: Agent[] = use(listAgents(wsId));
+  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
   const navigate = useNavigate();
-  const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(agents[0]);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(undefined);
   const [input, setInput] = useState('');
+
+  // 数据到达后默认选中第一个 Agent
+  useEffect(() => {
+    if (!selectedAgent && agents?.length) {
+      setSelectedAgent(agents[0]);
+    }
+  }, [agents, selectedAgent]);
 
   const handleSend = () => {
     const text = input.trim();
@@ -43,7 +50,7 @@ const NewChatBoard = ({ wsId }: { wsId: string }) => {
         <div className="w-full max-w-2xl">
           <InputBox
             agent={selectedAgent}
-            agents={agents}
+            agents={agents ?? []}
             value={input}
             onChange={setInput}
             onSend={handleSend}
@@ -81,17 +88,7 @@ const NewChatContent = () => {
 };
 
 const NewChat = () => {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex h-full items-center justify-center">
-          <Spin />
-        </div>
-      }
-    >
-      <NewChatContent />
-    </Suspense>
-  );
+  return <NewChatContent />;
 };
 
 export default NewChat;

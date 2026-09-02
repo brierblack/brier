@@ -1,4 +1,4 @@
-import { Suspense, useState, use } from 'react';
+import { useState } from 'react';
 import { App, Form, Input, Select, Upload, type FormInstance } from 'antd';
 import { Button } from '@brierb/brier-ui';
 
@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons';
 import { listAgents } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
+import { useApi } from '@/hooks/useApi';
 import { Modal } from '@brierb/brier-ui';
 
 interface CreateTeamModalProps {
@@ -41,9 +42,9 @@ const TeamFormBodyInner = ({
   teamName: string | undefined;
   wsId: string;
 }) => {
-  const agents = use(listAgents(wsId));
+  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
 
-  const agentOptions = agents.map((a) => ({
+  const agentOptions = (agents ?? []).map((a) => ({
     value: a.id,
     label: (
       <span className="flex items-center gap-2">
@@ -255,16 +256,14 @@ export const CreateTeamModal = ({ open, onCancel }: CreateTeamModalProps) => {
       }
     >
       {open ? (
-        <Suspense fallback={<div className="py-10 text-center text-standard">加载中...</div>}>
-          <TeamFormBody
-            form={form}
-            visibility={visibility}
-            setVisibility={setVisibility}
-            avatarUrl={avatarUrl}
-            setAvatarUrl={setAvatarUrl}
-            teamName={teamName}
-          />
-        </Suspense>
+        <TeamFormBody
+          form={form}
+          visibility={visibility}
+          setVisibility={setVisibility}
+          avatarUrl={avatarUrl}
+          setAvatarUrl={setAvatarUrl}
+          teamName={teamName}
+        />
       ) : null}
     </Modal>
   );

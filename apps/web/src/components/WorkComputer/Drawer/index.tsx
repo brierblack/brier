@@ -1,10 +1,10 @@
-import { Suspense, useMemo, useState, use } from 'react';
-import { App, Spin, Space } from 'antd';
+import { useMemo, useState } from 'react';
+import { App, Space } from 'antd';
 import { Button } from '@brierb/brier-ui';
 import { DesktopOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Drawer } from '@brierb/brier-ui';
 import { listWorkComputers } from '@/api/generated';
-import type { WorkComputer } from '@/types';
+import { useApi } from '@/hooks/useApi';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AddComputerModal } from '../AddModal';
 import { ServiceUpgradeCard } from './ServiceUpgradeCard';
@@ -18,13 +18,14 @@ interface WorkComputerDrawerProps {
   onClose: () => void;
 }
 
-const DrawerBody = ({ computersPromise }: { computersPromise: Promise<WorkComputer[]> }) => {
-  const workComputers = use(computersPromise);
+const DrawerBody = () => {
+  const { data: workComputers } = useApi(listWorkComputers, []);
 
   const [selectedComputerId, setSelectedComputerId] = useState<string | undefined>();
 
   const selectedComputer = useMemo(
-    () => workComputers.find((c) => c.id === selectedComputerId) ?? workComputers[0],
+    () =>
+      (workComputers ?? []).find((c) => c.id === selectedComputerId) ?? (workComputers ?? [])[0],
     [workComputers, selectedComputerId],
   );
 
@@ -54,7 +55,7 @@ const DrawerBody = ({ computersPromise }: { computersPromise: Promise<WorkComput
           <span className="text-standard font-medium">我添加的</span>
         </div>
         <div className="flex flex-col gap-1">
-          {workComputers.map((computer) => (
+          {workComputers?.map((computer) => (
             <div
               key={computer.id}
               onClick={() => setSelectedComputerId(computer.id)}
@@ -120,8 +121,6 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
   const [refreshing, setRefreshing] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
 
-  const computersPromise = useMemo(() => (open ? listWorkComputers() : null), [open]);
-
   const handleRefresh = () => {
     setRefreshing(true);
     setTimeout(() => {
@@ -149,17 +148,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
         </Space>
       }
     >
-      {computersPromise && (
-        <Suspense
-          fallback={
-            <div className="flex h-full items-center justify-center">
-              <Spin />
-            </div>
-          }
-        >
-          <DrawerBody computersPromise={computersPromise} />
-        </Suspense>
-      )}
+      {open && <DrawerBody />}
       <AddComputerModal open={addModalOpen} onClose={() => setAddModalOpen(false)} />
     </Drawer>
   );

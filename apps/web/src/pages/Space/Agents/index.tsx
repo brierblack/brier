@@ -1,4 +1,5 @@
-import { use, useMemo, useState, Suspense } from 'react';
+import { useMemo, useState } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { useNavigate } from 'react-router-dom';
 import { Input, type MenuProps } from 'antd';
 import { Button, Page, Select, Table, Dropdown } from '@brierb/brier-ui';
@@ -46,11 +47,11 @@ const AgentsTable = ({ wsId, workComputers }: { wsId: string; workComputers: Wor
   const [activitySort, setActivitySort] = useState('recent');
   const [computerDrawerOpen, setComputerDrawerOpen] = useState(false);
 
-  const agents = use(listAgents(wsId));
+  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
 
   const filteredAgents = useMemo(
     () =>
-      agents.filter((a) => {
+      (agents ?? []).filter((a) => {
         const matchSearch = a.name.toLowerCase().includes(search.toLowerCase());
         const matchStatus = statusFilter === 'all' || a.status === statusFilter;
         return matchSearch && matchStatus;
@@ -215,18 +216,11 @@ const AgentsTable = ({ wsId, workComputers }: { wsId: string; workComputers: Wor
 
 const AgentsContent = () => {
   const { currentWsId } = useWorkspace();
-  const workComputers = use(listWorkComputers());
+  const { data: workComputers } = useApi(listWorkComputers, []);
   if (!currentWsId) {
     return <div className="p-4 text-standard">请先创建工作空间</div>;
   }
-  return <AgentsTable wsId={currentWsId} workComputers={workComputers} />;
+  return <AgentsTable wsId={currentWsId} workComputers={workComputers ?? []} />;
 };
 
-const Agents = () => {
-  return (
-    <Suspense fallback={<div className="p-4 text-standard">加载中...</div>}>
-      <AgentsContent />
-    </Suspense>
-  );
-};
-export default Agents;
+export default AgentsContent;

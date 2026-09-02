@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState, use } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input, type MenuProps } from 'antd';
 import { Button, Dropdown, Page, Select, Table, Tag } from '@brierb/brier-ui';
@@ -13,6 +13,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { CreateTeamModal } from './CreateModal';
 import { listTeams } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
+import { useApi } from '@/hooks/useApi';
 import { MODE_MAP } from '../../../define';
 import type { AgentTeam } from '../../../types';
 
@@ -33,10 +34,10 @@ const TeamsTable = ({ wsId }: { wsId: string }) => {
   const [search, setSearch] = useState('');
   const [activitySort, setActivitySort] = useState('recent');
 
-  const teams = use(listTeams(wsId));
+  const { data: teams } = useApi(() => listTeams(wsId), [wsId]);
 
   const filteredTeams = useMemo(() => {
-    let result = teams;
+    let result = teams ?? [];
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -187,16 +188,6 @@ const TeamContent = () => {
 };
 
 const Team = () => {
-  return (
-    <Suspense
-      fallback={
-        <Page title="Agent 团队" subtitle="编排多 Agent 协作，实现复杂工作流">
-          <div className="flex h-full items-center justify-center text-standard">加载中...</div>
-        </Page>
-      }
-    >
-      <TeamContent />
-    </Suspense>
-  );
+  return <TeamContent />;
 };
 export default Team;

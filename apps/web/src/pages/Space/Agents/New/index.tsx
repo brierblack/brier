@@ -1,4 +1,5 @@
-import { use, useMemo, useState, Suspense } from 'react';
+import { useMemo, useState } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { useNavigate } from 'react-router-dom';
 import { App, Form, Input, Select, Space, Upload } from 'antd';
 import { Button } from '@brierb/brier-ui';
@@ -101,10 +102,10 @@ const NewAgentContent = () => {
   const [extSearch, setExtSearch] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
 
-  const workComputers = use(listWorkComputers());
+  const { data: workComputers } = useApi(listWorkComputers, []);
 
   const selectedComputer = useMemo(
-    () => workComputers.find((c) => c.id === selectedComputerId),
+    () => (workComputers ?? []).find((c) => c.id === selectedComputerId),
     [workComputers, selectedComputerId],
   );
 
@@ -155,7 +156,7 @@ const NewAgentContent = () => {
             <Select
               placeholder="请选择"
               onChange={(val) => setSelectedComputerId(val)}
-              options={workComputers.map((c) => ({
+              options={(workComputers ?? []).map((c) => ({
                 value: c.id,
                 label: (
                   <span className="flex items-center gap-2">
@@ -357,11 +358,4 @@ const NewAgentContent = () => {
   );
 };
 
-const NewAgent = () => {
-  return (
-    <Suspense fallback={<div className="p-4 text-standard">加载中...</div>}>
-      <NewAgentContent />
-    </Suspense>
-  );
-};
-export default NewAgent;
+export default NewAgentContent;

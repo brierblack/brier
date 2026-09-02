@@ -1,13 +1,21 @@
-import { Suspense, use } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Spin } from 'antd';
 import { NavMenu } from '../../components/NavMenu';
 import { Resizable, DragLine } from '@brierb/brier-ui';
 import { listWorkspaces } from '@/api/generated';
 import { WorkspaceProvider } from '@/context/WorkspaceContext';
+import { useApi } from '@/hooks/useApi';
 
-const SpaceLayoutContent = () => {
-  const workspaces = use(listWorkspaces());
+export const Layout = () => {
+  const { data: workspaces, loading } = useApi(listWorkspaces, []);
+
+  if (loading || !workspaces) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Spin />
+      </div>
+    );
+  }
 
   return (
     <WorkspaceProvider workspaces={workspaces}>
@@ -24,19 +32,5 @@ const SpaceLayoutContent = () => {
         </div>
       </Resizable>
     </WorkspaceProvider>
-  );
-};
-
-export const Layout = () => {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex h-full items-center justify-center">
-          <Spin />
-        </div>
-      }
-    >
-      <SpaceLayoutContent />
-    </Suspense>
   );
 };

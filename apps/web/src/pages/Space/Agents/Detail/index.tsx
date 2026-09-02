@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, use, Suspense } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Avatar, Input, InputNumber } from 'antd';
 import { Button, Select, Menu, type MenuProps } from '@brierb/brier-ui';
@@ -18,6 +18,7 @@ import { Page, Table, Tag } from '@brierb/brier-ui';
 import { skills as allSkills } from '../../../../data/mockData';
 import { listAgents } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
+import { useApi } from '@/hooks/useApi';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { MODELS, SKILL_TYPE_MAP } from '../../../../define';
 import type { Agent, Skill } from '../../../../types';
@@ -569,9 +570,9 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
   const [visibility, setVisibility] = useState(VISIBILITY_OPTIONS[1].value);
   const [concurrency, setConcurrency] = useState(6);
 
-  const agents = use(listAgents(wsId));
+  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
 
-  const agent = agents.find((a) => a.id === id);
+  const agent = (agents ?? []).find((a) => a.id === id);
 
   if (!agent) {
     return (
@@ -645,11 +646,4 @@ const AgentDetailContent = () => {
   return <AgentDetailBody wsId={currentWsId} />;
 };
 
-const AgentDetail = () => {
-  return (
-    <Suspense fallback={<div className="p-4 text-standard">加载中...</div>}>
-      <AgentDetailContent />
-    </Suspense>
-  );
-};
-export default AgentDetail;
+export default AgentDetailContent;

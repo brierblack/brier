@@ -1,6 +1,6 @@
-import { Suspense, useMemo, useState, use } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { App, Segmented, Select, Spin, Table } from 'antd';
+import { App, Segmented, Select, Table } from 'antd';
 import { Button, Page, Tag } from '@brierb/brier-ui';
 import {
   ArrowLeftOutlined,
@@ -13,7 +13,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { listAgents } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
-import type { Agent } from '../../../../types';
+import { useApi } from '@/hooks/useApi';
 import {
   AutomationConfigPanel,
   type TriggerType,
@@ -289,7 +289,7 @@ const BarChart = ({ data }: { data: DailyStat[] }) => {
 const ConfigTabBody = ({ automation, wsId }: { automation: AutomationDetail; wsId: string }) => {
   const navigate = useNavigate();
   const { message } = App.useApp();
-  const agents: Agent[] = use(listAgents(wsId));
+  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
   const [title, setTitle] = useState(automation.title);
   const [triggerType, setTriggerType] = useState<TriggerType>(automation.triggerType);
   const [timerConfig, setTimerConfig] = useState<TimerConfig>(automation.timerConfig);
@@ -327,7 +327,7 @@ const ConfigTabBody = ({ automation, wsId }: { automation: AutomationDetail; wsI
         onActionTypeChange={setActionType}
         instructions={instructions}
         onInstructionsChange={setInstructions}
-        agents={agents}
+        agents={agents ?? []}
       />
     </div>
   );
@@ -572,17 +572,7 @@ const AutomationDetail = () => {
         </div>
 
         <div className="flex-1 overflow-auto">
-          {activeTab === 'config' && (
-            <Suspense
-              fallback={
-                <div className="flex h-full items-center justify-center">
-                  <Spin />
-                </div>
-              }
-            >
-              <ConfigTab automation={automation} />
-            </Suspense>
-          )}
+          {activeTab === 'config' && <ConfigTab automation={automation} />}
           {activeTab === 'executions' && <ExecutionRecordsTab />}
           {activeTab === 'history' && <ModificationRecordsTab />}
         </div>

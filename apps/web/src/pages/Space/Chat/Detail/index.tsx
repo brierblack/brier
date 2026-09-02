@@ -1,11 +1,11 @@
-import { Suspense, useEffect, useRef, useState, use } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Button, Page } from '@brierb/brier-ui';
-import { Spin } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useAuth } from '@/context/AuthContext';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { listAgents } from '@/api/generated';
+import { useApi } from '@/hooks/useApi';
 import type { Agent } from '../../../../types';
 import { getConversationById, type ChatMessage } from '../../../../data/conversations';
 import { InputBox, MessageBubble, TypingIndicator, getAgent } from '../shared';
@@ -16,12 +16,12 @@ const ConversationBody = ({ wsId }: { wsId: string }) => {
   const location = useLocation();
   const { user } = useAuth();
 
-  const agents: Agent[] = use(listAgents(wsId));
+  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
 
   const firstMessage = (location.state as { firstMessage?: string } | null)?.firstMessage;
   const conversation = getConversationById(Number(id));
 
-  const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(agents[0]);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(undefined);
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     if (conversation) return [...conversation.messages];
     if (firstMessage) {
@@ -32,6 +32,13 @@ const ConversationBody = ({ wsId }: { wsId: string }) => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+
+  // 数据到达后默认选中第一个 Agent
+  useEffect(() => {
+    if (!selectedAgent && agents?.length) {
+      setSelectedAgent(agents[0]);
+    }
+  }, [agents, selectedAgent]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -96,7 +103,7 @@ const ConversationBody = ({ wsId }: { wsId: string }) => {
               <MessageBubble
                 key={msg.id}
                 message={msg}
-                agent={getAgent(msg, selectedAgent, agents)}
+                agent={getAgent(msg, selectedAgent, agents ?? [])}
                 user={user}
               />
             ))}
@@ -109,7 +116,7 @@ const ConversationBody = ({ wsId }: { wsId: string }) => {
           <div className="mx-auto max-w-2xl">
             <InputBox
               agent={selectedAgent}
-              agents={agents}
+              agents={agents ?? []}
               value={input}
               onChange={setInput}
               onSend={handleSend}
@@ -139,17 +146,7 @@ const ConversationDetailContent = () => {
 };
 
 const ConversationDetail = () => {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex h-full items-center justify-center">
-          <Spin />
-        </div>
-      }
-    >
-      <ConversationDetailContent />
-    </Suspense>
-  );
+  return <ConversationDetailContent />;
 };
 
 export default ConversationDetail;

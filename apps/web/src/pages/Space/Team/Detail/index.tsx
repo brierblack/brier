@@ -1,4 +1,4 @@
-import { Suspense, useState, use } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Input, Segmented, Tooltip } from 'antd';
 import { Button } from '@brierb/brier-ui';
@@ -17,6 +17,8 @@ import {
 import { Page, Tag } from '@brierb/brier-ui';
 import { getTeam } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
+import { useApi } from '@/hooks/useApi';
+import type { AgentTeam } from '../../../../types';
 
 interface MemberDetail {
   id: number;
@@ -225,7 +227,12 @@ const TeamDetailBody = ({ wsId }: { wsId: string }) => {
   const [activeTab, setActiveTab] = useState('members');
   const [sharing, setSharing] = useState('space');
 
-  if (!id) {
+  const { data: team } = useApi<AgentTeam | undefined>(
+    () => (id ? getTeam(wsId, id) : Promise.resolve(undefined)),
+    [wsId, id],
+  );
+
+  if (!id || !team) {
     return (
       <Page header={<span className="">团队未找到</span>}>
         <div className="flex h-full items-center justify-center">
@@ -237,7 +244,6 @@ const TeamDetailBody = ({ wsId }: { wsId: string }) => {
       </Page>
     );
   }
-  const team = use(getTeam(wsId, id));
 
   const mainAgent = MOCK_MEMBERS.find((m) => m.isMain);
   const sharingOption = SHARING_OPTIONS.find((o) => o.value === sharing) ?? SHARING_OPTIONS[0];
@@ -329,16 +335,6 @@ const TeamDetailContent = () => {
 };
 
 const TeamDetail = () => {
-  return (
-    <Suspense
-      fallback={
-        <Page header={<span className="">加载中...</span>}>
-          <div className="flex h-full items-center justify-center text-standard">加载中...</div>
-        </Page>
-      }
-    >
-      <TeamDetailContent />
-    </Suspense>
-  );
+  return <TeamDetailContent />;
 };
 export default TeamDetail;
