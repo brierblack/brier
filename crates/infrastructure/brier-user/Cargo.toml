@@ -5,6 +5,7 @@ edition.workspace = true
 
 [dependencies]
 brier-error.workspace = true
+brier-crypto.workspace = true
 brier-type.workspace = true
 sea-orm.workspace = true
 chrono.workspace = true

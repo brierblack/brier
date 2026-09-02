@@ -1,5 +1,6 @@
 use brier_config::AppConfig;
 use brier_core::tunnel::ConnectionRegistry;
+use brier_crypto::TokenCipher;
 use brier_forge::ProviderRegistry;
 use brier_jwt::{JwtSigner, JwtVerifier};
 use sea_orm::DatabaseConnection;
@@ -18,6 +19,8 @@ pub struct AppState {
     pub cookie_secure: bool,
     pub frontend_url: Option<String>,
     pub tunnel_registry: ConnectionRegistry,
+    /// 第三方 OAuth 令牌加解密器（AES-256-GCM），加密存储在 user_identities.access_token。
+    pub token_cipher: TokenCipher,
 }
 
 impl AppState {
@@ -30,6 +33,8 @@ impl AppState {
             cookie_secure: config.server.cookie_secure,
             frontend_url: config.server.frontend_url.clone(),
             tunnel_registry: ConnectionRegistry::new(),
+            token_cipher: TokenCipher::from_key_str(&config.server.token_encryption_key)
+                .expect("TOKEN_ENCRYPTION_KEY must be valid and non-empty"),
         }
     }
 }

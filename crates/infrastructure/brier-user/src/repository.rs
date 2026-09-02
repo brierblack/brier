@@ -1,4 +1,5 @@
 use chrono::Utc;
+use brier_crypto::TokenCipher;
 use brier_error::{BrierError, Result};
 use brier_type::id::UserId;
 use brier_type::User;
@@ -50,13 +51,17 @@ pub async fn find_user_by_provider(
 
 /// 通过第三方身份查找或创建用户；登录成功后更新资料与 last_login_at。
 /// user + identity 的创建在事务内完成，避免出现悬空身份。
+/// access_token 在写入前经 AES-256-GCM 加密。
 pub async fn find_or_create_user_by_identity(
     db: &DatabaseConnection,
+    cipher: &TokenCipher,
     provider: &str,
     provider_uid: &str,
     profile: &IdentityProfile<'_>,
     access_token: Option<&str>,
 ) -> Result<User> {
+    let encrypted_token = access_token.map(|t| cipher.encrypt(t)).transpose()?;
+
     // 已存在：更新资料 + access_token + last_login_at
     if let Some(identity) = user_identity::Entity::find()
         .filter(user_identity::Column::Provider.eq(provider))
@@ -80,7 +85,7 @@ pub async fn find_or_create_user_by_identity(
         let model = user_active.update(db).await.map_err(DbErrExt::to_brier)?;
 
         let mut identity_active: user_identity::ActiveModel = identity.into();
-        identity_active.access_token = sea_orm::Set(access_token.map(|s| s.to_string()));
+        identity_active.access_token = sea_orm::Set(encrypted_token);
         identity_active.updated_at = sea_orm::Set(now);
         identity_active.update(db).await.map_err(DbErrExt::to_brier)?;
 
@@ -109,7 +114,7 @@ pub async fn find_or_create_user_by_identity(
         user_id: sea_orm::Set(user_model.id),
         provider: sea_orm::Set(provider.to_string()),
         provider_uid: sea_orm::Set(provider_uid.to_string()),
-        access_token: sea_orm::Set(access_token.map(|s| s.to_string())),
+        access_token: sea_orm::Set(encrypted_token),
         created_at: sea_orm::Set(now),
         updated_at: sea_orm::Set(now),
         ..Default::default()
@@ -139,8 +144,10 @@ async fn unique_username(txn: &DatabaseTransaction, base: &str) -> Result<String
 }
 
 /// 获取指定 Provider 的访问令牌（如 GitHub API 调用所需）。
+/// 存储时已加密，此处解密后返回明文。兼容历史明文令牌。
 pub async fn get_provider_token(
     db: &DatabaseConnection,
+    cipher: &TokenCipher,
     user_id: UserId,
     provider: &str,
 ) -> Result<Option<String>> {
@@ -150,5 +157,5 @@ pub async fn get_provider_token(
         .one(db)
         .await
         .map_err(DbErrExt::to_brier)?;
-    Ok(identity.and_then(|m| m.access_token))
+    Ok(identity.and_then(|m| m.access_token.map(|t| cipher.decrypt_or_raw(&t))))
 }

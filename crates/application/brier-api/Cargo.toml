@@ -8,6 +8,7 @@ brier-core.workspace = true
 brier-contract = { workspace = true, features = ["openapi"] }
 brier-error.workspace = true
 brier-config.workspace = true
+brier-crypto.workspace = true
 brier-forge.workspace = true
 brier-workspace.workspace = true
 brier-type = { workspace = true, features = ["openapi"] }

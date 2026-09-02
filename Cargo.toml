@@ -2,6 +2,7 @@
 members = [
     "apps/server",
     "crates/foundation/brier-error",
+    "crates/foundation/brier-crypto",
     "crates/primitives/brier-type",
     "crates/primitives/brier-config",
     "crates/domain/brier-core",
@@ -22,6 +23,7 @@ edition = "2021"
 
 [workspace.dependencies]
 brier-error = { path = "crates/foundation/brier-error" }
+brier-crypto = { path = "crates/foundation/brier-crypto" }
 brier-type = { path = "crates/primitives/brier-type" }
 brier-config = { path = "crates/primitives/brier-config" }
 brier-core = { path = "crates/domain/brier-core" }
@@ -52,3 +54,7 @@ async-trait = "0.1"
 uuid = { version = "1", features = ["v4", "serde"] }
 utoipa = { version = "5", features = ["axum_extras", "uuid", "chrono"] }
 utoipa-swagger-ui = { version = "9", features = ["axum"] }
+aes-gcm = "0.10"
+base64 = "0.22"
+rand = "0.8"
+sha2 = "0.10"

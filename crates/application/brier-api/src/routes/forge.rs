@@ -30,7 +30,7 @@ pub(crate) async fn list_repos(
         .providers
         .get_repository(&provider)
         .ok_or_else(|| ApiError(BrierError::NotFound(format!("unknown provider: {provider}"))))?;
-    let token = brier_user::repository::get_provider_token(&state.db, user.id, &provider)
+    let token = brier_user::repository::get_provider_token(&state.db, &state.token_cipher, user.id, &provider)
         .await?
         .ok_or_else(|| ApiError(BrierError::Auth(format!("{provider} token not found"))))?;
     let repos = provider_obj.list_repos(&token).await?;

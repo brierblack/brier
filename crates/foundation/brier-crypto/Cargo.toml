@@ -1,0 +1,11 @@
+[package]
+name = "brier-crypto"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+brier-error.workspace = true
+aes-gcm.workspace = true
+base64.workspace = true
+rand.workspace = true
+sha2.workspace = true

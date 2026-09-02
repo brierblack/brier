@@ -89,6 +89,7 @@ pub(crate) async fn oauth_login(
     let identity = provider.fetch_identity(&access_token).await?;
     let user = brier_user::repository::find_or_create_user_by_identity(
         &state.db,
+        &state.token_cipher,
         provider.provider_name(),
         &identity.provider_uid,
         &brier_user::repository::IdentityProfile {

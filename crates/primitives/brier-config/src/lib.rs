@@ -29,6 +29,7 @@ pub struct ServerConfig {
     pub host: String,
     pub port: u16,
     pub jwt_secret: String,
+    pub token_encryption_key: String,
     pub frontend_dir: String,
     pub frontend_url: Option<String>,
     pub database_url: String,
@@ -82,6 +83,8 @@ impl AppConfig {
                 .map_err(|e| brier_error::BrierError::Config(e.to_string()))?,
             port,
             jwt_secret: std::env::var("JWT_SECRET")
+                .map_err(|e| brier_error::BrierError::Config(e.to_string()))?,
+            token_encryption_key: std::env::var("TOKEN_ENCRYPTION_KEY")
                 .map_err(|e| brier_error::BrierError::Config(e.to_string()))?,
             frontend_dir: std::env::var("FRONTEND_DIR")
                 .map_err(|e| brier_error::BrierError::Config(e.to_string()))?,
