@@ -1,4 +1,4 @@
-import { createDaemonManager } from '../daemon/DaemonManager.js';
+import { createDaemonManager } from '../daemon/index.js';
 import { existsSync, readFileSync } from 'node:fs';
 import { PID_FILE } from '../config/index.js';
 import type { PidFileData } from '../definitions/index.js';

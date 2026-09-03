@@ -1,4 +1,4 @@
-import { createDaemonManager } from '../daemon/DaemonManager.js';
+import { createDaemonManager } from '../daemon/index.js';
 import { LOG_FILE } from '../config/index.js';
 
 export interface StartOptions {

@@ -1,4 +1,4 @@
-import { createDaemonManager } from '../daemon/DaemonManager.js';
+import { createDaemonManager } from '../daemon/index.js';
 
 export const stopCommand = async (): Promise<void> => {
   const manager = createDaemonManager();

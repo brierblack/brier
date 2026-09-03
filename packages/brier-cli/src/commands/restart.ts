@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { createDaemonManager } from '../daemon/DaemonManager.js';
+import { createDaemonManager } from '../daemon/index.js';
 import { loadConfig, PID_FILE, readStoredToken } from '../config/index.js';
 import type { PidFileData } from '../definitions/index.js';
 
