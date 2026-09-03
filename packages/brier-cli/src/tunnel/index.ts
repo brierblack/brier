@@ -17,7 +17,8 @@ const MAX_RECONNECT_ATTEMPTS = 50;
 export interface TunnelClient {
   start: () => void;
   stop: () => Promise<void>;
-  send: (message: ClientMessage) => void;
+  /** 发送上行消息；返回是否真正发出（未连接时为 false，调用方决定如何处理） */
+  send: (message: ClientMessage) => boolean;
   getState: () => TunnelState;
   onStateChange: (callback: (state: TunnelState) => void) => () => void;
 }
@@ -69,20 +70,20 @@ export const createTunnelClient = (
 
   const getState = () => state;
 
-  const send = (message: ClientMessage) => {
-    if (!transport.isOpen()) {
-      throw new Error('Tunnel is not connected');
-    }
-    transport.send(JSON.stringify(message));
-  };
-
-  const sendHeartbeat = (): boolean => {
+  /**
+   * 发送一条上行消息。
+   * 同一事件循环内先判状态再发送，无异步间隙，因此不会抛出“未连接”异常；
+   * 未连接时直接返回 false，由调用方显式决定（丢弃或缓冲）。
+   */
+  const send = (message: ClientMessage): boolean => {
     if (!transport.isOpen()) {
       return false;
     }
-    transport.send(JSON.stringify({ type: 'heartbeat', timestamp: Date.now() }));
+    transport.send(JSON.stringify(message));
     return true;
   };
+
+  const sendHeartbeat = (): boolean => send({ type: 'heartbeat', timestamp: Date.now() });
 
   const heartbeat = createHeartbeat({
     intervalMs: HEARTBEAT_INTERVAL_MS,

@@ -27,11 +27,15 @@ const handleUncaughtError = (err: Error) => {
 };
 
 const run = (config: DaemonConfig) => {
+  /**
+   * 上报一条任务消息。
+   * send() 已不抛错，返回是否真正发出；未连接时返回 false，本帧按设计丢弃
+   * （断线窗口不上行、不做缓冲，属已知边界；连接恢复后的任务对账为后续增强）。
+   */
   const safeSend = (message: ClientMessage) => {
-    try {
-      tunnel?.send(message);
-    } catch {
-      // Connection not ready, output is dropped
+    const sent = tunnel?.send(message) ?? false;
+    if (!sent) {
+      return;
     }
   };
 
