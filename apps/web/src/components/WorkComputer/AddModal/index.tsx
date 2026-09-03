@@ -18,7 +18,16 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
   const [token, setToken] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
 
-  // 打开 Modal 时获取一次性接入令牌（原文仅返回一次，服务端只存哈希）
+  // 打开弹窗时仅重置 UI 状态，不自动生成令牌：
+  // 令牌按用户维度覆盖，自动刷新会吊销其他已接入电脑的连接，故改为用户显式点击「获取令牌」
+  useEffect(() => {
+    if (open) {
+      setShowPrompt(false);
+      setToken(undefined);
+    }
+  }, [open]);
+
+  // 仅在用户显式点击「获取令牌/刷新密钥」时生成一次性令牌（原文仅返回一次，服务端只存哈希）
   const fetchToken = async () => {
     setLoading(true);
     try {
@@ -31,14 +40,6 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (open) {
-      setShowPrompt(false);
-      fetchToken();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
 
   const commands = token ? buildCliCommands(token) : undefined;
   const promptContent = token ? buildConnectPrompt(token) : '';
@@ -76,7 +77,7 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
                 loading={loading}
                 onClick={fetchToken}
               >
-                刷新密钥
+                {token ? '刷新密钥' : '获取令牌'}
               </Button>
             </div>
             <div className="rounded bg-[#f5f5f5] px-3 py-2">
@@ -92,7 +93,9 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
                 </div>
               ) : (
                 <span className="text-xs text-[#86909c]">
-                  {loading ? '正在生成接入令牌...' : '接入令牌获取失败，请点击「刷新密钥」重试'}
+                  {loading
+                    ? '正在生成接入令牌...'
+                    : '尚未生成接入令牌，请点击「获取令牌」后再复制命令'}
                 </span>
               )}
             </div>
@@ -173,7 +176,8 @@ export const AddComputerModal = ({ open, onClose }: AddComputerModalProps) => {
         {showPrompt && (
           <div className="px-3 py-2">
             <pre className="m-0 text-xs leading-relaxed whitespace-pre-wrap text-[#86909c]">
-              {promptContent || (loading ? '正在生成接入令牌...' : '接入令牌获取失败')}
+              {promptContent ||
+                (loading ? '正在生成接入令牌...' : '请先点击「获取令牌」，再预览 Prompt 内容')}
             </pre>
           </div>
         )}
