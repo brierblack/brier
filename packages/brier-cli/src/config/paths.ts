@@ -8,8 +8,8 @@ import { join } from 'node:path';
 
 /** Brier 用户数据目录（~/.brier） */
 export const BRIER_DIR = join(homedir(), '.brier');
-/** daemon 进程 PID 文件（前台 CLI 与 daemon 子进程之间通信的载体） */
-export const PID_FILE = join(BRIER_DIR, 'daemon.pid');
+/** daemon 运行状态文件（JSON，结构见 definitions/daemon.ts 的 DaemonState） */
+export const DAEMON_STATE_FILE = join(BRIER_DIR, 'daemon.pid');
 /** daemon 运行日志文件 */
 export const LOG_FILE = join(BRIER_DIR, 'daemon.log');
 /** daemon 接入令牌持久化文件（0600，供 `daemon restart` 无参回退） */

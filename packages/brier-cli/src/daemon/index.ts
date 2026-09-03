@@ -14,3 +14,5 @@ export {
   type TaskExecutor,
   type TaskExecutorCallbacks,
 } from './TaskExecutor.js';
+/** daemon 运行状态读取（status/restart 展示与回退） */
+export { readDaemonState } from './state.js';

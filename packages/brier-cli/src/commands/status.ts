@@ -1,27 +1,21 @@
-import { createDaemonManager } from '../daemon/index.js';
-import { existsSync, readFileSync } from 'node:fs';
-import { PID_FILE } from '../config/index.js';
-import type { PidFileData } from '../definitions/index.js';
+import { createDaemonManager, readDaemonState } from '../daemon/index.js';
 
+/** `brier daemon status`：展示 daemon 运行状态与状态文件详情。 */
 export const statusCommand = (): void => {
   const manager = createDaemonManager();
   const status = manager.status();
 
   if (status === 'running') {
-    let pidInfo: PidFileData | null = null;
-    if (existsSync(PID_FILE)) {
-      try {
-        pidInfo = JSON.parse(readFileSync(PID_FILE, 'utf-8')) as PidFileData;
-      } catch {
-        // ignore
-      }
-    }
-
+    const state = readDaemonState();
     console.log('● 后台服务运行中');
-    if (pidInfo) {
-      console.log(`  PID: ${pidInfo.pid}`);
-      console.log(`  Server: ${pidInfo.serverUrl}`);
-      console.log(`  Started: ${new Date(pidInfo.startTime).toLocaleString()}`);
+    if (state) {
+      console.log(`  PID: ${state.pid}`);
+      console.log(`  Server: ${state.serverUrl}`);
+      console.log(`  Started: ${new Date(state.startTime).toLocaleString()}`);
+      console.log(`  Ready: ${state.ready ? '是' : '否（启动中）'}`);
+      if (state.tunnelState) {
+        console.log(`  隧道状态: ${state.tunnelState}`);
+      }
     }
   } else {
     console.log('○ 后台服务未运行');

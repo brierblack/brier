@@ -7,18 +7,21 @@ import {
   type TunnelMessageHandlers,
 } from '../tunnel/index.js';
 import { createTaskExecutor, type TaskExecutor } from './TaskExecutor.js';
+import { updateDaemonState } from './state.js';
 
 let tunnel: TunnelClient | null = null;
 let taskExecutor: TaskExecutor | null = null;
 
-/** 停止隧道并取消所有运行中任务（宿主层的生命周期策略）。 */
+/** 停止隧道、收尾任务执行器（宿主层的生命周期策略）。 */
 const stopAll = async () => {
   if (tunnel) {
     await tunnel.stop();
     tunnel = null;
   }
-  taskExecutor?.cancelAll();
-  taskExecutor = null;
+  if (taskExecutor) {
+    await taskExecutor.dispose();
+    taskExecutor = null;
+  }
 };
 
 const shutdown = async (signal: string) => {
@@ -74,9 +77,12 @@ const run = (config: DaemonConfig) => {
 
   tunnel.onStateChange((state: TunnelState) => {
     logger.info('Tunnel state:', state);
+    // 状态落盘（低频状态切换），供 `daemon status` 展示
+    updateDaemonState({ tunnelState: state });
   });
 
   tunnel.start();
+  updateDaemonState({ ready: true }); // 就绪握手：告知前台 Manager 启动成功
   logger.info('Daemon runner started');
   logger.info('Server:', config.serverUrl);
   logger.info('Hostname:', config.hostname);
@@ -98,7 +104,9 @@ const main = () => {
   try {
     config = loadConfig();
   } catch (err) {
-    logger.error('Config error:', err instanceof Error ? err.message : String(err));
+    const message = err instanceof Error ? err.message : String(err);
+    updateDaemonState({ bootError: message }); // 启动失败原因回写，Manager 据此中止
+    logger.error('Config error:', message);
     process.exit(1);
   }
 

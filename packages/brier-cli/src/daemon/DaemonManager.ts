@@ -1,64 +1,24 @@
 import { spawn } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync, mkdirSync, unlinkSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { PidFileData, DaemonStatus } from '../definitions/index.js';
-import { BRIER_DIR, PID_FILE, writeCredentials } from '../config/index.js';
+import type { DaemonStatus } from '../definitions/index.js';
+import { writeCredentials } from '../config/index.js';
 import { logger } from '../core/index.js';
+import {
+  isDaemonRunning,
+  readDaemonState,
+  removeDaemonState,
+  waitForProcessExit,
+  writeDaemonState,
+} from './state.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const RUNNER_SCRIPT = join(__dirname, 'DaemonRunner.js');
 
-const isProcessRunning = (pid: number): boolean => {
-  try {
-    process.kill(pid, 0);
-    return true;
-  } catch (err) {
-    return err instanceof Error && 'code' in err && (err as NodeJS.ErrnoException).code === 'EPERM';
-  }
-};
-
-const readPidFile = (): PidFileData | null => {
-  if (!existsSync(PID_FILE)) return null;
-  try {
-    const data = readFileSync(PID_FILE, 'utf-8');
-    return JSON.parse(data) as PidFileData;
-  } catch {
-    return null;
-  }
-};
-
-const writePidFile = (data: PidFileData) => {
-  mkdirSync(BRIER_DIR, { recursive: true });
-  writeFileSync(PID_FILE, JSON.stringify(data, null, 2));
-};
-
-const removePidFile = () => {
-  if (existsSync(PID_FILE)) {
-    unlinkSync(PID_FILE);
-  }
-};
-
-const waitForExit = (pid: number, timeoutMs = 5000): Promise<boolean> => {
-  return new Promise((resolve) => {
-    const startTime = Date.now();
-
-    const check = () => {
-      if (!isProcessRunning(pid)) {
-        resolve(true);
-        return;
-      }
-      if (Date.now() - startTime >= timeoutMs) {
-        resolve(false);
-        return;
-      }
-      setTimeout(check, 200);
-    };
-
-    check();
-  });
-};
+/** 启动后等待子进程就绪（ready/bootError）的时限 */
+const READY_TIMEOUT_MS = 3_000;
+const READY_POLL_MS = 150;
 
 export interface DaemonManager {
   start: (options: { serverUrl: string; token: string }) => Promise<void>;
@@ -69,12 +29,12 @@ export interface DaemonManager {
 
 export const createDaemonManager = (): DaemonManager => {
   const start = async (options: { serverUrl: string; token: string }): Promise<void> => {
-    const existing = readPidFile();
-    if (existing && isProcessRunning(existing.pid)) {
+    const existing = readDaemonState();
+    if (existing && isDaemonRunning(existing)) {
       throw new Error(`Daemon is already running (PID: ${existing.pid})`);
     }
     if (existing) {
-      removePidFile();
+      removeDaemonState();
     }
 
     // 持久化接入令牌（0600），供 `daemon restart` 无参回退；失败仅告警，不阻断启动
@@ -106,32 +66,60 @@ export const createDaemonManager = (): DaemonManager => {
       throw new Error('Failed to spawn daemon process');
     }
 
-    writePidFile({
+    // 先写“未就绪”状态，等子进程通过 ready/bootError 完成就绪握手
+    const startTime = Date.now();
+    writeDaemonState({
       pid: child.pid,
-      startTime: Date.now(),
+      startTime,
       serverUrl: options.serverUrl,
+      ready: false,
     });
+    logger.info('Daemon spawned, waiting for ready (PID:', child.pid, ')');
 
-    logger.info('Daemon started, PID:', child.pid);
+    const deadline = Date.now() + READY_TIMEOUT_MS;
+    while (Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, READY_POLL_MS));
+      const state = readDaemonState();
+      if (state?.ready) {
+        logger.info('Daemon started, PID:', child.pid);
+        return;
+      }
+      if (state?.bootError) {
+        removeDaemonState();
+        throw new Error(`Daemon failed to start: ${state.bootError}`);
+      }
+    }
+
+    // 超时：进程若已退出则清理并报错，否则强杀后清理
+    removeDaemonState();
+    if (!(await waitForProcessExit(child.pid, 500))) {
+      try {
+        child.kill('SIGTERM');
+      } catch {
+        /* already gone */
+      }
+    }
+    throw new Error('Daemon start timed out, please check ~/.brier/daemon.log');
   };
 
   const stop = async (): Promise<void> => {
-    const data = readPidFile();
+    const data = readDaemonState();
     if (!data) {
-      logger.warn('No PID file found, daemon may not be running');
+      logger.warn('No state file found, daemon may not be running');
       return;
     }
 
-    if (!isProcessRunning(data.pid)) {
-      logger.info('Process not running, cleaning up PID file');
-      removePidFile();
+    if (!isDaemonRunning(data)) {
+      // 身份校验不通过：PID 已复用或进程已退出，只清理状态，不误杀其他进程
+      logger.warn('Daemon not running or PID reused, cleaning up state file');
+      removeDaemonState();
       return;
     }
 
     logger.info('Sending SIGTERM to PID:', data.pid);
     process.kill(data.pid, 'SIGTERM');
 
-    const exited = await waitForExit(data.pid, 5000);
+    const exited = await waitForProcessExit(data.pid, 5000);
     if (!exited) {
       logger.warn('Process did not exit, sending SIGKILL');
       try {
@@ -141,7 +129,7 @@ export const createDaemonManager = (): DaemonManager => {
       }
     }
 
-    removePidFile();
+    removeDaemonState();
     logger.info('Daemon stopped');
   };
 
@@ -151,10 +139,10 @@ export const createDaemonManager = (): DaemonManager => {
   };
 
   const status = (): DaemonStatus => {
-    const data = readPidFile();
+    const data = readDaemonState();
     if (!data) return 'stopped';
-    if (isProcessRunning(data.pid)) return 'running';
-    removePidFile();
+    if (isDaemonRunning(data)) return 'running';
+    removeDaemonState();
     return 'stopped';
   };
 

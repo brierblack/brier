@@ -3,6 +3,11 @@ import type { TaskInfo } from '../definitions/index.js';
 import { logger, resolveRuntimeExecutable, RUNTIME_PROMPT_FLAGS } from '../core/index.js';
 
 const MAX_CONCURRENT = 3;
+/** 取消后等待 SIGTERM 生效的时间，超时升级 SIGKILL */
+const KILL_GRACE_MS = 2_000;
+/** dispose 整体等待上限 */
+const DISPOSE_TIMEOUT_MS = 2_000;
+const DISPOSE_POLL_MS = 100;
 
 export interface TaskExecutorCallbacks {
   onOutput: (taskId: string, stream: 'stdout' | 'stderr', data: string) => void;
@@ -12,12 +17,42 @@ export interface TaskExecutorCallbacks {
 
 export interface TaskExecutor {
   execute: (task: TaskInfo) => void;
+  /** 取消单个任务：SIGTERM，宽限期后 SIGKILL */
   cancel: (taskId: string) => void;
-  cancelAll: () => void;
+  /** 停止并收尾：对全部运行中任务 SIGTERM，等待退出，未退出的 SIGKILL */
+  dispose: () => Promise<void>;
 }
 
 export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecutor => {
   const processes = new Map<string, ChildProcess>();
+  /** 已请求取消的任务：其 close 不再上报 complete */
+  const cancelRequested = new Set<string>();
+  /** 已上报终态（error/complete 二选一，防双重上报）的任务 */
+  const finished = new Set<string>();
+  /** 取消后的 SIGKILL 升级计时器 */
+  const killTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+  const clearKillTimer = (taskId: string) => {
+    const timer = killTimers.get(taskId);
+    if (timer) {
+      clearTimeout(timer);
+      killTimers.delete(taskId);
+    }
+  };
+
+  const armKillTimer = (taskId: string, child: ChildProcess, delayMs: number) => {
+    clearKillTimer(taskId);
+    killTimers.set(
+      taskId,
+      setTimeout(() => {
+        killTimers.delete(taskId);
+        if (processes.get(taskId) === child) {
+          logger.warn(`Task ${taskId} did not exit after SIGTERM, sending SIGKILL`);
+          child.kill('SIGKILL');
+        }
+      }, delayMs),
+    );
+  };
 
   /**
    * 解析要执行的命令：
@@ -91,13 +126,27 @@ export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecut
     });
 
     child.on('error', (err: Error) => {
+      // error 后可能仍触发 close：终态只上报一次
+      if (finished.has(task.taskId)) return;
+      finished.add(task.taskId);
+      clearKillTimer(task.taskId);
       processes.delete(task.taskId);
       logger.error(`Task ${task.taskId} process error:`, err.message);
       callbacks.onError(task.taskId, err.message);
     });
 
     child.on('close', (code: number | null) => {
+      if (finished.has(task.taskId)) return;
+      finished.add(task.taskId);
+      clearKillTimer(task.taskId);
       processes.delete(task.taskId);
+
+      if (cancelRequested.has(task.taskId)) {
+        cancelRequested.delete(task.taskId);
+        logger.info(`Task ${task.taskId} cancelled`);
+        return;
+      }
+
       const exitCode = code ?? 0;
       logger.info(`Task ${task.taskId} completed with exit code ${exitCode}`);
       callbacks.onComplete(task.taskId, exitCode);
@@ -110,18 +159,42 @@ export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecut
       logger.warn(`Task ${taskId} not found, cannot cancel`);
       return;
     }
-    child.kill('SIGTERM');
-    processes.delete(taskId);
-    logger.info(`Task ${taskId} cancelled`);
-  };
-
-  const cancelAll = () => {
-    for (const [taskId, child] of processes) {
-      child.kill('SIGTERM');
-      logger.info(`Task ${taskId} cancelled (shutdown)`);
+    if (cancelRequested.has(taskId)) {
+      return;
     }
-    processes.clear();
+    cancelRequested.add(taskId);
+    logger.info(`Task ${taskId} cancelling (SIGTERM)`);
+    child.kill('SIGTERM');
+    armKillTimer(taskId, child, KILL_GRACE_MS);
   };
 
-  return { execute, cancel, cancelAll };
+  const dispose = (): Promise<void> => {
+    if (processes.size === 0) return Promise.resolve();
+
+    for (const [taskId, child] of processes) {
+      cancelRequested.add(taskId);
+      logger.info(`Task ${taskId} cancelling (shutdown, SIGTERM)`);
+      child.kill('SIGTERM');
+      armKillTimer(taskId, child, KILL_GRACE_MS);
+    }
+
+    return new Promise((resolve) => {
+      const start = Date.now();
+      const check = () => {
+        if (processes.size === 0 || Date.now() - start >= DISPOSE_TIMEOUT_MS) {
+          // 仍未退出的升级为 SIGKILL；close 事件随后清理各集合
+          for (const [taskId, child] of processes) {
+            logger.warn(`Task ${taskId} force killed during shutdown`);
+            child.kill('SIGKILL');
+          }
+          resolve();
+          return;
+        }
+        setTimeout(check, DISPOSE_POLL_MS);
+      };
+      check();
+    });
+  };
+
+  return { execute, cancel, dispose };
 };

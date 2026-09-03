@@ -1,32 +1,19 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { createDaemonManager } from '../daemon/index.js';
-import { loadConfig, PID_FILE, readStoredToken } from '../config/index.js';
-import type { PidFileData } from '../definitions/index.js';
+import { createDaemonManager, readDaemonState } from '../daemon/index.js';
+import { loadConfig, readStoredToken } from '../config/index.js';
 
 export interface RestartOptions {
   serverUrl?: string;
   token?: string;
 }
 
-/** 读取 PID 文件中记录的 serverUrl（重启时回退用）。 */
-const readSavedServerUrl = (): string | undefined => {
-  if (!existsSync(PID_FILE)) return undefined;
-  try {
-    const data = JSON.parse(readFileSync(PID_FILE, 'utf-8')) as PidFileData;
-    return data.serverUrl;
-  } catch {
-    return undefined;
-  }
-};
-
 export const restartCommand = async (options: RestartOptions): Promise<void> => {
   let serverUrl = options.serverUrl;
   // token 优先级：--token → BRIER_TOKEN 环境变量 → 持久化的接入令牌（0600 的 credentials.json）
   let token = options.token ?? process.env.BRIER_TOKEN ?? readStoredToken();
 
-  // 未显式指定 server-url 时，优先沿用当前 daemon 记录的地址（PID 文件），再退回环境变量
+  // 未显式指定 server-url 时，优先沿用当前 daemon 记录的地址（状态文件），再退回环境变量
   if (!serverUrl) {
-    serverUrl = readSavedServerUrl();
+    serverUrl = readDaemonState()?.serverUrl;
   }
 
   if (!serverUrl || !token) {

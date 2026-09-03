@@ -16,5 +16,5 @@ export type { StreamType, ClientMessage, ServerMessage, TunnelState } from './tu
 /** 本地任务执行上下文（TaskExecutor 入参） */
 export type { TaskInfo } from './task.js';
 
-/** daemon 生命周期相关：DaemonStatus / DaemonConfig / PidFileData */
-export type { DaemonStatus, DaemonConfig, PidFileData } from './daemon.js';
+/** daemon 生命周期相关：DaemonStatus / DaemonConfig / DaemonState */
+export type { DaemonStatus, DaemonConfig, DaemonState } from './daemon.js';
