@@ -46,6 +46,9 @@ pub enum ClientMessage {
         hostname: String,
         os: String,
         runtimes: Vec<String>,
+        /// 接入 CLI 版本（旧版客户端可能不带该字段）。
+        #[serde(default)]
+        version: Option<String>,
     },
     Heartbeat {
         timestamp: u64,

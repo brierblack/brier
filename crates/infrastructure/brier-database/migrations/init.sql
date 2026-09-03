@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS work_computers (
     status        TEXT NOT NULL CHECK (status IN ('online', 'offline')),
     last_seen_at  TIMESTAMPTZ,
     runtimes      TEXT,
+    version       TEXT,
     created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

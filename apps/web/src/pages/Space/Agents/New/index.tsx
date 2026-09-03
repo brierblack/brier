@@ -17,11 +17,35 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import { Page } from '@brierb/brier-ui';
-import { listWorkComputers } from '@/api/generated';
+import { createAgent, listWorkComputers } from '@/api/generated';
+import type { AgentVisibility, PublicScope } from '@/api/generated';
+import { useWorkspace } from '@/context/WorkspaceContext';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { MODELS } from '../../../../define';
 
-const RUNTIMES = ['Claude Code', 'Codex CLI', 'GPT-4o CLI', 'Gemini CLI'];
+// 后端未上报 runtime 时的兜底选项
+const FALLBACK_RUNTIMES = [
+  'OpenCode',
+  'Claude Code',
+  'Codex CLI',
+  'OpenAI CLI',
+  'Gemini CLI',
+  'Cursor CLI',
+  'Aider',
+  'Goose',
+  'Cody',
+];
+
+// 前端可见性选项 → 后端 AgentVisibility / PublicScope
+const VISIBILITY_TO_SCOPE: Record<
+  string,
+  { visibility: AgentVisibility; public_scope?: PublicScope }
+> = {
+  personal: { visibility: 'private' },
+  everyone: { visibility: 'public', public_scope: 'all' },
+  joined_spaces: { visibility: 'public', public_scope: 'joined_spaces' },
+  specified_spaces: { visibility: 'public', public_scope: 'specified_spaces' },
+};
 
 interface MockExtension {
   id: string;
@@ -95,12 +119,14 @@ const SectionCard = ({
 const NewAgentContent = () => {
   const { message } = App.useApp();
   const navigate = useNavigate();
+  const { currentWsId } = useWorkspace();
   const [form] = Form.useForm();
   const [selectedComputerId, setSelectedComputerId] = useState<string | undefined>(undefined);
   const [visibility, setVisibility] = useState<string>('personal');
   const [extensions, setExtensions] = useState<MockExtension[]>(DEFAULT_EXTENSIONS);
   const [extSearch, setExtSearch] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const { data: workComputers } = useApi(listWorkComputers, []);
 
@@ -109,16 +135,47 @@ const NewAgentContent = () => {
     [workComputers, selectedComputerId],
   );
 
+  // runtime 选项以电脑实际上报为准；未上报时用兜底清单
+  const runtimeOptions = useMemo(() => {
+    const runtimes = selectedComputer?.runtimes?.length
+      ? selectedComputer.runtimes
+      : FALLBACK_RUNTIMES;
+    return runtimes.map((r) => ({
+      label: <RuntimeBadge name={r} size={12} />,
+      value: r,
+    }));
+  }, [selectedComputer?.runtimes]);
+
   const filteredExtensions = useMemo(
     () => extensions.filter((e) => e.name.toLowerCase().includes(extSearch.toLowerCase())),
     [extensions, extSearch],
   );
 
-  const handleCreate = () => {
-    form.validateFields().then(() => {
+  const handleCreate = async () => {
+    if (!currentWsId) {
+      message.warning('请先创建工作空间');
+      return;
+    }
+    try {
+      const values = await form.validateFields();
+      const scope = VISIBILITY_TO_SCOPE[visibility] ?? { visibility: 'private' as const };
+      setSubmitting(true);
+      await createAgent(currentWsId, {
+        name: values.name,
+        description: values.desc,
+        visibility: scope.visibility,
+        public_scope: scope.public_scope,
+        runtime: values.runtime,
+        work_computer_id: values.workComputer ?? null,
+      });
       message.success('Agent 创建成功');
       navigate('/space/agents');
-    });
+    } catch (e) {
+      // 校验失败静默；接口错误提示
+      if (e instanceof Error) message.error(e.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleRemoveExtension = (id: string) => {
@@ -139,7 +196,7 @@ const NewAgentContent = () => {
       extra={
         <Space>
           <Button onClick={() => navigate('/space/agents')}>取消</Button>
-          <Button type="primary" onClick={handleCreate}>
+          <Button type="primary" loading={submitting} onClick={handleCreate}>
             创建
           </Button>
         </Space>
@@ -178,14 +235,7 @@ const NewAgentContent = () => {
             <Select
               placeholder={selectedComputer ? undefined : '请先选择工作电脑'}
               disabled={!selectedComputer}
-              options={
-                selectedComputer
-                  ? RUNTIMES.map((r) => ({
-                      label: <RuntimeBadge name={r} size={12} />,
-                      value: r,
-                    }))
-                  : []
-              }
+              options={selectedComputer ? runtimeOptions : []}
             />
           </Form.Item>
         </SectionCard>

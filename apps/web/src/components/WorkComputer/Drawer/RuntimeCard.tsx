@@ -9,14 +9,18 @@ interface RuntimeCardProps {
 export const RuntimeCard = memo(({ runtimes }: RuntimeCardProps) => (
   <Card title="检测到的 Runtime">
     <div className="flex flex-wrap gap-2 p-4">
-      {runtimes.map((rt) => (
-        <Tag key={rt} className="!cursor-pointer !border-ghost !bg-[#f0f0f0] !text-[#333]">
-          <span className="inline-flex items-center gap-1.5">
-            <RuntimeIcon name={rt} size={12} />
-            {rt}
-          </span>
-        </Tag>
-      ))}
+      {runtimes.length === 0 ? (
+        <span className="text-xs text-muted">暂无运行时上报（电脑在线后自动检测）</span>
+      ) : (
+        runtimes.map((rt) => (
+          <Tag key={rt} className="!cursor-pointer !border-ghost !bg-[#f0f0f0] !text-[#333]">
+            <span className="inline-flex items-center gap-1.5">
+              <RuntimeIcon name={rt} size={12} />
+              {rt}
+            </span>
+          </Tag>
+        ))
+      )}
     </div>
   </Card>
 ));

@@ -44,6 +44,7 @@ use crate::routes::workspace::CreateWorkspaceRequest;
         crate::routes::work_computer::create_connect_token,
         crate::routes::work_computer::get_work_computer,
         crate::routes::work_computer::delete_work_computer,
+        crate::routes::work_computer::list_computer_agents,
     ),
     components(schemas(
         User, Workspace, RepoInfo, CreateWorkspaceRequest,

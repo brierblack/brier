@@ -12,7 +12,7 @@ use tokio::sync::broadcast::error::RecvError;
 use brier_error::BrierError;
 use brier_type::enums::{WorkComputerStatus, WorkComputerType};
 use brier_type::id::{UserId, WorkComputerId};
-use brier_type::{WorkComputer, WorkComputerEvent};
+use brier_type::{Agent, WorkComputer, WorkComputerEvent};
 
 use crate::error::ApiError;
 use crate::routes::current_user;
@@ -45,6 +45,10 @@ pub fn router() -> Router<AppState> {
         .route(
             "/api/work-computers/events",
             get(stream_work_computer_events),
+        )
+        .route(
+            "/api/work-computers/{computer_id}/agents",
+            get(list_computer_agents),
         )
         .route(
             "/api/work-computers/{computer_id}",
@@ -96,6 +100,8 @@ pub(crate) async fn create_work_computer(
         os: req.os,
         status: WorkComputerStatus::Offline,
         last_seen_at: None,
+        runtimes: Vec::new(),
+        version: None,
         created_at: now,
         updated_at: now,
     };
@@ -176,6 +182,34 @@ pub(crate) async fn delete_work_computer(
     brier_agent::repository::delete_work_computer(&state.db, computer_id).await?;
     publish_wc_event(&state, user.id, WorkComputerEvent::Deleted { computer_id }).await;
     Ok(Json(()))
+}
+
+/// 列出该工作电脑上绑定的 Agent（需本人）。
+#[utoipa::path(
+    get,
+    path = "/api/work-computers/{computer_id}/agents",
+    params(("computer_id" = WorkComputerId, Path, description = "工作电脑 ID")),
+    responses(
+        (status = 200, description = "电脑上的 Agent 列表", body = [Agent]),
+        (status = 401, description = "未登录"),
+        (status = 404, description = "工作电脑不存在")
+    )
+)]
+pub(crate) async fn list_computer_agents(
+    State(state): State<AppState>,
+    Path(computer_id): Path<WorkComputerId>,
+    headers: HeaderMap,
+) -> Result<Json<Vec<Agent>>, ApiError> {
+    let user = current_user(&state, &headers).await?;
+    let wc = brier_agent::repository::get_work_computer(&state.db, computer_id)
+        .await?
+        .ok_or_else(|| ApiError(BrierError::NotFound("work computer not found".into())))?;
+    if wc.user_id != user.id {
+        return Err(ApiError(BrierError::NotFound("work computer not found".into())));
+    }
+    let agents = brier_agent::repository::list_agents_by_work_computer(&state.db, computer_id)
+        .await?;
+    Ok(Json(agents))
 }
 
 /// 向用户推送工作电脑状态事件（JSON 字符串；无订阅者时静默）。

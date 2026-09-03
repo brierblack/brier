@@ -5,7 +5,14 @@ export type TunnelState = 'connecting' | 'connected' | 'disconnected' | 'reconne
 export type StreamType = 'stdout' | 'stderr';
 
 export type ClientMessage =
-  | { type: 'auth'; token: string; hostname: string; os: string; runtimes: string[] }
+  | {
+      type: 'auth';
+      token: string;
+      hostname: string;
+      os: string;
+      runtimes: string[];
+      version?: string;
+    }
   | { type: 'heartbeat'; timestamp: number }
   | { type: 'task-output'; taskId: string; stream: StreamType; data: string }
   | { type: 'task-complete'; taskId: string; exitCode: number }
@@ -43,6 +50,8 @@ export interface DaemonConfig {
   hostname: string;
   os: string;
   runtimes: string[];
+  /** CLI 自身版本（package.json），Auth 时上报给服务端展示。 */
+  version: string;
 }
 
 export interface PidFileData {

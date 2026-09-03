@@ -105,6 +105,19 @@ pub async fn get_work_computer(
     model.map(WorkComputer::try_from).transpose()
 }
 
+/// 按工作电脑查询其上的 Agent（跨工作空间，Agent.work_computer_id 关联）。
+pub async fn list_agents_by_work_computer(
+    db: &DatabaseConnection,
+    computer_id: WorkComputerId,
+) -> Result<Vec<Agent>> {
+    let models = agent::Entity::find()
+        .filter(agent::Column::WorkComputerId.eq(computer_id.0))
+        .all(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    models.into_iter().map(Agent::try_from).collect()
+}
+
 pub async fn create_work_computer(
     db: &DatabaseConnection,
     wc: WorkComputer,
@@ -169,17 +182,17 @@ pub async fn find_work_computer_by_user_host(
     Ok(model)
 }
 
-/// CLI Auth 上报：按 hostname 有则更新、无则创建，置 online 并回写心跳。
+/// CLI Auth 上报：按 hostname 有则更新、无则创建，置 online 并回写心跳与版本。
 pub async fn upsert_online_work_computer(
     db: &DatabaseConnection,
     user_id: UserId,
     hostname: &str,
     os: &str,
     runtimes: Option<&[String]>,
+    version: Option<&str>,
     now: DateTime<Utc>,
 ) -> Result<work_computer::Model> {
-    let runtimes_json = runtimes
-        .map(|r| serde_json::to_string(r).unwrap_or_default());
+    let runtimes_json = runtimes.map(|r| serde_json::to_string(r).unwrap_or_default());
 
     if let Some(existing) =
         find_work_computer_by_user_host(db, user_id, hostname).await?
@@ -190,6 +203,7 @@ pub async fn upsert_online_work_computer(
             status: Set("online".to_string()),
             last_seen_at: Set(Some(now)),
             runtimes: Set(runtimes_json),
+            version: Set(version.map(|v| v.to_string())),
             updated_at: Set(now),
             ..Default::default()
         };
@@ -207,6 +221,7 @@ pub async fn upsert_online_work_computer(
         status: Set("online".to_string()),
         last_seen_at: Set(Some(now)),
         runtimes: Set(runtimes_json),
+        version: Set(version.map(|v| v.to_string())),
         created_at: Set(now),
         updated_at: Set(now),
     }

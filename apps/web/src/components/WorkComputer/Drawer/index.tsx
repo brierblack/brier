@@ -2,8 +2,13 @@ import { useMemo, useState } from 'react';
 import { App, Space } from 'antd';
 import { Button, Drawer } from '@brierb/brier-ui';
 import { DesktopOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
-import { createConnectToken, deleteWorkComputer, listWorkComputers } from '@/api/generated';
-import type { WorkComputer } from '@/types';
+import {
+  createConnectToken,
+  deleteWorkComputer,
+  listComputerAgents,
+  listWorkComputers,
+} from '@/api/generated';
+import type { Agent, ComputerAgent, WorkComputer } from '@/types';
 import { useApi } from '@/hooks/useApi';
 import { useWorkComputerEvents } from '@/hooks/useWorkComputerEvents';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -34,6 +39,28 @@ const DrawerBody = ({ refreshTick }: { refreshTick: number }) => {
     () =>
       (workComputers ?? []).find((c) => c.id === selectedComputerId) ?? (workComputers ?? [])[0],
     [workComputers, selectedComputerId],
+  );
+
+  // 当前选中电脑上绑定的 Agent（随选中电脑变化重新拉取）
+  const { data: agents } = useApi<Agent[]>(
+    () => (selectedComputer ? listComputerAgents(selectedComputer.id) : Promise.resolve([])),
+    [selectedComputer?.id],
+  );
+
+  // Agent（领域）→ 卡片展示模型（UI）映射
+  const computerAgents = useMemo<ComputerAgent[]>(
+    () =>
+      (agents ?? []).map((a) => ({
+        id: a.id,
+        name: a.name,
+        desc: a.description ?? '',
+        icon: a.icon ?? '🤖',
+        status: a.status,
+        runtime: a.runtime ?? '',
+        lastActive: a.last_active ?? '',
+        computerId: selectedComputer?.id ?? '',
+      })),
+    [agents, selectedComputer?.id],
   );
 
   const commands = useMemo(() => (token ? buildCliCommands(token) : undefined), [token]);
@@ -144,11 +171,11 @@ const DrawerBody = ({ refreshTick }: { refreshTick: number }) => {
 
         {/* Section cards */}
         <div className="flex flex-col gap-4">
-          <ServiceUpgradeCard version={undefined} latestVersion={undefined} isLatest={true} />
+          <ServiceUpgradeCard version={selectedComputer.version} />
 
-          <RuntimeCard runtimes={[]} />
+          <RuntimeCard runtimes={selectedComputer.runtimes} />
 
-          <AgentListCard agents={[]} />
+          <AgentListCard agents={computerAgents} />
 
           <CliUsageCard
             commands={commands}

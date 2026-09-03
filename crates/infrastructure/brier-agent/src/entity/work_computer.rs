@@ -13,6 +13,7 @@ pub struct Model {
     pub status: String,
     pub last_seen_at: Option<DateTimeUtc>,
     pub runtimes: Option<String>,
+    pub version: Option<String>,
     pub created_at: DateTimeUtc,
     pub updated_at: DateTimeUtc,
 }

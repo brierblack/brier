@@ -41,6 +41,15 @@ impl TryFrom<work_computer::Model> for WorkComputer {
             os: m.os,
             status: parse_enum(&m.status, "WorkComputerStatus")?,
             last_seen_at: m.last_seen_at,
+            runtimes: m
+                .runtimes
+                .as_deref()
+                .map(|json| {
+                    serde_json::from_str::<Vec<String>>(json)
+                        .unwrap_or_else(|_| Vec::new())
+                })
+                .unwrap_or_default(),
+            version: m.version,
             created_at: m.created_at,
             updated_at: m.updated_at,
         })
@@ -58,8 +67,8 @@ impl From<WorkComputer> for work_computer::ActiveModel {
             os: sea_orm::Set(wc.os),
             status: sea_orm::Set(enum_to_string(&wc.status)),
             last_seen_at: sea_orm::Set(wc.last_seen_at),
-            // runtimes 属内部上报数据，领域模型不承载；insert 时由 DB 默认 NULL
-            runtimes: sea_orm::NotSet,
+            runtimes: sea_orm::Set(Some(serde_json::to_string(&wc.runtimes).unwrap_or_default())),
+            version: sea_orm::Set(wc.version),
             created_at: sea_orm::Set(wc.created_at),
             updated_at: sea_orm::Set(wc.updated_at),
         }

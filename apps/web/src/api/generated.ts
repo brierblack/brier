@@ -234,9 +234,16 @@ export interface WorkComputer {
   last_seen_at?: string | null;
   name: string;
   os: string;
+  /** 电脑上可用的运行时（CLI 探测上报，如 ["OpenCode", "Node.js"]）。 */
+  runtimes: string[];
   status: WorkComputerStatus;
   updated_at: string;
   user_id: UserId;
+  /**
+     * 接入 CLI（brier daemon）版本号。
+     * @nullable
+     */
+  version?: string | null;
 }
 
 export interface Workspace {
@@ -480,6 +487,30 @@ export const deleteWorkComputer = async (computerId: WorkComputerId, options?: P
   {
     ...options,
     method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getListComputerAgentsUrl = (computerId: WorkComputerId,) => {
+
+
+
+
+  return `/api/work-computers/${computerId}/agents`
+}
+
+/**
+ * @summary 列出该工作电脑上绑定的 Agent（需本人）。
+ */
+export const listComputerAgents = async (computerId: WorkComputerId, options?: Parameters<typeof customFetch>[1]): Promise<Agent[]> => {
+
+  return customFetch<Agent[]>(getListComputerAgentsUrl(computerId),
+  {
+    ...options,
+    method: 'GET'
 
 
   }

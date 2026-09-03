@@ -99,6 +99,36 @@ impl MigrationTrait for WorkComputerTunnelMigration {
     }
 }
 
+// ---------------------------------------------------------------------------
+// m0004: work_computer 接入客户端版本
+// ---------------------------------------------------------------------------
+
+const WORK_COMPUTER_VERSION_SQL: &str =
+    include_str!("../migrations/m0004_work_computer_version.sql");
+
+pub struct WorkComputerVersionMigration;
+
+impl MigrationName for WorkComputerVersionMigration {
+    fn name(&self) -> &str {
+        "work_computer_version"
+    }
+}
+
+#[async_trait]
+impl MigrationTrait for WorkComputerVersionMigration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared(WORK_COMPUTER_VERSION_SQL)
+            .await?;
+        Ok(())
+    }
+
+    async fn down(&self, _manager: &SchemaManager) -> Result<(), DbErr> {
+        Ok(())
+    }
+}
+
 pub struct Migrator;
 
 impl MigratorTrait for Migrator {
@@ -107,6 +137,7 @@ impl MigratorTrait for Migrator {
             Box::new(Migration),
             Box::new(IdentitySplitMigration),
             Box::new(WorkComputerTunnelMigration),
+            Box::new(WorkComputerVersionMigration),
         ]
     }
 }

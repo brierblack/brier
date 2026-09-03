@@ -14,6 +14,10 @@ pub struct WorkComputer {
     pub os: String,
     pub status: WorkComputerStatus,
     pub last_seen_at: Option<DateTime<Utc>>,
+    /// 电脑上可用的运行时（CLI 探测上报，如 ["OpenCode", "Node.js"]）。
+    pub runtimes: Vec<String>,
+    /// 接入 CLI（brier daemon）版本号。
+    pub version: Option<String>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

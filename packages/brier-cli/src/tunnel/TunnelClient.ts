@@ -180,6 +180,7 @@ export const createTunnelClient = (
         hostname: config.hostname,
         os: config.os,
         runtimes: config.runtimes,
+        version: config.version,
       });
     });
 

@@ -119,6 +119,7 @@ async fn handle_client_message(
             hostname,
             os,
             runtimes,
+            version,
             ..
         } => {
             if computer.is_some() {
@@ -156,6 +157,7 @@ async fn handle_client_message(
                 &hostname,
                 &os,
                 Some(&runtimes),
+                version.as_deref(),
                 now,
             )
             .await
