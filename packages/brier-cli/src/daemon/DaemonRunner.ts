@@ -1,4 +1,4 @@
-import type { ClientMessage, DaemonConfig, TunnelState } from '../types.js';
+import type { ClientMessage, DaemonConfig, TunnelState } from '../definitions/index.js';
 import { loadConfig, LOG_FILE } from '../config.js';
 import { configureLogger, logger } from '../logger.js';
 import { createTunnelClient, type TunnelClient } from '../tunnel/TunnelClient.js';

@@ -1,5 +1,5 @@
 import { WebSocket } from 'ws';
-import type { ClientMessage, ServerMessage, DaemonConfig, TunnelState } from '../types.js';
+import type { ClientMessage, ServerMessage, DaemonConfig, TunnelState } from '../definitions/index.js';
 import type { TaskExecutor } from '../daemon/TaskExecutor.js';
 import { toWsUrl } from '../config.js';
 import { logger } from '../logger.js';

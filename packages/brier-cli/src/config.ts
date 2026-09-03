@@ -2,7 +2,7 @@ import { hostname as getHostname, type as osType, arch, platform, homedir } from
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { DaemonConfig } from './types.js';
+import type { DaemonConfig } from './definitions/index.js';
 import { resolveRuntimeExecutable, RUNTIME_REGISTRY } from './runtimes.js';
 
 export const BRIER_DIR = join(homedir(), '.brier');

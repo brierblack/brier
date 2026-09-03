@@ -2,11 +2,12 @@
 
 ## 1. 总览
 
-Brier 是一个前后端分离的工作空间平台，提供 AI Agent 管理、Agent 团队协作、技能市场、自动化任务与实时聊天能力。
+Brier 是一个前后端分离的 AI Agent 工作空间平台：管理 Agent / Agent 团队 / 工作电脑，并把指令以「任务」形式下发到**任意安装了 daemon CLI 的电脑**上由 AI runtime 执行、实时回传输出。前端同时提供技能市场、自动化与实时聊天等能力。
 
 - **前端**：React 19 + TypeScript + Vite（`apps/web`），Ant Design v6 + Tailwind CSS v4，组件库位于 `packages/brier-ui`（`@brierb/brier-ui`）
 - **后端**：Rust + Axum（`apps/server` 二进制 + `crates/*` 分层库）
-- **包管理**：pnpm workspace（前端）+ Cargo workspace（后端）
+- **接入 CLI**：`packages/brier-cli`（`@brierb/brier-cli`）——任意电脑安装后经加密隧道连入服务端，接收并执行任务
+- **包管理**：pnpm workspace（前端 + CLI）+ Cargo workspace（后端）
 
 ## 2. 后端 crates 分层
 
@@ -24,17 +25,17 @@ crates/
 ├── foundation/          # L0 基础层
 │   └── brier-error/     # 统一错误类型 BrierError / Result，零业务依赖
 ├── primitives/          # L1 原语层
-│   ├── brier-type/      # 领域类型：User/Workspace/Agent/Team/ID/枚举/隧道消息
+│   ├── brier-type/      # 领域类型：User/Workspace/Agent/AgentTask/ID/枚举/隧道消息/任务事件
 │   ├── brier-config/    # 配置加载
 │   └── brier-crypto/    # 令牌加解密工具（AES-256-GCM），密钥经 SHA-256 派生
 ├── domain/              # L2 领域层
 │   ├── brier-contract/  # 领域契约：OAuthProvider/RepositoryProvider trait 及其类型
-│   └── brier-core/      # 领域状态：tunnel(ConnectionRegistry 实时连接注册表)
+│   └── brier-core/      # 领域状态：tunnel(ConnectionRegistry 实时连接注册表)、event_bus(每用户 SSE 广播)
 ├── infrastructure/      # L3 基础设施层
 │   ├── brier-database/  # 数据库 schema（SQL 迁移）+ 连接管理与迁移执行（不含业务实体/仓储）
 │   ├── brier-user/      # 用户上下文聚合包：users/user_identities 实体、转换、仓储、规则
 │   ├── brier-workspace/ # 工作空间上下文聚合包：workspaces/workspace_members 实体、转换、仓储
-│   ├── brier-agent/     # Agent 上下文聚合包：agents/agent_teams/agent_team_members/work_computers 实体、转换
+│   ├── brier-agent/     # Agent 上下文聚合包：agents/agent_teams/agent_team_members/work_computers/agent_tasks 实体、转换
 │   ├── brier-forge/     # 代码托管平台适配：github/gitee 厂商实现（OAuth+仓库 API）、ProviderRegistry
 │   └── brier-jwt/       # 会话令牌：签发/验证，验证策略集中（HS256）
 └── application/         # L4 应用层
@@ -68,7 +69,7 @@ apps/
 ### 2.4 各 crate 职责
 
 - **brier-error**：统一错误枚举（Config/Auth/Provider/Jwt/Server/Database/NotFound/Validation/Io）。`Auth` 表示认证流程失败，`Provider` 表示外部 Provider（GitHub 等）API 通信失败，与具体厂商解耦。错误层不依赖任何业务 crate 与 ORM；数据库错误的转换由各上下文聚合包通过本地 trait `DbErrExt::to_brier` 显式完成
-- **brier-type**：纯数据类型与领域枚举（含 `tunnel::ServerMessage`），跨层共享，无副作用
+- **brier-type**：纯数据类型与领域枚举（含 `tunnel::ServerMessage`/`ClientMessage`、`agent_task::AgentTask`、`task_event::TaskEvent`），跨层共享，无副作用
 - **brier-config**：环境配置读取与校验。`providers: HashMap<String, OAuthConfig>`（github 必填，gitee/gitlab 等三变量齐全才注册）；`cookie_secure` 控制会话 Cookie 的 Secure 属性
 - **brier-crypto**：令牌加解密工具（AES-256-GCM）。`TokenCipher` 从 `TOKEN_ENCRYPTION_KEY` 环境变量经 SHA-256 派生 32 字节密钥，提供 `encrypt` / `decrypt` / `decrypt_or_raw`（兼容历史明文令牌，下次登录自动加密）。与 `JWT_SECRET` 独立，不复用
 - **brier-contract**：领域契约包（自包含、零状态、零副作用）——`auth::OAuthProvider` trait（authorize_url / exchange_code / fetch_identity，返回 `ProviderIdentity`）、`repo::RepositoryProvider` trait（list_repos 等代码资源访问，`RepoInfo` 随 trait 同居）。实现层（brier-forge）与消费层（brier-api）共同依赖，是全仓库变更敏感度最低的包之一；与 `brier-type` 的区别：type 是"是什么"（数据形状），contract 是"能做什么"（行为契约）
@@ -76,10 +77,10 @@ apps/
 - **brier-database**：仅承载数据库 schema（SQL 迁移文件集中管理）、连接建立与迁移执行。不含任何业务实体、类型转换或仓储逻辑——各上下文聚合包（brier-user / brier-workspace / brier-agent）各自管理实体与仓储。`DbErrExt` 内联于 `connection.rs`，仅服务于连接与迁移的错误转换
 - **brier-user**：用户上下文聚合包（自包含）。`users`/`user_identities` 两表的实体映射、entity ↔ `brier-type::User` 转换、`find_or_create_user_by_identity`/`find_user_by_id`/`get_provider_token` 等仓储函数、username 唯一化规则。不感知任何登录厂商，厂商仅作为 provider 字符串参数。access_token 经 `brier-crypto::TokenCipher` 在写入时加密、读取时解密，`decrypt_or_raw` 兼容历史明文令牌
 - **brier-workspace**：工作空间上下文聚合包（自包含）。`workspaces`/`workspace_members` 两表的实体映射、entity ↔ `brier-type::Workspace`/`WorkspaceMember` 转换、`create_workspace`/`get_workspace_for_user`/`list_workspaces_for_user` 仓储函数。与 brier-user / brier-agent 零依赖
-- **brier-agent**：Agent 上下文聚合包（自包含）。`agents`/`agent_teams`/`agent_team_members`/`work_computers` 四表的实体映射、entity ↔ 领域类型转换。仓储函数按需补充。与 brier-user / brier-workspace 零依赖
+- **brier-agent**：Agent 上下文聚合包（自包含）。`agents`/`agent_teams`/`agent_team_members`/`work_computers`/`agent_tasks` 五表的实体映射、entity ↔ 领域类型转换。仓储函数按需补充（任务侧含：按空间列任务 / 状态条件推进 running / 原子追加输出 / 完成 / 失败 / 取消 / Agent 活跃刷新）。与 brier-user / brier-workspace 零依赖
 - **brier-forge**：代码托管平台适配层。`providers/github` 与 `providers/gitee` 各自实现 `OAuthProvider` 与 `RepositoryProvider`（封装 OAuth 授权、身份与仓库 API；`oauth_base`/`api_base` 可指向 mock server 以支持单元测试）。`ProviderRegistry` 由 `AppConfig` 构建，按 provider 名分发认证与仓库两类能力；新增厂商（GitLab…）实现两个 trait 后在 `from_config` 注册一行即可，brier-api 与前端零改动
 - **brier-jwt**：会话令牌的签发与验证（`JwtSigner`/`JwtVerifier`），验证策略（HS256、leeway、必需 exp/iat）集中于此；`SessionClaims` 仅含 `sub`（用户 UUID）/`iat`/`exp`/`jti`，profile 信息一律从数据库读取
-- **brier-api**：Axum 路由（auth/workspace/forge 等）、全局状态、登录编排（何时/给谁签发）、HTTP 错误映射。`AppState.providers` 为代码托管平台适配注册表（`brier_forge::ProviderRegistry`），动态路由 `/api/auth/{provider}/login|callback` 与 `/api/{provider}/repos` 均从注册表分发，未注册的 provider 返回 404；登录编排只依赖 `brier_contract::auth::OAuthProvider`，仓库 API 只依赖 `brier_contract::repo::RepositoryProvider`，实时连接状态来自 `brier_core::tunnel::ConnectionRegistry`，不感知具体厂商实现。用户数据访问走 `brier-user::repository`，工作空间数据访问走 `brier-workspace::repository`——不直接依赖 brier-database
+- **brier-api**：Axum 路由（auth/workspace/agent/team/agent_task/work_computer/tunnel/forge 等）、全局状态、登录编排（何时/给谁签发）、HTTP 错误映射。`AppState.providers` 为代码托管平台适配注册表（`brier_forge::ProviderRegistry`），动态路由 `/api/auth/{provider}/login|callback` 与 `/api/{provider}/repos` 均从注册表分发，未注册的 provider 返回 404；登录编排只依赖 `brier_contract::auth::OAuthProvider`，仓库 API 只依赖 `brier_contract::repo::RepositoryProvider`，实时连接状态来自 `brier_core::tunnel::ConnectionRegistry`，不感知具体厂商实现。任务模块：创建时校验归属与电脑在线、经隧道下发 `task-start`；隧道上行把 `task-output/complete/error` 落库并广播 SSE 事件。用户数据访问走 `brier-user::repository`，工作空间数据访问走 `brier-workspace::repository`，任务数据访问走 `brier-agent::repository`——不直接依赖 brier-database
 
 ## 3. 关键设计决策
 
@@ -119,28 +120,49 @@ impl DbErrExt for sea_orm::DbErr {
 - 禁止高层 crate 被低层 crate 依赖
 - 新增 crate 时按 2.2 结构落位，并在依赖声明前校验层级
 
+### 3.4 Agent 任务执行闭环（agent_tasks + 隧道）
+
+核心链路：**创建任务 → 服务端经隧道下发 → 电脑上的 daemon 执行 AI runtime → 输出实时回传落库 → 前端事件驱动刷新**。
+
+- **数据模型**：`agent_tasks`（m0005）单表承载任务生命周期——`workspace_id/creator_id/agent_id/computer_id` 归属，`title/prompt/command/runtime` 执行内容，`status/priority/source/output/exit_code/error/started_at/finished_at` 过程态。输出先聚合到 `output` 单字段（MVP），需要结构化时再拆 `task_outputs`。
+- **双执行模式**：
+  - `prompt` 模式：把自然语言指令下发给 Agent 绑定的 runtime（AI CLI），CLI 按 runtime 拼参数（见 3.5）
+  - `command` 模式：显式 shell 命令，绕过 runtime（高级用法）
+- **状态机与并发安全**：`pending → running → completed | failed | cancelled`。所有推进均为**条件更新**（`UPDATE ... WHERE status IN (...)`），配合 `task-start` 下发后异步回包，天然规避「complete 先于 running 落库」与「取消后被 complete 覆盖」两类竞态；输出追加用 PG 字符串连接符（`||`）表达式原子拼接，避免并发 chunk 互相覆盖。
+- **隧道协议**：下行 `ServerMessage::TaskStart`（含 `taskId/runtime/command/args/prompt`）、`TaskCancel`；上行 `ClientMessage::TaskOutput/TaskComplete/TaskError`——`task_id` 用 UUID，上行按 `(task_id, computer_id)` 归属校验，防止越权写入。
+- **事件推送**：任务开始/终态时经 `event_bus` 广播 `TaskEvent`（`type: "task_updated"`，与工作电脑事件区分），前端列表事件驱动刷新；高频输出不推事件，详情页轮询拉取避免事件风暴。
+
+### 3.5 Runtime 可执行文件统一解析（探测与执行一致）
+
+CLI 对 AI runtime 的「探测上报」与「任务执行」共用同一解析函数 `resolveRuntimeExecutable(name)`，保证**上报可用的 runtime 一定可执行**：
+
+- 解析顺序：PATH 查找（`command -v`，排除系统目录误报如 `/usr/sbin/gpt`）→ 官方安装目录兜底（如 `opencode` → `~/.opencode/bin/opencode`、`claude` → `~/.claude/bin/claude`，支持 `~/` 展开）
+- 返回**绝对路径**：`TaskExecutor` 用绝对路径 `spawn`，避免 daemon 进程 PATH 不含 runtime 目录时 `spawn ENOENT`（daemon 常以受限 PATH 启动，而 runtime 常装在 `~/.opencode/bin` 等非 PATH 目录）
+- prompt 模式的参数前缀集中在 `RUNTIME_PROMPT_FLAGS`（如 `OpenCode: ['run']`、`Claude Code: ['-p']`），执行参数 = 前缀 flags + prompt 原文
+
 ## 4. 前端目录结构
 
 ```
 apps/web/src/
 ├── api/                   # API 层：generated.ts（Orval 自动生成）+ custom-instance.ts（mutator，统一 credentials 与错误映射）
 ├── components/            # 复用组件：NavMenu / WorkSpace / WorkComputer / Logo / Icon / StatusBadge / RuntimeIcon / AvatarUpload / ErrorBoundary / Fallback
-├── context/               # 全局上下文：AuthContext/（Provider.tsx + auth.ts + index.ts）
-├── data/                  # 静态数据：mockData.ts
+├── context/               # 全局上下文：AuthContext/（Provider.tsx + auth.ts + index.ts）、WorkspaceContext/
+├── data/                  # 静态数据：mockData.ts（技能市场等仍为 UI mock）、conversations.ts（历史会话 mock，待 B5 落库）
+├── hooks/                 # useApi（统一取数）/ useWorkComputerEvents / useTaskEvents（SSE 事件驱动刷新）
 ├── Layout/                # 布局壳：index.tsx
 ├── pages/                 # 页面
 │   ├── Login/             # 登录页
 │   └── Space/             # 空间页面（空间级壳）
-│       ├── Chat/          # 新会话 + 历史会话（详情视图）
-│       ├── Agents/        # Agent 列表 / 详情 / 新建
-│       ├── AgentTasks/    # Agent 事项（列表 + 详情视图）
+│       ├── Chat/          # 新会话 + 历史会话（详情视图；发送消息直连 Agent 任务执行）
+│       ├── Agents/        # Agent 列表（CRUD 已接真 API）/ 详情 / 新建
+│       ├── AgentTasks/    # Agent 事项：任务列表 / 详情（终端风实时输出轮询），已接真 API
 │       ├── Automation/    # 自动化任务（列表 / 配置 / 详情）
 │       ├── Team/          # 团队管理（创建弹窗 + 详情）
-│       ├── Skills/        # 技能市场（列表 / 详情 / 新建）
+│       ├── Skills/        # 技能市场（列表 / 详情 / 新建，仍为 mock）
 │       ├── Settings/      # 空间设置
 │       └── New/           # 新建空间
-├── define.tsx             # 常量与定义
-├── types.ts               # TypeScript 类型定义
+├── define.tsx             # 常量与定义：MODELS / AI_RUNTIMES（runtime 注册表，与 CLI 对齐）/ 各类文案映射
+├── types.ts               # TypeScript 类型定义（域类型从 generated.ts 重导出）
 ├── App.tsx                # 根组件
 ├── index.tsx              # 入口
 └── index.css              # 全局样式
@@ -153,13 +175,38 @@ apps/web/src/
 - `users`：账户本体，与具体登录厂商解耦。字段：`username`（唯一）、`name`、`email`、`phone`（唯一，预留手机号登录）、`password_hash`（预留本地凭证）、`avatar_url`、`status`（active/disabled）、`last_login_at`。`password_hash` 属敏感凭证，仅存在于数据库实体，不进入 `brier-type::User` API 模型。
 - `user_identities`：第三方身份，`(provider, provider_uid)` 唯一。`provider` 目前支持 `github`/`gitee`/`gitlab`，`access_token` 随身份存储。接入新 OAuth 厂商时仅需新增身份记录，无需改动 users 表。
 - 登录编排：`find_or_create_user_by_identity(provider, provider_uid, profile, token)`——已存在则更新资料与 `last_login_at`；不存在则在事务内创建 user + identity。
-- 迁移：`migrations/` 目录按序执行（`init` → `identity_split`），迁移文件列表化，后续 schema 变更新增 `m0003_*.sql` 并在 `migration.rs` 注册。
+- 迁移：`migrations/` 目录按序执行（`init` → `identity_split` → `work_computer_tunnel` → `work_computer_version` → `agent_tasks`），迁移文件列表化，后续 schema 变更新增 `m000N_*.sql` 并在 `migration.rs` 注册；新库在 `init.sql` 同步目标结构保证幂等。
 
 GitHub 登录：`apps/server` → `brier-api::routes/auth::provider_login`（`/api/auth/{provider}/login` 从 `AppState.providers` 注册表分发）→ 跳转 GitHub 授权页 → callback 进入 `provider_callback` → `oauth_login`（统一编排：`OAuthProvider::exchange_code` → `fetch_identity`，返回 `ProviderIdentity`）→ `brier-user::repository`（find_or_create_user_by_identity：按 `(provider, provider_uid)` 查找/创建用户与身份，事务内完成；access_token 经 `TokenCipher::encrypt` 加密后写入）→ `brier-api` 构造 `SessionClaims`（`sub` = 用户 UUID）并交由 `brier-jwt::JwtSigner` 签发 → Set-Cookie（HttpOnly + SameSite=Lax，`cookie_secure` 为 true 时加 Secure）→ 后续 `/api/auth/me` 与 `current_user` 均用 `JwtVerifier` 验证后由 `brier-user::repository::find_user_by_id` 查库返回最新资料。Forge 路由调 `get_provider_token` 时经 `decrypt_or_raw` 解密令牌后传给 `RepositoryProvider::list_repos`。
 
 ### 工作空间数据流（brier-workspace）
 
 工作空间 CRUD 路由（`/api/workspaces`）→ `brier-api::routes::workspace`（`current_user` 鉴权后调用）→ `brier-workspace::repository`（`create_workspace` / `get_workspace_for_user` / `list_workspaces_for_user`）→ SeaORM 操作 `workspaces` + `workspace_members` 表。`brier-api` 不经过 brier-database，直接调用聚合包仓储函数。
+
+### Agent 任务执行数据流（agent_tasks + 隧道）
+
+```
+前端（Agent 事项 / Chat 直连）
+  │  POST /api/workspaces/{wid}/tasks  { agent_id, prompt|command, ... }
+  ▼
+brier-api::routes::agent_task::create_task
+  │  1) 校验空间/Agent 归属，Agent 须绑定电脑且有 runtime，电脑须在隧道注册表中在线
+  │  2) 落库 agent_tasks（pending）→ 经 ConnectionRegistry 下发 TaskStart（taskId/runtime/prompt）
+  │  3) 下发成功 → 条件更新 running（失败 → failed）
+  ▼
+brier-cli daemon（目标电脑）
+  │  收到 task-start → resolveRuntimeExecutable(runtime) 绝对路径
+  │  spawn(可执行文件, [...RUNTIME_PROMPT_FLAGS, prompt]) 执行
+  │  stdout/stderr → 上行 task-output；退出 → 上行 task-complete(exitCode)；异常 → task-error
+  ▼
+brier-api::routes::tunnel（上行落库）
+  │  按 (task_id, computer_id) 归属校验 → 条件推进状态 / `||` 原子追加 output
+  │  终态（completed/failed/cancelled）→ event_bus 广播 task_updated
+  ▼
+前端 useTaskEvents（SSE）刷新列表；详情页轮询 GET /tasks/{id} 拉取输出
+```
+
+取消链路：`POST /tasks/{id}/cancel` → 条件更新 cancelled → 下发 `TaskCancel` → CLI 终止进程（close 回调回包 complete 因状态已终态而被条件更新忽略，保持 cancelled）。
 
 ## 6. OpenAPI 与 API 文档（utoipa）
 

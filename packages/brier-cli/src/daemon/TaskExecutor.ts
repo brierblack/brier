@@ -1,5 +1,5 @@
 import { spawn, type ChildProcess } from 'node:child_process';
-import type { TaskInfo } from '../types.js';
+import type { TaskInfo } from '../definitions/index.js';
 import { logger } from '../logger.js';
 import { resolveRuntimeExecutable, RUNTIME_PROMPT_FLAGS } from '../runtimes.js';
 

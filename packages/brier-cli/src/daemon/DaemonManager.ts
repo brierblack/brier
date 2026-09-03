@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, unlinkSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { PidFileData, DaemonStatus } from '../types.js';
+import type { PidFileData, DaemonStatus } from '../definitions/index.js';
 import { BRIER_DIR, PID_FILE } from '../config.js';
 import { logger } from '../logger.js';
 
