@@ -7,35 +7,29 @@ import {
   type TunnelMessageHandlers,
 } from '../tunnel/index.js';
 import { createTaskExecutor, type TaskExecutor } from './TaskExecutor.js';
+import { createOutputBatcher, type OutputBatcher } from './OutputBatcher.js';
 import { updateDaemonState } from './state.js';
 
-let tunnel: TunnelClient | null = null;
-let taskExecutor: TaskExecutor | null = null;
+/**
+ * daemon 运行时句柄：把隧道/任务执行器/批处理器与生命周期出口显式收拢，
+ * 组合根只返回这一个对象，杜绝模块级隐式可变状态。
+ */
+interface DaemonContext {
+  tunnel: TunnelClient;
+  taskExecutor: TaskExecutor;
+  outputBatcher: OutputBatcher;
+  /** 优雅停止：flush 残留输出 → 关闭隧道 → 收尾任务 → 清理批处理器 */
+  stop: () => Promise<void>;
+}
 
-/** 停止隧道、收尾任务执行器（宿主层的生命周期策略）。 */
-const stopAll = async () => {
-  if (tunnel) {
-    await tunnel.stop();
-    tunnel = null;
-  }
-  if (taskExecutor) {
-    await taskExecutor.dispose();
-    taskExecutor = null;
-  }
-};
+/**
+ * 组合根：装配并启动 daemon 的全部运行时组件。
+ * 纯装配职责，不注册信号、不触碰 process；进程级接线由 main 完成。
+ */
+const startDaemon = (config: DaemonConfig): DaemonContext => {
+  // 先声明后赋值：safeSend 闭包在隧道启动后才被事件触发，此处为延迟引用
+  let tunnel: TunnelClient | null = null;
 
-const shutdown = async (signal: string) => {
-  logger.info(`Received ${signal}, shutting down...`);
-  await stopAll();
-  process.exit(0);
-};
-
-const handleUncaughtError = (err: Error) => {
-  logger.error('Uncaught error:', err.message);
-  void stopAll().finally(() => process.exit(1));
-};
-
-const run = (config: DaemonConfig) => {
   /**
    * 上报一条任务消息。
    * send() 已不抛错，返回是否真正发出；未连接时返回 false，本帧按设计丢弃
@@ -48,17 +42,36 @@ const run = (config: DaemonConfig) => {
     }
   };
 
-  const executor = createTaskExecutor({
-    onOutput: (taskId, stream, data) => safeSend({ type: 'task-output', taskId, stream, data }),
-    onComplete: (taskId, exitCode) => safeSend({ type: 'task-complete', taskId, exitCode }),
-    onError: (taskId, error) => safeSend({ type: 'task-error', taskId, error }),
+  // task-output 走批量发送（高频小消息合并，见 OutputBatcher）；终态/控制消息仍即时上报
+  const outputBatcher = createOutputBatcher({
+    onFlush: (chunks) => {
+      for (const chunk of chunks) {
+        safeSend({
+          type: 'task-output',
+          taskId: chunk.taskId,
+          stream: chunk.stream,
+          data: chunk.data,
+        });
+      }
+    },
   });
-  taskExecutor = executor;
+
+  const taskExecutor = createTaskExecutor({
+    onOutput: (taskId, stream, data) => outputBatcher.push(taskId, stream, data),
+    onComplete: (taskId, exitCode) => {
+      outputBatcher.flushTask(taskId); // 终态前先发出该任务残留输出，避免被服务端终态过滤丢弃
+      safeSend({ type: 'task-complete', taskId, exitCode });
+    },
+    onError: (taskId, error) => {
+      outputBatcher.flushTask(taskId);
+      safeSend({ type: 'task-error', taskId, error });
+    },
+  });
 
   // 组合点：把隧道下发的业务消息翻译成任务执行动作
   const messageHandlers: TunnelMessageHandlers = {
     onTaskStart: (message) => {
-      executor.execute({
+      taskExecutor.execute({
         taskId: message.taskId,
         runtime: message.runtime,
         command: message.command,
@@ -69,25 +82,41 @@ const run = (config: DaemonConfig) => {
       });
     },
     onTaskCancel: (taskId) => {
-      executor.cancel(taskId);
+      taskExecutor.cancel(taskId);
     },
   };
 
-  tunnel = createTunnelClient(config, messageHandlers);
+  const client = createTunnelClient(config, messageHandlers);
+  tunnel = client;
 
-  tunnel.onStateChange((state: TunnelState) => {
+  client.onStateChange((state: TunnelState) => {
     logger.info('Tunnel state:', state);
     // 状态落盘（低频状态切换），供 `daemon status` 展示
     updateDaemonState({ tunnelState: state });
   });
 
-  tunnel.start();
+  client.start();
   updateDaemonState({ ready: true }); // 就绪握手：告知前台 Manager 启动成功
   logger.info('Daemon runner started');
   logger.info('Server:', config.serverUrl);
   logger.info('Hostname:', config.hostname);
   logger.info('OS:', config.os);
   logger.info('Runtimes:', config.runtimes.join(', ') || 'none detected');
+
+  const stop = async () => {
+    outputBatcher.flushAll(); // 连接关闭前先把残留的任务输出发出去
+    await client.stop();
+    await taskExecutor.dispose();
+    outputBatcher.dispose();
+  };
+
+  return { tunnel: client, taskExecutor, outputBatcher, stop };
+};
+
+const shutdown = async (ctx: DaemonContext, signal: string) => {
+  logger.info(`Received ${signal}, shutting down...`);
+  await ctx.stop();
+  process.exit(0);
 };
 
 const main = () => {
@@ -110,14 +139,29 @@ const main = () => {
     process.exit(1);
   }
 
-  process.on('SIGTERM', () => void shutdown('SIGTERM'));
-  process.on('SIGINT', () => void shutdown('SIGINT'));
+  // 进程级接线：句柄只存于 main 作用域，注册信号/异常处理都显式接收它
+  let ctx: DaemonContext | null = null;
+
+  const handleSignal = (signal: string) => () => {
+    if (ctx) {
+      void shutdown(ctx, signal);
+    }
+  };
+
+  const handleUncaughtError = (err: Error) => {
+    logger.error('Uncaught error:', err.stack ?? err.message);
+    const cleanup = ctx ? ctx.stop() : Promise.resolve();
+    void cleanup.finally(() => process.exit(1));
+  };
+
+  process.on('SIGTERM', handleSignal('SIGTERM'));
+  process.on('SIGINT', handleSignal('SIGINT'));
   process.on('uncaughtException', handleUncaughtError);
   process.on('unhandledRejection', (reason) => {
     logger.error('Unhandled rejection:', reason);
   });
 
-  run(config);
+  ctx = startDaemon(config);
 };
 
 main();
