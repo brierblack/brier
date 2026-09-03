@@ -1,6 +1,6 @@
 import { createDaemonManager } from '../daemon/DaemonManager.js';
 import { existsSync, readFileSync } from 'node:fs';
-import { PID_FILE } from '../config.js';
+import { PID_FILE } from '../config/index.js';
 import type { PidFileData } from '../definitions/index.js';
 
 export const statusCommand = (): void => {

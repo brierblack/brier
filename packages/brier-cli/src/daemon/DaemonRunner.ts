@@ -1,6 +1,6 @@
 import type { ClientMessage, DaemonConfig, TunnelState } from '../definitions/index.js';
-import { loadConfig, LOG_FILE } from '../config.js';
-import { configureLogger, logger } from '../logger.js';
+import { loadConfig, LOG_FILE } from '../config/index.js';
+import { configureLogger, logger } from '../core/index.js';
 import { createTunnelClient, type TunnelClient } from '../tunnel/index.js';
 import { createTaskExecutor } from './TaskExecutor.js';
 
@@ -67,7 +67,7 @@ const main = () => {
 
   let config: DaemonConfig;
   try {
-    config = loadConfig({});
+    config = loadConfig();
   } catch (err) {
     logger.error('Config error:', err instanceof Error ? err.message : String(err));
     process.exit(1);

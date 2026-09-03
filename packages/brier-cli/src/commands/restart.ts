@@ -1,5 +1,5 @@
 import { createDaemonManager } from '../daemon/DaemonManager.js';
-import { loadConfig } from '../config.js';
+import { loadConfig } from '../config/index.js';
 
 export interface RestartOptions {
   serverUrl?: string;
@@ -12,7 +12,7 @@ export const restartCommand = async (options: RestartOptions): Promise<void> => 
 
   if (!serverUrl || !token) {
     try {
-      const config = loadConfig({});
+      const config = loadConfig();
       if (!serverUrl) serverUrl = config.serverUrl;
       if (!token) token = config.token;
     } catch {

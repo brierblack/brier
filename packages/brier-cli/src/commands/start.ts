@@ -1,5 +1,5 @@
 import { createDaemonManager } from '../daemon/DaemonManager.js';
-import { LOG_FILE } from '../config.js';
+import { LOG_FILE } from '../config/index.js';
 
 export interface StartOptions {
   serverUrl: string;

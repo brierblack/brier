@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { LOG_FILE } from '../config.js';
+import { LOG_FILE } from '../config/index.js';
 
 /** 默认打印的最近日志行数 */
 const TAIL_LINES = 100;

@@ -1,7 +1,7 @@
 import type { ClientMessage, DaemonConfig, TunnelState } from '../definitions/index.js';
 import type { TaskExecutor } from '../daemon/TaskExecutor.js';
-import { toWsUrl } from '../config.js';
-import { logger } from '../logger.js';
+import { toWsUrl } from './url.js';
+import { logger } from '../core/index.js';
 import { createBackoff } from './backoff.js';
 import type { ServerMessageHandlers } from './dispatcher.js';
 import { dispatchServerMessage } from './dispatcher.js';

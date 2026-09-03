@@ -80,3 +80,11 @@ export const resolveRuntimeExecutable = (runtime: string): string | null => {
   const candidates = entry.fallbacks ?? [`~/.local/bin/${entry.command}`];
   return candidates.map(expandHome).find(isExecutable) ?? null;
 };
+
+/**
+ * 探测本机已安装的 AI runtime 名称列表。
+ * 过滤注册表：只保留 resolveRuntimeExecutable 能解析出可执行文件的项
+ * （探测与执行共用同一解析，保证“探测到”的 runtime 一定能被 spawn）。
+ */
+export const detectInstalledRuntimes = (): string[] =>
+  RUNTIME_REGISTRY.filter((r) => resolveRuntimeExecutable(r.name) !== null).map((r) => r.name);

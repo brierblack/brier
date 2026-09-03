@@ -3,8 +3,8 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, unlinkSync } from '
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PidFileData, DaemonStatus } from '../definitions/index.js';
-import { BRIER_DIR, PID_FILE } from '../config.js';
-import { logger } from '../logger.js';
+import { BRIER_DIR, PID_FILE } from '../config/index.js';
+import { logger } from '../core/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

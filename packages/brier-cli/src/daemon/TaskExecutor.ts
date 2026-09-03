@@ -1,7 +1,6 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import type { TaskInfo } from '../definitions/index.js';
-import { logger } from '../logger.js';
-import { resolveRuntimeExecutable, RUNTIME_PROMPT_FLAGS } from '../runtimes.js';
+import { logger, resolveRuntimeExecutable, RUNTIME_PROMPT_FLAGS } from '../core/index.js';
 
 const MAX_CONCURRENT = 3;
 

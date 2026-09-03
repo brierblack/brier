@@ -1,4 +1,4 @@
-import { logger } from '../logger.js';
+import { logger } from '../core/index.js';
 import type { ServerMessage } from '../definitions/index.js';
 
 /**
