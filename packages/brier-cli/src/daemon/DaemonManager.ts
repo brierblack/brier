@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, unlinkSync } from '
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PidFileData, DaemonStatus } from '../definitions/index.js';
-import { BRIER_DIR, PID_FILE } from '../config/index.js';
+import { BRIER_DIR, PID_FILE, writeCredentials } from '../config/index.js';
 import { logger } from '../core/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -75,6 +75,16 @@ export const createDaemonManager = (): DaemonManager => {
     }
     if (existing) {
       removePidFile();
+    }
+
+    // 持久化接入令牌（0600），供 `daemon restart` 无参回退；失败仅告警，不阻断启动
+    try {
+      writeCredentials(options.token);
+    } catch (err) {
+      logger.warn(
+        'Failed to persist credentials:',
+        err instanceof Error ? err.message : String(err),
+      );
     }
 
     const childEnv: Record<string, string> = {
