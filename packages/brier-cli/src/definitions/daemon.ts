@@ -34,7 +34,7 @@ export interface DaemonConfig {
 }
 
 /**
- * daemon 运行状态文件内容（~/.brier/daemon.pid）。
+ * daemon 运行状态文件内容（~/.brier/daemon.json）。
  *
  * 前台 CLI 与 daemon 子进程之间没有 IPC 通道，二者通过该文件 + 信号协作：
  * - 前台 DaemonManager：启动时写入（ready=false），轮询 ready 做就绪握手；

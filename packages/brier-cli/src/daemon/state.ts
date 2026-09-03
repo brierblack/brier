@@ -4,7 +4,7 @@ import type { DaemonState } from '../definitions/index.js';
 import { BRIER_DIR, DAEMON_STATE_FILE } from '../config/index.js';
 
 /**
- * daemon 运行状态契约（~/.brier/daemon.pid，JSON）。
+ * daemon 运行状态契约（~/.brier/daemon.json，JSON）。
  *
  * 前台 CLI 与 daemon 子进程之间唯一的持久契约：Manager 写初始记录并轮询 ready，
  * Runner 进入运行后置 ready/写 bootError、随隧道状态更新 tunnelState。
