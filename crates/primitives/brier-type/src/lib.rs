@@ -6,6 +6,8 @@ pub mod work_computer;
 pub mod work_computer_event;
 pub mod agent;
 pub mod agent_team;
+pub mod agent_task;
+pub mod task_event;
 pub mod relation;
 pub mod tunnel;
 
@@ -17,4 +19,6 @@ pub use work_computer::WorkComputer;
 pub use work_computer_event::WorkComputerEvent;
 pub use agent::Agent;
 pub use agent_team::AgentTeam;
+pub use agent_task::AgentTask;
+pub use task_event::TaskEvent;
 pub use relation::{WorkspaceMember, AgentTeamMember};

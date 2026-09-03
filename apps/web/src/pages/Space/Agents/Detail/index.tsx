@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Avatar, Input, InputNumber } from 'antd';
+import { App, Avatar, Input, InputNumber } from 'antd';
 import { Button, Select, Menu, type MenuProps } from '@brierb/brier-ui';
 import {
   AppstoreOutlined,
@@ -16,16 +16,17 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { Page, Table, Tag } from '@brierb/brier-ui';
 import { skills as allSkills } from '../../../../data/mockData';
-import { listAgents } from '@/api/generated';
+import { deleteAgent, listAgents } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { useApi } from '@/hooks/useApi';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
-import { MODELS, SKILL_TYPE_MAP } from '../../../../define';
+import { AI_RUNTIMES, MODELS, SKILL_TYPE_MAP } from '../../../../define';
 import type { Agent, Skill } from '../../../../types';
 import { useAuth } from '@/context/AuthContext';
 import { StatusBadge } from '@/components/StatusBadge';
 
-const RUNTIMES = ['Claude Code', 'Codex CLI', 'GPT-4o CLI', 'Gemini CLI'];
+// Agent 运行时展示：优先真实绑定的 runtime；下拉选项为受支持注册表
+// （与 CLI RUNTIME_REGISTRY / 新建页兜底清单同源）。
 
 const VISIBILITY_OPTIONS = [
   { value: 'private', label: '仅个人可用' },
@@ -147,6 +148,7 @@ const OverviewTab = ({
   setVisibility,
   concurrency,
   setConcurrency,
+  onDelete,
 }: {
   agent: Agent;
   runtime: string;
@@ -157,6 +159,7 @@ const OverviewTab = ({
   setVisibility: (v: string) => void;
   concurrency: number;
   setConcurrency: (v: number) => void;
+  onDelete: () => void;
 }) => {
   return (
     <div className="flex min-w-0 flex-1 gap-8 overflow-hidden px-4 py-3">
@@ -190,7 +193,7 @@ const OverviewTab = ({
               <Select
                 value={runtime}
                 onChange={setRuntime}
-                options={RUNTIMES.map((r) => ({
+                options={AI_RUNTIMES.map((r) => ({
                   value: r,
                   label: <RuntimeBadge name={r} size={12} />,
                 }))}
@@ -249,7 +252,9 @@ const OverviewTab = ({
                   删除后 Agent 会从日常列表和指派选项中隐藏，历史任务与会话记录会保留
                 </p>
               </div>
-              <Button>删除</Button>
+              <Button danger onClick={onDelete}>
+                删除
+              </Button>
             </div>
           </div>
         </div>
@@ -564,8 +569,9 @@ const WorkDirTab = () => {
 const AgentDetailBody = ({ wsId }: { wsId: string }) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { message, modal } = App.useApp();
   const [activeKey, setActiveKey] = useState('overview');
-  const [runtime, setRuntime] = useState(RUNTIMES[0]);
+  const [runtime, setRuntime] = useState<string | undefined>(undefined);
   const [model, setModel] = useState(MODELS[0]);
   const [visibility, setVisibility] = useState(VISIBILITY_OPTIONS[1].value);
   const [concurrency, setConcurrency] = useState(6);
@@ -573,6 +579,32 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
   const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
 
   const agent = (agents ?? []).find((a) => a.id === id);
+
+  // 展示/编辑态跟随 Agent 真实 runtime（数据到达后同步一次）
+  useEffect(() => {
+    if (agent?.runtime) setRuntime(agent.runtime);
+  }, [agent?.id, agent?.runtime]);
+
+  /** 删除 Agent：确认后调 DELETE，成功后返回列表 */
+  const handleDelete = () => {
+    if (!agent) return;
+    modal.confirm({
+      title: `删除 Agent「${agent.name}」`,
+      content: '删除后该 Agent 将从空间移除，无法再被指派或下发任务。确定删除吗？',
+      okText: '删除',
+      okButtonProps: { danger: true },
+      cancelText: '取消',
+      onOk: async () => {
+        try {
+          await deleteAgent(wsId, agent.id);
+          message.success('已删除');
+          navigate('/space/agents');
+        } catch (e) {
+          message.error(e instanceof Error ? e.message : '删除失败');
+        }
+      },
+    });
+  };
 
   if (!agent) {
     return (
@@ -612,7 +644,7 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
         {activeKey === 'overview' && (
           <OverviewTab
             agent={agent}
-            runtime={runtime}
+            runtime={runtime ?? ''}
             setRuntime={setRuntime}
             model={model}
             setModel={setModel}
@@ -620,6 +652,7 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
             setVisibility={setVisibility}
             concurrency={concurrency}
             setConcurrency={setConcurrency}
+            onDelete={handleDelete}
           />
         )}
         {activeKey === 'new-chat' && <NewChatTab agent={agent} />}

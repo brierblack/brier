@@ -70,6 +70,21 @@ export const NAV_ITEMS: {
 ];
 
 export const MODELS = ['GPT-4o', 'GPT-4o mini', 'Claude 3.5 Sonnet', 'DeepSeek V3', 'Qwen Max'];
+/**
+ * 支持的 AI Runtime 注册表（与 brier-cli `RUNTIME_REGISTRY` 保持一致）。
+ * 新建 Agent 时若电脑未上报 runtimes，用它作为兜底选项。
+ */
+export const AI_RUNTIMES = [
+  'OpenCode',
+  'Claude Code',
+  'Codex CLI',
+  'OpenAI CLI',
+  'Gemini CLI',
+  'Cursor CLI',
+  'Aider',
+  'Goose',
+  'Cody',
+] as const;
 export const AGENT_ICONS = ['📊', '🔍', '💬', '📄', '🛡️', '⚙️', '🌐', '🧪'];
 export const TEAMS_LIST = ['工程效能', '数据洞察', '客户成功', '安全合规'];
 export const CREATE_STEPS = ['基本信息', '模型配置', '技能加载', '工具配置', '确认创建'];

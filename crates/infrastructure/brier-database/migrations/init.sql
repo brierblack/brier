@@ -118,6 +118,31 @@ CREATE TABLE IF NOT EXISTS agent_team_members (
     PRIMARY KEY (team_id, agent_id)
 );
 
+CREATE TABLE IF NOT EXISTS agent_tasks (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    workspace_id UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+    creator_id  UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    agent_id    UUID NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
+    computer_id UUID REFERENCES work_computers(id) ON DELETE SET NULL,
+    title       TEXT NOT NULL,
+    prompt      TEXT,
+    command     TEXT,
+    runtime     TEXT,
+    status      TEXT NOT NULL DEFAULT 'pending'
+                CHECK (status IN ('pending', 'running', 'completed', 'failed', 'cancelled')),
+    priority    TEXT NOT NULL DEFAULT 'medium'
+                CHECK (priority IN ('high', 'medium', 'low')),
+    source      TEXT NOT NULL DEFAULT 'manual'
+                CHECK (source IN ('manual', 'automation')),
+    output      TEXT NOT NULL DEFAULT '',
+    exit_code   INT,
+    error       TEXT,
+    started_at  TIMESTAMPTZ,
+    finished_at TIMESTAMPTZ,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE INDEX idx_workspaces_creator_id        ON workspaces(creator_id);
 CREATE INDEX idx_work_computers_user_id       ON work_computers(user_id);
 CREATE INDEX idx_agents_workspace_id          ON agents(workspace_id);

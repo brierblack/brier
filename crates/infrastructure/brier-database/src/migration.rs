@@ -129,6 +129,39 @@ impl MigrationTrait for WorkComputerVersionMigration {
     }
 }
 
+// ---------------------------------------------------------------------------
+// m0005: Agent 任务（agent_tasks）
+// ---------------------------------------------------------------------------
+
+const AGENT_TASKS_SQL: &str = include_str!("../migrations/m0005_agent_tasks.sql");
+
+pub struct AgentTasksMigration;
+
+impl MigrationName for AgentTasksMigration {
+    fn name(&self) -> &str {
+        "agent_tasks"
+    }
+}
+
+#[async_trait]
+impl MigrationTrait for AgentTasksMigration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared(AGENT_TASKS_SQL)
+            .await?;
+        Ok(())
+    }
+
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared("DROP TABLE IF EXISTS agent_tasks")
+            .await?;
+        Ok(())
+    }
+}
+
 pub struct Migrator;
 
 impl MigratorTrait for Migrator {
@@ -138,6 +171,7 @@ impl MigratorTrait for Migrator {
             Box::new(IdentitySplitMigration),
             Box::new(WorkComputerTunnelMigration),
             Box::new(WorkComputerVersionMigration),
+            Box::new(AgentTasksMigration),
         ]
     }
 }

@@ -1,14 +1,16 @@
 use brier_error::Result;
 use brier_type::id::*;
-use brier_type::{Agent, AgentTeam, WorkComputer};
+use brier_type::{Agent, AgentTask, AgentTeam, WorkComputer};
 use chrono::{DateTime, Utc};
+use sea_orm::sea_query::extension::postgres::PgExpr;
+use sea_orm::sea_query::Expr;
 use sea_orm::sea_query::OnConflict;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder, Set,
 };
 
 use crate::convert::DbErrExt;
-use crate::entity::{agent, agent_team, user_connect_token, work_computer};
+use crate::entity::{agent, agent_task, agent_team, user_connect_token, work_computer};
 
 // ---- Agent ----
 
@@ -272,5 +274,174 @@ pub async fn delete_work_computer(
         .exec(db)
         .await
         .map_err(DbErrExt::to_brier)?;
+    Ok(())
+}
+
+// ---- AgentTask ----
+
+pub async fn list_agent_tasks_by_workspace(
+    db: &DatabaseConnection,
+    workspace_id: WorkspaceId,
+) -> Result<Vec<AgentTask>> {
+    let models = agent_task::Entity::find()
+        .filter(agent_task::Column::WorkspaceId.eq(workspace_id.0))
+        .order_by_desc(agent_task::Column::CreatedAt)
+        .all(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    models.into_iter().map(AgentTask::try_from).collect()
+}
+
+pub async fn get_agent_task(db: &DatabaseConnection, task_id: TaskId) -> Result<Option<AgentTask>> {
+    let model = agent_task::Entity::find_by_id(task_id.0)
+        .one(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    model.map(AgentTask::try_from).transpose()
+}
+
+pub async fn create_agent_task(db: &DatabaseConnection, task: AgentTask) -> Result<AgentTask> {
+    let active: agent_task::ActiveModel = task.into();
+    let model = active.insert(db).await.map_err(DbErrExt::to_brier)?;
+    AgentTask::try_from(model)
+}
+
+/// 任务从 pending 推进为 running（下发成功）；已非 pending（如并发收到完成）则不改。
+pub async fn mark_task_running(
+    db: &DatabaseConnection,
+    task_id: TaskId,
+    now: DateTime<Utc>,
+) -> Result<bool> {
+    let res = agent_task::Entity::update_many()
+        .set(agent_task::ActiveModel {
+            status: Set("running".to_string()),
+            started_at: Set(Some(now)),
+            updated_at: Set(now),
+            ..Default::default()
+        })
+        .filter(agent_task::Column::Id.eq(task_id.0))
+        .filter(agent_task::Column::Status.eq("pending"))
+        .exec(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    Ok(res.rows_affected > 0)
+}
+
+/// 追加任务输出（仅运行中的任务；原子拼接避免并发 chunk 互相覆盖）。
+pub async fn append_task_output(
+    db: &DatabaseConnection,
+    task_id: TaskId,
+    computer_id: WorkComputerId,
+    data: &str,
+    now: DateTime<Utc>,
+) -> Result<bool> {
+    let res = agent_task::Entity::update_many()
+        .col_expr(
+            agent_task::Column::Output,
+            Expr::col(agent_task::Column::Output).concat(data.to_string()),
+        )
+        .col_expr(agent_task::Column::UpdatedAt, Expr::value(now))
+        .filter(agent_task::Column::Id.eq(task_id.0))
+        .filter(agent_task::Column::ComputerId.eq(computer_id.0))
+        .filter(agent_task::Column::Status.is_in(["pending", "running"]))
+        .exec(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    Ok(res.rows_affected > 0)
+}
+
+/// 任务结束（正常退出）；仅运行/等待中的任务可推进，返回更新后的任务。
+pub async fn finish_task(
+    db: &DatabaseConnection,
+    task_id: TaskId,
+    computer_id: WorkComputerId,
+    exit_code: i32,
+    now: DateTime<Utc>,
+) -> Result<Option<AgentTask>> {
+    let res = agent_task::Entity::update_many()
+        .set(agent_task::ActiveModel {
+            status: Set("completed".to_string()),
+            exit_code: Set(Some(exit_code)),
+            finished_at: Set(Some(now)),
+            updated_at: Set(now),
+            ..Default::default()
+        })
+        .filter(agent_task::Column::Id.eq(task_id.0))
+        .filter(agent_task::Column::ComputerId.eq(computer_id.0))
+        .filter(agent_task::Column::Status.is_in(["pending", "running"]))
+        .exec(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    if res.rows_affected == 0 {
+        return Ok(None);
+    }
+    get_agent_task(db, task_id).await
+}
+
+/// 任务失败（runtime 执行报错）；返回更新后的任务。
+pub async fn fail_task(
+    db: &DatabaseConnection,
+    task_id: TaskId,
+    computer_id: WorkComputerId,
+    error: &str,
+    now: DateTime<Utc>,
+) -> Result<Option<AgentTask>> {
+    let res = agent_task::Entity::update_many()
+        .set(agent_task::ActiveModel {
+            status: Set("failed".to_string()),
+            error: Set(Some(error.to_string())),
+            finished_at: Set(Some(now)),
+            updated_at: Set(now),
+            ..Default::default()
+        })
+        .filter(agent_task::Column::Id.eq(task_id.0))
+        .filter(agent_task::Column::ComputerId.eq(computer_id.0))
+        .filter(agent_task::Column::Status.is_in(["pending", "running"]))
+        .exec(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    if res.rows_affected == 0 {
+        return Ok(None);
+    }
+    get_agent_task(db, task_id).await
+}
+
+/// 取消任务（用户手动取消）；返回更新后的任务，已终态返回 None。
+pub async fn cancel_agent_task(
+    db: &DatabaseConnection,
+    task_id: TaskId,
+    now: DateTime<Utc>,
+) -> Result<Option<AgentTask>> {
+    let res = agent_task::Entity::update_many()
+        .set(agent_task::ActiveModel {
+            status: Set("cancelled".to_string()),
+            finished_at: Set(Some(now)),
+            updated_at: Set(now),
+            ..Default::default()
+        })
+        .filter(agent_task::Column::Id.eq(task_id.0))
+        .filter(agent_task::Column::Status.is_in(["pending", "running"]))
+        .exec(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    if res.rows_affected == 0 {
+        return Ok(None);
+    }
+    get_agent_task(db, task_id).await
+}
+
+/// 刷新 Agent 最近活跃时间（任务创建/结束时调用）。
+pub async fn touch_agent_activity(
+    db: &DatabaseConnection,
+    agent_id: AgentId,
+    now: DateTime<Utc>,
+) -> Result<()> {
+    let active = agent::ActiveModel {
+        id: Set(agent_id.0),
+        last_active: Set(Some(now)),
+        updated_at: Set(now),
+        ..Default::default()
+    };
+    active.update(db).await.map_err(DbErrExt::to_brier)?;
     Ok(())
 }

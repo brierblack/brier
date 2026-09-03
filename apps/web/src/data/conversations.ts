@@ -2,7 +2,8 @@ export interface ChatMessage {
   id: number;
   role: 'user' | 'agent';
   content: string;
-  agentId?: number;
+  /** 真 Agent 为 uuid；历史 mock 数据为数字 id，getAgent 内统一转字符串匹配。 */
+  agentId?: number | string;
 }
 
 export interface Conversation {

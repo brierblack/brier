@@ -30,6 +30,10 @@ pub enum ServerMessage {
         args: Vec<String>,
         cwd: Option<String>,
         env: Option<HashMap<String, String>>,
+        /// 自然语言指令（AI runtime 模式下由 CLI 拼成该 runtime 的参数；
+        /// 旧版 CLI 无此字段时忽略）。命令模式下为 None。
+        #[serde(default)]
+        prompt: Option<String>,
     },
     TaskCancel {
         #[serde(rename = "taskId")]

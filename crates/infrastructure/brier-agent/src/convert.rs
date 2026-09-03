@@ -2,7 +2,7 @@ use brier_error::{BrierError, Result};
 use brier_type::id::*;
 use brier_type::*;
 
-use crate::entity::{agent, agent_team, agent_team_member, work_computer};
+use crate::entity::{agent, agent_task, agent_team, agent_team_member, work_computer};
 
 pub trait DbErrExt {
     fn to_brier(self) -> BrierError;
@@ -183,6 +183,62 @@ impl From<AgentTeamMember> for agent_team_member::ActiveModel {
             team_id: sea_orm::Set(atm.team_id.0),
             agent_id: sea_orm::Set(atm.agent_id.0),
             created_at: sea_orm::Set(atm.created_at),
+        }
+    }
+}
+
+// --- AgentTask ---
+
+impl TryFrom<agent_task::Model> for AgentTask {
+    type Error = BrierError;
+
+    fn try_from(m: agent_task::Model) -> Result<Self> {
+        Ok(Self {
+            id: TaskId(m.id),
+            workspace_id: WorkspaceId(m.workspace_id),
+            creator_id: UserId(m.creator_id),
+            agent_id: AgentId(m.agent_id),
+            computer_id: m.computer_id.map(WorkComputerId),
+            title: m.title,
+            prompt: m.prompt,
+            command: m.command,
+            runtime: m.runtime,
+            status: parse_enum(&m.status, "TaskStatus")?,
+            priority: parse_enum(&m.priority, "TaskPriority")?,
+            source: parse_enum(&m.source, "TaskSource")?,
+            output: m.output,
+            exit_code: m.exit_code,
+            error: m.error,
+            started_at: m.started_at,
+            finished_at: m.finished_at,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+        })
+    }
+}
+
+impl From<AgentTask> for agent_task::ActiveModel {
+    fn from(t: AgentTask) -> Self {
+        Self {
+            id: sea_orm::Set(t.id.0),
+            workspace_id: sea_orm::Set(t.workspace_id.0),
+            creator_id: sea_orm::Set(t.creator_id.0),
+            agent_id: sea_orm::Set(t.agent_id.0),
+            computer_id: sea_orm::Set(t.computer_id.map(|id| id.0)),
+            title: sea_orm::Set(t.title),
+            prompt: sea_orm::Set(t.prompt),
+            command: sea_orm::Set(t.command),
+            runtime: sea_orm::Set(t.runtime),
+            status: sea_orm::Set(enum_to_string(&t.status)),
+            priority: sea_orm::Set(enum_to_string(&t.priority)),
+            source: sea_orm::Set(enum_to_string(&t.source)),
+            output: sea_orm::Set(t.output),
+            exit_code: sea_orm::Set(t.exit_code),
+            error: sea_orm::Set(t.error),
+            started_at: sea_orm::Set(t.started_at),
+            finished_at: sea_orm::Set(t.finished_at),
+            created_at: sea_orm::Set(t.created_at),
+            updated_at: sea_orm::Set(t.updated_at),
         }
     }
 }

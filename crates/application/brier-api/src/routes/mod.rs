@@ -1,4 +1,5 @@
 pub(crate) mod agent;
+pub(crate) mod agent_task;
 pub(crate) mod auth;
 pub(crate) mod forge;
 pub(crate) mod team;
@@ -21,6 +22,7 @@ pub fn router() -> Router<AppState> {
         .nest("/api/auth", auth::router())
         .nest("/api/workspaces", workspace::router())
         .merge(agent::router())
+        .merge(agent_task::router())
         .merge(team::router())
         .merge(work_computer::router())
         .route("/api/{provider}/repos", get(forge::list_repos))

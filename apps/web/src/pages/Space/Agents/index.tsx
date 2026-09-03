@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useApi } from '@/hooks/useApi';
 import { useNavigate } from 'react-router-dom';
-import { Input, type MenuProps } from 'antd';
+import { App, Input, type MenuProps } from 'antd';
 import { Button, Page, Select, Table, Dropdown } from '@brierb/brier-ui';
 import {
   PlusOutlined,
@@ -20,7 +20,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { StatusBadge } from '../../../components/StatusBadge';
 import { RuntimeBadge } from '../../../components/RuntimeIcon';
 import { WorkComputerDrawer } from '../../../components/WorkComputer';
-import { listAgents, listWorkComputers } from '@/api/generated';
+import { deleteAgent, listAgents, listWorkComputers } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import type {
   Agent,
@@ -42,12 +42,34 @@ const actionMenuItems: MenuProps['items'] = [
 
 const AgentsTable = ({ wsId, workComputers }: { wsId: string; workComputers: WorkComputer[] }) => {
   const navigate = useNavigate();
+  const { message, modal } = App.useApp();
   const [search, setSearch] = useState('');
   const [statusFilter] = useState<string>('all');
   const [activitySort, setActivitySort] = useState('recent');
   const [computerDrawerOpen, setComputerDrawerOpen] = useState(false);
+  const [tick, setTick] = useState(0);
 
-  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
+  const { data: agents } = useApi(() => listAgents(wsId), [wsId, tick]);
+
+  /** 删除 Agent：确认后调 DELETE 并从列表移除 */
+  const handleDelete = (agent: Agent) => {
+    modal.confirm({
+      title: `删除 Agent「${agent.name}」`,
+      content: '删除后该 Agent 将从空间移除，无法再被指派或下发任务。确定删除吗？',
+      okText: '删除',
+      okButtonProps: { danger: true },
+      cancelText: '取消',
+      onOk: async () => {
+        try {
+          await deleteAgent(wsId, agent.id);
+          message.success('已删除');
+          setTick((t) => t + 1);
+        } catch (e) {
+          message.error(e instanceof Error ? e.message : '删除失败');
+        }
+      },
+    });
+  };
 
   const filteredAgents = useMemo(
     () =>
@@ -143,6 +165,7 @@ const AgentsTable = ({ wsId, workComputers }: { wsId: string; workComputers: Wor
               onClick: ({ key }) => {
                 if (key === 'view') navigate(`/space/agents/${r.id}`);
                 if (key === 'computer') setComputerDrawerOpen(true);
+                if (key === 'delete') handleDelete(r);
               },
             }}
             trigger={['click']}
@@ -156,7 +179,7 @@ const AgentsTable = ({ wsId, workComputers }: { wsId: string; workComputers: Wor
         ),
       },
     ],
-    [],
+    [handleDelete],
   );
 
   return (

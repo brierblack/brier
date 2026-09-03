@@ -1,46 +1,190 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { App, Segmented, Input } from 'antd';
+import { App, Form, Input, Modal, Segmented, Select } from 'antd';
 import { Button, Page, Tag } from '@brierb/brier-ui';
 import {
   PlusOutlined,
-  SearchOutlined,
-  ScheduleOutlined,
   RobotOutlined,
+  ScheduleOutlined,
+  SearchOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons';
-import { MOCK_TASKS, PRIORITY_MAP, STATUS_MAP } from './data';
+import { createTask, listAgents, listTasks } from '@/api/generated';
+import type { Agent, TaskPriority, TaskStatus } from '@/api/generated';
+import { useApi } from '@/hooks/useApi';
+import { useTaskEvents } from '@/hooks/useTaskEvents';
+import { useWorkspace } from '@/context/WorkspaceContext';
+import { RuntimeBadge } from '../../../components/RuntimeIcon';
+import { formatTime, PRIORITY_META, SOURCE_LABEL, STATUS_META } from './data';
+
+const FILTER_OPTIONS: { label: string; value: TaskStatus | 'all' }[] = [
+  { label: '全部', value: 'all' },
+  { label: '待执行', value: 'pending' },
+  { label: '执行中', value: 'running' },
+  { label: '已完成', value: 'completed' },
+  { label: '失败', value: 'failed' },
+  { label: '已取消', value: 'cancelled' },
+];
+
+const NewTaskModal = ({
+  open,
+  onClose,
+  agents,
+  onCreated,
+}: {
+  open: boolean;
+  onClose: () => void;
+  agents: Agent[];
+  onCreated: (taskId: string) => void;
+}) => {
+  const { message } = App.useApp();
+  const { currentWsId } = useWorkspace();
+  const [form] = Form.useForm();
+  const [submitting, setSubmitting] = useState(false);
+
+  // 仅展示可执行任务的 Agent：绑定了工作电脑且有 runtime
+  const bindableAgents = useMemo(
+    () => agents.filter((a) => a.work_computer_id && a.runtime),
+    [agents],
+  );
+
+  const handleOk = async () => {
+    if (!currentWsId) return;
+    try {
+      const values = await form.validateFields();
+      setSubmitting(true);
+      const prompt = (values.prompt as string).trim();
+      const task = await createTask(currentWsId, {
+        agent_id: values.agentId,
+        title: prompt.slice(0, 40),
+        prompt,
+        priority: (values.priority ?? 'medium') as TaskPriority,
+      });
+      message.success('事项已创建并下发执行');
+      onClose();
+      form.resetFields();
+      onCreated(task.id);
+    } catch (e) {
+      if (e instanceof Error) message.error(e.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal
+      title="新建事项"
+      open={open}
+      onCancel={onClose}
+      onOk={handleOk}
+      okText="创建并下发"
+      cancelText="取消"
+      confirmLoading={submitting}
+      destroyOnHidden
+    >
+      <Form form={form} layout="vertical" className="!pt-2">
+        <Form.Item
+          name="agentId"
+          label="执行 Agent"
+          rules={[{ required: true, message: '请选择 Agent' }]}
+        >
+          <Select
+            placeholder="选择已绑定工作电脑的 Agent"
+            options={bindableAgents.map((a) => ({
+              value: a.id,
+              label: (
+                <span className="flex items-center gap-2">
+                  <RobotOutlined className="text-standard" />
+                  <span className="font-medium">{a.name}</span>
+                  {a.runtime && <RuntimeBadge name={a.runtime} size={11} />}
+                </span>
+              ),
+            }))}
+          />
+        </Form.Item>
+        <Form.Item
+          name="prompt"
+          label="指令"
+          rules={[{ required: true, message: '请输入要 Agent 执行的内容' }]}
+        >
+          <Input.TextArea
+            rows={4}
+            placeholder="描述要让 Agent 做的事，例如：分析当前目录下的 TODO 注释，按模块汇总并输出清单"
+          />
+        </Form.Item>
+        <Form.Item name="priority" label="优先级" initialValue="medium">
+          <Select
+            options={[
+              { value: 'high', label: '高' },
+              { value: 'medium', label: '中' },
+              { value: 'low', label: '低' },
+            ]}
+          />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+};
 
 const AgentTasks = () => {
   const navigate = useNavigate();
   const { message } = App.useApp();
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const { currentWsId } = useWorkspace();
+  const [statusFilter, setStatusFilter] = useState<TaskStatus | 'all'>('all');
   const [search, setSearch] = useState('');
+  const [tick, setTick] = useState(0);
+  const [newOpen, setNewOpen] = useState(false);
+
+  const { data: tasks } = useApi(
+    () => (currentWsId ? listTasks(currentWsId) : Promise.resolve([])),
+    [currentWsId, tick],
+  );
+  const { data: agents } = useApi(
+    () => (currentWsId ? listAgents(currentWsId) : Promise.resolve([])),
+    [currentWsId],
+  );
+
+  // 任务状态事件驱动刷新（其他端创建/完成时自动更新）
+  useTaskEvents(currentWsId !== undefined, () => setTick((t) => t + 1));
+
+  const agentMap = useMemo(() => new Map((agents ?? []).map((a) => [a.id, a])), [agents]);
 
   const countByStatus = useMemo(() => {
-    const counts = { pending: 0, processing: 0, completed: 0 };
-    MOCK_TASKS.forEach((t) => {
+    const counts: Record<TaskStatus, number> = {
+      pending: 0,
+      running: 0,
+      completed: 0,
+      failed: 0,
+      cancelled: 0,
+    };
+    (tasks ?? []).forEach((t) => {
       counts[t.status] += 1;
     });
     return counts;
-  }, []);
+  }, [tasks]);
 
   const filteredTasks = useMemo(() => {
-    return MOCK_TASKS.filter((t) => {
+    const kw = search.trim().toLowerCase();
+    return (tasks ?? []).filter((t) => {
       const matchStatus = statusFilter === 'all' || t.status === statusFilter;
-      const matchSearch = t.title.toLowerCase().includes(search.toLowerCase());
+      const matchSearch =
+        !kw || t.title.toLowerCase().includes(kw) || (t.prompt ?? '').toLowerCase().includes(kw);
       return matchStatus && matchSearch;
     });
-  }, [statusFilter, search]);
+  }, [tasks, statusFilter, search]);
 
   const handleNew = () => {
-    message.info('新建事项功能开发中');
+    if (!currentWsId) {
+      message.warning('请先创建工作空间');
+      return;
+    }
+    setNewOpen(true);
   };
 
   return (
     <Page
       title="Agent 事项"
-      subtitle="查看和管理 Agent 自动创建或手动创建的事项任务"
+      subtitle="下发到工作电脑执行的 Agent 任务与实时输出"
       extra={
         <div className="flex items-center gap-3">
           <Button icon={<ScheduleOutlined />}>我的事项</Button>
@@ -54,46 +198,31 @@ const AgentTasks = () => {
         <div className="mb-4 flex items-center justify-between">
           <Segmented
             value={statusFilter}
-            onChange={(v) => setStatusFilter(v as string)}
-            options={[
-              { label: `全部 ${MOCK_TASKS.length}`, value: 'all' },
-              {
-                label: (
-                  <span className="flex items-center gap-1">
-                    待处理
-                    <span className="flex size-4 items-center justify-center rounded-full bg-[#fa8c16]/10 text-[10px] font-medium text-[#fa8c16]">
-                      {countByStatus.pending}
-                    </span>
-                  </span>
-                ),
-                value: 'pending',
-              },
-              {
-                label: (
-                  <span className="flex items-center gap-1">
-                    处理中
-                    <span className="flex size-4 items-center justify-center rounded-full bg-[#1677ff]/10 text-[10px] font-medium text-[#1677ff]">
-                      {countByStatus.processing}
-                    </span>
-                  </span>
-                ),
-                value: 'processing',
-              },
-              {
-                label: (
-                  <span className="flex items-center gap-1">
-                    已完成
-                    <span className="flex size-4 items-center justify-center rounded-full bg-[#52c41a]/10 text-[10px] font-medium text-[#52c41a]">
-                      {countByStatus.completed}
-                    </span>
-                  </span>
-                ),
-                value: 'completed',
-              },
-            ]}
+            onChange={(v) => setStatusFilter(v as TaskStatus | 'all')}
+            options={FILTER_OPTIONS.map((o) =>
+              o.value === 'all'
+                ? { label: `全部 ${tasks?.length ?? 0}`, value: 'all' }
+                : {
+                    label: (
+                      <span className="flex items-center gap-1">
+                        {o.label}
+                        <span
+                          className="flex size-4 items-center justify-center rounded-full text-[10px] font-medium"
+                          style={{
+                            background: `${STATUS_META[o.value as TaskStatus].color}14`,
+                            color: STATUS_META[o.value as TaskStatus].color,
+                          }}
+                        >
+                          {countByStatus[o.value as TaskStatus]}
+                        </span>
+                      </span>
+                    ),
+                    value: o.value,
+                  },
+            )}
           />
           <Input
-            placeholder="搜索事项..."
+            placeholder="搜索标题或指令..."
             prefix={<SearchOutlined />}
             className="!w-[260px]"
             value={search}
@@ -104,8 +233,9 @@ const AgentTasks = () => {
 
         <div className="flex flex-col gap-3">
           {filteredTasks.map((task) => {
-            const status = STATUS_MAP[task.status];
-            const priority = PRIORITY_MAP[task.priority];
+            const status = STATUS_META[task.status];
+            const priority = PRIORITY_META[task.priority];
+            const agent = task.agent_id ? agentMap.get(task.agent_id) : undefined;
             return (
               <div
                 key={task.id}
@@ -129,17 +259,22 @@ const AgentTasks = () => {
                       {priority.label}
                     </Tag>
                   </div>
-                  <p className="mt-1 truncate text-xs text-muted">{task.desc}</p>
+                  <p className="mt-1 truncate text-xs text-muted">{task.prompt ?? task.command}</p>
                   <div className="mt-2 flex flex-wrap items-center gap-3 text-xs">
                     <span className="flex items-center gap-1">
                       <ThunderboltOutlined className="text-muted" />
-                      <span className="font-medium">{task.sourceName}</span>
+                      <span className="font-medium">{SOURCE_LABEL[task.source]}</span>
                     </span>
                     <span className="flex items-center gap-1">
                       <RobotOutlined className="text-muted" />
-                      <span className="font-medium">{task.agentName}</span>
+                      <span className="font-medium">
+                        {agent?.name ?? (task.runtime ? `Agent (${task.runtime})` : 'Agent')}
+                      </span>
                     </span>
-                    <span className="text-muted">{task.createdAt}</span>
+                    <span className="flex items-center gap-1">
+                      {task.runtime && <RuntimeBadge name={task.runtime} size={11} />}
+                    </span>
+                    <span className="text-muted">{formatTime(task.created_at)}</span>
                   </div>
                 </div>
                 <span
@@ -153,11 +288,23 @@ const AgentTasks = () => {
           })}
           {filteredTasks.length === 0 && (
             <div className="flex h-40 items-center justify-center rounded-xl border border-dashed border-ghost text-sm text-muted">
-              暂无匹配的事项
+              {search || statusFilter !== 'all'
+                ? '暂无匹配的事项'
+                : '暂无事项，点击右上角「新建事项」下发第一个任务'}
             </div>
           )}
         </div>
       </div>
+
+      <NewTaskModal
+        open={newOpen}
+        onClose={() => setNewOpen(false)}
+        agents={agents ?? []}
+        onCreated={(taskId) => {
+          setTick((t) => t + 1);
+          navigate(`/space/agent-tasks/${taskId}`);
+        }}
+      />
     </Page>
   );
 };

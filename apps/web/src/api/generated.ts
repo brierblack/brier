@@ -76,6 +76,78 @@ export interface Agent {
 }
 
 /**
+ * Agent 任务唯一标识
+ */
+export type TaskId = string;
+
+export type TaskPriority = typeof TaskPriority[keyof typeof TaskPriority];
+
+
+export const TaskPriority = {
+  high: 'high',
+  medium: 'medium',
+  low: 'low',
+} as const;
+
+export type TaskSource = typeof TaskSource[keyof typeof TaskSource];
+
+
+export const TaskSource = {
+  manual: 'manual',
+  automation: 'automation',
+} as const;
+
+export type TaskStatus = typeof TaskStatus[keyof typeof TaskStatus];
+
+
+export const TaskStatus = {
+  pending: 'pending',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+  cancelled: 'cancelled',
+} as const;
+
+/**
+ * Agent 任务：把指令下发给绑定工作电脑上的 runtime 执行，输出聚合回传。
+ */
+export interface AgentTask {
+  agent_id: AgentId;
+  /**
+     * 自定义 shell 命令（有值时绕过 runtime 直接执行，高级用法）。
+     * @nullable
+     */
+  command?: string | null;
+  computer_id?: null | WorkComputerId;
+  created_at: string;
+  creator_id: UserId;
+  /** @nullable */
+  error?: string | null;
+  /** @nullable */
+  exit_code?: number | null;
+  /** @nullable */
+  finished_at?: string | null;
+  id: TaskId;
+  /** 聚合输出（stdout/stderr 按到达顺序追加）。 */
+  output: string;
+  priority: TaskPriority;
+  /**
+     * 发给 runtime 的自然语言指令（AI runtime 模式下作为 CLI 参数）。
+     * @nullable
+     */
+  prompt?: string | null;
+  /** @nullable */
+  runtime?: string | null;
+  source: TaskSource;
+  /** @nullable */
+  started_at?: string | null;
+  status: TaskStatus;
+  title: string;
+  updated_at: string;
+  workspace_id: WorkspaceId;
+}
+
+/**
  * Agent 团队唯一标识
  */
 export type AgentTeamId = string;
@@ -132,6 +204,22 @@ export interface CreateAgentRequest {
   visibility?: null | AgentVisibility;
   /** @nullable */
   work_computer_id?: string | null;
+}
+
+export interface CreateTaskRequest {
+  agent_id: AgentId;
+  /**
+     * 显式 shell 命令（高级用法，绕过 runtime；prompt 与 command 至少其一）。
+     * @nullable
+     */
+  command?: string | null;
+  priority?: null | TaskPriority;
+  /**
+     * 自然语言指令（AI runtime 模式：CLI 会拼成该 runtime 的执行参数）。
+     * @nullable
+     */
+  prompt?: string | null;
+  title: string;
 }
 
 export interface CreateTeamRequest {
@@ -684,6 +772,101 @@ export const deleteAgent = async (workspaceId: WorkspaceId,
   {
     ...options,
     method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getListTasksUrl = (workspaceId: WorkspaceId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/tasks`
+}
+
+export const listTasks = async (workspaceId: WorkspaceId, options?: Parameters<typeof customFetch>[1]): Promise<AgentTask[]> => {
+
+  return customFetch<AgentTask[]>(getListTasksUrl(workspaceId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateTaskUrl = (workspaceId: WorkspaceId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/tasks`
+}
+
+export const createTask = async (workspaceId: WorkspaceId,
+    createTaskRequest: CreateTaskRequest, options?: Parameters<typeof customFetch>[1]): Promise<AgentTask> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+return customFetch<AgentTask>(getCreateTaskUrl(workspaceId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createTaskRequest)
+  }
+);}
+
+
+
+export const getGetTaskUrl = (workspaceId: WorkspaceId,
+    taskId: TaskId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/tasks/${taskId}`
+}
+
+export const getTask = async (workspaceId: WorkspaceId,
+    taskId: TaskId, options?: Parameters<typeof customFetch>[1]): Promise<AgentTask> => {
+
+  return customFetch<AgentTask>(getGetTaskUrl(workspaceId,taskId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCancelTaskUrl = (workspaceId: WorkspaceId,
+    taskId: TaskId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/tasks/${taskId}/cancel`
+}
+
+export const cancelTask = async (workspaceId: WorkspaceId,
+    taskId: TaskId, options?: Parameters<typeof customFetch>[1]): Promise<AgentTask> => {
+
+  return customFetch<AgentTask>(getCancelTaskUrl(workspaceId,taskId),
+  {
+    ...options,
+    method: 'GET'
 
 
   }

@@ -6,12 +6,13 @@
 
 use brier_contract::repo::RepoInfo;
 use brier_type::{
-    id::{AgentId, AgentTeamId, WorkComputerId, WorkspaceId},
-    Agent, AgentTeam, User, WorkComputer, Workspace,
+    id::{AgentId, AgentTeamId, TaskId, WorkComputerId, WorkspaceId},
+    Agent, AgentTask, AgentTeam, User, WorkComputer, Workspace,
 };
 use utoipa::OpenApi;
 
 use crate::routes::agent::CreateAgentRequest;
+use crate::routes::agent_task::CreateTaskRequest;
 use crate::routes::team::CreateTeamRequest;
 use crate::routes::work_computer::{ConnectTokenResponse, CreateWorkComputerRequest};
 use crate::routes::workspace::CreateWorkspaceRequest;
@@ -36,6 +37,10 @@ use crate::routes::workspace::CreateWorkspaceRequest;
         crate::routes::agent::create_agent,
         crate::routes::agent::get_agent,
         crate::routes::agent::delete_agent,
+        crate::routes::agent_task::list_tasks,
+        crate::routes::agent_task::create_task,
+        crate::routes::agent_task::get_task,
+        crate::routes::agent_task::cancel_task,
         crate::routes::team::list_teams,
         crate::routes::team::create_team,
         crate::routes::team::get_team,
@@ -48,9 +53,9 @@ use crate::routes::workspace::CreateWorkspaceRequest;
     ),
     components(schemas(
         User, Workspace, RepoInfo, CreateWorkspaceRequest,
-        Agent, AgentTeam, WorkComputer,
-        AgentId, AgentTeamId, WorkComputerId, WorkspaceId,
-        CreateAgentRequest, CreateTeamRequest, CreateWorkComputerRequest,
+        Agent, AgentTask, AgentTeam, WorkComputer,
+        AgentId, AgentTeamId, TaskId, WorkComputerId, WorkspaceId,
+        CreateAgentRequest, CreateTaskRequest, CreateTeamRequest, CreateWorkComputerRequest,
         ConnectTokenResponse,
     ))
 )]

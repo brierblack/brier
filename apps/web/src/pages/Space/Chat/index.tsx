@@ -5,7 +5,7 @@ import { listAgents } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { useApi } from '@/hooks/useApi';
 import type { Agent } from '../../../types';
-import { InputBox } from './shared';
+import { InputBox, pickDefaultAgent } from './shared';
 
 const SUGGESTIONS = [
   { icon: '📊', text: '帮我分析数据并生成可视化报告' },
@@ -20,10 +20,10 @@ const NewChatBoard = ({ wsId }: { wsId: string }) => {
   const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(undefined);
   const [input, setInput] = useState('');
 
-  // 数据到达后默认选中第一个 Agent
+  // 数据到达后默认选中一个可执行任务的 Agent（已绑电脑 + runtime）
   useEffect(() => {
     if (!selectedAgent && agents?.length) {
-      setSelectedAgent(agents[0]);
+      setSelectedAgent(pickDefaultAgent(agents));
     }
   }, [agents, selectedAgent]);
 

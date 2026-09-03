@@ -91,7 +91,8 @@ export const AgentSelector = ({
   agents: Agent[];
   onSelect: (a: Agent) => void;
 }) => {
-  const availableAgents = agents.filter((a) => a.status !== 'offline');
+  // Agent 状态语义暂不完整（新建均为 offline），先全部展示便于选择
+  const availableAgents = agents;
   return (
     <Dropdown
       trigger={['click']}
@@ -178,3 +179,10 @@ export const getAgent = (message: ChatMessage, fallback: Agent, agents: Agent[] 
   }
   return fallback;
 };
+
+/**
+ * 默认选中的 Agent：优先"已绑定工作电脑且配置了 runtime"（能真正下发任务）；
+ * 都没有时退回第一个。避免默认选中未绑定的旧 Agent 导致"任务下发失败"。
+ */
+export const pickDefaultAgent = (agents: Agent[]): Agent | undefined =>
+  agents.find((a) => a.work_computer_id && a.runtime) ?? agents[0];

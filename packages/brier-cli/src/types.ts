@@ -31,6 +31,7 @@ export type ServerMessage =
       args: string[];
       cwd?: string;
       env?: Record<string, string>;
+      prompt?: string;
     }
   | { type: 'task-cancel'; taskId: string }
   | { type: 'query-runtimes' };
@@ -42,6 +43,8 @@ export interface TaskInfo {
   args: string[];
   cwd?: string;
   env?: Record<string, string>;
+  /** 自然语言指令（AI runtime 模式：拼到 runtime 命令参数中执行） */
+  prompt?: string;
 }
 
 export interface DaemonConfig {

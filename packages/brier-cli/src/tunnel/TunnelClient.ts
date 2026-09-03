@@ -111,6 +111,7 @@ export const createTunnelClient = (
           args: message.args,
           cwd: message.cwd,
           env: message.env,
+          prompt: message.prompt,
         });
         break;
 

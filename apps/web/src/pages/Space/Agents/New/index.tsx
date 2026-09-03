@@ -21,20 +21,7 @@ import { createAgent, listWorkComputers } from '@/api/generated';
 import type { AgentVisibility, PublicScope } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
-import { MODELS } from '../../../../define';
-
-// 后端未上报 runtime 时的兜底选项
-const FALLBACK_RUNTIMES = [
-  'OpenCode',
-  'Claude Code',
-  'Codex CLI',
-  'OpenAI CLI',
-  'Gemini CLI',
-  'Cursor CLI',
-  'Aider',
-  'Goose',
-  'Cody',
-];
+import { AI_RUNTIMES, MODELS } from '../../../../define';
 
 // 前端可见性选项 → 后端 AgentVisibility / PublicScope
 const VISIBILITY_TO_SCOPE: Record<
@@ -135,11 +122,9 @@ const NewAgentContent = () => {
     [workComputers, selectedComputerId],
   );
 
-  // runtime 选项以电脑实际上报为准；未上报时用兜底清单
+  // runtime 选项以电脑实际上报为准；未上报时用受支持注册表兜底
   const runtimeOptions = useMemo(() => {
-    const runtimes = selectedComputer?.runtimes?.length
-      ? selectedComputer.runtimes
-      : FALLBACK_RUNTIMES;
+    const runtimes = selectedComputer?.runtimes?.length ? selectedComputer.runtimes : AI_RUNTIMES;
     return runtimes.map((r) => ({
       label: <RuntimeBadge name={r} size={12} />,
       value: r,

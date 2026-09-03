@@ -3,13 +3,15 @@ use axum::extract::State;
 use axum::http::{header, HeaderMap, StatusCode};
 use axum::response::{IntoResponse, Response};
 use brier_crypto::hash_token;
-use brier_type::id::{UserId, WorkComputerId};
+use brier_type::id::{TaskId, UserId, WorkComputerId};
 use brier_type::tunnel::{ClientMessage, ServerMessage};
 use brier_type::WorkComputerEvent;
 use chrono::Utc;
 use futures::{SinkExt, StreamExt};
+use std::str::FromStr;
 use tokio::sync::mpsc;
 
+use crate::routes::agent_task::publish_task_event;
 use crate::AppState;
 
 fn extract_token(headers: &HeaderMap) -> Option<String> {
@@ -201,16 +203,69 @@ async fn handle_client_message(
             stream,
             data,
         } => {
-            tracing::info!(task_id, ?stream, data_len = data.len(), "task output");
+            tracing::debug!(task_id, ?stream, data_len = data.len(), "task output");
+            if let Some((cid, _)) = *computer {
+                let Ok(tid) = TaskId::from_str(&task_id) else {
+                    return;
+                };
+                let now = Utc::now();
+                if let Err(e) = brier_agent::repository::append_task_output(
+                    &state.db,
+                    tid,
+                    cid,
+                    &data,
+                    now,
+                )
+                .await
+                {
+                    tracing::warn!(task_id, error = %e, "append task output failed");
+                }
+            }
         }
         ClientMessage::TaskComplete {
             task_id,
             exit_code,
         } => {
             tracing::info!(task_id, exit_code, "task completed");
+            if let Some((cid, user_id)) = *computer {
+                let Ok(tid) = TaskId::from_str(&task_id) else {
+                    return;
+                };
+                let now = Utc::now();
+                match brier_agent::repository::finish_task(&state.db, tid, cid, exit_code, now)
+                    .await
+                {
+                    Ok(Some(task)) => {
+                        let _ =
+                            brier_agent::repository::touch_agent_activity(&state.db, task.agent_id, now)
+                                .await;
+                        publish_task_event(&state, &user_id, &task).await;
+                    }
+                    Ok(None) => {
+                        // 任务已终态（如已取消）或非本机任务，忽略
+                    }
+                    Err(e) => tracing::warn!(task_id, error = %e, "finish task failed"),
+                }
+            }
         }
         ClientMessage::TaskError { task_id, error } => {
             tracing::warn!(task_id, error, "task error");
+            if let Some((cid, user_id)) = *computer {
+                let Ok(tid) = TaskId::from_str(&task_id) else {
+                    return;
+                };
+                let now = Utc::now();
+                match brier_agent::repository::fail_task(&state.db, tid, cid, &error, now).await {
+                    Ok(Some(task)) => {
+                        let _ =
+                            brier_agent::repository::touch_agent_activity(&state.db, task.agent_id, now)
+                                .await;
+                        publish_task_event(&state, &user_id, &task).await;
+                    }
+                    Ok(None) => {}
+                    Err(e) => tracing::warn!(task_id, error = %e, "fail task failed"),
+                }
+            }
         }
         ClientMessage::RuntimeInfo { runtimes } => {
             tracing::info!(?runtimes, "runtime info updated");

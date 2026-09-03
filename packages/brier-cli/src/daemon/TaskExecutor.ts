@@ -1,7 +1,7 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import type { TaskInfo } from '../types.js';
 import { logger } from '../logger.js';
-import { RUNTIME_COMMANDS } from '../runtimes.js';
+import { resolveRuntimeExecutable, RUNTIME_PROMPT_FLAGS } from '../runtimes.js';
 
 const MAX_CONCURRENT = 3;
 
@@ -20,11 +20,28 @@ export interface TaskExecutor {
 export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecutor => {
   const processes = new Map<string, ChildProcess>();
 
-  const resolveCommand = (task: TaskInfo): string => {
+  /**
+   * 解析要执行的命令：
+   * - 显式 command：直接用（调用方负责其可执行性）
+   * - runtime 模式：解析为**绝对路径**（PATH 或官方安装目录），
+   *   避免 daemon 进程 PATH 不含 runtime 目录时 spawn ENOENT
+   */
+  const resolveCommand = (task: TaskInfo): string | null => {
     if (task.command) return task.command;
-    const mapped = RUNTIME_COMMANDS[task.runtime];
-    if (mapped) return mapped;
-    throw new Error(`Cannot resolve command for runtime: ${task.runtime}`);
+    return resolveRuntimeExecutable(task.runtime);
+  };
+
+  /**
+   * 拼执行参数：
+   * - prompt 模式（AI runtime）：命令前缀 flags + prompt 原文
+   * - 命令模式：透传服务端给的 args
+   */
+  const buildArgs = (task: TaskInfo): string[] => {
+    if (task.prompt) {
+      const flags = RUNTIME_PROMPT_FLAGS[task.runtime] ?? [];
+      return [...flags, task.prompt];
+    }
+    return task.args ?? [];
   };
 
   const execute = (task: TaskInfo) => {
@@ -39,13 +56,22 @@ export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecut
     }
 
     const cmd = resolveCommand(task);
+    if (!cmd) {
+      callbacks.onError(
+        task.taskId,
+        `Cannot resolve command for runtime: ${task.runtime} (no command provided)`,
+      );
+      return;
+    }
+
+    const args = buildArgs(task);
     const childEnv = task.env ? { ...process.env, ...task.env } : process.env;
 
-    logger.info(`Task ${task.taskId} starting: ${cmd} ${task.args.join(' ')}`, task.runtime);
+    logger.info(`Task ${task.taskId} starting: ${cmd} ${args.join(' ')}`, task.runtime);
 
     let child: ChildProcess;
     try {
-      child = spawn(cmd, task.args, {
+      child = spawn(cmd, args, {
         cwd: task.cwd,
         env: childEnv,
         stdio: ['pipe', 'pipe', 'pipe'],

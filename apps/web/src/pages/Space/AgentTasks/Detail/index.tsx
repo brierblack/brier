@@ -1,184 +1,76 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { App, Input } from 'antd';
+import { App } from 'antd';
 import { Button, Page, Tag } from '@brierb/brier-ui';
 import {
   ArrowLeftOutlined,
-  CheckOutlined,
-  FlagOutlined,
-  MessageOutlined,
-  PlusOutlined,
-  SendOutlined,
-  ThunderboltOutlined,
-  RobotOutlined,
   ClockCircleOutlined,
+  CodeOutlined,
+  RobotOutlined,
+  StopOutlined,
 } from '@ant-design/icons';
-import {
-  MOCK_ACTIVITIES,
-  PRIORITY_MAP,
-  STATUS_MAP,
-  TASK_AGENTS,
-  getTaskAgent,
-  getTaskById,
-  type TaskActivity,
-  type TaskActivityType,
-  type TaskAgent,
-} from '../data';
-
-const ACTIVITY_META: Record<
-  TaskActivityType,
-  { text: string; icon: React.ReactNode; color: string }
-> = {
-  created: { text: '创建了事项', icon: <PlusOutlined />, color: '#1677ff' },
-  assigned: { text: '将事项分配给', icon: <SendOutlined />, color: '#722ed1' },
-  accepted: { text: '接受了任务', icon: <CheckOutlined />, color: '#fa8c16' },
-  comment: { text: '评论', icon: <MessageOutlined />, color: '#8c8c8c' },
-  completed: { text: '完成了事项', icon: <FlagOutlined />, color: '#52c41a' },
-};
-
-const AgentBadge = ({ agent, size = 24 }: { agent: TaskAgent; size?: number }) => (
-  <div
-    className="flex shrink-0 items-center justify-center rounded-full"
-    style={{
-      width: size,
-      height: size,
-      backgroundColor: agent.color + '1a',
-      border: `1px solid ${agent.color}22`,
-      fontSize: size * 0.5,
-    }}
-  >
-    {agent.icon}
-  </div>
-);
-
-const ActivityItem = ({ activity, isLast }: { activity: TaskActivity; isLast: boolean }) => {
-  const agent = getTaskAgent(activity.agentId);
-  const targetAgent = activity.targetAgentId ? getTaskAgent(activity.targetAgentId) : undefined;
-  const meta = ACTIVITY_META[activity.type];
-
-  return (
-    <div className="flex gap-3">
-      <div className="flex flex-col items-center">
-        <div className="relative">
-          <AgentBadge agent={agent} />
-          <span
-            className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-white text-[9px] shadow-sm"
-            style={{ color: meta.color }}
-          >
-            {meta.icon}
-          </span>
-        </div>
-        {!isLast && <div className="my-1 w-px flex-1 bg-ghost" />}
-      </div>
-
-      <div className="min-w-0 flex-1 pb-6">
-        <div className="flex flex-wrap items-center gap-x-1.5 text-sm">
-          <span className="text-standard font-medium">{agent.name}</span>
-          <span className="text-standard">{meta.text}</span>
-          {targetAgent && (
-            <span className="flex items-center gap-1">
-              <AgentBadge agent={targetAgent} size={16} />
-              <span className="font-medium text-brand">{targetAgent.name}</span>
-            </span>
-          )}
-        </div>
-        <div className="mt-0.5 text-xs text-muted">{activity.time}</div>
-        {activity.content && (
-          <div className="mt-2 rounded-lg bg-[#f5f5f5] px-3 py-2.5 text-sm leading-relaxed">
-            {activity.content}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const ActivityTimeline = ({
-  activities,
-  onAddActivity,
-  disabled,
-}: {
-  activities: TaskActivity[];
-  onAddActivity: (activity: TaskActivity) => void;
-  disabled: boolean;
-}) => {
-  const [comment, setComment] = useState('');
-
-  const handleComment = () => {
-    const text = comment.trim();
-    if (!text) return;
-    onAddActivity({
-      id: `comment-${Date.now()}`,
-      type: 'comment',
-      agentId: 1,
-      content: text,
-      time: '刚刚',
-    });
-    setComment('');
-  };
-
-  return (
-    <div className="rounded-xl border border-ghost bg-white p-5">
-      <div className="mb-4 text-standard font-bold">动态</div>
-      <div>
-        {activities.map((activity, index) => (
-          <ActivityItem
-            key={activity.id}
-            activity={activity}
-            isLast={index === activities.length - 1}
-          />
-        ))}
-      </div>
-      <div className="flex items-center gap-2 pt-1">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#0a0a0a] to-[#3a3a3a] text-xs font-medium text-white">
-          RJ
-        </span>
-        <Input
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          onPressEnter={handleComment}
-          placeholder="写下评论，与 Agent 互动..."
-          disabled={disabled}
-          suffix={
-            <Button
-              type="primary"
-              size="small"
-              shape="circle"
-              icon={<SendOutlined />}
-              onClick={handleComment}
-              disabled={!comment.trim() || disabled}
-            />
-          }
-        />
-      </div>
-    </div>
-  );
-};
+import { cancelTask, getTask, listAgents } from '@/api/generated';
+import { useApi } from '@/hooks/useApi';
+import { useWorkspace } from '@/context/WorkspaceContext';
+import { RuntimeBadge } from '../../../../components/RuntimeIcon';
+import { formatTime, isActiveStatus, PRIORITY_META, SOURCE_LABEL, STATUS_META } from '../data';
 
 const DetailInfoItem = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div>
     <div className="text-xs text-muted">{label}</div>
-    <div className="mt-1 text-sm text-standard font-medium">{children}</div>
+    <div className="mt-1 flex items-center gap-1.5 text-sm text-standard font-medium">
+      {children}
+    </div>
   </div>
 );
 
 const AgentTaskDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
+  const { currentWsId } = useWorkspace();
+  const [refresh, setRefresh] = useState(0);
+  const outputRef = useRef<HTMLPreElement>(null);
 
-  const task = getTaskById(id ?? '');
-  const [status, setStatus] = useState(task?.status ?? 'pending');
-  const [activities, setActivities] = useState<TaskActivity[]>(
-    task ? (MOCK_ACTIVITIES[task.id] ?? []) : [],
+  const { data: task } = useApi(
+    () =>
+      currentWsId && id
+        ? getTask(currentWsId, id)
+        : Promise.reject(new Error('workspace 或 task 缺失')),
+    [currentWsId, id, refresh],
   );
+
+  const { data: agents } = useApi(
+    () => (currentWsId ? listAgents(currentWsId) : Promise.resolve([])),
+    [currentWsId],
+  );
+  const agent = useMemo(
+    () => (task ? (agents ?? []).find((a) => a.id === task.agent_id) : undefined),
+    [agents, task],
+  );
+
+  // 执行中/待执行：轮询详情直至终态
+  useEffect(() => {
+    if (task && isActiveStatus(task.status)) {
+      const timer = setTimeout(() => setRefresh((r) => r + 1), 1500);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [task, refresh]);
+
+  // 输出自动滚动到底部
+  useEffect(() => {
+    if (outputRef.current) {
+      outputRef.current.scrollTop = outputRef.current.scrollHeight;
+    }
+  }, [task?.output]);
 
   if (!task) {
     return (
       <Page header={<span>事项未找到</span>}>
         <div className="flex h-full items-center justify-center">
           <div className="text-center">
-            <p className="mb-3 text-standard">未找到该事项</p>
+            <p className="mb-3 text-standard">未找到该事项或加载中</p>
             <Button onClick={() => navigate('/space/agent-tasks')}>返回列表</Button>
           </div>
         </div>
@@ -186,47 +78,37 @@ const AgentTaskDetail = () => {
     );
   }
 
-  const statusMeta = STATUS_MAP[status];
-  const priority = PRIORITY_MAP[task.priority];
-  const ownerAgent = TASK_AGENTS.find((a) => a.name === task.agentName);
+  const statusMeta = STATUS_META[task.status];
+  const priority = PRIORITY_META[task.priority];
+  const active = isActiveStatus(task.status);
 
-  const handleAccept = () => {
-    setStatus('processing');
-    setActivities((prev) => [
-      ...prev,
-      { id: `accept-${Date.now()}`, type: 'accepted', agentId: ownerAgent?.id ?? 4, time: '刚刚' },
-    ]);
-    message.success('已接受任务');
+  const handleCancel = () => {
+    if (!currentWsId) return;
+    modal.confirm({
+      title: '取消任务',
+      content: '确定取消该任务吗？正在执行的进程会被终止。',
+      okText: '取消任务',
+      okButtonProps: { danger: true },
+      cancelText: '再想想',
+      onOk: async () => {
+        try {
+          await cancelTask(currentWsId, task.id);
+          message.success('任务已取消');
+          setRefresh((r) => r + 1);
+        } catch (e) {
+          message.error(e instanceof Error ? e.message : '取消失败');
+        }
+      },
+    });
   };
-
-  const handleComplete = () => {
-    setStatus('completed');
-    setActivities((prev) => [
-      ...prev,
-      { id: `done-${Date.now()}`, type: 'completed', agentId: ownerAgent?.id ?? 4, time: '刚刚' },
-    ]);
-    message.success('事项已完成');
-  };
-
-  const handleAddActivity = (activity: TaskActivity) => {
-    setActivities((prev) => [...prev, activity]);
-  };
-
-  const showActions = status !== 'completed';
 
   return (
     <Page
       header={
         <div className="flex items-center gap-3 py-2.5">
-          <Button
-            bordered={false}
-            icon={
-              <ArrowLeftOutlined
-                className="shrink-0 cursor-pointer text-standard hover:text-brand"
-                onClick={() => navigate('/space/agent-tasks')}
-              />
-            }
-          />
+          <Button bordered={false} onClick={() => navigate('/space/agent-tasks')}>
+            <ArrowLeftOutlined className="shrink-0 cursor-pointer text-standard hover:text-brand" />
+          </Button>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="m-0 truncate text-lg font-bold">{task.title}</h1>
@@ -235,41 +117,24 @@ const AgentTaskDetail = () => {
               </Tag>
             </div>
             <p className="mt-0.5 text-xs text-muted">
-              {task.sourceName} · 创建于 {task.createdAt}
+              {SOURCE_LABEL[task.source]} · {formatTime(task.created_at)}
             </p>
           </div>
         </div>
       }
       extra={
         <div className="flex items-center gap-2">
-          {status === 'pending' && (
-            <Button type="primary" icon={<CheckOutlined />} onClick={handleAccept}>
-              接受任务
+          {active && (
+            <Button danger icon={<StopOutlined />} onClick={handleCancel}>
+              取消任务
             </Button>
           )}
-          {status === 'processing' && (
-            <Button type="primary" icon={<FlagOutlined />} onClick={handleComplete}>
-              标记完成
-            </Button>
-          )}
-          {!showActions && (
-            <Button
-              onClick={() => {
-                setStatus('pending');
-                message.success('事项已重新打开');
-              }}
-            >
-              重新打开
-            </Button>
-          )}
-          <Button danger onClick={() => message.info('删除功能开发中')}>
-            删除
-          </Button>
         </div>
       }
     >
-      <div className="p-4">
-        <div className="mb-6 rounded-xl border border-ghost bg-white p-5">
+      <div className="flex flex-col gap-4 p-4">
+        {/* 任务信息 */}
+        <div className="rounded-xl border border-ghost bg-white p-5">
           <div className="mb-4 flex items-center gap-2">
             <span
               className="flex size-8 items-center justify-center rounded-lg text-base"
@@ -282,51 +147,78 @@ const AgentTaskDetail = () => {
               {statusMeta.icon}
             </span>
             <div>
-              <div className="text-standard font-medium">事项详情</div>
-              <div className="text-xs text-muted">#{task.id.toUpperCase()}</div>
+              <div className="text-standard font-medium">任务详情</div>
+              <div className="text-xs text-muted">#{task.id.slice(0, 8)}</div>
             </div>
           </div>
 
-          <p className="text-sm text-standard leading-relaxed">{task.desc}</p>
+          <div className="mb-4 rounded-lg bg-[#fafafa] px-4 py-3 font-mono text-sm text-standard leading-relaxed whitespace-pre-wrap">
+            {task.prompt ?? task.command ?? '（无指令）'}
+          </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-4 border-t border-ghost pt-4 sm:grid-cols-3">
-            <DetailInfoItem label="状态">
-              <span style={{ color: statusMeta.color }}>{statusMeta.label}</span>
+          <div className="grid grid-cols-2 gap-4 border-t border-ghost pt-4 sm:grid-cols-4">
+            <DetailInfoItem label="执行 Agent">
+              <RobotOutlined className="text-muted" />
+              <span className="truncate">
+                {agent?.name ?? (task.runtime ? `Agent (${task.runtime})` : `Agent`)}
+              </span>
+            </DetailInfoItem>
+            <DetailInfoItem label="Runtime">
+              {task.runtime ? <RuntimeBadge name={task.runtime} size={14} /> : <span>—</span>}
             </DetailInfoItem>
             <DetailInfoItem label="优先级">
               <Tag color={priority.color} className="m-0">
                 {priority.label}
               </Tag>
             </DetailInfoItem>
-            <DetailInfoItem label="来源">
-              <span className="flex items-center gap-1">
-                <ThunderboltOutlined className="text-muted" />
-                {task.sourceName}
-              </span>
+            <DetailInfoItem label="状态">
+              <span style={{ color: statusMeta.color }}>{statusMeta.label}</span>
             </DetailInfoItem>
-            <DetailInfoItem label="负责 Agent">
-              <span className="flex items-center gap-1.5">
-                {ownerAgent ? <AgentBadge agent={ownerAgent} size={20} /> : <RobotOutlined />}
-                {task.agentName}
-              </span>
+            <DetailInfoItem label="开始时间">
+              <ClockCircleOutlined className="text-muted" />
+              {formatTime(task.started_at)}
             </DetailInfoItem>
-            <DetailInfoItem label="创建时间">
-              <span className="flex items-center gap-1">
-                <ClockCircleOutlined className="text-muted" />
-                {task.createdAt}
-              </span>
+            <DetailInfoItem label="结束时间">
+              <ClockCircleOutlined className="text-muted" />
+              {formatTime(task.finished_at)}
             </DetailInfoItem>
-            <DetailInfoItem label="当前动态">
-              <span className="text-muted">{activities.length} 条</span>
+            <DetailInfoItem label="退出码">
+              <CodeOutlined className="text-muted" />
+              {task.exit_code !== null && task.exit_code !== undefined ? task.exit_code : '—'}
             </DetailInfoItem>
           </div>
+
+          {task.error && (
+            <div className="mt-4 rounded-lg border border-[#f5222d33] bg-[#fff2f0] px-4 py-3 text-xs whitespace-pre-wrap text-[#cf1322]">
+              {task.error}
+            </div>
+          )}
         </div>
 
-        <ActivityTimeline
-          activities={activities}
-          onAddActivity={handleAddActivity}
-          disabled={status === 'completed'}
-        />
+        {/* 执行输出 */}
+        <div className="overflow-hidden rounded-xl border border-ghost bg-[#0d1117]">
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
+            <span className="flex items-center gap-2 text-xs text-[#8b949e]">
+              <CodeOutlined />
+              执行输出
+              {active && (
+                <span className="flex items-center gap-1.5">
+                  <span className="size-1.5 animate-pulse rounded-full bg-[#52c41a]" />
+                  {task.status === 'pending' ? '等待执行' : '运行中'}
+                </span>
+              )}
+            </span>
+            {task.status === 'completed' && (
+              <span className="text-xs text-[#52c41a]">exit {task.exit_code ?? 0}</span>
+            )}
+          </div>
+          <pre
+            ref={outputRef}
+            className="m-0 h-[420px] overflow-auto p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap text-[#c9d1d9]"
+          >
+            {task.output || (active ? '等待任务输出…' : '（无输出）')}
+          </pre>
+        </div>
       </div>
     </Page>
   );
