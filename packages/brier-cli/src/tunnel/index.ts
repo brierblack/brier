@@ -1,5 +1,9 @@
-import type { ClientMessage, DaemonConfig, TunnelState } from '../definitions/index.js';
-import type { TaskExecutor } from '../daemon/TaskExecutor.js';
+import type {
+  ClientMessage,
+  DaemonConfig,
+  ServerMessage,
+  TunnelState,
+} from '../definitions/index.js';
 import { toWsUrl } from './url.js';
 import { logger } from '../core/index.js';
 import { createBackoff } from './backoff.js';
@@ -24,6 +28,18 @@ export interface TunnelClient {
 }
 
 /**
+ * 业务消息处理回调（组合点）。
+ *
+ * 隧道只负责“协议 → 消息分发”，不解释业务：task-start/task-cancel
+ * 原样交给宿主实现（daemon/DaemonRunner 将其翻译成 TaskExecutor 调用）。
+ * 隧道域因此不依赖任务执行域。
+ */
+export interface TunnelMessageHandlers {
+  onTaskStart: (message: Extract<ServerMessage, { type: 'task-start' }>) => void;
+  onTaskCancel: (taskId: string) => void;
+}
+
+/**
  * 隧道骨架：连接生命周期编排与状态仲裁的唯一入口。
  *
  * 本文件只做“编排”，不接触 ws 细节、不算退避、不解析消息：
@@ -40,7 +56,7 @@ export interface TunnelClient {
  */
 export const createTunnelClient = (
   config: DaemonConfig,
-  taskExecutor: TaskExecutor,
+  messageHandlers: TunnelMessageHandlers,
 ): TunnelClient => {
   const transport = createWebSocketTransport();
   const backoff = createBackoff({
@@ -145,19 +161,11 @@ export const createTunnelClient = (
     },
     onTaskStart: (message) => {
       logger.info('Task start:', message.taskId, message.command);
-      taskExecutor.execute({
-        taskId: message.taskId,
-        runtime: message.runtime,
-        command: message.command,
-        args: message.args,
-        cwd: message.cwd,
-        env: message.env,
-        prompt: message.prompt,
-      });
+      messageHandlers.onTaskStart(message);
     },
     onTaskCancel: (taskId) => {
       logger.info('Task cancel:', taskId);
-      taskExecutor.cancel(taskId);
+      messageHandlers.onTaskCancel(taskId);
     },
     onQueryRuntimes: () => {
       send({ type: 'runtime-info', runtimes: config.runtimes });
@@ -204,8 +212,7 @@ export const createTunnelClient = (
   const stop = async () => {
     running = false;
     heartbeat.stop();
-    taskExecutor.cancelAll();
-
+    // 取消运行中任务由宿主（DaemonRunner）在自身 shutdown 里处理，隧道只负责关闭连接
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
       reconnectTimer = null;

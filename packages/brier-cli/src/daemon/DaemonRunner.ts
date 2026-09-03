@@ -1,29 +1,35 @@
 import type { ClientMessage, DaemonConfig, TunnelState } from '../definitions/index.js';
 import { loadConfig, LOG_FILE } from '../config/index.js';
 import { configureLogger, logger } from '../core/index.js';
-import { createTunnelClient, type TunnelClient } from '../tunnel/index.js';
-import { createTaskExecutor } from './TaskExecutor.js';
+import {
+  createTunnelClient,
+  type TunnelClient,
+  type TunnelMessageHandlers,
+} from '../tunnel/index.js';
+import { createTaskExecutor, type TaskExecutor } from './TaskExecutor.js';
 
 let tunnel: TunnelClient | null = null;
+let taskExecutor: TaskExecutor | null = null;
 
-const shutdown = async (signal: string) => {
-  logger.info(`Received ${signal}, shutting down...`);
-
+/** 停止隧道并取消所有运行中任务（宿主层的生命周期策略）。 */
+const stopAll = async () => {
   if (tunnel) {
     await tunnel.stop();
     tunnel = null;
   }
+  taskExecutor?.cancelAll();
+  taskExecutor = null;
+};
 
+const shutdown = async (signal: string) => {
+  logger.info(`Received ${signal}, shutting down...`);
+  await stopAll();
   process.exit(0);
 };
 
 const handleUncaughtError = (err: Error) => {
   logger.error('Uncaught error:', err.message);
-  if (tunnel) {
-    tunnel.stop().finally(() => process.exit(1));
-  } else {
-    process.exit(1);
-  }
+  void stopAll().finally(() => process.exit(1));
 };
 
 const run = (config: DaemonConfig) => {
@@ -39,13 +45,32 @@ const run = (config: DaemonConfig) => {
     }
   };
 
-  const taskExecutor = createTaskExecutor({
+  const executor = createTaskExecutor({
     onOutput: (taskId, stream, data) => safeSend({ type: 'task-output', taskId, stream, data }),
     onComplete: (taskId, exitCode) => safeSend({ type: 'task-complete', taskId, exitCode }),
     onError: (taskId, error) => safeSend({ type: 'task-error', taskId, error }),
   });
+  taskExecutor = executor;
 
-  tunnel = createTunnelClient(config, taskExecutor);
+  // 组合点：把隧道下发的业务消息翻译成任务执行动作
+  const messageHandlers: TunnelMessageHandlers = {
+    onTaskStart: (message) => {
+      executor.execute({
+        taskId: message.taskId,
+        runtime: message.runtime,
+        command: message.command,
+        args: message.args,
+        cwd: message.cwd,
+        env: message.env,
+        prompt: message.prompt,
+      });
+    },
+    onTaskCancel: (taskId) => {
+      executor.cancel(taskId);
+    },
+  };
+
+  tunnel = createTunnelClient(config, messageHandlers);
 
   tunnel.onStateChange((state: TunnelState) => {
     logger.info('Tunnel state:', state);
