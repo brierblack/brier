@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { readCliVersion } from './config.js';
 import { startCommand } from './commands/start.js';
 import { stopCommand } from './commands/stop.js';
 import { restartCommand } from './commands/restart.js';
 import { statusCommand } from './commands/status.js';
+import { logCommand } from './commands/log.js';
 
 const program = new Command();
 
 program
   .name('brier')
   .description('Brier CLI - Connect to Brier platform via encrypted tunnel')
-  .version('0.0.1');
+  .version(readCliVersion());
 
 const daemon = program.command('daemon').description('Manage the brier background service');
 
@@ -59,6 +61,18 @@ daemon
   .description('Check the background service status')
   .action(() => {
     statusCommand();
+  });
+
+daemon
+  .command('log')
+  .description('Show the latest daemon log lines')
+  .action(() => {
+    try {
+      logCommand();
+    } catch (err) {
+      console.error('Error:', err instanceof Error ? err.message : String(err));
+      process.exit(1);
+    }
   });
 
 program.parseAsync(process.argv).catch((err: unknown) => {

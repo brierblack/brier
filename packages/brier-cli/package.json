@@ -19,8 +19,8 @@
       "types": "./types/index.d.ts"
     },
     "./tunnel": {
-      "import": "./dist/tunnel/TunnelClient.js",
-      "types": "./types/tunnel/TunnelClient.d.ts"
+      "import": "./dist/tunnel/index.js",
+      "types": "./types/tunnel/index.d.ts"
     }
   },
   "files": [

@@ -93,9 +93,4 @@ export type ServerMessage =
  * 收到 auth-failed 或重连次数耗尽（50 次退避上限）时进入 error 并停止，
  * 主动 stop 时进入 disconnected。
  */
-export type TunnelState =
-  | 'connecting'
-  | 'connected'
-  | 'disconnected'
-  | 'reconnecting'
-  | 'error';
+export type TunnelState = 'connecting' | 'connected' | 'disconnected' | 'reconnecting' | 'error';

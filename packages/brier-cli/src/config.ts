@@ -10,7 +10,7 @@ export const PID_FILE = join(BRIER_DIR, 'daemon.pid');
 export const LOG_FILE = join(BRIER_DIR, 'daemon.log');
 
 /** CLI 自身版本（读取 dist 同级的 package.json）。 */
-const readCliVersion = (): string => {
+export const readCliVersion = (): string => {
   try {
     const pkgPath = fileURLToPath(new URL('../package.json', import.meta.url));
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as { version?: string };
