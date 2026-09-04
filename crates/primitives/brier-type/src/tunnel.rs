@@ -47,6 +47,9 @@ pub enum ServerMessage {
         /// 执行形态（pty 交互/pipe 非交互）；缺省为 None（daemon 按 pipe 执行，向后兼容）。
         #[serde(default, rename = "execMode")]
         exec_mode: Option<ExecMode>,
+        /// 续接上一 CLI 会话（如 opencode 的 session ID）；缺省不续接。
+        #[serde(default, rename = "resumeSessionId")]
+        resume_session_id: Option<String>,
     },
     TaskCancel {
         #[serde(rename = "taskId")]

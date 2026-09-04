@@ -1,9 +1,117 @@
+import { useState } from 'react';
 import { Avatar, Input } from 'antd';
 import { Button, Dropdown } from '@brierb/brier-ui';
 import { ArrowUpOutlined, DownOutlined, CheckOutlined } from '@ant-design/icons';
 import { useAuth } from '@/context/AuthContext';
+import { getTask } from '@/api/generated';
 import type { SessionMessage } from '@/api/generated';
 import type { Agent } from '../../../types';
+import { parseRunMessage, type RunTranscript } from './transcript';
+
+/** 从任务原始输出（opencode JSON 事件流）解析出的工具调用完整结果 */
+interface ParsedToolOutput {
+  tool: string;
+  command: string;
+  output: string;
+}
+
+/** 解析工具输出原始事件：type=tool_use 且 state.status=completed */
+const parseToolOutputs = (raw: string): ParsedToolOutput[] => {
+  const tools: ParsedToolOutput[] = [];
+  for (const rawLine of raw.split('\n')) {
+    const line = rawLine.trim();
+    if (!line.startsWith('{')) continue;
+    let evt: unknown;
+    try {
+      evt = JSON.parse(line);
+    } catch {
+      continue;
+    }
+    if (evt === null || typeof evt !== 'object') continue;
+    const obj = evt as {
+      type?: unknown;
+      part?: {
+        type?: unknown;
+        tool?: unknown;
+        state?: { status?: string; input?: unknown; output?: unknown };
+      };
+    };
+    if (obj.type !== 'tool_use' || obj.part === undefined) continue;
+    const { part } = obj;
+    const state = part.state;
+    if (state === undefined || state.status !== 'completed') continue;
+    const input =
+      state.input !== null && typeof state.input === 'object'
+        ? (state.input as Record<string, unknown>)
+        : undefined;
+    const command =
+      typeof input?.command === 'string' ? input.command : JSON.stringify(state.input ?? {});
+    const output = typeof state.output === 'string' ? state.output : '';
+    tools.push({ tool: typeof part.tool === 'string' ? part.tool : 'unknown', command, output });
+  }
+  return tools;
+};
+
+/** run 消息展开区：查看每个工具调用的完整输出（从任务原始记录解析） */
+const FullToolOutputs = ({ wsId, taskId }: { wsId?: string; taskId?: string | null }) => {
+  const [open, setOpen] = useState(false);
+  const [state, setState] = useState<{
+    loading: boolean;
+    items?: ParsedToolOutput[];
+    error?: string;
+  }>({
+    loading: false,
+  });
+
+  const toggle = () => {
+    const next = !open;
+    setOpen(next);
+    if (!next || state.items || state.loading) return;
+    if (!wsId || !taskId) {
+      setState({ loading: false, error: '缺少任务信息，无法获取完整输出' });
+      return;
+    }
+    setState({ loading: true });
+    void getTask(wsId, taskId)
+      .then((task) => setState({ loading: false, items: parseToolOutputs(task.output ?? '') }))
+      .catch((err: unknown) =>
+        setState({ loading: false, error: err instanceof Error ? err.message : String(err) }),
+      );
+  };
+
+  return (
+    <div className="mt-2 border-t border-ghost pt-2">
+      <button
+        type="button"
+        onClick={toggle}
+        className="cursor-pointer border-none bg-transparent p-0 text-xs text-muted hover:text-brand"
+      >
+        {open ? '收起完整输出' : '查看完整工具输出'}
+      </button>
+      {open && (
+        <div className="mt-2">
+          {state.loading && <div className="text-xs text-muted">加载中…</div>}
+          {state.error && <div className="text-xs text-[#cf3f3f]">加载失败：{state.error}</div>}
+          {!state.loading && !state.error && state.items && state.items.length === 0 && (
+            <div className="text-xs text-muted">（该轮无工具调用输出）</div>
+          )}
+          {!state.loading &&
+            !state.error &&
+            state.items?.map((item, i) => (
+              <div key={i} className="mb-2 rounded-lg border border-ghost bg-white/60">
+                <div className="border-b border-ghost px-2.5 py-1.5 text-xs font-medium break-all">
+                  ◇ 工具 {item.tool} · {item.command}
+                </div>
+                <pre className="m-0 max-h-80 overflow-auto px-2.5 py-2 font-mono text-xs leading-relaxed break-all whitespace-pre-wrap">
+                  {item.output || '（无输出）'}
+                </pre>
+              </div>
+            ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const AgentAvatar = ({ agent, size = 32 }: { agent: Agent; size?: number }) => {
   const color = agent.color ?? '#666666';
@@ -22,14 +130,100 @@ export const AgentAvatar = ({ agent, size = 32 }: { agent: Agent; size?: number 
   );
 };
 
+/** 判断某工具调用是否属于“读取类”（文件/查看/搜索/输出查看），用于自动折叠 */
+const FILE_READ_TOOLS = new Set([
+  'read',
+  'read_file',
+  'view',
+  'cat',
+  'show',
+  'show_file',
+  'open',
+  'open_file',
+  'grep',
+  'find',
+  'search',
+  'head',
+  'tail',
+  'less',
+  'more',
+  'sed',
+  'awk',
+  'wc',
+]);
+const FILE_READ_CMD_RE = /(^|\s)(cat|head|tail|less|more|sed\s+-n|awk|grep|find|wc)(\s|$)/;
+
+const isFileRead = (name: string, cmd: string): boolean =>
+  FILE_READ_TOOLS.has(name) || FILE_READ_CMD_RE.test(cmd);
+
+/** 工具步骤卡片：短输出直接展示；长输出/文件读取类默认折叠为摘要行，点开看全文 */
+const ToolStepCard = ({ name, cmd, out }: { name: string; cmd: string; out: string }) => {
+  const lineCount = out.split('\n').length;
+  const charCount = out.length;
+  const longOutput = lineCount > 5 || charCount > 600;
+  const fileRead = isFileRead(name, cmd);
+  const collapsed = fileRead || longOutput;
+
+  if (!collapsed) {
+    return (
+      <div className="mt-2 rounded-lg border border-ghost bg-white/60">
+        <div className="border-b border-ghost px-2.5 py-1 text-xs font-medium break-all">
+          ◇ 工具 {name} · {cmd}
+        </div>
+        <pre className="m-0 px-2.5 py-2 font-mono text-xs leading-relaxed break-all whitespace-pre-wrap">
+          {out || '（无输出）'}
+        </pre>
+      </div>
+    );
+  }
+
+  const label = fileRead
+    ? `◇ 读取内容 · ${name}${cmd ? ` · ${cmd}` : ''}（${lineCount} 行）`
+    : `◇ 工具 ${name} · ${cmd}`;
+  return (
+    <details className="mt-2 rounded-lg border border-ghost bg-white/60">
+      <summary className="cursor-pointer px-2.5 py-1 text-xs break-all text-muted select-none hover:text-brand">
+        {label}
+      </summary>
+      <pre className="m-0 max-h-80 overflow-auto border-t border-ghost px-2.5 py-2 font-mono text-xs leading-relaxed break-all whitespace-pre-wrap">
+        {out || '（无输出）'}
+      </pre>
+    </details>
+  );
+};
+
+/** v2 过程事件列表（text 分段 + tool 折叠卡片） */
+const RunEventsView = ({ run }: { run: RunTranscript }) => {
+  const events = run.events ?? [];
+  return (
+    <div className="mt-2 flex flex-col gap-1.5 border-t border-ghost pt-2">
+      {events.map((ev, i) =>
+        ev.k === 'text' ? (
+          <p key={i} className="text-[13px] leading-relaxed break-words whitespace-pre-wrap">
+            {ev.d}
+          </p>
+        ) : (
+          <ToolStepCard key={i} name={ev.name} cmd={ev.cmd} out={ev.out} />
+        ),
+      )}
+      {run.truncated && (
+        <div className="text-[11px] text-muted">（内容过长，超出单条上限的部分已省略）</div>
+      )}
+    </div>
+  );
+};
+
 export const MessageBubble = ({
   message,
   agent,
   user,
+  wsId,
 }: {
   message: SessionMessage;
   agent: Agent;
   user: ReturnType<typeof useAuth>['user'];
+  /** 工作空间 ID（可选）：提供时 run 消息可拉取任务的完整工具输出 */
+  wsId?: string;
 }) => {
   if (message.role === 'user') {
     return (
@@ -47,6 +241,57 @@ export const MessageBubble = ({
             {user?.username?.slice(0, 2).toUpperCase() ?? 'U'}
           </Avatar>
         )}
+      </div>
+    );
+  }
+
+  // 运行转录消息（kind=run 的 JSON 信封）：摘要（全文）+ 过程（v2 事件折叠 / v1 整段兼容）
+  const run = parseRunMessage(message.content);
+  if (run) {
+    const answers = run.answers ?? [];
+    const hasV2 = (run.events?.length ?? 0) > 0;
+    const summaryLong = run.summary.length > 1600;
+    return (
+      <div className="flex items-start gap-3">
+        <AgentAvatar agent={agent} size={32} />
+        <div className="flex max-w-[85%] flex-col gap-1">
+          <div className="text-[11px] font-medium">{agent.name}</div>
+          <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-2.5">
+            <div className={summaryLong ? 'max-h-[420px] overflow-y-auto' : undefined}>
+              <p className="leading-relaxed break-words whitespace-pre-wrap">{run.summary}</p>
+            </div>
+            <details className="mt-2 border-t border-ghost pt-2">
+              <summary className="cursor-pointer text-xs text-muted select-none hover:text-brand">
+                {hasV2
+                  ? `查看执行过程（${run.events?.length ?? 0} 个步骤）`
+                  : `查看执行过程${answers.length > 0 ? `（${answers.length} 次回答）` : ''}`}
+              </summary>
+              {hasV2 ? (
+                <RunEventsView run={run} />
+              ) : (
+                <>
+                  <pre className="m-0 mt-2 max-h-96 overflow-auto font-mono text-xs leading-relaxed break-all whitespace-pre-wrap">
+                    {run.transcript ?? ''}
+                  </pre>
+                  {answers.length > 0 && (
+                    <div className="mt-2 flex flex-col gap-1.5 border-t border-ghost pt-2">
+                      {answers.map((answer, i) => (
+                        <div key={i} className="flex gap-2 text-xs">
+                          <span className="shrink-0 text-brand">你的回答 {i + 1}:</span>
+                          <span className="min-w-0 break-words whitespace-pre-wrap">{answer}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {run.truncated && (
+                    <div className="mt-1.5 text-[11px] text-muted">（过程过长，已截断展示）</div>
+                  )}
+                  <FullToolOutputs wsId={wsId} taskId={message.task_id} />
+                </>
+              )}
+            </details>
+          </div>
+        </div>
       </div>
     );
   }

@@ -34,14 +34,25 @@ export const RUNTIME_COMMANDS: Record<string, string> = Object.fromEntries(
  * AI runtime 单次（非交互）执行参数模板：命令前缀 flags，后面紧跟 prompt。
  * 服务端 task-start 携带 prompt 时，CLI 用它拼出
  * `spawn(<command>, [...flags, prompt])`；未列出的 runtime 按裸参数执行。
+ *
+ * OpenCode 使用 `--format json` 输出结构化事件（含 sessionID，供跨轮续接）；
+ * 展示层会从中提取文本事件，JSON 事件本身不被当作最终正文。
  */
 export const RUNTIME_PROMPT_FLAGS: Record<string, readonly string[]> = {
-  OpenCode: ['run'],
+  OpenCode: ['run', '--format', 'json'],
   'Claude Code': ['-p'],
   'Codex CLI': ['exec'],
   'Gemini CLI': ['-p'],
   Aider: ['--message'],
   Goose: ['run'],
+};
+
+/**
+ * 各 runtime 续接上一会话所需的参数名（值与 resumeSessionId 拼接）。
+ * 仅支持原生 resume/session 续接的 runtime 需要登记。
+ */
+export const RUNTIME_RESUME_FLAGS: Record<string, readonly [string]> = {
+  OpenCode: ['--session'],
 };
 
 // macOS 自带磁盘分区工具 gpt(8) 位于 /usr/sbin/gpt，命中系统目录视为未安装。

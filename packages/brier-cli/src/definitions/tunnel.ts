@@ -91,6 +91,8 @@ export type ServerMessage =
       prompt?: string;
       /** 执行形态（可选）：缺省 pipe（向后兼容旧服务端） */
       execMode?: ExecMode;
+      /** 续接的 CLI 会话 ID（如 opencode session）；缺省不续接 */
+      resumeSessionId?: string;
     }
   | { type: 'task-cancel'; taskId: string }
   | { type: 'task-input'; taskId: string; data: string }

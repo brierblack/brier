@@ -26,4 +26,6 @@ export interface TaskInfo {
   prompt?: string;
   /** 执行形态（可选）：缺省 pipe（非交互，向后兼容）；pty 为伪终端交互（支持 task-input） */
   execMode?: ExecMode;
+  /** 续接的 CLI 会话 ID（可选）：opencode 等通过 --session 恢复上一会话上下文 */
+  resumeSessionId?: string;
 }

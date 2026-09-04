@@ -27,6 +27,8 @@ pub struct CreateTaskRequest {
     /// 执行形态：pty（交互，可回答提问）/ pipe（非交互，默认）。
     #[schema(value_type = Option<String>, example = "pty")]
     pub exec_mode: Option<ExecMode>,
+    /// 续接的 CLI 会话 ID（如 opencode session，由前端从上一轮事件解析后回传）；缺省不续接。
+    pub resume_session_id: Option<String>,
 }
 
 #[derive(Deserialize, utoipa::ToSchema)]
@@ -195,6 +197,7 @@ pub(crate) async fn create_task(
                 env: None,
                 prompt: created.prompt.clone(),
                 exec_mode: req.exec_mode,
+                resume_session_id: req.resume_session_id.clone(),
             },
         )
         .await;

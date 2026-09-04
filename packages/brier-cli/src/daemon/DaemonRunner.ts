@@ -73,6 +73,7 @@ const startDaemon = (config: DaemonConfig): DaemonContext => {
         env: message.env,
         prompt: message.prompt,
         execMode: message.execMode,
+        resumeSessionId: message.resumeSessionId,
       });
     },
     onTaskCancel: (taskId) => {

@@ -1,7 +1,36 @@
 import { spawn, type ChildProcess } from 'node:child_process';
+import { chmodSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { createRequire } from 'node:module';
 import pty from 'node-pty';
 import type { TaskInfo } from '../definitions/index.js';
-import { logger, resolveRuntimeExecutable, RUNTIME_PROMPT_FLAGS } from '../core/index.js';
+import {
+  logger,
+  resolveRuntimeExecutable,
+  RUNTIME_PROMPT_FLAGS,
+  RUNTIME_RESUME_FLAGS,
+} from '../core/index.js';
+
+const require = createRequire(import.meta.url);
+
+/**
+ * 修复 node-pty 的 darwin spawn-helper 可执行权限。
+ *
+ * 现象：node-pty 在 macOS 上先 spawn 自带的 spawn-helper 再执行目标命令；
+ * 若该 helper 因下载/安装而缺失可执行位（0644），posix_spawnp 返回 EACCES，
+ * 且 node-pty 只抛出笼统的 "posix_spawnp failed."（无 errno），难以定位。
+ * 每次 pty 启动前兜底 chmod +x，兼容重装后权限再丢失的情况。
+ */
+const ensurePtyHelperExecutable = (): void => {
+  if (process.platform !== 'darwin') return;
+  try {
+    const pkgDir = dirname(require.resolve('node-pty/package.json'));
+    const helper = join(pkgDir, 'prebuilds', `darwin-${process.arch}`, 'spawn-helper');
+    chmodSync(helper, 0o755);
+  } catch {
+    // helper 权限修正失败不致命：若 node-pty 自身可执行则正常走；否则抛错由上层捕获
+  }
+};
 
 const MAX_CONCURRENT = 3;
 /** 取消后等待 SIGTERM 生效的时间，超时升级 SIGKILL（仅 pipe 模式需要；pty.kill 为同步终止） */
@@ -9,6 +38,8 @@ const KILL_GRACE_MS = 2_000;
 /** dispose 整体等待上限 */
 const DISPOSE_TIMEOUT_MS = 2_000;
 const DISPOSE_POLL_MS = 100;
+/** 交互 CLI 启动后到可接收输入的就绪等待（全屏 TUI 初始化较慢，如 opencode） */
+const PTY_STARTUP_DELAY_MS = 1_200;
 
 /** node-pty 伪终端句柄类型（避免直接依赖其类型导出形态） */
 type PtyHandle = ReturnType<typeof pty.spawn>;
@@ -88,13 +119,18 @@ export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecut
 
   /**
    * 拼执行参数：
-   * - prompt 模式（AI runtime）：命令前缀 flags + prompt 原文
+   * - prompt 模式（AI runtime）：命令前缀 flags + 续接参数(可选) + prompt 原文
    * - 命令模式：透传服务端给的 args
    */
   const buildArgs = (task: TaskInfo): string[] => {
     if (task.prompt) {
-      const flags = RUNTIME_PROMPT_FLAGS[task.runtime] ?? [];
-      return [...flags, task.prompt];
+      const args = [...(RUNTIME_PROMPT_FLAGS[task.runtime] ?? [])];
+      if (task.resumeSessionId) {
+        const flag = RUNTIME_RESUME_FLAGS[task.runtime];
+        if (flag) args.push(...flag, task.resumeSessionId);
+      }
+      args.push(task.prompt);
+      return args;
     }
     return task.args ?? [];
   };
@@ -158,10 +194,20 @@ export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecut
    * pty 模式：伪终端交互子进程。
    * CLI 检测到 tty 后进入交互模式（会提问、渲染进度、等待输入）；
    * 屏幕字节经 onData 上行（含 ANSI），用户输入经 writeInput 写入（模拟击键）。
+   *
+   * 与 pipe 模式的关键差异：prompt 任务不再把 prompt 拼成命令行参数，
+   * 而是启动后作为“用户输入”敲进终端（交互式 CLI 从会话里读取首条消息）。
    */
-  const executePty = (task: TaskInfo, cmd: string, args: string[], childEnv: NodeJS.ProcessEnv) => {
+  const executePty = (
+    task: TaskInfo,
+    cmd: string,
+    args: string[],
+    childEnv: NodeJS.ProcessEnv,
+    initialInput?: string,
+  ) => {
     let handle: PtyHandle;
     try {
+      ensurePtyHelperExecutable();
       handle = pty.spawn(cmd, args, {
         name: 'xterm-256color',
         cols: 120,
@@ -176,6 +222,26 @@ export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecut
 
     ptyProcs.set(task.taskId, handle);
     logger.info(`Task ${task.taskId} started in pty mode: ${cmd} ${args.join(' ')}`, task.runtime);
+
+    // prompt 作为首条会话消息敲入（补回车触发提交）；无 prompt（command 模式）不注入。
+    // 时序：交互 CLI（尤其全屏 TUI，如 opencode）需要时间完成初始化，过早写入会被丢弃，
+    // 导致会话一直停在“等待输入”态；延迟到终端就绪后再注入。
+    if (initialInput) {
+      const pendingWrite = setTimeout(() => {
+        try {
+          if (ptyProcs.get(task.taskId) === handle) {
+            handle.write(initialInput);
+          }
+        } catch {
+          // 会话已结束等情况：忽略注入失败
+        }
+      }, PTY_STARTUP_DELAY_MS);
+      // 会话先于注入结束时取消定时器，避免向已死终端写入
+      const clearOnExit = () => {
+        clearTimeout(pendingWrite);
+      };
+      handle.onExit(clearOnExit);
+    }
 
     handle.onData((data: string) => {
       // pty 只有一路输出（合并 stdout/stderr 的终端字节流），统一按 stdout 上行；
@@ -216,14 +282,19 @@ export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecut
       return;
     }
 
-    const args = buildArgs(task);
     const childEnv = buildEnv(task);
 
     if (task.execMode === 'pty') {
-      executePty(task, cmd, args, childEnv);
+      // 交互模式：prompt 不拼参数，作为首条输入敲入；command 模式透传 args
+      const args = task.prompt ? [] : (task.args ?? []);
+      const initialInput =
+        task.prompt !== undefined && task.prompt.trim() !== ''
+          ? `${task.prompt.replace(/\r?\n/g, '\r')}\r`
+          : undefined;
+      executePty(task, cmd, args, childEnv, initialInput);
       return;
     }
-    executePipe(task, cmd, args, childEnv);
+    executePipe(task, cmd, buildArgs(task), childEnv);
   };
 
   const writeInput = (taskId: string, data: string): boolean => {

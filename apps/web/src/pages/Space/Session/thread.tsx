@@ -12,6 +12,14 @@ import type { Agent, AgentTask, SessionMessage, TaskStatus } from '@/api/generat
 import { useApi } from '@/hooks/useApi';
 import { useTaskEvents } from '@/hooks/useTaskEvents';
 import { AgentAvatar, InputBox, MessageBubble } from './shared';
+import { createOutputProjector, type OutputProjector } from './outputProjector';
+import {
+  buildRunContentV2,
+  parseOpenCodeRunEvents,
+  parseRunMessage,
+  stripAnsi,
+} from './transcript';
+import type { RunEvent } from './transcript';
 
 /** 任务是否已进入终态（SSE 事件驱动收尾依据）。 */
 const isTerminalStatus = (s: TaskStatus): boolean =>
@@ -72,8 +80,16 @@ export const SessionThread = ({
   } | null>(null);
   // 最近一次收到"本会话关注任务"事件的时间，空窗才触发兜底检查
   const lastTaskEventAtRef = useRef(0);
-  // 正在执行任务的实时输出（仅本地预览，终态后以落库消息为准）
+  // 正在执行任务的实时输出（仅本地预览，终态后以落库消息为准；已投影为可读文本）
   const [runningText, setRunningText] = useState('');
+  /** 运行期原始输出原文累积（opencode = JSON 事件流；终态据此还原全量过程事件） */
+  const runningRawRef = useRef('');
+  /** 当前任务的输出投影器（按 runtime 决定解析/透传；仅用于实时可读展示） */
+  const projectorRef = useRef<OutputProjector | null>(null);
+  /** 当前任务的 runtime（决定终态过程事件的解析方式） */
+  const runtimeRef = useRef<string | null>(null);
+  /** 当前任务捕获到的 CLI 会话 ID（如 opencode sessionID） */
+  const sessionIdRef = useRef<string | null>(null);
 
   // 任务事件订阅（会话跟随）：task_output 实时渲染预览；终态事件驱动等待结束
   useTaskEvents(!!wsId, wsId, (e) => {
@@ -81,7 +97,21 @@ export const SessionThread = ({
     if (!w || e.task_id !== w.taskId) return;
     if (e.type === 'task_output') {
       lastTaskEventAtRef.current = Date.now();
-      setRunningText((prev) => prev + e.data);
+      // 原文全量累积（终态据此还原全量过程事件，保证离线全文）
+      runningRawRef.current += e.data;
+      const projector = projectorRef.current;
+      if (projector) {
+        const text = projector.push(e.data);
+        if (text) {
+          setRunningText((prev) => prev + text);
+        }
+        if (sessionIdRef.current === null) {
+          sessionIdRef.current = projector.getSessionId();
+        }
+      } else {
+        // 无投影器（理论不出现）：原文即展示
+        setRunningText((prev) => prev + e.data);
+      }
       return;
     }
     if (e.type === 'task_updated' && isTerminalStatus(e.status)) {
@@ -125,6 +155,33 @@ export const SessionThread = ({
     }
   };
 
+  /** 终态成功后落一条“运行转录”消息（content 由调用方按 v2 组装，含全量过程与全文摘要） */
+  const appendRunMessage = async (content: string, taskId: string | null) => {
+    if (!session) return;
+    try {
+      const created = await appendMessage(wsId, session.id, {
+        role: 'agent',
+        content,
+        agent_id: session.agent_id,
+        task_id: taskId,
+      });
+      pushMessage(created);
+    } catch {
+      // 落库失败不阻塞 UI（转录丢失，输出仍可从任务记录查）
+    }
+  };
+
+  /** 会话线程内最近一条已完成的 agent run 转录中的 CLI 会话 ID（用于跨轮续接） */
+  const lastRunSessionId = (list: SessionMessage[]): string | undefined => {
+    for (let i = list.length - 1; i >= 0; i--) {
+      const m = list[i];
+      if (m.role !== 'agent') continue;
+      const run = parseRunMessage(m.content);
+      if (run?.sessionId) return run.sessionId;
+    }
+    return undefined;
+  };
+
   /** 执行任务并回填 agent 回复（user 消息按需先落库）。 */
   const runTask = async (text: string, persistUser: boolean) => {
     const agent = agentRef.current;
@@ -134,6 +191,10 @@ export const SessionThread = ({
     loadingRef.current = true;
     setLoading(true);
     setRunningText('');
+    runningRawRef.current = '';
+    projectorRef.current = createOutputProjector(agent.runtime);
+    runtimeRef.current = agent.runtime ?? null;
+    sessionIdRef.current = null;
 
     // 1) user 消息落库（首条由建会话时已落库，persistUser=false）
     if (persistUser) {
@@ -150,13 +211,15 @@ export const SessionThread = ({
       }
     }
 
-    // 2) 创建任务
+    // 2) 创建任务（会话线程内自动续接上一次 opencode 会话，实现多轮上下文）
     let taskId: string;
     try {
+      const resumeSessionId = lastRunSessionId(messages);
       const task = await createTask(wsId, {
         agent_id: agent.id,
         title: text.slice(0, 40),
         prompt: text,
+        ...(resumeSessionId ? { resume_session_id: resumeSessionId } : {}),
       });
       taskId = task.id;
     } catch (e) {
@@ -207,7 +270,32 @@ export const SessionThread = ({
     setLoading(false);
     try {
       if (finalTask.status === 'completed') {
-        await appendAgentReply(finalTask.output || '（任务执行完成，无输出）', finalTask.id);
+        // v2 转录：全量过程事件 + 全文摘要（不再按 600/40k 截断）
+        const runtime = runtimeRef.current;
+        const raw = runningRawRef.current;
+        const events: RunEvent[] =
+          runtime === 'OpenCode'
+            ? parseOpenCodeRunEvents(raw)
+            : raw.trim()
+              ? [{ k: 'text', d: stripAnsi(raw) }]
+              : [];
+        const finalText = projectorRef.current?.getFinalText() ?? '';
+        const summary =
+          finalText.trim() ||
+          events
+            .filter((ev): ev is Extract<RunEvent, { k: 'text' }> => ev.k === 'text')
+            .map((ev) => ev.d)
+            .join('\n')
+            .trim() ||
+          finalTask.output?.trim() ||
+          '（任务执行完成，无输出）';
+        const content = buildRunContentV2({
+          events,
+          summary,
+          answers: [],
+          sessionId: sessionIdRef.current ?? undefined,
+        });
+        await appendRunMessage(content, finalTask.id);
       } else if (finalTask.status === 'failed') {
         await appendAgentReply(`任务失败：${finalTask.error ?? '未知错误'}`, finalTask.id);
       } else {
@@ -216,6 +304,10 @@ export const SessionThread = ({
     } finally {
       // 正式消息已落库入列，移除实时预览（与 pushMessage 同批渲染，避免内容重复闪现）
       setRunningText('');
+      runningRawRef.current = '';
+      projectorRef.current = null;
+      runtimeRef.current = null;
+      sessionIdRef.current = null;
     }
   };
 
@@ -253,7 +345,13 @@ export const SessionThread = ({
       <div className="flex-1 overflow-auto">
         <div className="mx-auto flex max-w-2xl flex-col gap-5 px-4 py-6">
           {messages.map((msg) => (
-            <MessageBubble key={msg.id} message={msg} agent={sessionAgent} user={user} />
+            <MessageBubble
+              key={msg.id}
+              message={msg}
+              agent={sessionAgent}
+              user={user}
+              wsId={wsId}
+            />
           ))}
           {loading && (
             <div className="flex items-start gap-3">
@@ -265,8 +363,8 @@ export const SessionThread = ({
                     <span className="size-1.5 animate-pulse rounded-full bg-[#52c41a]" />
                     任务执行中…
                   </div>
-                  <pre className="m-0 max-h-72 overflow-auto p-3 font-mono text-xs leading-relaxed break-all whitespace-pre-wrap">
-                    {runningText || '等待输出…'}
+                  <pre className="m-0 max-h-80 overflow-auto p-3 font-mono text-xs leading-relaxed break-all whitespace-pre-wrap">
+                    {stripAnsi(runningText) || '等待输出…'}
                   </pre>
                 </div>
               </div>

@@ -12,6 +12,10 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@11.22.0 --activate
 
+# node-pty 无 linux-arm64 预编译产物时会回退 node-gyp 源码编译，
+# alpine 需 python3/make/g++ 工具链（构建期专用，不进运行时镜像）
+RUN apk add --no-cache python3 make g++ linux-headers
+
 # Copy workspace root files for dependency install
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/web/package.json apps/web/
