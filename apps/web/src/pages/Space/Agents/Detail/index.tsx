@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { App, Avatar, Input, InputNumber } from 'antd';
+import { App, Input, InputNumber } from 'antd';
 import { Button, Select, Menu, type MenuProps } from '@brierb/brier-ui';
 import {
   AppstoreOutlined,
@@ -9,21 +9,21 @@ import {
   ThunderboltOutlined,
   FileTextOutlined,
   FolderOutlined,
-  ArrowUpOutlined,
   DeleteOutlined,
   ToolOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Page, Table, Tag } from '@brierb/brier-ui';
 import { skills as allSkills } from '../../../../data/mockData';
-import { deleteAgent, listAgents, updateAgent } from '@/api/generated';
+import { createSession, deleteAgent, listAgents, updateAgent } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { useApi } from '@/hooks/useApi';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { AI_RUNTIMES, MODELS, SKILL_TYPE_MAP } from '../../../../define';
 import type { Agent, Skill } from '../../../../types';
-import { useAuth } from '@/context/AuthContext';
 import { StatusBadge } from '@/components/StatusBadge';
+import { SessionThread } from '../../Session/thread';
+import { InputBox } from '../../Session/shared';
 
 // Agent 运行时展示：优先真实绑定的 runtime；下拉选项为受支持注册表
 // （与 CLI RUNTIME_REGISTRY / 新建页兜底清单同源）。
@@ -103,12 +103,6 @@ const MOCK_CONVERSATIONS = [
   { id: 4, title: '编写单元测试覆盖率报告', messages: 6, lastActive: '昨天', status: '已完成' },
   { id: 5, title: '部署 v2.3 到预发环境', messages: 9, lastActive: '3 天前', status: '已完成' },
 ];
-
-interface ChatMessage {
-  id: number;
-  role: 'user' | 'agent';
-  content: string;
-}
 
 const PropertyRow = ({ label, children }: { label: string; children: React.ReactNode }) => {
   return (
@@ -323,136 +317,77 @@ const OverviewTab = ({
   );
 };
 
-const NewChatTab = ({ agent }: { agent: Agent }) => {
-  const { user } = useAuth();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+/** Agent 详情内"新会话"：与 /space/session 相同的会话线程逻辑，Agent 锁定为当前详情对象。
+ *  首条消息创建真实会话（后端落库）后进入线程；会话状态提升到 AgentDetailBody，
+ *  切换 tab 再回来不丢上下文，且历史已有回复时不会重复下发首条。 */
+const NewChatTab = ({
+  agent,
+  wsId,
+  chat,
+  onStart,
+}: {
+  agent: Agent;
+  wsId: string;
+  /** 进行中的会话（null = 未开始，展示"新会话"首屏） */
+  chat: { sessionId: string; bootPrompt: string } | null;
+  onStart: (c: { sessionId: string; bootPrompt: string }) => void;
+}) => {
+  const { message } = App.useApp();
   const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const endRef = useRef<HTMLDivElement>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading]);
-
-  const handleSend = () => {
+  // 首条发送：创建真实会话（后端落库首条 user 消息）→ 进入会话线程自动执行任务
+  const handleStart = async () => {
     const text = input.trim();
-    if (!text || loading) return;
-    setMessages((prev) => [...prev, { id: Date.now(), role: 'user', content: text }]);
-    setInput('');
-    setLoading(true);
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          role: 'agent',
-          content: `收到！我是${agent.name}，正在处理你的请求："${text.slice(0, 50)}${text.length > 50 ? '...' : ''}"\n\n这是一个模拟响应，实际接入 Agent 后将返回真实结果。`,
-        },
-      ]);
-      setLoading(false);
-    }, 1200);
+    if (!text || submitting) return;
+    setSubmitting(true);
+    try {
+      const session = await createSession(wsId, {
+        agent_id: agent.id,
+        first_message: text,
+      });
+      onStart({ sessionId: session.id, bootPrompt: text });
+    } catch (e) {
+      message.error(e instanceof Error ? e.message : '创建会话失败');
+      setSubmitting(false);
+    }
   };
 
-  return (
-    <div className="flex h-full flex-1 flex-col overflow-hidden">
-      {messages.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4">
+  if (!chat) {
+    return (
+      <div className="flex h-full flex-1 flex-col overflow-hidden">
+        <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6">
           <AgentAvatar agent={agent} size={48} />
-          <div className="text-lg font-bold">{agent.name}</div>
-          <p className="text-standard">{agent.description ?? ''}</p>
-        </div>
-      ) : (
-        <div className="flex-1 overflow-auto">
-          <div className="mx-auto flex max-w-2xl flex-col gap-5 px-4 py-6">
-            {messages.map((msg) =>
-              msg.role === 'user' ? (
-                <div key={msg.id} className="flex items-start justify-end gap-3">
-                  <div className="max-w-[75%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-white">
-                    <p className="text-standard leading-relaxed break-words whitespace-pre-wrap">
-                      {msg.content}
-                    </p>
-                  </div>
-                  {user?.avatar_url ? (
-                    <Avatar size={32} src={user.avatar_url} className="shrink-0 !rounded-[8px]" />
-                  ) : (
-                    <Avatar
-                      size={32}
-                      className="shrink-0 !rounded-[8px] !bg-[linear-gradient(135deg,#0a0a0a,#3a3a3a)]"
-                    >
-                      {user?.username?.slice(0, 2).toUpperCase() ?? 'U'}
-                    </Avatar>
-                  )}
-                </div>
-              ) : (
-                <div key={msg.id} className="flex items-start gap-3">
-                  <AgentAvatar agent={agent} size={32} />
-                  <div className="flex max-w-[75%] flex-col gap-1">
-                    <div className="text-[11px] font-medium">{agent.name}</div>
-                    <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-2.5">
-                      <p className="text-standard leading-relaxed break-words whitespace-pre-wrap">
-                        {msg.content}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ),
-            )}
-            {loading && (
-              <div className="flex items-start gap-3">
-                <AgentAvatar agent={agent} size={32} />
-                <div className="flex flex-col gap-1">
-                  <div className="text-[11px] font-medium">{agent.name}</div>
-                  <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-3">
-                    <div className="flex items-center gap-1">
-                      <span className="size-1.5 animate-bounce rounded-full [animation-delay:0ms]" />
-                      <span className="size-1.5 animate-bounce rounded-full [animation-delay:150ms]" />
-                      <span className="size-1.5 animate-bounce rounded-full [animation-delay:300ms]" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div ref={endRef} />
+          <div className="text-center">
+            <h2 className="text-lg font-bold">和 {agent.name} 开始新会话</h2>
+            <p className="mt-1 text-sm text-muted">
+              消息将下发到该 Agent 绑定的工作电脑执行，会话记录会保存在会话列表
+            </p>
           </div>
-        </div>
-      )}
-
-      <div className="shrink-0 border-t border-ghost px-4 pt-2 pb-4">
-        <div className="mx-auto max-w-2xl">
-          <div className="overflow-hidden rounded-2xl border border-ghost bg-white shadow-sm transition-colors focus-within:border-brand">
-            <Input.TextArea
+          <div className="w-full max-w-2xl">
+            <InputBox
+              agent={agent}
+              agents={[agent]}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              placeholder={`给 ${agent.name} 发送消息…`}
-              autoSize={{ minRows: 1, maxRows: 4 }}
-              variant="borderless"
-              className="!px-4 !py-3 !text-standard"
+              onChange={setInput}
+              onSend={() => void handleStart()}
+              loading={submitting}
+              onAgentSelect={() => {}}
             />
-            <div className="flex items-center justify-between px-2 pb-2">
-              <div className="flex items-center gap-1.5 rounded-lg px-2 py-1">
-                <AgentAvatar agent={agent} size={20} />
-                <span className="text-xs font-medium">{agent.name}</span>
-              </div>
-              <Button
-                type="primary"
-                shape="circle"
-                size="small"
-                icon={<ArrowUpOutlined />}
-                onClick={handleSend}
-                disabled={!input.trim() || loading}
-                className="shrink-0"
-              />
-            </div>
           </div>
         </div>
       </div>
-    </div>
+    );
+  }
+
+  // 会话已建立：与 /space/session/:id 相同逻辑（Agent 由会话绑定锁定，不可切换）
+  return (
+    <SessionThread
+      key={chat.sessionId}
+      wsId={wsId}
+      sessionId={chat.sessionId}
+      autoRun={{ prompt: chat.bootPrompt }}
+    />
   );
 };
 
@@ -632,10 +567,17 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
   const [visibility, setVisibility] = useState('');
   const [concurrency, setConcurrency] = useState(6);
   const [tick, setTick] = useState(0);
+  // Agent 详情内"新会话"：进行中的会话（提升到本层，切换 tab 不丢失；切 Agent 时重置）
+  const [newChat, setNewChat] = useState<{ sessionId: string; bootPrompt: string } | null>(null);
 
   const { data: agents } = useApi(() => listAgents(wsId), [wsId, tick]);
 
   const agent = (agents ?? []).find((a) => a.id === id);
+
+  // 切换到其它 Agent 时清空"新会话"上下文
+  useEffect(() => {
+    setNewChat(null);
+  }, [agent?.id]);
 
   // 展示/编辑态跟随 Agent 真实配置（数据到达后同步）
   useEffect(() => {
@@ -743,7 +685,9 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
             onSave={() => void handleSaveConfig()}
           />
         )}
-        {activeKey === 'new-chat' && <NewChatTab agent={agent} />}
+        {activeKey === 'new-chat' && (
+          <NewChatTab agent={agent} wsId={wsId} chat={newChat} onStart={(c) => setNewChat(c)} />
+        )}
         {activeKey === 'conversations' && <ConversationsTab />}
         {activeKey === 'skills' && <SkillsTab />}
         {activeKey === 'instructions' && <InstructionsTab />}
