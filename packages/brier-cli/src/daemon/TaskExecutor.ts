@@ -108,7 +108,9 @@ export const createTaskExecutor = (callbacks: TaskExecutorCallbacks): TaskExecut
       child = spawn(cmd, args, {
         cwd: task.cwd,
         env: childEnv,
-        stdio: ['pipe', 'pipe', 'pipe'],
+        // stdin 置 ignore：任务输入全部来自 prompt/command 参数，runtime 无交互输入。
+        // 若用 pipe 且不关闭，TUI 类 runtime（opencode 等）会因 stdin 永不 EOF 而挂起不执行。
+        stdio: ['ignore', 'pipe', 'pipe'],
       });
     } catch (err) {
       callbacks.onError(task.taskId, err instanceof Error ? err.message : String(err));
