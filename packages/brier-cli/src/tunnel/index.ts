@@ -95,8 +95,7 @@ export const createTunnelClient = (
 
   const getState = () => state;
 
-  const send = (message: ClientMessage): boolean =>
-    transport.send(JSON.stringify(message));
+  const send = (message: ClientMessage): boolean => transport.send(JSON.stringify(message));
 
   const sendHeartbeat = (): boolean => send({ type: 'heartbeat', timestamp: Date.now() });
 
