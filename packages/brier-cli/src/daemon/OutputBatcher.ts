@@ -76,7 +76,13 @@ export const createOutputBatcher = (options: OutputBatcherOptions): OutputBatche
       const entries = [...pending.entries()];
       for (const [key, entry] of entries) {
         if (pending.has(key)) {
-          flushEntry(key, entry);
+          try {
+            flushEntry(key, entry);
+          } catch (err) {
+            pending.delete(key);
+            // flush 回调抛错不应杀死进程（setInterval 回调中的异常成为 uncaughtException）
+            // 丢弃该缓冲项，其余继续
+          }
         }
       }
     }, flushIntervalMs);

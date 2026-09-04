@@ -117,7 +117,13 @@ export const createDaemonManager = (): DaemonManager => {
     }
 
     logger.info('Sending SIGTERM to PID:', data.pid);
-    process.kill(data.pid, 'SIGTERM');
+    try {
+      process.kill(data.pid, 'SIGTERM');
+    } catch {
+      removeDaemonState();
+      logger.warn('Process already exited, cleaning up');
+      return;
+    }
 
     const exited = await waitForProcessExit(data.pid, 5000);
     if (!exited) {

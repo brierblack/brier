@@ -30,16 +30,9 @@ const startDaemon = (config: DaemonConfig): DaemonContext => {
   // 先声明后赋值：safeSend 闭包在隧道启动后才被事件触发，此处为延迟引用
   let tunnel: TunnelClient | null = null;
 
-  /**
-   * 上报一条任务消息。
-   * send() 已不抛错，返回是否真正发出；未连接时返回 false，本帧按设计丢弃
-   * （断线窗口不上行、不做缓冲，属已知边界；连接恢复后的任务对账为后续增强）。
-   */
+  // send() 不抛异常（未连接/背压返回 false）；未发出的帧按设计丢弃（断线窗口不上行，属已知边界）
   const safeSend = (message: ClientMessage) => {
-    const sent = tunnel?.send(message) ?? false;
-    if (!sent) {
-      return;
-    }
+    tunnel?.send(message);
   };
 
   // task-output 走批量发送（高频小消息合并，见 OutputBatcher）；终态/控制消息仍即时上报
@@ -115,8 +108,11 @@ const startDaemon = (config: DaemonConfig): DaemonContext => {
 
 const shutdown = async (ctx: DaemonContext, signal: string) => {
   logger.info(`Received ${signal}, shutting down...`);
-  await ctx.stop();
-  process.exit(0);
+  try {
+    await ctx.stop();
+  } finally {
+    process.exit(0);
+  }
 };
 
 const main = () => {
@@ -159,6 +155,8 @@ const main = () => {
   process.on('uncaughtException', handleUncaughtError);
   process.on('unhandledRejection', (reason) => {
     logger.error('Unhandled rejection:', reason);
+    const cleanup = ctx ? ctx.stop() : Promise.resolve();
+    void cleanup.finally(() => process.exit(1));
   });
 
   ctx = startDaemon(config);
