@@ -7,8 +7,8 @@ import { Layout as SpaceLayout } from './pages/Space';
 
 const Login = lazy(() => import('./pages/Login'));
 const New = lazy(() => import('./pages/Space/New'));
-const Chat = lazy(() => import('./pages/Space/Chat'));
-const ChatDetail = lazy(() => import('./pages/Space/Chat/Detail'));
+const Session = lazy(() => import('./pages/Space/Session'));
+const SessionDetail = lazy(() => import('./pages/Space/Session/Detail'));
 const Agents = lazy(() => import('./pages/Space/Agents'));
 const AgentDetail = lazy(() => import('./pages/Space/Agents/Detail'));
 const NewAgent = lazy(() => import('./pages/Space/Agents/New'));
@@ -34,8 +34,8 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/space/new" element={<New />} />
               <Route path="/space" element={<SpaceLayout />}>
-                <Route path="/space/chat" element={<Chat />} />
-                <Route path="/space/chat/:id" element={<ChatDetail />} />
+                <Route path="/space/session" element={<Session />} />
+                <Route path="/space/session/:id" element={<SessionDetail />} />
                 <Route path="/space/agent-tasks" element={<AgentTasks />} />
                 <Route path="/space/agent-tasks/:id" element={<AgentTaskDetail />} />
                 <Route path="/space/agents" element={<Agents />} />
@@ -52,7 +52,7 @@ const App = () => {
                 <Route path="/space/settings" element={<Settings />} />
               </Route>
             </Route>
-            <Route path="*" element={<Navigate to="/space/chat" replace />} />
+            <Route path="*" element={<Navigate to="/space/session" replace />} />
           </Routes>
         </BrowserRouter>
       </ErrorBoundary>

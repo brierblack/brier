@@ -8,6 +8,7 @@ pub mod agent;
 pub mod agent_team;
 pub mod agent_task;
 pub mod task_event;
+pub mod session;
 pub mod relation;
 pub mod tunnel;
 
@@ -21,4 +22,5 @@ pub use agent::Agent;
 pub use agent_team::AgentTeam;
 pub use agent_task::AgentTask;
 pub use task_event::TaskEvent;
+pub use session::{Session, SessionMessage};
 pub use relation::{WorkspaceMember, AgentTeamMember};

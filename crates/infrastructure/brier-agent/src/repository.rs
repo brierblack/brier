@@ -1,6 +1,7 @@
 use brier_error::Result;
+use brier_type::enums::{AgentVisibility, PublicScope};
 use brier_type::id::*;
-use brier_type::{Agent, AgentTask, AgentTeam, WorkComputer};
+use brier_type::{Agent, AgentTask, AgentTeam, Session, SessionMessage, WorkComputer};
 use chrono::{DateTime, Utc};
 use sea_orm::sea_query::extension::postgres::PgExpr;
 use sea_orm::sea_query::Expr;
@@ -9,8 +10,23 @@ use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder, Set,
 };
 
-use crate::convert::DbErrExt;
-use crate::entity::{agent, agent_task, agent_team, user_connect_token, work_computer};
+use crate::convert::{enum_to_string, DbErrExt};
+use crate::entity::{
+    agent, agent_task, agent_team, session, session_message, user_connect_token, work_computer,
+};
+
+/// Agent 字段级更新请求（None = 保持不变；work_computer_id 传 Some 表示换绑）。
+pub struct AgentUpdate {
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub icon: Option<String>,
+    pub color: Option<String>,
+    pub runtime: Option<String>,
+    pub workdir: Option<String>,
+    pub visibility: Option<AgentVisibility>,
+    pub public_scope: Option<PublicScope>,
+    pub work_computer_id: Option<WorkComputerId>,
+}
 
 // ---- Agent ----
 
@@ -44,6 +60,48 @@ pub async fn update_agent(db: &DatabaseConnection, agent: Agent) -> Result<Agent
     let active: agent::ActiveModel = agent.into();
     let model = active.update(db).await.map_err(DbErrExt::to_brier)?;
     Agent::try_from(model)
+}
+
+/// 字段级更新（读改写）：None 字段保持不变；不存在返回 None。
+pub async fn update_agent_fields(
+    db: &DatabaseConnection,
+    agent_id: AgentId,
+    patch: AgentUpdate,
+    now: DateTime<Utc>,
+) -> Result<Option<Agent>> {
+    let Some(m) = agent::Entity::find_by_id(agent_id.0)
+        .one(db)
+        .await
+        .map_err(DbErrExt::to_brier)?
+    else {
+        return Ok(None);
+    };
+
+    let am = agent::ActiveModel {
+        id: Set(m.id),
+        workspace_id: Set(m.workspace_id),
+        creator_id: Set(m.creator_id),
+        work_computer_id: Set(patch.work_computer_id.map(|id| id.0).or(m.work_computer_id)),
+        name: Set(patch.name.unwrap_or(m.name)),
+        description: Set(patch.description.or(m.description)),
+        icon: Set(patch.icon.or(m.icon)),
+        color: Set(patch.color.or(m.color)),
+        status: Set(m.status),
+        visibility: Set(
+            patch
+                .visibility
+                .map(|v| enum_to_string(&v))
+                .unwrap_or(m.visibility),
+        ),
+        public_scope: Set(patch.public_scope.map(|s| enum_to_string(&s)).or(m.public_scope)),
+        runtime: Set(patch.runtime.or(m.runtime)),
+        workdir: Set(patch.workdir.or(m.workdir)),
+        last_active: Set(m.last_active),
+        created_at: Set(m.created_at),
+        updated_at: Set(now),
+    };
+    let model = am.update(db).await.map_err(DbErrExt::to_brier)?;
+    Ok(Some(Agent::try_from(model)?))
 }
 
 pub async fn delete_agent(db: &DatabaseConnection, agent_id: AgentId) -> Result<()> {
@@ -444,4 +502,74 @@ pub async fn touch_agent_activity(
     };
     active.update(db).await.map_err(DbErrExt::to_brier)?;
     Ok(())
+}
+
+// ---- Session / SessionMessage ----
+
+pub async fn list_sessions_by_workspace(
+    db: &DatabaseConnection,
+    workspace_id: WorkspaceId,
+) -> Result<Vec<Session>> {
+    let models = session::Entity::find()
+        .filter(session::Column::WorkspaceId.eq(workspace_id.0))
+        .order_by_desc(session::Column::UpdatedAt)
+        .all(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    models.into_iter().map(Session::try_from).collect()
+}
+
+pub async fn get_session(db: &DatabaseConnection, session_id: SessionId) -> Result<Option<Session>> {
+    let model = session::Entity::find_by_id(session_id.0)
+        .one(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    model.map(Session::try_from).transpose()
+}
+
+pub async fn create_session(db: &DatabaseConnection, s: Session) -> Result<Session> {
+    let active: session::ActiveModel = s.into();
+    let model = active.insert(db).await.map_err(DbErrExt::to_brier)?;
+    Session::try_from(model)
+}
+
+pub async fn delete_session(db: &DatabaseConnection, session_id: SessionId) -> Result<()> {
+    session::Entity::delete_by_id(session_id.0)
+        .exec(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    Ok(())
+}
+
+pub async fn list_messages_by_session(
+    db: &DatabaseConnection,
+    session_id: SessionId,
+) -> Result<Vec<SessionMessage>> {
+    let models = session_message::Entity::find()
+        .filter(session_message::Column::SessionId.eq(session_id.0))
+        .order_by_asc(session_message::Column::CreatedAt)
+        .all(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    models.into_iter().map(SessionMessage::try_from).collect()
+}
+
+/// 追加一条消息并刷新会话 updated_at（列表排序依据）。
+pub async fn append_session_message(
+    db: &DatabaseConnection,
+    msg: SessionMessage,
+    now: DateTime<Utc>,
+) -> Result<SessionMessage> {
+    let active: session_message::ActiveModel = msg.into();
+    let model = active.insert(db).await.map_err(DbErrExt::to_brier)?;
+    session::Entity::update_many()
+        .set(session::ActiveModel {
+            updated_at: Set(now),
+            ..Default::default()
+        })
+        .filter(session::Column::Id.eq(model.session_id))
+        .exec(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    SessionMessage::try_from(model)
 }

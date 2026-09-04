@@ -162,6 +162,68 @@ impl MigrationTrait for AgentTasksMigration {
     }
 }
 
+// ---------------------------------------------------------------------------
+// m0006: 会话（sessions + session_messages）
+// ---------------------------------------------------------------------------
+
+const AGENT_SESSIONS_SQL: &str = include_str!("../migrations/m0006_agent_sessions.sql");
+
+pub struct AgentSessionsMigration;
+
+impl MigrationName for AgentSessionsMigration {
+    fn name(&self) -> &str {
+        "agent_sessions"
+    }
+}
+
+#[async_trait]
+impl MigrationTrait for AgentSessionsMigration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared(AGENT_SESSIONS_SQL)
+            .await?;
+        Ok(())
+    }
+
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared("DROP TABLE IF EXISTS session_messages; DROP TABLE IF EXISTS sessions;")
+            .await?;
+        Ok(())
+    }
+}
+
+// ---------------------------------------------------------------------------
+// m0007: agents.workdir（任务工作目录）
+// ---------------------------------------------------------------------------
+
+const AGENT_WORKDIR_SQL: &str = include_str!("../migrations/m0007_agent_workdir.sql");
+
+pub struct AgentWorkdirMigration;
+
+impl MigrationName for AgentWorkdirMigration {
+    fn name(&self) -> &str {
+        "agent_workdir"
+    }
+}
+
+#[async_trait]
+impl MigrationTrait for AgentWorkdirMigration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared(AGENT_WORKDIR_SQL)
+            .await?;
+        Ok(())
+    }
+
+    async fn down(&self, _manager: &SchemaManager) -> Result<(), DbErr> {
+        Ok(())
+    }
+}
+
 pub struct Migrator;
 
 impl MigratorTrait for Migrator {
@@ -172,6 +234,8 @@ impl MigratorTrait for Migrator {
             Box::new(WorkComputerTunnelMigration),
             Box::new(WorkComputerVersionMigration),
             Box::new(AgentTasksMigration),
+            Box::new(AgentSessionsMigration),
+            Box::new(AgentWorkdirMigration),
         ]
     }
 }

@@ -167,7 +167,8 @@ pub(crate) async fn create_task(
     let task_id = created.id;
     let _ = brier_agent::repository::touch_agent_activity(&state.db, req.agent_id, now).await;
 
-    // 5. 经隧道下发；失败则置 failed
+    // 5. 经隧道下发；失败则置 failed（cwd 取 Agent 配置的工作目录）
+    let workdir = agent.workdir.clone();
     let started = state
         .tunnel_registry
         .send(
@@ -177,7 +178,7 @@ pub(crate) async fn create_task(
                 runtime: created.runtime.clone().unwrap_or_default(),
                 command: created.command.clone().unwrap_or_default(),
                 args: Vec::new(),
-                cwd: None,
+                cwd: workdir,
                 env: None,
                 prompt: created.prompt.clone(),
             },

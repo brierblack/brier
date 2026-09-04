@@ -2,8 +2,8 @@ import { Avatar, Input } from 'antd';
 import { Button, Dropdown } from '@brierb/brier-ui';
 import { ArrowUpOutlined, DownOutlined, CheckOutlined } from '@ant-design/icons';
 import { useAuth } from '@/context/AuthContext';
+import type { SessionMessage } from '@/api/generated';
 import type { Agent } from '../../../types';
-import type { ChatMessage } from '../../../data/conversations';
 
 export const AgentAvatar = ({ agent, size = 32 }: { agent: Agent; size?: number }) => {
   const color = agent.color ?? '#666666';
@@ -27,7 +27,7 @@ export const MessageBubble = ({
   agent,
   user,
 }: {
-  message: ChatMessage;
+  message: SessionMessage;
   agent: Agent;
   user: ReturnType<typeof useAuth>['user'];
 }) => {
@@ -173,9 +173,9 @@ export const InputBox = ({
   );
 };
 
-export const getAgent = (message: ChatMessage, fallback: Agent, agents: Agent[] = []): Agent => {
-  if (message.agentId) {
-    return agents.find((a) => String(a.id) === String(message.agentId)) ?? fallback;
+export const getAgent = (message: SessionMessage, fallback: Agent, agents: Agent[] = []): Agent => {
+  if (message.agent_id) {
+    return agents.find((a) => String(a.id) === String(message.agent_id)) ?? fallback;
   }
   return fallback;
 };

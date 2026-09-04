@@ -16,6 +16,7 @@ pub struct Model {
     pub visibility: String,
     pub public_scope: Option<String>,
     pub runtime: Option<String>,
+    pub workdir: Option<String>,
     pub last_active: Option<DateTimeUtc>,
     pub created_at: DateTimeUtc,
     pub updated_at: DateTimeUtc,

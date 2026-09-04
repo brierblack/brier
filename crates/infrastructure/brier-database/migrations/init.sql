@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS agents (
     visibility       TEXT NOT NULL CHECK (visibility IN ('private', 'public')),
     public_scope     TEXT CHECK (public_scope IN ('all', 'joined_spaces', 'specified_spaces')),
     runtime          TEXT,
+    workdir          TEXT,
     last_active      TIMESTAMPTZ,
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -143,6 +144,26 @@ CREATE TABLE IF NOT EXISTS agent_tasks (
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS sessions (
+    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    workspace_id UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+    creator_id   UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    agent_id     UUID NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
+    title        TEXT NOT NULL DEFAULT '新会话',
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS session_messages (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_id      UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+    role            TEXT NOT NULL CHECK (role IN ('user', 'agent')),
+    content         TEXT NOT NULL,
+    agent_id        UUID REFERENCES agents(id) ON DELETE SET NULL,
+    task_id         UUID REFERENCES agent_tasks(id) ON DELETE SET NULL,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE INDEX idx_workspaces_creator_id        ON workspaces(creator_id);
 CREATE INDEX idx_work_computers_user_id       ON work_computers(user_id);
 CREATE INDEX idx_agents_workspace_id          ON agents(workspace_id);
@@ -152,3 +173,10 @@ CREATE INDEX idx_agent_teams_workspace_id     ON agent_teams(workspace_id);
 CREATE INDEX idx_agent_teams_creator_id       ON agent_teams(creator_id);
 CREATE INDEX idx_agent_teams_primary_agent_id ON agent_teams(primary_agent_id);
 CREATE INDEX idx_user_identities_user_id      ON user_identities(user_id);
+CREATE INDEX idx_agent_tasks_workspace_id     ON agent_tasks(workspace_id);
+CREATE INDEX idx_agent_tasks_agent_id         ON agent_tasks(agent_id);
+CREATE INDEX idx_agent_tasks_creator_id       ON agent_tasks(creator_id);
+CREATE INDEX idx_agent_tasks_status           ON agent_tasks(status);
+CREATE INDEX idx_sessions_workspace_updated   ON sessions(workspace_id, updated_at DESC);
+CREATE INDEX idx_sessions_agent_id            ON sessions(agent_id);
+CREATE INDEX idx_session_messages_session     ON session_messages(session_id, created_at);

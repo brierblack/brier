@@ -6,13 +6,14 @@
 
 use brier_contract::repo::RepoInfo;
 use brier_type::{
-    id::{AgentId, AgentTeamId, TaskId, WorkComputerId, WorkspaceId},
-    Agent, AgentTask, AgentTeam, User, WorkComputer, Workspace,
+    id::{AgentId, AgentTeamId, SessionId, SessionMessageId, TaskId, WorkComputerId, WorkspaceId},
+    Agent, AgentTask, AgentTeam, MessageRole, Session, SessionMessage, User, WorkComputer, Workspace,
 };
 use utoipa::OpenApi;
 
-use crate::routes::agent::CreateAgentRequest;
+use crate::routes::agent::{CreateAgentRequest, UpdateAgentRequest};
 use crate::routes::agent_task::CreateTaskRequest;
+use crate::routes::session::{AppendMessageRequest, CreateSessionRequest};
 use crate::routes::team::CreateTeamRequest;
 use crate::routes::work_computer::{ConnectTokenResponse, CreateWorkComputerRequest};
 use crate::routes::workspace::CreateWorkspaceRequest;
@@ -37,6 +38,7 @@ use crate::routes::workspace::CreateWorkspaceRequest;
         crate::routes::agent::create_agent,
         crate::routes::agent::get_agent,
         crate::routes::agent::delete_agent,
+        crate::routes::agent::update_agent,
         crate::routes::agent_task::list_tasks,
         crate::routes::agent_task::create_task,
         crate::routes::agent_task::get_task,
@@ -50,12 +52,20 @@ use crate::routes::workspace::CreateWorkspaceRequest;
         crate::routes::work_computer::get_work_computer,
         crate::routes::work_computer::delete_work_computer,
         crate::routes::work_computer::list_computer_agents,
+        crate::routes::session::list_sessions,
+        crate::routes::session::create_session,
+        crate::routes::session::list_messages,
+        crate::routes::session::append_message,
+        crate::routes::session::delete_session,
     ),
     components(schemas(
         User, Workspace, RepoInfo, CreateWorkspaceRequest,
         Agent, AgentTask, AgentTeam, WorkComputer,
-        AgentId, AgentTeamId, TaskId, WorkComputerId, WorkspaceId,
-        CreateAgentRequest, CreateTaskRequest, CreateTeamRequest, CreateWorkComputerRequest,
+        Session, SessionMessage, MessageRole,
+        AgentId, AgentTeamId, TaskId, SessionId, SessionMessageId, WorkComputerId, WorkspaceId,
+        CreateAgentRequest, UpdateAgentRequest, CreateTaskRequest, CreateSessionRequest,
+        AppendMessageRequest,
+        CreateTeamRequest, CreateWorkComputerRequest,
         ConnectTokenResponse,
     ))
 )]

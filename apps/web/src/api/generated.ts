@@ -72,6 +72,11 @@ export interface Agent {
   updated_at: string;
   visibility: AgentVisibility;
   work_computer_id?: null | WorkComputerId;
+  /**
+     * Agent 任务执行的工作目录（daemon 在该目录 spawn runtime），空则继承 daemon 目录。
+     * @nullable
+     */
+  workdir?: string | null;
   workspace_id: WorkspaceId;
 }
 
@@ -183,6 +188,21 @@ export interface AgentTeam {
   workspace_id: WorkspaceId;
 }
 
+export type MessageRole = typeof MessageRole[keyof typeof MessageRole];
+
+
+export const MessageRole = {
+  user: 'user',
+  agent: 'agent',
+} as const;
+
+export interface AppendMessageRequest {
+  agent_id?: null | AgentId;
+  content: string;
+  role: MessageRole;
+  task_id?: null | TaskId;
+}
+
 /**
  * 接入令牌响应：原文只在生成时返回一次，服务端仅存哈希。
  */
@@ -204,6 +224,14 @@ export interface CreateAgentRequest {
   visibility?: null | AgentVisibility;
   /** @nullable */
   work_computer_id?: string | null;
+}
+
+export interface CreateSessionRequest {
+  agent_id: AgentId;
+  /** 首条用户消息（同时作为会话默认标题来源）。 */
+  first_message: string;
+  /** @nullable */
+  title?: string | null;
 }
 
 export interface CreateTaskRequest {
@@ -273,6 +301,67 @@ export interface RepoInfo {
   full_name: string;
   name: string;
   private: boolean;
+}
+
+/**
+ * 会话唯一标识
+ */
+export type SessionId = string;
+
+/**
+ * 会话：用户与 Agent 围绕任务的对话记录（对应一列消息）。
+ */
+export interface Session {
+  agent_id: AgentId;
+  created_at: string;
+  creator_id: UserId;
+  id: SessionId;
+  title: string;
+  updated_at: string;
+  workspace_id: WorkspaceId;
+}
+
+/**
+ * 会话消息唯一标识
+ */
+export type SessionMessageId = string;
+
+/**
+ * 会话消息：一条 user 指令或一条 agent 回复（可与任务关联）。
+ */
+export interface SessionMessage {
+  agent_id?: null | AgentId;
+  content: string;
+  created_at: string;
+  id: SessionMessageId;
+  role: MessageRole;
+  session_id: SessionId;
+  task_id?: null | TaskId;
+}
+
+/**
+ * Agent 字段级更新（缺省字段保持不变）。
+ */
+export interface UpdateAgentRequest {
+  /** @nullable */
+  color?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  icon?: string | null;
+  /** @nullable */
+  name?: string | null;
+  public_scope?: null | PublicScope;
+  /** @nullable */
+  runtime?: string | null;
+  visibility?: null | AgentVisibility;
+  /** @nullable */
+  work_computer_id?: string | null;
+  /**
+     * 任务执行工作目录（daemon 在该目录 spawn runtime）。
+     * @nullable
+     */
+  workdir?: string | null;
 }
 
 export type UserStatus = typeof UserStatus[keyof typeof UserStatus];
@@ -774,6 +863,161 @@ export const deleteAgent = async (workspaceId: WorkspaceId,
     method: 'DELETE'
 
 
+  }
+);}
+
+
+
+export const getUpdateAgentUrl = (workspaceId: WorkspaceId,
+    agentId: AgentId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/agents/${agentId}`
+}
+
+export const updateAgent = async (workspaceId: WorkspaceId,
+    agentId: AgentId,
+    updateAgentRequest: UpdateAgentRequest, options?: Parameters<typeof customFetch>[1]): Promise<Agent> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+return customFetch<Agent>(getUpdateAgentUrl(workspaceId,agentId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(updateAgentRequest)
+  }
+);}
+
+
+
+export const getListSessionsUrl = (workspaceId: WorkspaceId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/sessions`
+}
+
+export const listSessions = async (workspaceId: WorkspaceId, options?: Parameters<typeof customFetch>[1]): Promise<Session[]> => {
+
+  return customFetch<Session[]>(getListSessionsUrl(workspaceId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateSessionUrl = (workspaceId: WorkspaceId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/sessions`
+}
+
+export const createSession = async (workspaceId: WorkspaceId,
+    createSessionRequest: CreateSessionRequest, options?: Parameters<typeof customFetch>[1]): Promise<Session> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+return customFetch<Session>(getCreateSessionUrl(workspaceId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createSessionRequest)
+  }
+);}
+
+
+
+export const getDeleteSessionUrl = (workspaceId: WorkspaceId,
+    sessionId: SessionId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/sessions/${sessionId}`
+}
+
+export const deleteSession = async (workspaceId: WorkspaceId,
+    sessionId: SessionId, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteSessionUrl(workspaceId,sessionId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getListMessagesUrl = (workspaceId: WorkspaceId,
+    sessionId: SessionId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/sessions/${sessionId}/messages`
+}
+
+export const listMessages = async (workspaceId: WorkspaceId,
+    sessionId: SessionId, options?: Parameters<typeof customFetch>[1]): Promise<SessionMessage[]> => {
+
+  return customFetch<SessionMessage[]>(getListMessagesUrl(workspaceId,sessionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getAppendMessageUrl = (workspaceId: WorkspaceId,
+    sessionId: SessionId,) => {
+
+
+
+
+  return `/api/workspaces/${workspaceId}/sessions/${sessionId}/messages`
+}
+
+export const appendMessage = async (workspaceId: WorkspaceId,
+    sessionId: SessionId,
+    appendMessageRequest: AppendMessageRequest, options?: Parameters<typeof customFetch>[1]): Promise<SessionMessage> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+return customFetch<SessionMessage>(getAppendMessageUrl(workspaceId,sessionId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(appendMessageRequest)
   }
 );}
 

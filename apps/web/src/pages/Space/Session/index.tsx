@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
-import { listAgents } from '@/api/generated';
+import { createSession, listAgents } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { useApi } from '@/hooks/useApi';
 import type { Agent } from '../../../types';
@@ -14,11 +14,12 @@ const SUGGESTIONS = [
   { icon: '📄', text: '根据需求文档生成技术方案' },
 ];
 
-const NewChatBoard = ({ wsId }: { wsId: string }) => {
+const NewSessionBoard = ({ wsId }: { wsId: string }) => {
   const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
   const navigate = useNavigate();
   const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(undefined);
   const [input, setInput] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   // 数据到达后默认选中一个可执行任务的 Agent（已绑电脑 + runtime）
   useEffect(() => {
@@ -27,11 +28,26 @@ const NewChatBoard = ({ wsId }: { wsId: string }) => {
     }
   }, [agents, selectedAgent]);
 
-  const handleSend = () => {
+  // 首句发送：创建真实会话（后端落库首条消息）→ 进入会话详情自动执行任务
+  const handleSend = async () => {
     const text = input.trim();
-    if (!text) return;
-    // 新会话发送后进入对应历史会话（此处模拟创建会话 id = Date.now()）
-    navigate(`/space/chat/${Date.now()}`, { state: { firstMessage: text } });
+    const agent = selectedAgent;
+    if (!text || submitting || !agent) return;
+
+    setSubmitting(true);
+    try {
+      const session = await createSession(wsId, {
+        agent_id: agent.id,
+        first_message: text,
+      });
+      navigate(`/space/session/${session.id}`, {
+        state: { runAgentId: agent.id, runPrompt: text },
+      });
+    } catch (e) {
+      // 创建失败静默留在本页（右上角无反馈通道时由控制台可见）
+      setSubmitting(false);
+      throw e;
+    }
   };
 
   if (!selectedAgent) {
@@ -53,8 +69,8 @@ const NewChatBoard = ({ wsId }: { wsId: string }) => {
             agents={agents ?? []}
             value={input}
             onChange={setInput}
-            onSend={handleSend}
-            loading={false}
+            onSend={() => void handleSend()}
+            loading={submitting}
             onAgentSelect={setSelectedAgent}
           />
         </div>
@@ -75,7 +91,7 @@ const NewChatBoard = ({ wsId }: { wsId: string }) => {
   );
 };
 
-const NewChatContent = () => {
+const NewSessionContent = () => {
   const { currentWsId } = useWorkspace();
   if (!currentWsId) {
     return (
@@ -84,11 +100,11 @@ const NewChatContent = () => {
       </div>
     );
   }
-  return <NewChatBoard wsId={currentWsId} />;
+  return <NewSessionBoard wsId={currentWsId} />;
 };
 
-const NewChat = () => {
-  return <NewChatContent />;
+const NewSession = () => {
+  return <NewSessionContent />;
 };
 
-export default NewChat;
+export default NewSession;

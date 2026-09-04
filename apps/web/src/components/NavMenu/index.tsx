@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Avatar } from 'antd';
+import { App, Avatar } from 'antd';
 import { Button, Dropdown, Select, Menu, type MenuProps } from '@brierb/brier-ui';
 
 import {
@@ -17,14 +17,16 @@ import {
   LogoutOutlined,
   EllipsisOutlined,
   DeleteOutlined,
-  EditOutlined,
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_ITEMS } from '@/define';
 import { Logo, Wordmark } from '@/components/Logo';
 import { WorkSpace } from '../WorkSpace';
 import { useAuth } from '@/context/AuthContext';
-import { recentConversations, olderConversations } from '../../data/conversations';
+import { useWorkspace } from '@/context/WorkspaceContext';
+import { deleteSession, listSessions } from '@/api/generated';
+import type { Session } from '@/api/generated';
+import { useApi } from '@/hooks/useApi';
 
 const menuItems: MenuProps['items'] = [
   {
@@ -55,10 +57,40 @@ export const NavMenu = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, login, logout } = useAuth();
+  const { currentWsId } = useWorkspace();
+  const { message, modal } = App.useApp();
   const [recentExpanded, setRecentExpanded] = useState(true);
   const [olderExpanded, setOlderExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [, setShowShadow] = useState(false);
+
+  // 会话列表（当前空间；路由变化时回到列表可触发重取）
+  const [tick, setTick] = useState(0);
+  const { data: sessions } = useApi(
+    () => (currentWsId ? listSessions(currentWsId) : Promise.resolve([])),
+    [currentWsId, location.pathname, tick],
+  );
+
+  const handleDeleteSession = (s: Session) => {
+    if (!currentWsId) return;
+    modal.confirm({
+      title: `删除会话「${s.title}」`,
+      content: '删除后该会话及其消息将一并移除。',
+      okText: '删除',
+      okButtonProps: { danger: true },
+      cancelText: '取消',
+      onOk: async () => {
+        try {
+          await deleteSession(currentWsId, s.id);
+          message.success('已删除');
+          setTick((t) => t + 1);
+          if (location.pathname === `/space/session/${s.id}`) navigate('/space/session');
+        } catch (e) {
+          message.error(e instanceof Error ? e.message : '删除失败');
+        }
+      },
+    });
+  };
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -77,7 +109,7 @@ export const NavMenu = () => {
   }, [recentExpanded, olderExpanded]);
 
   const selectedKey =
-    location.pathname === '/space/chat' || location.pathname.startsWith('/space/chat/')
+    location.pathname === '/space/session' || location.pathname.startsWith('/space/session/')
       ? 'new-chat'
       : location.pathname.replace('/space/', '').split('/')[0];
 
@@ -135,22 +167,23 @@ export const NavMenu = () => {
     },
   ];
 
-  const recentItems: MenuProps['items'] = recentConversations.map((conv) => ({
-    key: `conv-${conv.id}`,
+  // 会话按最近 7 天 / 更早分组（以 updated_at 计）
+  const weekAgo = Date.now() - 7 * 24 * 3600 * 1000;
+  const sessionItems = (sessions ?? []).map((s) => ({
+    session: s,
+    recent: new Date(s.updated_at).getTime() >= weekAgo,
+  }));
+  const convItem = (s: Session) => ({
+    key: `conv-${s.id}`,
     icon: <MessageOutlined />,
-    label: conv.title,
+    label: s.title,
     className: 'flex group',
     extra: (
       <div className="opacity-0 group-hover:opacity-100">
         <Dropdown
           menu={{
-            items: [
-              { key: 'view', label: '重命名', icon: <EditOutlined /> },
-              { key: 'delete', label: '删除', icon: <DeleteOutlined /> },
-            ],
-            onClick: ({ key }) => {
-              if (key === 'view') navigate(`/space/chat/${conv.id}`);
-            },
+            items: [{ key: 'delete', label: '删除', icon: <DeleteOutlined /> }],
+            onClick: () => handleDeleteSession(s),
           }}
           trigger={['click']}
         >
@@ -164,13 +197,11 @@ export const NavMenu = () => {
         </Dropdown>
       </div>
     ),
-  }));
+  });
 
-  const olderItems: MenuProps['items'] = olderConversations.map((conv) => ({
-    key: `conv-${conv.id}`,
-    icon: <MessageOutlined />,
-    label: conv.title,
-  }));
+  const recentItems = sessionItems.filter((i) => i.recent).map((i) => convItem(i.session));
+  const olderItems = sessionItems.filter((i) => !i.recent).map((i) => convItem(i.session));
+  const hasSessions = (sessions?.length ?? 0) > 0;
 
   return (
     <div className="flex h-full flex-col pr-2">
@@ -190,7 +221,7 @@ export const NavMenu = () => {
           items={menuItems}
           onClick={(e) => {
             if (e.key === 'new-chat') {
-              navigate('/space/chat');
+              navigate('/space/session');
               return;
             }
             navigate(`/space/${e.key}`);
@@ -202,6 +233,9 @@ export const NavMenu = () => {
         ref={scrollRef}
         className="flex-1 scrollbar-none overflow-y-auto [mask-image:linear-gradient(to_top,transparent,black_25%)] px-1 [-webkit-mask-image:linear-gradient(to_top,transparent,black_25%)]"
       >
+        {!hasSessions && (
+          <div className="px-2 py-2 text-xs text-muted">暂无会话，点击上方「新会话」开始</div>
+        )}
         <div
           className="group flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-standard font-medium hover:bg-[#f5f5f5]"
           onClick={() => setRecentExpanded(!recentExpanded)}
@@ -220,7 +254,7 @@ export const NavMenu = () => {
             mode="vertical"
             selectedKeys={[]}
             items={recentItems}
-            onClick={({ key }) => navigate(`/space/chat/${key.replace('conv-', '')}`)}
+            onClick={({ key }) => navigate(`/space/session/${key.replace('conv-', '')}`)}
           />
         )}
 
@@ -242,7 +276,7 @@ export const NavMenu = () => {
             mode="vertical"
             selectedKeys={[]}
             items={olderItems}
-            onClick={({ key }) => navigate(`/space/chat/${key.replace('conv-', '')}`)}
+            onClick={({ key }) => navigate(`/space/session/${key.replace('conv-', '')}`)}
           />
         )}
       </div>

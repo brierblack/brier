@@ -36,3 +36,5 @@ define_id!(WorkComputerId, "工作电脑唯一标识");
 define_id!(AgentId, "Agent 唯一标识");
 define_id!(AgentTeamId, "Agent 团队唯一标识");
 define_id!(TaskId, "Agent 任务唯一标识");
+define_id!(SessionId, "会话唯一标识");
+define_id!(SessionMessageId, "会话消息唯一标识");

@@ -2,7 +2,10 @@ use brier_error::{BrierError, Result};
 use brier_type::id::*;
 use brier_type::*;
 
-use crate::entity::{agent, agent_task, agent_team, agent_team_member, work_computer};
+use crate::entity::{
+    agent, agent_task, agent_team, agent_team_member, session, session_message, user_connect_token,
+    work_computer,
+};
 
 pub trait DbErrExt {
     fn to_brier(self) -> BrierError;
@@ -14,12 +17,12 @@ impl DbErrExt for sea_orm::DbErr {
     }
 }
 
-fn parse_enum<T: serde::de::DeserializeOwned>(s: &str, label: &str) -> Result<T> {
+pub(crate) fn parse_enum<T: serde::de::DeserializeOwned>(s: &str, label: &str) -> Result<T> {
     serde_json::from_value(serde_json::Value::String(s.to_string()))
         .map_err(|e| BrierError::Validation(format!("invalid {}: {} ({})", label, s, e)))
 }
 
-fn enum_to_string<T: serde::Serialize>(value: &T) -> String {
+pub(crate) fn enum_to_string<T: serde::Serialize>(value: &T) -> String {
     serde_json::to_string(value)
         .unwrap_or_default()
         .trim_matches('"')
@@ -98,6 +101,7 @@ impl TryFrom<agent::Model> for Agent {
                 .map(|s| parse_enum(s, "PublicScope"))
                 .transpose()?,
             runtime: m.runtime,
+            workdir: m.workdir,
             last_active: m.last_active,
             created_at: m.created_at,
             updated_at: m.updated_at,
@@ -120,6 +124,7 @@ impl From<Agent> for agent::ActiveModel {
             visibility: sea_orm::Set(enum_to_string(&a.visibility)),
             public_scope: sea_orm::Set(a.public_scope.map(|s| enum_to_string(&s))),
             runtime: sea_orm::Set(a.runtime),
+            workdir: sea_orm::Set(a.workdir),
             last_active: sea_orm::Set(a.last_active),
             created_at: sea_orm::Set(a.created_at),
             updated_at: sea_orm::Set(a.updated_at),
@@ -183,6 +188,68 @@ impl From<AgentTeamMember> for agent_team_member::ActiveModel {
             team_id: sea_orm::Set(atm.team_id.0),
             agent_id: sea_orm::Set(atm.agent_id.0),
             created_at: sea_orm::Set(atm.created_at),
+        }
+    }
+}
+
+// --- Session / SessionMessage ---
+
+impl TryFrom<session::Model> for Session {
+    type Error = BrierError;
+
+    fn try_from(m: session::Model) -> Result<Self> {
+        Ok(Self {
+            id: SessionId(m.id),
+            workspace_id: WorkspaceId(m.workspace_id),
+            creator_id: UserId(m.creator_id),
+            agent_id: AgentId(m.agent_id),
+            title: m.title,
+            created_at: m.created_at,
+            updated_at: m.updated_at,
+        })
+    }
+}
+
+impl From<Session> for session::ActiveModel {
+    fn from(s: Session) -> Self {
+        Self {
+            id: sea_orm::Set(s.id.0),
+            workspace_id: sea_orm::Set(s.workspace_id.0),
+            creator_id: sea_orm::Set(s.creator_id.0),
+            agent_id: sea_orm::Set(s.agent_id.0),
+            title: sea_orm::Set(s.title),
+            created_at: sea_orm::Set(s.created_at),
+            updated_at: sea_orm::Set(s.updated_at),
+        }
+    }
+}
+
+impl TryFrom<session_message::Model> for SessionMessage {
+    type Error = BrierError;
+
+    fn try_from(m: session_message::Model) -> Result<Self> {
+        Ok(Self {
+            id: SessionMessageId(m.id),
+            session_id: SessionId(m.session_id),
+            role: parse_enum(&m.role, "MessageRole")?,
+            content: m.content,
+            agent_id: m.agent_id.map(AgentId),
+            task_id: m.task_id.map(TaskId),
+            created_at: m.created_at,
+        })
+    }
+}
+
+impl From<SessionMessage> for session_message::ActiveModel {
+    fn from(m: SessionMessage) -> Self {
+        Self {
+            id: sea_orm::Set(m.id.0),
+            session_id: sea_orm::Set(m.session_id.0),
+            role: sea_orm::Set(enum_to_string(&m.role)),
+            content: sea_orm::Set(m.content),
+            agent_id: sea_orm::Set(m.agent_id.map(|id| id.0)),
+            task_id: sea_orm::Set(m.task_id.map(|id| id.0)),
+            created_at: sea_orm::Set(m.created_at),
         }
     }
 }

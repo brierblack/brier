@@ -18,6 +18,8 @@ pub struct Agent {
     pub visibility: AgentVisibility,
     pub public_scope: Option<PublicScope>,
     pub runtime: Option<String>,
+    /// Agent 任务执行的工作目录（daemon 在该目录 spawn runtime），空则继承 daemon 目录。
+    pub workdir: Option<String>,
     pub last_active: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,

@@ -2,10 +2,10 @@ pub(crate) mod agent;
 pub(crate) mod agent_task;
 pub(crate) mod auth;
 pub(crate) mod forge;
+pub(crate) mod session;
 pub(crate) mod team;
 pub(crate) mod work_computer;
 pub(crate) mod workspace;
-
 use axum::extract::ws::WebSocketUpgrade;
 use axum::extract::State;
 use axum::http::HeaderMap;
@@ -26,6 +26,7 @@ pub fn router() -> Router<AppState> {
         .nest("/api/workspaces", workspace::router())
         .merge(agent::router())
         .merge(agent_task::router())
+        .merge(session::router())
         .merge(team::router())
         .merge(work_computer::router())
         .route("/api/{provider}/repos", get(forge::list_repos))

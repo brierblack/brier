@@ -16,7 +16,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { Page, Table, Tag } from '@brierb/brier-ui';
 import { skills as allSkills } from '../../../../data/mockData';
-import { deleteAgent, listAgents } from '@/api/generated';
+import { deleteAgent, listAgents, updateAgent } from '@/api/generated';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { useApi } from '@/hooks/useApi';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
@@ -34,6 +34,28 @@ const VISIBILITY_OPTIONS = [
   { value: 'public-joined', label: '公开 · 我加入的所有空间' },
   { value: 'public-specified', label: '公开 · 指定空间' },
 ];
+
+/** 前端可见性选项值 → 后端 (visibility, public_scope) */
+const visibilityToBackend = (v: string) => {
+  switch (v) {
+    case 'private':
+      return { visibility: 'private' as const };
+    case 'public-joined':
+      return { visibility: 'public' as const, public_scope: 'joined_spaces' as const };
+    case 'public-specified':
+      return { visibility: 'public' as const, public_scope: 'specified_spaces' as const };
+    default:
+      return { visibility: 'public' as const, public_scope: 'all' as const };
+  }
+};
+
+/** 后端 Agent → 前端可见性选项值 */
+const agentToVisibility = (a: Agent): string => {
+  if (a.visibility === 'private') return 'private';
+  if (a.public_scope === 'joined_spaces') return 'public-joined';
+  if (a.public_scope === 'specified_spaces') return 'public-specified';
+  return 'public-all';
+};
 
 const SPARKLINE_DATA = [
   0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -149,6 +171,7 @@ const OverviewTab = ({
   concurrency,
   setConcurrency,
   onDelete,
+  onSave,
 }: {
   agent: Agent;
   runtime: string;
@@ -160,6 +183,7 @@ const OverviewTab = ({
   concurrency: number;
   setConcurrency: (v: number) => void;
   onDelete: () => void;
+  onSave: () => void;
 }) => {
   return (
     <div className="flex min-w-0 flex-1 gap-8 overflow-hidden px-4 py-3">
@@ -239,6 +263,15 @@ const OverviewTab = ({
           <div className="mb-2 text-standard font-bold">操作</div>
           <div>
             <div className="flex items-center justify-between gap-2 border-b border-ghost pb-2">
+              <div className="flex-1">
+                <div className="text-standard font-medium">保存配置</div>
+                <p className="mt-1 text-xs">保存上方修改的运行时与可见性设置</p>
+              </div>
+              <Button type="primary" size="small" onClick={onSave}>
+                保存
+              </Button>
+            </div>
+            <div className="flex items-center justify-between gap-2 border-b border-ghost py-2">
               <div className="flex-1">
                 <div className="text-standard font-medium">默认 Agent</div>
                 <p className="mt-1 text-xs">设为你的"主力" Agent — 接受指派时的默认人选</p>
@@ -544,8 +577,29 @@ const InstructionsTab = () => {
   );
 };
 
-const WorkDirTab = () => {
+const WorkDirTab = ({
+  agent,
+  onSave,
+}: {
+  agent: Agent;
+  onSave: (workdir: string) => Promise<void>;
+}) => {
   const [path, setPath] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  // 跟随 Agent 真实工作目录
+  useEffect(() => {
+    setPath(agent.workdir ?? '');
+  }, [agent.workdir]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onSave(path.trim());
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="flex-1 overflow-auto p-6">
@@ -559,7 +613,9 @@ const WorkDirTab = () => {
           className="font-mono"
         />
         <div className="mt-4">
-          <Button type="primary">保存</Button>
+          <Button type="primary" loading={saving} onClick={handleSave}>
+            保存
+          </Button>
         </div>
       </div>
     </div>
@@ -573,17 +629,48 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
   const [activeKey, setActiveKey] = useState('overview');
   const [runtime, setRuntime] = useState<string | undefined>(undefined);
   const [model, setModel] = useState(MODELS[0]);
-  const [visibility, setVisibility] = useState(VISIBILITY_OPTIONS[1].value);
+  const [visibility, setVisibility] = useState('');
   const [concurrency, setConcurrency] = useState(6);
+  const [tick, setTick] = useState(0);
 
-  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
+  const { data: agents } = useApi(() => listAgents(wsId), [wsId, tick]);
 
   const agent = (agents ?? []).find((a) => a.id === id);
 
-  // 展示/编辑态跟随 Agent 真实 runtime（数据到达后同步一次）
+  // 展示/编辑态跟随 Agent 真实配置（数据到达后同步）
   useEffect(() => {
-    if (agent?.runtime) setRuntime(agent.runtime);
-  }, [agent?.id, agent?.runtime]);
+    if (!agent) return;
+    if (agent.runtime) setRuntime(agent.runtime);
+    setVisibility(agentToVisibility(agent));
+  }, [agent?.id, agent?.runtime, agent?.visibility, agent?.public_scope]);
+
+  /** 保存概览属性（runtime + 可见性） */
+  const handleSaveConfig = async () => {
+    if (!agent) return;
+    try {
+      await updateAgent(wsId, agent.id, {
+        runtime: runtime || null,
+        ...visibilityToBackend(visibility),
+      });
+      message.success('已保存');
+      setTick((t) => t + 1);
+    } catch (e) {
+      message.error(e instanceof Error ? e.message : '保存失败');
+    }
+  };
+
+  /** 保存工作目录 */
+  const handleSaveWorkdir = async (workdir: string) => {
+    if (!agent) return;
+    try {
+      await updateAgent(wsId, agent.id, { workdir });
+      message.success('工作目录已保存');
+      setTick((t) => t + 1);
+    } catch (e) {
+      message.error(e instanceof Error ? e.message : '保存失败');
+      throw e;
+    }
+  };
 
   /** 删除 Agent：确认后调 DELETE，成功后返回列表 */
   const handleDelete = () => {
@@ -653,13 +740,14 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
             concurrency={concurrency}
             setConcurrency={setConcurrency}
             onDelete={handleDelete}
+            onSave={() => void handleSaveConfig()}
           />
         )}
         {activeKey === 'new-chat' && <NewChatTab agent={agent} />}
         {activeKey === 'conversations' && <ConversationsTab />}
         {activeKey === 'skills' && <SkillsTab />}
         {activeKey === 'instructions' && <InstructionsTab />}
-        {activeKey === 'workdir' && <WorkDirTab />}
+        {activeKey === 'workdir' && <WorkDirTab agent={agent} onSave={handleSaveWorkdir} />}
       </div>
     </Page>
   );
