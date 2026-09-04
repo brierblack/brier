@@ -6,9 +6,13 @@ import { WebSocket } from 'ws';
  * 职责边界：
  * - connect() 每次调用会先清理上一个连接（移除监听 + terminate），再建立新连接；
  * - 事件（open/message/close/error）通过 on() 订阅，订阅一次后跨多次重连保持有效；
- * - 协议层 ping 自动回 pong，调用方无需感知。
- * - send() 在未连接时抛错（与旧实现语义一致），是否吞掉由上层决策。
+ * - 协议层 ping 自动回 pong，调用方无需感知；
+ * - send() 返回是否已入队：未连接或发送缓冲积压超限（背压）时返回 false，
+ *   由上层决定丢弃或重试，本模块不抛错。
  */
+
+/** 发送缓冲上限（字节）：超过该值 send() 返回 false 触发背压，防止慢网时内存无上限增长 */
+const MAX_BUFFERED_AMOUNT_BYTES = 4 * 1024 * 1024;
 
 export interface TransportEventMap {
   /** 连接建立（TCP+TLS+WS 握手完成） */
@@ -24,14 +28,16 @@ export interface TransportEventMap {
 export interface Transport {
   /** 建立到 url 的连接（携带自定义请求头）；会清理上一次连接 */
   connect(url: string, headers: Record<string, string>): void;
-  /** 发送文本帧；未连接时抛 'Tunnel is not connected' */
-  send(data: string): void;
+  /** 发送文本帧；返回是否已入队（未连接或缓冲积压超限时为 false，不抛错） */
+  send(data: string): boolean;
   /** 优雅关闭（仅当连接处于打开/连接中） */
   close(code: number, reason: string): void;
   /** 强制终止底层连接（不触发事件） */
   terminate(): void;
   isOpen(): boolean;
   isConnecting(): boolean;
+  /** 连接是否已完全关闭（不存在或 CLOSED）：close 事件不会再触发 */
+  isClosed(): boolean;
   /** 等待下一次 close 事件，超时 resolve（用于 stop 的优雅关闭兜底） */
   waitClosed(timeoutMs: number): Promise<void>;
   /** 订阅事件，返回取消订阅函数 */
@@ -85,9 +91,17 @@ export const createWebSocketTransport = (): Transport => {
 
     send(data) {
       if (ws === null || ws.readyState !== WebSocket.OPEN) {
-        throw new Error('Tunnel is not connected');
+        return false;
       }
-      ws.send(data);
+      if (ws.bufferedAmount > MAX_BUFFERED_AMOUNT_BYTES) {
+        return false;
+      }
+      try {
+        ws.send(data);
+        return true;
+      } catch {
+        return false;
+      }
     },
 
     close(code, reason) {
@@ -106,6 +120,10 @@ export const createWebSocketTransport = (): Transport => {
 
     isConnecting() {
       return readyState() === WebSocket.CONNECTING;
+    },
+
+    isClosed() {
+      return ws === null || ws.readyState === WebSocket.CLOSED;
     },
 
     waitClosed(timeoutMs) {

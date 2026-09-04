@@ -14,6 +14,8 @@ import { createWebSocketTransport } from './transport.js';
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
 const HEARTBEAT_TIMEOUT_MS = 10_000;
+/** auth 消息发出后等待 auth-ok/auth-failed 的最长时间，超时视为握手失败并重连 */
+const AUTH_HANDSHAKE_TIMEOUT_MS = 10_000;
 const BASE_RECONNECT_DELAY_MS = 1_000;
 const MAX_RECONNECT_DELAY_MS = 30_000;
 const MAX_RECONNECT_ATTEMPTS = 50;
@@ -68,6 +70,13 @@ export const createTunnelClient = (
   let state: TunnelState = 'disconnected';
   let running = false;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  /** auth 握手超时计时器（open 后启动，auth-ok/auth-failed/close 时清除） */
+  let handshakeTimer: ReturnType<typeof setTimeout> | null = null;
+  /**
+   * 本次运行是否以“错误”终止（auth 失败 / 重连耗尽）。
+   * 区分于 stop() 的正常停止：保证随后的 close 事件不把 error 覆盖成 disconnected。
+   */
+  let exitAsError = false;
   const listeners = new Set<(state: TunnelState) => void>();
 
   const notifyStateChange = (newState: TunnelState) => {
@@ -86,20 +95,29 @@ export const createTunnelClient = (
 
   const getState = () => state;
 
-  /**
-   * 发送一条上行消息。
-   * 同一事件循环内先判状态再发送，无异步间隙，因此不会抛出“未连接”异常；
-   * 未连接时直接返回 false，由调用方显式决定（丢弃或缓冲）。
-   */
-  const send = (message: ClientMessage): boolean => {
-    if (!transport.isOpen()) {
-      return false;
-    }
+  const send = (message: ClientMessage): boolean =>
     transport.send(JSON.stringify(message));
-    return true;
-  };
 
   const sendHeartbeat = (): boolean => send({ type: 'heartbeat', timestamp: Date.now() });
+
+  const clearHandshakeTimer = () => {
+    if (handshakeTimer) {
+      clearTimeout(handshakeTimer);
+      handshakeTimer = null;
+    }
+  };
+
+  /**
+   * 启动握手超时：若服务端不回 auth-ok/auth-failed，10s 后主动断开走重连，
+   * 避免永久停留在 connecting（此时心跳尚未启动，无其他自愈路径）。
+   */
+  const armHandshakeTimeout = () => {
+    clearHandshakeTimer();
+    handshakeTimer = setTimeout(() => {
+      logger.warn('Auth handshake timed out, reconnecting');
+      transport.close(4000, 'auth timeout');
+    }, AUTH_HANDSHAKE_TIMEOUT_MS);
+  };
 
   const heartbeat = createHeartbeat({
     intervalMs: HEARTBEAT_INTERVAL_MS,
@@ -108,6 +126,9 @@ export const createTunnelClient = (
     onTimeout: () => {
       logger.warn('Heartbeat timeout, forcing reconnect');
       transport.close(4000, 'heartbeat timeout');
+    },
+    onBeatError: (error) => {
+      logger.error('Heartbeat send failed:', error);
     },
   });
 
@@ -127,8 +148,9 @@ export const createTunnelClient = (
     const delay = backoff.next();
     if (delay < 0) {
       logger.error('Max reconnect attempts reached, stopping');
-      notifyStateChange('error');
+      exitAsError = true;
       running = false;
+      notifyStateChange('error');
       return;
     }
 
@@ -146,15 +168,18 @@ export const createTunnelClient = (
 
   const dispatchHandlers: ServerMessageHandlers = {
     onAuthOk: (computerId) => {
+      clearHandshakeTimer();
       logger.info('Tunnel authenticated, computerId:', computerId);
       backoff.reset();
       notifyStateChange('connected');
       heartbeat.start();
     },
     onAuthFailed: (reason) => {
+      clearHandshakeTimer();
       logger.error('Authentication failed:', reason);
-      notifyStateChange('error');
+      exitAsError = true;
       running = false;
+      notifyStateChange('error');
     },
     onHeartbeatAck: () => {
       heartbeat.ack();
@@ -183,16 +208,19 @@ export const createTunnelClient = (
       runtimes: config.runtimes,
       version: config.version,
     });
+    armHandshakeTimeout();
   });
   transport.on('message', (data) => dispatchServerMessage(data, dispatchHandlers));
   transport.on('close', (code, reason) => {
     const reasonStr = reason || `code ${code}`;
     logger.warn(`WebSocket closed: ${reasonStr}`);
+    clearHandshakeTimer();
     heartbeat.stop();
     if (running) {
       scheduleReconnect();
     } else {
-      notifyStateChange('disconnected');
+      // 失败停机（auth 失败/重连耗尽）保持 error，正常 stop 才是 disconnected
+      notifyStateChange(exitAsError ? 'error' : 'disconnected');
     }
   });
   transport.on('error', (err) => {
@@ -205,6 +233,7 @@ export const createTunnelClient = (
       return;
     }
     running = true;
+    exitAsError = false;
     backoff.reset();
     connect();
   };
@@ -212,10 +241,19 @@ export const createTunnelClient = (
   const stop = async () => {
     running = false;
     heartbeat.stop();
+    clearHandshakeTimer();
     // 取消运行中任务由宿主（DaemonRunner）在自身 shutdown 里处理，隧道只负责关闭连接
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
       reconnectTimer = null;
+    }
+
+    // 连接已完全关闭（从未连接/已断开/已 teardown）：close 事件不会再触发，
+    // 直接返回，避免空等 waitClosed 的 3s 兜底超时。
+    if (transport.isClosed()) {
+      notifyStateChange('disconnected');
+      logger.info('Tunnel stopped');
+      return;
     }
 
     transport.close(1000, 'client shutdown');

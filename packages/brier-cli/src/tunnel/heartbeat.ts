@@ -20,6 +20,11 @@ export interface HeartbeatOptions {
   onBeat: () => boolean;
   /** ack 超时（对端无响应）回调，由上层决定如何处置 */
   onTimeout: () => void;
+  /**
+   * onBeat 抛错时的回调（可选）。setInterval 回调中的异常会作为
+   * uncaughtException 直接杀死进程，因此 beat() 内部必须吞掉。
+   */
+  onBeatError?: (error: unknown) => void;
 }
 
 export interface Heartbeat {
@@ -59,8 +64,12 @@ export const createHeartbeat = (options: HeartbeatOptions): Heartbeat => {
   };
 
   const beat = () => {
-    if (options.onBeat()) {
-      armTimeout();
+    try {
+      if (options.onBeat()) {
+        armTimeout();
+      }
+    } catch (error) {
+      options.onBeatError?.(error);
     }
   };
 

@@ -11,6 +11,12 @@ export interface BackoffOptions {
   maxMs: number;
   /** 最大重连尝试次数，达到后放弃 */
   maxAttempts: number;
+  /**
+   * 是否启用 full jitter：在 [0, 计算延迟] 内取随机值，
+   * 避免大量客户端同时断线后以完全相同的节奏重连（重连风暴）。
+   * 默认开启。
+   */
+  jitter?: boolean;
 }
 
 export interface Backoff {
@@ -27,6 +33,7 @@ export interface Backoff {
 
 export const createBackoff = (options: BackoffOptions): Backoff => {
   let attempts = 0;
+  const useJitter = options.jitter ?? true;
 
   return {
     next() {
@@ -34,7 +41,9 @@ export const createBackoff = (options: BackoffOptions): Backoff => {
         return -1;
       }
       attempts += 1;
-      return Math.min(options.baseMs * Math.pow(2, attempts - 1), options.maxMs);
+      const delay = Math.min(options.baseMs * Math.pow(2, attempts - 1), options.maxMs);
+      // full jitter：与指数退避正交，仅打散“同一时刻重连”的相位
+      return useJitter ? Math.floor(Math.random() * (delay + 1)) : delay;
     },
     get attempts() {
       return attempts;
