@@ -4,6 +4,7 @@ packages:
 
 allowBuilds:
   esbuild: true
+  node-pty: true
 
 minimumReleaseAgeExclude:
   - '@rolldown/binding-darwin-x64@1.2.5'

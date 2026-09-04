@@ -1,3 +1,5 @@
+import type { ExecMode } from './tunnel.js';
+
 /**
  * 本地任务执行上下文。
  *
@@ -22,4 +24,6 @@ export interface TaskInfo {
   env?: Record<string, string>;
   /** 自然语言指令（可选）：存在时按 RUNTIME_PROMPT_FLAGS 拼到命令参数中执行 */
   prompt?: string;
+  /** 执行形态（可选）：缺省 pipe（非交互，向后兼容）；pty 为伪终端交互（支持 task-input） */
+  execMode?: ExecMode;
 }

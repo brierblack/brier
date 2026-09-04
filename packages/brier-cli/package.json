@@ -1,6 +1,6 @@
 {
   "name": "@brierb/brier-cli",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Brier 平台接入命令行工具：通过加密隧道将本机接入 Brier 远程编码池，接收并执行远程任务",
   "keywords": [
     "brier",
@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "commander": "^12.1.0",
+    "node-pty": "^1.1.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {

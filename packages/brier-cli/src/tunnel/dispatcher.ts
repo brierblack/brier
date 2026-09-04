@@ -20,6 +20,8 @@ export interface ServerMessageHandlers {
   onTaskStart: (message: Extract<ServerMessage, { type: 'task-start' }>) => void;
   /** 任务取消 */
   onTaskCancel: (taskId: string) => void;
+  /** 向运行中任务写入输入（回答 AI 提问 / pty 击键） */
+  onTaskInput: (message: Extract<ServerMessage, { type: 'task-input' }>) => void;
   /** 服务端查询本机 runtime 清单 */
   onQueryRuntimes: () => void;
 }
@@ -49,6 +51,9 @@ export const dispatchServerMessage = (raw: string, handlers: ServerMessageHandle
       break;
     case 'task-cancel':
       handlers.onTaskCancel(message.taskId);
+      break;
+    case 'task-input':
+      handlers.onTaskInput(message);
       break;
     case 'query-runtimes':
       handlers.onQueryRuntimes();

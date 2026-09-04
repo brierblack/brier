@@ -19,6 +19,13 @@
 export type StreamType = 'stdout' | 'stderr';
 
 /**
+ * 子进程执行形态（随 task-start 下发，两端同步）：
+ * - pipe：非交互，stdout/stderr 管道直传（默认，向后兼容旧行为）
+ * - pty：伪终端交互，可接收 task-input 写入（AI 提问等场景）
+ */
+export type ExecMode = 'pipe' | 'pty';
+
+/**
  * 隧道线协议消息（daemon ⇄ Brier 服务端，WebSocket JSON 文本帧）。
  *
  * 使用可辨识联合：以 `type` 字段区分消息，type 值为 kebab-case（如 task-output / auth-ok），
@@ -61,6 +68,7 @@ export type ClientMessage =
  * - heartbeat-ack：心跳回执（echo 客户端发送的 timestamp）
  * - task-start：下发任务执行；prompt 模式由 CLI 按 runtime 拼参数，command 模式直接执行
  * - task-cancel：请求终止正在执行的子进程（SIGTERM）
+ * - task-input：向运行中任务写入输入（pty 模式 = 模拟键盘击键；pipe 模式写入 stdin）
  * - query-runtimes：查询本机 runtime 清单（当前服务端不会主动发送，属预留；CLI 保留处理以兼容旧服务端）
  */
 export type ServerMessage =
@@ -81,8 +89,11 @@ export type ServerMessage =
       env?: Record<string, string>;
       /** 自然语言指令（可选）：存在时按 RUNTIME_PROMPT_FLAGS 拼入执行参数 */
       prompt?: string;
+      /** 执行形态（可选）：缺省 pipe（向后兼容旧服务端） */
+      execMode?: ExecMode;
     }
   | { type: 'task-cancel'; taskId: string }
+  | { type: 'task-input'; taskId: string; data: string }
   | { type: 'query-runtimes' };
 
 /**

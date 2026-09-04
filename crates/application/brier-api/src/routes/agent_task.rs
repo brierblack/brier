@@ -8,7 +8,7 @@ use serde::Deserialize;
 use brier_error::BrierError;
 use brier_type::enums::{TaskPriority, TaskSource, TaskStatus};
 use brier_type::id::{AgentId, TaskId, WorkspaceId};
-use brier_type::tunnel::ServerMessage;
+use brier_type::tunnel::{ExecMode, ServerMessage};
 use brier_type::AgentTask;
 use brier_tunnel::publish_task_event;
 use crate::error::ApiError;
@@ -24,6 +24,15 @@ pub struct CreateTaskRequest {
     /// 显式 shell 命令（高级用法，绕过 runtime；prompt 与 command 至少其一）。
     pub command: Option<String>,
     pub priority: Option<TaskPriority>,
+    /// 执行形态：pty（交互，可回答提问）/ pipe（非交互，默认）。
+    #[schema(value_type = Option<String>, example = "pty")]
+    pub exec_mode: Option<ExecMode>,
+}
+
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct InputTaskRequest {
+    /// 写入任务进程的输入内容（pty = 击键文本，可含换行/控制字符）。
+    pub data: String,
 }
 
 pub fn router() -> Router<AppState> {
@@ -39,6 +48,10 @@ pub fn router() -> Router<AppState> {
         .route(
             "/api/workspaces/{workspace_id}/tasks/{task_id}/cancel",
             post(cancel_task),
+        )
+        .route(
+            "/api/workspaces/{workspace_id}/tasks/{task_id}/input",
+            post(input_task),
         )
 }
 
@@ -181,6 +194,7 @@ pub(crate) async fn create_task(
                 cwd: workdir,
                 env: None,
                 prompt: created.prompt.clone(),
+                exec_mode: req.exec_mode,
             },
         )
         .await;
@@ -277,6 +291,70 @@ pub(crate) async fn cancel_task(
     state.workspaces.remove(&task_id);
     publish_task_event(&state.event_bus, &user.id, &updated).await;
     Ok(Json(updated))
+}
+
+#[utoipa::path(
+    post,
+    path = "/api/workspaces/{workspace_id}/tasks/{task_id}/input",
+    params(
+        ("workspace_id" = WorkspaceId, Path, description = "工作空间 ID"),
+        ("task_id" = TaskId, Path, description = "任务 ID")
+    ),
+    request_body = InputTaskRequest,
+    responses(
+        (status = 200, description = "已写入（透传 daemon）", body = AgentTask),
+        (status = 400, description = "任务已结束 / 目标电脑离线 / 输入为空"),
+        (status = 401, description = "未登录"),
+        (status = 404, description = "任务不存在或无权限")
+    )
+)]
+pub(crate) async fn input_task(
+    State(state): State<AppState>,
+    Path((workspace_id, task_id)): Path<(WorkspaceId, TaskId)>,
+    headers: HeaderMap,
+    Json(req): Json<InputTaskRequest>,
+) -> Result<Json<AgentTask>, ApiError> {
+    let user = current_user(&state, &headers).await?;
+    check_workspace_access(&state, &workspace_id, &user.id).await?;
+    let task = get_task_in_workspace(&state, workspace_id, task_id).await?;
+
+    if req.data.is_empty() {
+        return Err(ApiError(BrierError::Validation("输入内容不能为空".into())));
+    }
+    if task.status != TaskStatus::Running {
+        return Err(ApiError(BrierError::Validation(
+            "任务未处于运行中，无法写入输入".into(),
+        )));
+    }
+    let computer_id = task.computer_id.ok_or_else(|| {
+        ApiError(BrierError::Validation("任务未绑定工作电脑".into()))
+    })?;
+    if !state
+        .tunnel_registry
+        .is_online(&computer_id.to_string())
+        .await
+    {
+        return Err(ApiError(BrierError::Validation(
+            "目标工作电脑当前离线，无法写入输入".into(),
+        )));
+    }
+
+    let sent = state
+        .tunnel_registry
+        .send(
+            &computer_id.to_string(),
+            ServerMessage::TaskInput {
+                task_id: task_id.to_string(),
+                data: req.data,
+            },
+        )
+        .await;
+    if !sent {
+        return Err(ApiError(BrierError::Validation(
+            "发送输入到工作电脑失败".into(),
+        )));
+    }
+    Ok(Json(task))
 }
 
 async fn get_task_in_workspace(

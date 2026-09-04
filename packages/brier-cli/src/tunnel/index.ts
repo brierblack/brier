@@ -39,6 +39,7 @@ export interface TunnelClient {
 export interface TunnelMessageHandlers {
   onTaskStart: (message: Extract<ServerMessage, { type: 'task-start' }>) => void;
   onTaskCancel: (taskId: string) => void;
+  onTaskInput: (message: Extract<ServerMessage, { type: 'task-input' }>) => void;
 }
 
 /**
@@ -190,6 +191,10 @@ export const createTunnelClient = (
     onTaskCancel: (taskId) => {
       logger.info('Task cancel:', taskId);
       messageHandlers.onTaskCancel(taskId);
+    },
+    onTaskInput: (message) => {
+      logger.info('Task input:', message.taskId);
+      messageHandlers.onTaskInput(message);
     },
     onQueryRuntimes: () => {
       send({ type: 'runtime-info', runtimes: config.runtimes });

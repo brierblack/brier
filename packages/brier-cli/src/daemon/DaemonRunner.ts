@@ -72,10 +72,18 @@ const startDaemon = (config: DaemonConfig): DaemonContext => {
         cwd: message.cwd,
         env: message.env,
         prompt: message.prompt,
+        execMode: message.execMode,
       });
     },
     onTaskCancel: (taskId) => {
       taskExecutor.cancel(taskId);
+    },
+    onTaskInput: (message) => {
+      // 回答 AI 提问 / 交互输入：写入执行器；任务不存在/不可写时记录即可（无应答通道，靠输出侧感知）
+      const ok = taskExecutor.writeInput(message.taskId, message.data);
+      if (!ok) {
+        logger.warn(`Task ${message.taskId} input ignored: task not running or not writable`);
+      }
     },
   };
 
