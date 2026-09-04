@@ -15,7 +15,7 @@ import {
 import type { Agent, AgentTask, SessionMessage, TaskStatus } from '@/api/generated';
 import { useApi } from '@/hooks/useApi';
 import { useTaskEvents } from '@/hooks/useTaskEvents';
-import { InputBox, MessageBubble, TypingIndicator, getAgent } from '../shared';
+import { InputBox, MessageBubble, getAgent, AgentAvatar } from '../shared';
 
 /** 任务是否已进入终态（SSE 事件驱动收尾依据）。 */
 const isTerminalStatus = (s: TaskStatus): boolean =>
@@ -62,13 +62,16 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
   } | null>(null);
   // 最近一次收到"本会话关注任务"事件的时间，空窗才触发兜底检查
   const lastTaskEventAtRef = useRef(0);
+  // 正在执行任务的实时输出（仅本地预览，终态后以落库消息为准）
+  const [runningText, setRunningText] = useState('');
 
-  // 任务事件订阅（会话跟随）：终态事件驱动等待结束；输出事件不参与会话气泡
+  // 任务事件订阅（会话跟随）：task_output 实时渲染预览；终态事件驱动等待结束
   useTaskEvents(!!wsId, wsId, (e) => {
     const w = waiterRef.current;
     if (!w || e.task_id !== w.taskId) return;
     if (e.type === 'task_output') {
       lastTaskEventAtRef.current = Date.now();
+      setRunningText((prev) => prev + e.data);
       return;
     }
     if (e.type === 'task_updated' && isTerminalStatus(e.status)) {
@@ -83,7 +86,7 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading]);
+  }, [messages, loading, runningText]);
 
   // 卸载时释放等待器（避免卸载后 resolve 触发 setState）
   useEffect(() => {
@@ -120,6 +123,7 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
 
     loadingRef.current = true;
     setLoading(true);
+    setRunningText('');
 
     // 1) user 消息落库（首条由建会话时已落库，persistUser=false）
     if (persistUser) {
@@ -159,7 +163,7 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
     //    注册后立即快检一次覆盖竞态；仅在事件静默超时（SSE 断线）时低频兜底。
     const finalTask = await new Promise<AgentTask>((resolve) => {
       let settled = false;
-      let timer: ReturnType<typeof setInterval> | undefined;
+      let timer: ReturnType<typeof setInterval> | undefined = undefined;
       const settle = (task: AgentTask) => {
         if (settled) return;
         settled = true;
@@ -191,12 +195,17 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
 
     loadingRef.current = false;
     setLoading(false);
-    if (finalTask.status === 'completed') {
-      await appendAgentReply(finalTask.output || '（任务执行完成，无输出）', finalTask.id);
-    } else if (finalTask.status === 'failed') {
-      await appendAgentReply(`任务失败：${finalTask.error ?? '未知错误'}`, finalTask.id);
-    } else {
-      await appendAgentReply('任务已取消', finalTask.id);
+    try {
+      if (finalTask.status === 'completed') {
+        await appendAgentReply(finalTask.output || '（任务执行完成，无输出）', finalTask.id);
+      } else if (finalTask.status === 'failed') {
+        await appendAgentReply(`任务失败：${finalTask.error ?? '未知错误'}`, finalTask.id);
+      } else {
+        await appendAgentReply('任务已取消', finalTask.id);
+      }
+    } finally {
+      // 正式消息已落库入列，移除实时预览（与 pushMessage 同批渲染，避免内容重复闪现）
+      setRunningText('');
     }
   };
 
@@ -261,7 +270,25 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
                 user={user}
               />
             ))}
-            {loading && <TypingIndicator agent={sessionAgent ?? (agents ?? [])[0]} />}
+            {loading && (
+              <div className="flex items-start gap-3">
+                <AgentAvatar agent={sessionAgent ?? (agents ?? [])[0]} size={32} />
+                <div className="flex max-w-[75%] flex-col gap-1">
+                  <div className="text-[11px] font-medium">
+                    {sessionAgent?.name ?? (agents ?? [])[0]?.name}
+                  </div>
+                  <div className="overflow-hidden rounded-2xl rounded-bl-md border border-ghost">
+                    <div className="flex items-center gap-1.5 border-b border-ghost bg-[#fafafa] px-3 py-1.5 text-[11px] text-muted">
+                      <span className="size-1.5 animate-pulse rounded-full bg-[#52c41a]" />
+                      任务执行中…
+                    </div>
+                    <pre className="m-0 max-h-72 overflow-auto p-3 font-mono text-xs leading-relaxed break-all whitespace-pre-wrap">
+                      {runningText || '等待输出…'}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            )}
             <div ref={endRef} />
           </div>
         </div>
