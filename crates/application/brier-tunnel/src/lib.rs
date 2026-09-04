@@ -6,20 +6,25 @@
 //! （output/complete/error）落库与事件广播、断连清理（置 offline + 推送事件）。
 //!
 //! 分层：
-//! - [`TunnelContext`]：隧道运行所需依赖（DB / 连接注册表 / 事件总线），
+//! - [`TunnelContext`]：隧道运行所需依赖（DB / 连接注册表 / 事件总线 / 任务归属索引），
 //!   由宿主（`brier-api`）在路由适配处从 `AppState` 映射注入，本 crate 不依赖 HTTP 路由层。
 //! - [`transport`]：WebSocket 生命周期主循环（传输层）。
 //! - [`auth`]：Auth 消息的鉴权编排。
 //! - [`dispatch`]：上行 `ClientMessage` 的分发与各业务分支处理。
 //! - [`cleanup`]：断连清理。
 //! - 事件工具（本文件）：任务/电脑状态事件的 JSON 序列化与广播，供隧道与 HTTP 路由共用。
+//! - [`workspace_index`]：task_id → workspace_id 的进程内索引，供输出流按会话过滤。
 
 pub mod auth;
 pub mod cleanup;
 pub mod dispatch;
+pub mod output;
 pub mod transport;
+pub mod workspace_index;
 
+pub use output::OutputBatcher;
 pub use transport::tunnel_upgrade;
+pub use workspace_index::TaskWorkspaces;
 
 use brier_core::event_bus::EventBus;
 use brier_core::tunnel::ConnectionRegistry;
@@ -33,6 +38,10 @@ pub struct TunnelContext {
     pub db: DatabaseConnection,
     pub tunnel_registry: ConnectionRegistry,
     pub event_bus: EventBus,
+    /// task_id → workspace_id 共享索引（HTTP 路由与隧道共用，按会话过滤输出流）。
+    pub workspaces: TaskWorkspaces,
+    /// 任务输出批量缓冲（进程级共享，负责合并落库与 SSE 输出事件推送）。
+    pub output_batcher: OutputBatcher,
 }
 
 /// 向用户推送任务状态事件（SSE，无订阅者时静默）。
@@ -41,6 +50,28 @@ pub async fn publish_task_event(event_bus: &EventBus, user_id: &UserId, task: &A
         task_id: task.id,
         workspace_id: task.workspace_id,
         status: task.status,
+    };
+    if let Ok(payload) = serde_json::to_string(&event) {
+        event_bus.publish(user_id.0, payload).await;
+    }
+}
+
+/// 向用户推送任务输出增量事件（SSE，无订阅者时静默）。
+///
+/// `offset` 为该块在任务累计输出中的起始字节偏移，前端据此去重/补缺。
+pub async fn publish_task_output_event(
+    event_bus: &EventBus,
+    user_id: UserId,
+    task_id: brier_type::id::TaskId,
+    workspace_id: brier_type::id::WorkspaceId,
+    offset: usize,
+    data: &str,
+) {
+    let event = TaskEvent::Output {
+        task_id,
+        workspace_id,
+        offset,
+        data: data.to_string(),
     };
     if let Ok(payload) = serde_json::to_string(&event) {
         event_bus.publish(user_id.0, payload).await;

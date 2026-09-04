@@ -19,13 +19,13 @@ impl EventBus {
         Self::default()
     }
 
-    /// 订阅指定用户的事件流；channel 不存在时创建（容量 64）。
+    /// 订阅指定用户的事件流；channel 不存在时创建（容量 256，容纳任务输出增量事件）。
     pub async fn subscribe(&self, user_id: Uuid) -> broadcast::Receiver<String> {
         let mut users = self.users.write().await;
         match users.get(&user_id) {
             Some(tx) => tx.subscribe(),
             None => {
-                let (tx, rx) = broadcast::channel(64);
+                let (tx, rx) = broadcast::channel(256);
                 users.insert(user_id, tx);
                 rx
             }

@@ -10,7 +10,9 @@ import {
   StopOutlined,
 } from '@ant-design/icons';
 import { cancelTask, getTask, listAgents } from '@/api/generated';
+import type { AgentTask } from '@/api/generated';
 import { useApi } from '@/hooks/useApi';
+import { useTaskEvents } from '@/hooks/useTaskEvents';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { formatTime, isActiveStatus, PRIORITY_META, SOURCE_LABEL, STATUS_META } from '../data';
@@ -32,13 +34,24 @@ const AgentTaskDetail = () => {
   const [refresh, setRefresh] = useState(0);
   const outputRef = useRef<HTMLPreElement>(null);
 
-  const { data: task } = useApi(
+  // 快照：初载与终态校准走一次全量 GET；执行中的增量由 SSE 推送实时追加
+  const { data: fetched } = useApi(
     () =>
       currentWsId && id
         ? getTask(currentWsId, id)
         : Promise.reject(new Error('workspace 或 task 缺失')),
     [currentWsId, id, refresh],
   );
+  const [task, setTask] = useState<AgentTask | undefined>(undefined);
+  useEffect(() => {
+    if (fetched) setTask(fetched);
+  }, [fetched]);
+
+  // 已确认渲染的输出长度：SSE 增量按 offset 对齐追加，避免与快照重复/丢失
+  const outputLenRef = useRef(0);
+  useEffect(() => {
+    outputLenRef.current = task?.output.length ?? 0;
+  }, [task]);
 
   const { data: agents } = useApi(
     () => (currentWsId ? listAgents(currentWsId) : Promise.resolve([])),
@@ -49,14 +62,25 @@ const AgentTaskDetail = () => {
     [agents, task],
   );
 
-  // 执行中/待执行：轮询详情直至终态
-  useEffect(() => {
-    if (task && isActiveStatus(task.status)) {
-      const timer = setTimeout(() => setRefresh((r) => r + 1), 1500);
-      return () => clearTimeout(timer);
+  const active = !!task && isActiveStatus(task.status);
+
+  // SSE 实时订阅：task_output 增量追加；task_updated 终态触发一次全量校准
+  useTaskEvents(currentWsId !== undefined && active, currentWsId, (e) => {
+    if (e.task_id !== id) return;
+    if (e.type === 'task_output') {
+      if (e.offset === outputLenRef.current) {
+        // 顺序增量：直接追加
+        setTask((prev) => (prev ? { ...prev, output: prev.output + e.data } : prev));
+      } else if (e.offset > outputLenRef.current) {
+        // 中间缺块（断线重连丢帧等）：触发一次全量校准
+        setRefresh((r) => r + 1);
+      }
+      // offset < 已渲染长度：快照已包含该块，跳过避免重复
+    } else if (!isActiveStatus(e.status)) {
+      // 终态：拉一次权威全量（含 exit_code / error / 完整 output）
+      setRefresh((r) => r + 1);
     }
-    return undefined;
-  }, [task, refresh]);
+  });
 
   // 输出自动滚动到底部
   useEffect(() => {
@@ -80,7 +104,6 @@ const AgentTaskDetail = () => {
 
   const statusMeta = STATUS_META[task.status];
   const priority = PRIORITY_META[task.priority];
-  const active = isActiveStatus(task.status);
 
   const handleCancel = () => {
     if (!currentWsId) return;

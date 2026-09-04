@@ -144,8 +144,10 @@ const AgentTasks = () => {
     [currentWsId],
   );
 
-  // 任务状态事件驱动刷新（其他端创建/完成时自动更新）
-  useTaskEvents(currentWsId !== undefined, () => setTick((t) => t + 1));
+  // 任务状态事件驱动刷新（其他端创建/完成时自动更新）；输出事件不触发列表刷新
+  useTaskEvents(currentWsId !== undefined, currentWsId, (e) => {
+    if (e.type === 'task_updated') setTick((t) => t + 1);
+  });
 
   const agentMap = useMemo(() => new Map((agents ?? []).map((a) => [a.id, a])), [agents]);
 

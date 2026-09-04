@@ -200,6 +200,8 @@ pub(crate) async fn create_task(
     let final_task = brier_agent::repository::get_agent_task(&state.db, task_id)
         .await?
         .ok_or_else(|| ApiError(BrierError::NotFound("task not found".into())))?;
+    // 登记任务归属，隧道推送输出事件（SSE）时无需再查库
+    state.workspaces.insert(task_id, final_task.workspace_id);
     publish_task_event(&state.event_bus, &user.id, &final_task).await;
     Ok(Json(final_task))
 }
@@ -253,6 +255,8 @@ pub(crate) async fn cancel_task(
     let computer_id = before.computer_id;
 
     let now = Utc::now();
+    // 先 flush 该任务残余输出（进程被终止前最后一段），再置 cancelled
+    state.output_batcher.flush_task(&task_id).await;
     let updated = match brier_agent::repository::cancel_agent_task(&state.db, task_id, now).await? {
         Some(t) => t,
         None => before, // 已终态：幂等返回现状
@@ -269,6 +273,8 @@ pub(crate) async fn cancel_task(
                 .await;
         }
     }
+    // 任务进入终态：清理归属索引
+    state.workspaces.remove(&task_id);
     publish_task_event(&state.event_bus, &user.id, &updated).await;
     Ok(Json(updated))
 }

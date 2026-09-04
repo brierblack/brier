@@ -130,7 +130,7 @@ impl DbErrExt for sea_orm::DbErr {
   - `command` 模式：显式 shell 命令，绕过 runtime（高级用法）
 - **状态机与并发安全**：`pending → running → completed | failed | cancelled`。所有推进均为**条件更新**（`UPDATE ... WHERE status IN (...)`），配合 `task-start` 下发后异步回包，天然规避「complete 先于 running 落库」与「取消后被 complete 覆盖」两类竞态；输出追加用 PG 字符串连接符（`||`）表达式原子拼接，避免并发 chunk 互相覆盖。
 - **隧道协议**：下行 `ServerMessage::TaskStart`（含 `taskId/runtime/command/args/prompt`）、`TaskCancel`；上行 `ClientMessage::TaskOutput/TaskComplete/TaskError`——`task_id` 用 UUID，上行按 `(task_id, computer_id)` 归属校验，防止越权写入。
-- **事件推送**：任务开始/终态时经 `event_bus` 广播 `TaskEvent`（`type: "task_updated"`，与工作电脑事件区分），前端列表事件驱动刷新；高频输出不推事件，详情页轮询拉取避免事件风暴。
+- **事件推送**：任务状态变更时经 `event_bus` 广播 `TaskEvent`（`type: "task_updated"`），执行过程中按 100ms 周期批量广播输出增量（`type: "task_output"`，含累计 `offset`，供前端快照增量去重）。SSE 端点 `/api/work-computers/events` 支持 `?workspace_id=` 按会话过滤任务事件，前端列表事件驱动刷新、详情页增量渲染，不再高频轮询。
 
 ### 3.5 Runtime 可执行文件统一解析（探测与执行一致）
 
@@ -191,19 +191,23 @@ GitHub 登录：`apps/server` → `brier-api::routes/auth::provider_login`（`/a
   ▼
 brier-api::routes::agent_task::create_task
   │  1) 校验空间/Agent 归属，Agent 须绑定电脑且有 runtime，电脑须在隧道注册表中在线
-  │  2) 落库 agent_tasks（pending）→ 经 ConnectionRegistry 下发 TaskStart（taskId/runtime/prompt）
+  │  2) 落库 agent_tasks（pending）→ 登记 workspace 索引 → 经 ConnectionRegistry 下发 TaskStart
   │  3) 下发成功 → 条件更新 running（失败 → failed）
   ▼
 brier-cli daemon（目标电脑）
   │  收到 task-start → resolveRuntimeExecutable(runtime) 绝对路径
   │  spawn(可执行文件, [...RUNTIME_PROMPT_FLAGS, prompt]) 执行
-  │  stdout/stderr → 上行 task-output；退出 → 上行 task-complete(exitCode)；异常 → task-error
+  │  stdout/stderr（16KB/50ms 微批）→ 上行 task-output；退出 → task-complete；异常 → task-error
   ▼
-brier-api::routes::tunnel（上行落库）
-  │  按 (task_id, computer_id) 归属校验 → 条件推进状态 / `||` 原子追加 output
-  │  终态（completed/failed/cancelled）→ event_bus 广播 task_updated
+brier-tunnel（隧道上行）
+  │  任务输出进入 OutputBatcher（单写者，100ms 周期 / 256KB 硬上限）
+  │  flush 时：一次 `||` 原子追加 output + 广播 task_output{offset, data}
+  │  终态（complete/error）前先 flush_task 保证残余输出落库，再推进状态
   ▼
-前端 useTaskEvents（SSE）刷新列表；详情页轮询 GET /tasks/{id} 拉取输出
+前端（SSE 端点可按 workspace_id 过滤）
+  │  列表：收到 task_updated → 刷新列表
+  │  详情：初始 GET /tasks/{id} 快照 → 收到 task_output 按 offset 增量追加
+  │       终态 task_updated → 全量校准一次（防断线丢帧）
 ```
 
 取消链路：`POST /tasks/{id}/cancel` → 条件更新 cancelled → 下发 `TaskCancel` → CLI 终止进程（close 回调回包 complete 因状态已终态而被条件更新忽略，保持 cancelled）。

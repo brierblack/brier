@@ -48,6 +48,8 @@ async fn tunnel_ws(
             db: state.db,
             tunnel_registry: state.tunnel_registry,
             event_bus: state.event_bus,
+            workspaces: state.workspaces,
+            output_batcher: state.output_batcher,
         },
     )
     .await

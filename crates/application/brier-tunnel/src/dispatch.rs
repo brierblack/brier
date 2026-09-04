@@ -2,7 +2,8 @@
 
 use std::str::FromStr;
 
-use brier_type::id::{TaskId, UserId, WorkComputerId};
+use brier_type::enums::TaskStatus;
+use brier_type::id::{TaskId, UserId, WorkComputerId, WorkspaceId};
 use brier_type::tunnel::{ClientMessage, ServerMessage};
 use chrono::Utc;
 use tokio::sync::mpsc;
@@ -38,17 +39,15 @@ pub(super) async fn handle_client_message(
             data,
         } => {
             tracing::debug!(task_id, ?stream, data_len = data.len(), "task output");
-            if let Some((cid, _)) = *computer {
-                let Ok(tid) = TaskId::from_str(&task_id) else {
-                    return;
-                };
-                let now = Utc::now();
-                if let Err(e) =
-                    brier_agent::repository::append_task_output(&ctx.db, tid, cid, &data, now).await
-                {
-                    tracing::warn!(task_id, error = %e, "append task output failed");
-                }
-            }
+            let Some((cid, user_id)) = *computer else { return; };
+            let Ok(tid) = TaskId::from_str(&task_id) else { return; };
+            // 解析任务所属工作空间：优先走进程内索引（O(1)），索引 miss 时
+            // 查库一次并回填（兼容旧版本创建、未登记索引的任务）。
+            let Some(workspace_id) = resolve_workspace(ctx, tid, cid).await else {
+                return;
+            };
+            // 输出统一进入批量缓冲，由 writer 周期 flush（一次 DB append + 一次 SSE 事件）
+            ctx.output_batcher.push(tid, cid, user_id, workspace_id, &data);
         }
         ClientMessage::TaskComplete {
             task_id,
@@ -60,8 +59,11 @@ pub(super) async fn handle_client_message(
                     return;
                 };
                 let now = Utc::now();
+                // 终态前置：确保残余输出先落库，再推进任务状态
+                ctx.output_batcher.flush_task(&tid).await;
                 match brier_agent::repository::finish_task(&ctx.db, tid, cid, exit_code, now).await {
                     Ok(Some(task)) => {
+                        ctx.workspaces.remove(&tid);
                         let _ =
                             brier_agent::repository::touch_agent_activity(&ctx.db, task.agent_id, now)
                                 .await;
@@ -81,8 +83,11 @@ pub(super) async fn handle_client_message(
                     return;
                 };
                 let now = Utc::now();
+                // 终态前置：确保残余输出先落库，再推进任务状态
+                ctx.output_batcher.flush_task(&tid).await;
                 match brier_agent::repository::fail_task(&ctx.db, tid, cid, &error, now).await {
                     Ok(Some(task)) => {
+                        ctx.workspaces.remove(&tid);
                         let _ =
                             brier_agent::repository::touch_agent_activity(&ctx.db, task.agent_id, now)
                                 .await;
@@ -97,4 +102,26 @@ pub(super) async fn handle_client_message(
             tracing::info!(?runtimes, "runtime info updated");
         }
     }
+}
+
+/// 解析任务所属工作空间：索引快路径 + 查库回填。
+///
+/// 仅当任务确属该电脑且仍在执行（pending/running）时才返回并缓存；
+/// 终态/非本机任务直接返回 None（对应输出帧会被批量器丢弃，不写库不推送）。
+async fn resolve_workspace(
+    ctx: &TunnelContext,
+    task_id: TaskId,
+    computer_id: WorkComputerId,
+) -> Option<WorkspaceId> {
+    if let Some(ws) = ctx.workspaces.get(&task_id) {
+        return Some(ws);
+    }
+    let task = brier_agent::repository::get_agent_task(&ctx.db, task_id).await.ok()??;
+    let is_active = matches!(task.status, TaskStatus::Pending | TaskStatus::Running);
+    let belongs = task.computer_id == Some(computer_id);
+    if !is_active || !belongs {
+        return None;
+    }
+    ctx.workspaces.insert(task_id, task.workspace_id);
+    Some(task.workspace_id)
 }

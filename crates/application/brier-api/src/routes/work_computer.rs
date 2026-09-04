@@ -1,4 +1,4 @@
-use axum::extract::{Path, State};
+use axum::extract::{Path, Query, State};
 use axum::http::HeaderMap;
 use axum::response::sse::{Event as SseEvent, Sse};
 use axum::routing::{get, post};
@@ -11,7 +11,7 @@ use tokio::sync::broadcast::error::RecvError;
 
 use brier_error::BrierError;
 use brier_type::enums::{WorkComputerStatus, WorkComputerType};
-use brier_type::id::WorkComputerId;
+use brier_type::id::{WorkComputerId, WorkspaceId};
 use brier_type::{Agent, WorkComputer, WorkComputerEvent};
 use brier_tunnel::publish_work_computer_event;
 
@@ -223,19 +223,27 @@ pub(crate) async fn list_computer_agents(
     Ok(Json(agents))
 }
 
-/// 工作电脑事件 SSE：电脑上线/下线/删除时推送，前端收到后刷新列表。
+/// 工作电脑事件 SSE：电脑上线/下线/删除与任务状态/输出事件推送，前端收到后刷新。
 /// 鉴权走会话 Cookie（EventSource 同源自动携带），未登录返回 401。
+///
+/// 可选查询参数 `workspace_id`：指定后只推送该工作空间的**任务**事件
+/// （`task_updated` / `task_output`）；工作电脑事件与工作空间无关，始终推送。
 pub(crate) async fn stream_work_computer_events(
     State(state): State<AppState>,
     headers: HeaderMap,
+    Query(filter): Query<WorkspaceFilter>,
 ) -> Result<Sse<impl Stream<Item = Result<SseEvent, Infallible>>>, ApiError> {
     let user = current_user(&state, &headers).await?;
     let rx = state.event_bus.subscribe(user.id.0).await;
+    let filter_ws = filter.workspace_id;
 
-    let stream = stream::unfold(rx, |mut rx| async move {
+    let stream = stream::unfold(rx, move |mut rx| async move {
         loop {
             match rx.recv().await {
                 Ok(payload) => {
+                    if !event_matches_workspace(&payload, filter_ws.as_ref()) {
+                        continue;
+                    }
                     return Some((Ok::<_, Infallible>(SseEvent::default().data(payload)), rx));
                 }
                 // 订阅者积压落后：跳过旧事件，等待最新（列表拉取是全量，不依赖增量）
@@ -246,4 +254,26 @@ pub(crate) async fn stream_work_computer_events(
     });
 
     Ok(Sse::new(stream))
+}
+
+/// SSE 事件负载的 workspace 过滤参数。
+#[derive(Deserialize, Default)]
+pub struct WorkspaceFilter {
+    pub workspace_id: Option<WorkspaceId>,
+}
+
+/// 判断事件负载是否应推给当前订阅：
+/// - 未指定 `workspace_id`：全部放行（电脑事件订阅场景）；
+/// - 指定后：仅放行 workspace_id 匹配的任务事件，工作电脑事件一并过滤。
+fn event_matches_workspace(payload: &str, workspace_id: Option<&WorkspaceId>) -> bool {
+    let Some(ws) = workspace_id else {
+        return true;
+    };
+    let Ok(v) = serde_json::from_str::<serde_json::Value>(payload) else {
+        return true;
+    };
+    let Some(evt_ws) = v.get("workspace_id").and_then(|x| x.as_str()) else {
+        return false;
+    };
+    evt_ws == ws.0.to_string().as_str()
 }

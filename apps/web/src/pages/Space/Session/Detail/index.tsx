@@ -12,13 +12,14 @@ import {
   listMessages,
   listSessions,
 } from '@/api/generated';
-import type { Agent, SessionMessage } from '@/api/generated';
+import type { Agent, AgentTask, SessionMessage, TaskStatus } from '@/api/generated';
 import { useApi } from '@/hooks/useApi';
+import { useTaskEvents } from '@/hooks/useTaskEvents';
 import { InputBox, MessageBubble, TypingIndicator, getAgent } from '../shared';
 
-const POLL_MS = 1500;
-/** 轮询超过该次数（约 60s）仍未终态则停止跟随，提示去事项页查看。 */
-const MAX_POLLS = 40;
+/** 任务是否已进入终态（SSE 事件驱动收尾依据）。 */
+const isTerminalStatus = (s: TaskStatus): boolean =>
+  s === 'completed' || s === 'failed' || s === 'cancelled';
 
 const SessionDetailBody = ({ wsId }: { wsId: string }) => {
   const { id } = useParams();
@@ -48,30 +49,48 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
-  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const loadingRef = useRef(false);
   const agentRef = useRef<Agent | undefined>(undefined);
   useEffect(() => {
     agentRef.current = sessionAgent;
   }, [sessionAgent]);
 
+  // 终态等待器：runTask 创建任务后挂起，SSE 事件 / 空窗兜底驱动 resolve
+  const waiterRef = useRef<{
+    taskId: string;
+    resolve: (task: AgentTask) => void;
+  } | null>(null);
+  // 最近一次收到"本会话关注任务"事件的时间，空窗才触发兜底检查
+  const lastTaskEventAtRef = useRef(0);
+
+  // 任务事件订阅（会话跟随）：终态事件驱动等待结束；输出事件不参与会话气泡
+  useTaskEvents(!!wsId, wsId, (e) => {
+    const w = waiterRef.current;
+    if (!w || e.task_id !== w.taskId) return;
+    if (e.type === 'task_output') {
+      lastTaskEventAtRef.current = Date.now();
+      return;
+    }
+    if (e.type === 'task_updated' && isTerminalStatus(e.status)) {
+      void getTask(wsId, e.task_id)
+        .then((task) => w.resolve(task))
+        .catch(() => {
+          // 终态事件已到但拉取失败：清空时间戳，让兜底周期立即重试
+          lastTaskEventAtRef.current = 0;
+        });
+    }
+  });
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  // 卸载时停止轮询
+  // 卸载时释放等待器（避免卸载后 resolve 触发 setState）
   useEffect(() => {
     return () => {
-      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+      waiterRef.current = null;
     };
   }, []);
-
-  const stopPolling = () => {
-    if (pollTimerRef.current) {
-      clearInterval(pollTimerRef.current);
-      pollTimerRef.current = null;
-    }
-  };
 
   const pushMessage = (m: SessionMessage) => {
     setMessages((prev) => [...prev, m]);
@@ -117,7 +136,7 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
       }
     }
 
-    // 2) 创建任务并轮询
+    // 2) 创建任务
     let taskId: string;
     try {
       const task = await createTask(wsId, {
@@ -136,39 +155,49 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
       return;
     }
 
-    let pollCount = 0;
-    pollTimerRef.current = setInterval(async () => {
-      pollCount += 1;
-      try {
-        const task = await getTask(wsId, taskId);
-        if (task.status === 'completed') {
-          stopPolling();
-          await appendAgentReply(task.output || '（任务执行完成，无输出）', task.id);
-          loadingRef.current = false;
-          setLoading(false);
-        } else if (task.status === 'failed') {
-          stopPolling();
-          await appendAgentReply(`任务失败：${task.error ?? '未知错误'}`, task.id);
-          loadingRef.current = false;
-          setLoading(false);
-        } else if (task.status === 'cancelled') {
-          stopPolling();
-          await appendAgentReply('任务已取消', task.id);
-          loadingRef.current = false;
-          setLoading(false);
-        } else if (pollCount >= MAX_POLLS) {
-          stopPolling();
-          await appendAgentReply(
-            '任务仍在执行中，为不阻塞对话已停止跟随。可前往「Agent 事项」查看实时输出与进度。',
-            task.id,
-          );
-          loadingRef.current = false;
-          setLoading(false);
+    // 3) 等待任务终态：SSE 事件驱动为主（见组件级 useTaskEvents），
+    //    注册后立即快检一次覆盖竞态；仅在事件静默超时（SSE 断线）时低频兜底。
+    const finalTask = await new Promise<AgentTask>((resolve) => {
+      let settled = false;
+      let timer: ReturnType<typeof setInterval> | undefined;
+      const settle = (task: AgentTask) => {
+        if (settled) return;
+        settled = true;
+        if (timer) clearInterval(timer);
+        waiterRef.current = null;
+        resolve(task);
+      };
+      waiterRef.current = { taskId, resolve: settle };
+
+      const check = async () => {
+        try {
+          const task = await getTask(wsId, taskId);
+          if (isTerminalStatus(task.status)) settle(task);
+          // 未终态：保持等待，由 SSE 终态事件驱动收尾
+        } catch {
+          // 瞬时失败忽略，下次兜底重试
         }
-      } catch {
-        // 轮询瞬时失败忽略，下轮重试
-      }
-    }, POLL_MS);
+      };
+
+      // 立即检查一次：覆盖"注册前任务已完成"的竞态
+      void check();
+      // 静默兜底：>10s 无该任务事件才主动检查（正常输出/事件流下不触发）
+      timer = setInterval(() => {
+        if (Date.now() - lastTaskEventAtRef.current > 10_000) {
+          void check();
+        }
+      }, 5_000);
+    });
+
+    loadingRef.current = false;
+    setLoading(false);
+    if (finalTask.status === 'completed') {
+      await appendAgentReply(finalTask.output || '（任务执行完成，无输出）', finalTask.id);
+    } else if (finalTask.status === 'failed') {
+      await appendAgentReply(`任务失败：${finalTask.error ?? '未知错误'}`, finalTask.id);
+    } else {
+      await appendAgentReply('任务已取消', finalTask.id);
+    }
   };
 
   // 来自新会话板的首条：Agent/消息已就绪后自动执行一次（不重复落库 user 消息）
