@@ -9,8 +9,8 @@ use brier_error::BrierError;
 use brier_type::enums::{TaskPriority, TaskSource, TaskStatus};
 use brier_type::id::{AgentId, TaskId, WorkspaceId};
 use brier_type::tunnel::ServerMessage;
-use brier_type::{AgentTask, TaskEvent};
-
+use brier_type::AgentTask;
+use brier_tunnel::publish_task_event;
 use crate::error::ApiError;
 use crate::routes::current_user;
 use crate::AppState;
@@ -199,7 +199,7 @@ pub(crate) async fn create_task(
     let final_task = brier_agent::repository::get_agent_task(&state.db, task_id)
         .await?
         .ok_or_else(|| ApiError(BrierError::NotFound("task not found".into())))?;
-    publish_task_event(&state, &user.id, &final_task).await;
+    publish_task_event(&state.event_bus, &user.id, &final_task).await;
     Ok(Json(final_task))
 }
 
@@ -268,7 +268,7 @@ pub(crate) async fn cancel_task(
                 .await;
         }
     }
-    publish_task_event(&state, &user.id, &updated).await;
+    publish_task_event(&state.event_bus, &user.id, &updated).await;
     Ok(Json(updated))
 }
 
@@ -296,20 +296,4 @@ async fn check_workspace_access(
         .ok_or_else(|| ApiError(BrierError::NotFound("workspace not found".into())))?;
     let _ = ws;
     Ok(())
-}
-
-/// 向用户推送任务状态事件（SSE，无订阅者时静默）。
-pub(crate) async fn publish_task_event(
-    state: &AppState,
-    user_id: &brier_type::id::UserId,
-    task: &AgentTask,
-) {
-    let event = TaskEvent::Updated {
-        task_id: task.id,
-        workspace_id: task.workspace_id,
-        status: task.status,
-    };
-    if let Ok(payload) = serde_json::to_string(&event) {
-        state.event_bus.publish(user_id.0, payload).await;
-    }
 }

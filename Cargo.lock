@@ -394,6 +394,7 @@ dependencies = [
  "brier-error",
  "brier-forge",
  "brier-jwt",
+ "brier-tunnel",
  "brier-type",
  "brier-user",
  "brier-workspace",
@@ -489,6 +490,24 @@ dependencies = [
  "jsonwebtoken",
  "serde",
  "uuid",
+]
+
+[[package]]
+name = "brier-tunnel"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "brier-agent",
+ "brier-core",
+ "brier-crypto",
+ "brier-type",
+ "chrono",
+ "futures",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

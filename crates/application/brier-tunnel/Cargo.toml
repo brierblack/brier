@@ -1,0 +1,19 @@
+[package]
+name = "brier-tunnel"
+version.workspace = true
+edition.workspace = true
+description = "CLI 隧道 WebSocket 服务：鉴权、心跳、任务消息分发与断连清理"
+
+[dependencies]
+brier-agent.workspace = true
+brier-core.workspace = true
+brier-crypto.workspace = true
+brier-type.workspace = true
+axum.workspace = true
+futures.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+sea-orm.workspace = true
+chrono.workspace = true

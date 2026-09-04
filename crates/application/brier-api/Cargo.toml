@@ -15,6 +15,7 @@ brier-agent.workspace = true
 brier-type = { workspace = true, features = ["openapi"] }
 brier-user.workspace = true
 brier-jwt.workspace = true
+brier-tunnel.workspace = true
 axum.workspace = true
 futures.workspace = true
 tokio.workspace = true

@@ -11,8 +11,9 @@ use tokio::sync::broadcast::error::RecvError;
 
 use brier_error::BrierError;
 use brier_type::enums::{WorkComputerStatus, WorkComputerType};
-use brier_type::id::{UserId, WorkComputerId};
+use brier_type::id::WorkComputerId;
 use brier_type::{Agent, WorkComputer, WorkComputerEvent};
+use brier_tunnel::publish_work_computer_event;
 
 use crate::error::ApiError;
 use crate::routes::current_user;
@@ -106,7 +107,12 @@ pub(crate) async fn create_work_computer(
         updated_at: now,
     };
     let created = brier_agent::repository::create_work_computer(&state.db, wc).await?;
-    publish_wc_event(&state, user.id, WorkComputerEvent::Updated { computer_id: created.id }).await;
+    publish_work_computer_event(
+        &state.event_bus,
+        user.id,
+        WorkComputerEvent::Updated { computer_id: created.id },
+    )
+    .await;
     Ok(Json(created))
 }
 
@@ -180,7 +186,12 @@ pub(crate) async fn delete_work_computer(
         return Err(ApiError(BrierError::NotFound("work computer not found".into())));
     }
     brier_agent::repository::delete_work_computer(&state.db, computer_id).await?;
-    publish_wc_event(&state, user.id, WorkComputerEvent::Deleted { computer_id }).await;
+    publish_work_computer_event(
+        &state.event_bus,
+        user.id,
+        WorkComputerEvent::Deleted { computer_id },
+    )
+    .await;
     Ok(Json(()))
 }
 
@@ -210,13 +221,6 @@ pub(crate) async fn list_computer_agents(
     let agents = brier_agent::repository::list_agents_by_work_computer(&state.db, computer_id)
         .await?;
     Ok(Json(agents))
-}
-
-/// 向用户推送工作电脑状态事件（JSON 字符串；无订阅者时静默）。
-async fn publish_wc_event(state: &AppState, user_id: UserId, event: WorkComputerEvent) {
-    if let Ok(payload) = serde_json::to_string(&event) {
-        state.event_bus.publish(user_id.0, payload).await;
-    }
 }
 
 /// 工作电脑事件 SSE：电脑上线/下线/删除时推送，前端收到后刷新列表。

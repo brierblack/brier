@@ -14,6 +14,7 @@ members = [
     "crates/infrastructure/brier-workspace",
     "crates/infrastructure/brier-agent",
     "crates/application/brier-api",
+    "crates/application/brier-tunnel",
 ]
 resolver = "2"
 
@@ -35,6 +36,7 @@ brier-user = { path = "crates/infrastructure/brier-user" }
 brier-workspace = { path = "crates/infrastructure/brier-workspace" }
 brier-agent = { path = "crates/infrastructure/brier-agent" }
 brier-api = { path = "crates/application/brier-api" }
+brier-tunnel = { path = "crates/application/brier-tunnel" }
 axum = { version = "0.8", features = ["ws"] }
 futures = "0.3"
 tokio = { version = "1", features = ["full"] }
