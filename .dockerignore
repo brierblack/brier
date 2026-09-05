@@ -40,7 +40,6 @@ LICENSE
 # Docker files (not needed inside image)
 Dockerfile
 docker-compose*.yml
-docker-start.sh
 .dockerignore
 
 # CI/CD & scripts

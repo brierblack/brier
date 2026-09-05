@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Avatar, Input } from 'antd';
 import { Button, Dropdown } from '@brierb/brier-ui';
 import { ArrowUpOutlined, DownOutlined, CheckOutlined } from '@ant-design/icons';
@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getTask } from '@/api/generated';
 import type { SessionMessage } from '@/api/generated';
 import type { Agent } from '../../../types';
-import { parseRunMessage, type RunTranscript } from './transcript';
+import { parseRunMessage, type RunTranscript, type RunEvent } from './transcript';
 
 /** 从任务原始输出（opencode JSON 事件流）解析出的工具调用完整结果 */
 interface ParsedToolOutput {
@@ -156,56 +156,90 @@ const FILE_READ_CMD_RE = /(^|\s)(cat|head|tail|less|more|sed\s+-n|awk|grep|find|
 const isFileRead = (name: string, cmd: string): boolean =>
   FILE_READ_TOOLS.has(name) || FILE_READ_CMD_RE.test(cmd);
 
-/** 工具步骤卡片：短输出直接展示；长输出/文件读取类默认折叠为摘要行，点开看全文 */
-const ToolStepCard = ({ name, cmd, out }: { name: string; cmd: string; out: string }) => {
-  const lineCount = out.split('\n').length;
-  const charCount = out.length;
-  const longOutput = lineCount > 5 || charCount > 600;
-  const fileRead = isFileRead(name, cmd);
-  const collapsed = fileRead || longOutput;
+/** 思考阶段：一段意图文本 + 后续连续的工具操作 */
+interface ThinkingPhase {
+  intent: string;
+  plan: boolean;
+  tools: { name: string; cmd: string }[];
+}
 
-  if (!collapsed) {
-    return (
-      <div className="mt-2 rounded-lg border border-ghost bg-white/60">
-        <div className="border-b border-ghost px-2.5 py-1 text-xs font-medium break-all">
-          ◇ 工具 {name} · {cmd}
-        </div>
-        <pre className="m-0 px-2.5 py-2 font-mono text-xs leading-relaxed break-all whitespace-pre-wrap">
-          {out || '（无输出）'}
-        </pre>
-      </div>
-    );
+/** 把有序事件流按"text → 紧跟的 tools"分组为思考阶段 */
+const groupPhases = (events: RunEvent[]): ThinkingPhase[] => {
+  const phases: ThinkingPhase[] = [];
+  let current: ThinkingPhase | null = null;
+  let sawTool = false;
+  for (const ev of events) {
+    if (ev.k === 'text') {
+      if (current) phases.push(current);
+      current = { intent: ev.d, plan: !sawTool, tools: [] };
+    } else {
+      if (!current) current = { intent: '', plan: false, tools: [] };
+      current.tools.push({ name: ev.name, cmd: ev.cmd });
+      sawTool = true;
+    }
   }
+  if (current) phases.push(current);
+  return phases;
+};
 
-  const label = fileRead
-    ? `◇ 读取内容 · ${name}${cmd ? ` · ${cmd}` : ''}（${lineCount} 行）`
-    : `◇ 工具 ${name} · ${cmd}`;
+/** 从命令中提取文件名（用于"已阅读 X.md"展示） */
+const extractFileName = (cmd: string): string => {
+  const m = cmd.match(/(\S+\.\w+)\b/);
+  return m ? m[1] : cmd.replace(/\s+/g, ' ').trim().slice(0, 60);
+};
+
+/** 操作摘要行：按操作类型聚合计数（Trae 模式） */
+const OperationBlock = ({ tools }: { tools: { name: string; cmd: string }[] }) => {
+  const reads = tools.filter((t) => isFileRead(t.name, t.cmd));
+  const execs = tools.filter((t) => !isFileRead(t.name, t.cmd));
+  const parts: string[] = [];
+  if (reads.length > 0) parts.push(`已读取 ${reads.length} 个文件`);
+  if (execs.length > 0) parts.push(`执行 ${execs.length} 条命令`);
+
   return (
-    <details className="mt-2 rounded-lg border border-ghost bg-white/60">
-      <summary className="cursor-pointer px-2.5 py-1 text-xs break-all text-muted select-none hover:text-brand">
-        {label}
+    <details className="group">
+      <summary className="cursor-pointer py-0.5 text-xs text-muted select-none hover:text-brand">
+        {parts.join('，')} ▼
       </summary>
-      <pre className="m-0 max-h-80 overflow-auto border-t border-ghost px-2.5 py-2 font-mono text-xs leading-relaxed break-all whitespace-pre-wrap">
-        {out || '（无输出）'}
-      </pre>
+      <div className="mt-1 flex flex-col gap-0.5 pl-3">
+        {reads.map((t, i) => (
+          <span key={`r${i}`} className="text-xs text-muted">
+            已阅读 {extractFileName(t.cmd)}
+          </span>
+        ))}
+        {execs.map((t, i) => (
+          <span key={`e${i}`} className="font-mono text-xs text-muted">
+            {t.cmd.replace(/\s+/g, ' ').trim().slice(0, 80)}
+          </span>
+        ))}
+      </div>
     </details>
   );
 };
 
-/** v2 过程事件列表（text 分段 + tool 折叠卡片） */
+/** v2 过程视图（Trae 模式）：思考阶段 → 意图文本 + 操作摘要折叠 */
 const RunEventsView = ({ run }: { run: RunTranscript }) => {
-  const events = run.events ?? [];
+  const phases = useMemo(() => groupPhases(run.events ?? []), [run.events]);
+  if (phases.length === 0 && !run.transcript) return null;
   return (
-    <div className="mt-2 flex flex-col gap-1.5 border-t border-ghost pt-2">
-      {events.map((ev, i) =>
-        ev.k === 'text' ? (
-          <p key={i} className="text-[13px] leading-relaxed break-words whitespace-pre-wrap">
-            {ev.d}
-          </p>
-        ) : (
-          <ToolStepCard key={i} name={ev.name} cmd={ev.cmd} out={ev.out} />
-        ),
-      )}
+    <div className="mt-2 border-t border-ghost pt-2">
+      <div className="mb-1.5 text-xs font-medium text-muted">思考过程</div>
+      {phases.map((phase, i) => (
+        <div key={i} className="mb-2 flex flex-col gap-0.5">
+          {phase.intent && (
+            <p
+              className={
+                phase.plan
+                  ? 'border-l-2 border-ghost pl-2 text-xs leading-relaxed break-words whitespace-pre-wrap text-muted italic'
+                  : 'text-[13px] leading-relaxed break-words whitespace-pre-wrap'
+              }
+            >
+              {phase.intent}
+            </p>
+          )}
+          {phase.tools.length > 0 && <OperationBlock tools={phase.tools} />}
+        </div>
+      ))}
       {run.truncated && (
         <div className="text-[11px] text-muted">（内容过长，超出单条上限的部分已省略）</div>
       )}
@@ -398,7 +432,7 @@ export const InputBox = ({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="给 Agent 发送消息…"
-        autoSize={{ minRows: 1, maxRows: 6 }}
+        autoSize={{ minRows: 3, maxRows: 6 }}
         variant="borderless"
         className="!px-4 !py-3 !text-standard"
       />

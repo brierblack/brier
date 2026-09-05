@@ -63,7 +63,7 @@ const NewSessionBoard = ({ wsId }: { wsId: string }) => {
       <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
         <Logo className="h-10 w-10" variant="white" />
         <h1 className="text-xl font-bold">有什么可以帮你？</h1>
-        <div className="w-full max-w-2xl">
+        <div className="w-full max-w-3xl">
           <InputBox
             agent={selectedAgent}
             agents={agents ?? []}

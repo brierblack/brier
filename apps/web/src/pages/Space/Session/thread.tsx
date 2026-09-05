@@ -34,6 +34,48 @@ const isTerminalStatus = (s: TaskStatus): boolean =>
  *
  * Agent 由会话自身绑定（session.agent_id），会话内不可切换，天然锁定。
  */
+/** 实时过程视图（Trae 模式）：文本段 + 操作计数摘要，不显示文件内容 */
+const RunningProcess = ({ text }: { text: string }) => {
+  const phases = useMemo(() => {
+    const clean = stripAnsi(text);
+    if (!clean.trim()) return [];
+    const out: Array<{ intent: string; tools: string[] }> = [];
+    let current: { intent: string; tools: string[] } | null = null;
+    for (const line of clean.split('\n')) {
+      const toolMatch = line.match(/^◇ 工具 (.*)$/);
+      if (toolMatch) {
+        if (!current) current = { intent: '', tools: [] };
+        current.tools.push(toolMatch[1].split('\n')[0]);
+      } else if (line.trim()) {
+        if (current) out.push(current);
+        current = { intent: line.trim(), tools: [] };
+      }
+    }
+    if (current) out.push(current);
+    return out;
+  }, [text]);
+
+  if (text.length === 0) {
+    return <p className="m-0 p-3 text-xs text-muted">等待输出…</p>;
+  }
+  return (
+    <div className="max-h-80 space-y-1.5 overflow-auto p-3">
+      {phases.map((phase, i) => (
+        <div key={i} className="flex flex-col gap-0.5">
+          {phase.intent && (
+            <p className="text-[13px] leading-relaxed break-words whitespace-pre-wrap">
+              {phase.intent}
+            </p>
+          )}
+          {phase.tools.length > 0 && (
+            <span className="text-xs text-muted">执行 {phase.tools.length} 条操作</span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const SessionThread = ({
   wsId,
   sessionId,
@@ -343,7 +385,7 @@ export const SessionThread = ({
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-auto">
-        <div className="mx-auto flex max-w-2xl flex-col gap-5 px-4 py-6">
+        <div className="mx-auto flex max-w-3xl flex-col gap-5 px-4 py-6">
           {messages.map((msg) => (
             <MessageBubble
               key={msg.id}
@@ -363,9 +405,7 @@ export const SessionThread = ({
                     <span className="size-1.5 animate-pulse rounded-full bg-[#52c41a]" />
                     任务执行中…
                   </div>
-                  <pre className="m-0 max-h-80 overflow-auto p-3 font-mono text-xs leading-relaxed break-all whitespace-pre-wrap">
-                    {stripAnsi(runningText) || '等待输出…'}
-                  </pre>
+                  <RunningProcess text={runningText} />
                 </div>
               </div>
             </div>
@@ -375,7 +415,7 @@ export const SessionThread = ({
       </div>
 
       <div className="shrink-0 px-4 pt-2 pb-4">
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto max-w-3xl">
           <InputBox
             agent={sessionAgent}
             agents={[sessionAgent]}
@@ -385,7 +425,6 @@ export const SessionThread = ({
             loading={loading}
             onAgentSelect={() => {}}
           />
-          <p className="mt-1.5 text-center text-[11px]">Enter 发送 · Shift+Enter 换行</p>
         </div>
       </div>
     </div>

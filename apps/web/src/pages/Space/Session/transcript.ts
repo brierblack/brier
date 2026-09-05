@@ -17,6 +17,8 @@ export interface RunTextEvent {
   k: 'text';
   /** 助手文本（纯文本，可含换行） */
   d: string;
+  /** 规划段标记：首个工具调用之前的文本（agent 的“计划/意图”），渲染时弱化 */
+  p?: boolean;
 }
 
 export interface RunToolEvent {
@@ -124,6 +126,7 @@ export const buildRunContentV2 = (input: {
  */
 export const parseOpenCodeRunEvents = (raw: string): RunEvent[] => {
   const events: RunEvent[] = [];
+  let sawTool = false;
   for (const rawLine of raw.split('\n')) {
     const line = rawLine.trim();
     if (!line.startsWith('{')) continue;
@@ -145,12 +148,13 @@ export const parseOpenCodeRunEvents = (raw: string): RunEvent[] => {
     const part = obj.part;
     if (part === undefined || typeof part !== 'object') continue;
     if (obj.type === 'text' && typeof part.text === 'string' && part.text.length > 0) {
-      events.push({ k: 'text', d: stripAnsi(part.text) });
+      events.push({ k: 'text', d: stripAnsi(part.text), ...(sawTool ? {} : { p: true }) });
       continue;
     }
     if (obj.type !== 'tool_use') continue;
     const state = part.state;
     if (state === undefined || state.status !== 'completed') continue;
+    sawTool = true;
     const input =
       state.input !== null && typeof state.input === 'object'
         ? (state.input as Record<string, unknown>)
