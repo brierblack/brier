@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App, Input } from 'antd';
 import { PlusOutlined, ReloadOutlined, DesktopOutlined, SearchOutlined } from '@ant-design/icons';
@@ -11,15 +11,19 @@ import { getColumns } from './columns';
 
 const List = () => {
   const navigate = useNavigate();
-  const { currentSpaceId } = useSpace();
-  const [computerDrawerOpen, setComputerDrawerOpen] = useState(false);
   const { message, modal } = App.useApp();
+  const { currentSpaceId } = useSpace();
 
   const [keyword, setKeyword] = useState('');
   const [activitySort, setActivitySort] = useState('recent');
+  const [computerDrawerOpen, setComputerDrawerOpen] = useState(false);
 
   const { data: computers } = useRequest(listWorkComputers, []);
   const { data: agents, run: runAgents, loading } = useRequest(listAgents, [currentSpaceId]);
+
+  const handleComputerDrawerClose = useCallback(() => {
+    setComputerDrawerOpen(false);
+  }, []);
 
   /** 删除 Agent：确认后调 DELETE 并从列表移除 */
   const handleDelete = (agent: Agent) => {
@@ -105,7 +109,7 @@ const List = () => {
           pagination={false}
         />
       </div>
-      <ComputerDrawer open={computerDrawerOpen} onClose={() => setComputerDrawerOpen(false)} />
+      <ComputerDrawer open={computerDrawerOpen} onClose={handleComputerDrawerClose} />
     </Page>
   );
 };
