@@ -1,10 +1,3 @@
-import {
-  RobotOutlined,
-  TeamOutlined,
-  ThunderboltOutlined,
-  SettingOutlined,
-} from '@ant-design/icons';
-
 import type { PageKey } from './types';
 
 export const STATUS_MAP = {
@@ -37,37 +30,6 @@ export const PAGE_TITLES: Record<PageKey, { title: string; subtitle: string }> =
   skills: { title: 'Skills', subtitle: '内置工具、MCP 服务与自定义技能' },
   settings: { title: '设置', subtitle: '空间基础信息、Agent 个性化与已安装技能' },
 };
-
-export const NAV_ITEMS: {
-  key: PageKey;
-  url: string;
-  label: string;
-  icon: React.ReactNode;
-  section: string;
-}[] = [
-  {
-    key: 'agents',
-    url: '/space/agents',
-    label: 'Agents',
-    icon: <RobotOutlined />,
-    section: '导航',
-  },
-  { key: 'team', url: '/space/team', label: 'Agent 团队', icon: <TeamOutlined />, section: '导航' },
-  {
-    key: 'skills',
-    url: '/space/skills',
-    label: 'Skills',
-    icon: <ThunderboltOutlined />,
-    section: '导航',
-  },
-  {
-    key: 'settings',
-    url: '/space/settings',
-    label: '设置',
-    icon: <SettingOutlined />,
-    section: '导航',
-  },
-];
 
 export const MODELS = ['GPT-4o', 'GPT-4o mini', 'Claude 3.5 Sonnet', 'DeepSeek V3', 'Qwen Max'];
 /**

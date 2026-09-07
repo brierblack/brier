@@ -32,6 +32,8 @@ impl TryFrom<user::Model> for User {
             email: m.email,
             phone: m.phone,
             avatar_url: m.avatar_url,
+            // 账户本体不含身份来源，provider 由调用方查询 user_identities 后回填
+            provider: None,
             status: parse_enum(&m.status, "UserStatus")?,
             last_login_at: m.last_login_at,
             created_at: m.created_at,

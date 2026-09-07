@@ -3,10 +3,6 @@ import { useAuth } from '@/context/AuthContext';
 import { Logo } from '@/components/Logo';
 import { GitHub, GitLab, Gitee } from '@/components/Icon';
 
-const BrierLogo = ({ size = 48 }: { size?: number }) => {
-  return <Logo style={{ width: size, height: size }} />;
-};
-
 /** 可用的 OAuth 登录提供方。新增厂商时在此追加一项。 */
 const PROVIDERS = [
   { key: 'github', label: 'GitHub', icon: <GitHub size={20} /> },
@@ -42,7 +38,7 @@ const Login = () => {
         {/* Left brand panel */}
         <div className="hidden h-full w-[52%] flex-col justify-between py-12 pr-8 pl-16 lg:flex">
           <div className="flex items-center gap-3">
-            <BrierLogo size={44} />
+            <Logo size={44} />
             <div>
               <div className="text-xl font-bold tracking-tight text-white">Brier</div>
               <div className="text-[11px] text-white/40">AI Agent Workspace</div>
@@ -90,7 +86,7 @@ const Login = () => {
             <div className="rounded-[28px] border border-white/8 bg-[rgba(255,255,255,0.04)] p-9 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
               {/* Mobile logo */}
               <div className="mb-6 flex items-center justify-center gap-2.5 lg:hidden">
-                <BrierLogo size={40} />
+                <Logo size={40} />
                 <span className="text-lg font-bold text-white">Brier</span>
               </div>
 

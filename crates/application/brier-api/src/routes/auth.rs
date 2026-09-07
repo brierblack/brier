@@ -162,9 +162,12 @@ pub(crate) async fn auth_me(
     let token =
         get_token_from_headers(&headers).ok_or_else(|| ApiError(BrierError::Auth("not logged in".into())))?;
     let claims = state.jwt_verifier.verify(&token)?;
-    let user = brier_user::repository::find_user_by_id(&state.db, UserId(claims.sub))
+    let user_id = UserId(claims.sub);
+    let mut user = brier_user::repository::find_user_by_id(&state.db, user_id)
         .await?
         .ok_or_else(|| ApiError(BrierError::NotFound("user not found".into())))?;
+    // 联合 user_identities：回填最近登录的第三方身份（前端用于展示用户类型）
+    user.provider = brier_user::repository::find_latest_provider(&state.db, user_id).await?;
     Ok(Json(user))
 }
 

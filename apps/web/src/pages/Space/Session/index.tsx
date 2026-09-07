@@ -61,7 +61,7 @@ const NewSessionBoard = ({ wsId }: { wsId: string }) => {
   return (
     <div className="flex h-full flex-col bg-canvas">
       <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
-        <Logo className="h-10 w-10" variant="white" />
+        <Logo size={40} variant="white" />
         <h1 className="text-xl font-bold">有什么可以帮你？</h1>
         <div className="w-full max-w-3xl">
           <InputBox

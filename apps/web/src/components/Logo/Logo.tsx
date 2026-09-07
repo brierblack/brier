@@ -1,8 +1,7 @@
-import { memo, type CSSProperties } from 'react';
+import { memo } from 'react';
 
-export interface LogoProps {
-  className?: string;
-  style?: CSSProperties;
+export interface LogoProps extends React.SVGProps<SVGSVGElement> {
+  size?: number;
   /**
    * 'black' 黑叶白圆（适合深色背景）；'white' 白叶黑圆（适合浅色背景）。
    * 默认 'black'。
@@ -21,14 +20,15 @@ const LEAF_TRANSFORM = {
   white: 'translate(512.0 540.0) scale(0.72) translate(-516.5 -512.0)',
 } as const;
 
-export const Logo = memo(({ className, style, variant = 'black' }: LogoProps) => {
+export const Logo = memo(({ size = 16, variant = 'black', ...props }: LogoProps) => {
   const isBlack = variant === 'black';
   return (
     <svg
       viewBox="12 12 1000 1000"
-      className={className}
-      style={style}
       xmlns="http://www.w3.org/2000/svg"
+      height={size}
+      width={size}
+      {...props}
     >
       <circle cx="512" cy="512" r="500" fill={isBlack ? '#ffffff' : '#000000'} />
       <path

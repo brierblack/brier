@@ -35,6 +35,7 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/space/new" element={<SpaceNew />} />
               <Route path="/space" element={<SpaceLayout />}>
+                <Route index element={<Navigate to="/space/session" replace />} />
                 <Route path="/space/session" element={<Session />} />
                 <Route path="/space/session/:id" element={<SessionDetail />} />
                 <Route path="/space/tasks" element={<Tasks />} />

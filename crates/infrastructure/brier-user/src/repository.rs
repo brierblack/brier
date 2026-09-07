@@ -5,7 +5,7 @@ use brier_type::id::UserId;
 use brier_type::User;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, DatabaseTransaction, EntityTrait,
-    QueryFilter, TransactionTrait,
+    QueryFilter, QueryOrder, TransactionTrait,
 };
 
 use crate::convert::DbErrExt;
@@ -25,6 +25,21 @@ pub async fn find_user_by_id(db: &DatabaseConnection, id: UserId) -> Result<Opti
         .await
         .map_err(DbErrExt::to_brier)?;
     Ok(model.map(User::try_from).transpose()?)
+}
+
+/// 用户最近登录绑定的第三方身份 provider（无 OAuth 身份时为 None）。
+/// 单值语义：多身份绑定时取最近更新的那个（/api/auth/me 展示用户类型用）。
+pub async fn find_latest_provider(
+    db: &DatabaseConnection,
+    user_id: UserId,
+) -> Result<Option<String>> {
+    let identity = user_identity::Entity::find()
+        .filter(user_identity::Column::UserId.eq(user_id.0))
+        .order_by_desc(user_identity::Column::UpdatedAt)
+        .one(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
+    Ok(identity.map(|m| m.provider))
 }
 
 /// 按 (provider, provider_uid) 查找用户（OAuth 登录的主入口）。

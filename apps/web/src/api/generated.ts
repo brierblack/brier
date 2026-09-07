@@ -393,6 +393,11 @@ export interface User {
   name?: string | null;
   /** @nullable */
   phone?: string | null;
+  /**
+     * 最近登录绑定的第三方身份（如 github / gitee）；本地凭证账户为 None。
+     * @nullable
+     */
+  provider?: string | null;
   status: UserStatus;
   updated_at: string;
   username: string;

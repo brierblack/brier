@@ -14,6 +14,8 @@ pub struct User {
     pub email: Option<String>,
     pub phone: Option<String>,
     pub avatar_url: Option<String>,
+    /// 最近登录绑定的第三方身份（如 github / gitee）；本地凭证账户为 None。
+    pub provider: Option<String>,
     pub status: UserStatus,
     pub last_login_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,

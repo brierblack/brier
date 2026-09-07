@@ -7,3 +7,4 @@ export type { IconProps } from './definition';
 export { GitHub } from './GitHub';
 export { GitLab } from './GitLab';
 export { Gitee } from './Gitee';
+export { Provider } from './Provider';
