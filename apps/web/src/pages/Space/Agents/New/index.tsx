@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
-import { useApi } from '@/hooks/useApi';
+import { useRequest } from '@/hooks/useRequest';
 import { useNavigate } from 'react-router-dom';
-import { App, Form, Input, Select, Space, Upload } from 'antd';
+import { App, Form, Input, Select, Space } from 'antd';
 import { Button } from '@brierb/brier-ui';
 import {
   CheckOutlined,
@@ -14,12 +14,12 @@ import {
   SearchOutlined,
   AppstoreOutlined,
   UploadOutlined,
-  PlusOutlined,
 } from '@ant-design/icons';
 import { Page } from '@brierb/brier-ui';
 import { createAgent, listWorkComputers } from '@/api/generated';
 import type { AgentVisibility, PublicScope } from '@/api/generated';
-import { useWorkspace } from '@/context/WorkspaceContext';
+import { AvatarUpload } from '@/components/AvatarUpload';
+import { useSpace } from '@/context/SpaceContext';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { AI_RUNTIMES, MODELS } from '../../../../define';
 
@@ -106,7 +106,7 @@ const SectionCard = ({
 const NewAgentContent = () => {
   const { message } = App.useApp();
   const navigate = useNavigate();
-  const { currentWsId } = useWorkspace();
+  const { currentSpaceId } = useSpace();
   const [form] = Form.useForm();
   const [selectedComputerId, setSelectedComputerId] = useState<string | undefined>(undefined);
   const [visibility, setVisibility] = useState<string>('personal');
@@ -115,7 +115,7 @@ const NewAgentContent = () => {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: workComputers } = useApi(listWorkComputers, []);
+  const { data: workComputers } = useRequest(listWorkComputers, []);
 
   const selectedComputer = useMemo(
     () => (workComputers ?? []).find((c) => c.id === selectedComputerId),
@@ -137,7 +137,7 @@ const NewAgentContent = () => {
   );
 
   const handleCreate = async () => {
-    if (!currentWsId) {
+    if (!currentSpaceId) {
       message.warning('请先创建工作空间');
       return;
     }
@@ -145,9 +145,10 @@ const NewAgentContent = () => {
       const values = await form.validateFields();
       const scope = VISIBILITY_TO_SCOPE[visibility] ?? { visibility: 'private' as const };
       setSubmitting(true);
-      await createAgent(currentWsId, {
+      await createAgent(currentSpaceId, {
         name: values.name,
         description: values.desc,
+        avatar: avatarUrl || null,
         visibility: scope.visibility,
         public_scope: scope.public_scope,
         runtime: values.runtime,
@@ -229,28 +230,13 @@ const NewAgentContent = () => {
         <SectionCard title="基本信息">
           <div className="flex gap-5">
             <Form.Item label="头像" className="!mb-0 shrink-0">
-              <Upload
-                showUploadList={false}
-                beforeUpload={(file) => {
-                  setAvatarUrl(URL.createObjectURL(file));
-                  return false;
-                }}
-                accept="image/*"
-                style={{ display: 'flex', alignItems: 'center' }}
-              >
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt="头像"
-                    className="size-20 cursor-pointer rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex size-20 cursor-pointer flex-col items-center justify-center rounded-full border border-dashed border-ghost hover:border-[#1677ff]">
-                    <PlusOutlined className="text-lg" />
-                    <span className="mt-1 text-xs">上传头像</span>
-                  </div>
-                )}
-              </Upload>
+              <AvatarUpload
+                avatarUrl={avatarUrl}
+                size={80}
+                rounded="full"
+                label="上传头像"
+                onChange={(dataUrl) => setAvatarUrl(dataUrl)}
+              />
             </Form.Item>
 
             <div className="flex-1">

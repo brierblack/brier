@@ -19,8 +19,7 @@ use crate::entity::{
 pub struct AgentUpdate {
     pub name: Option<String>,
     pub description: Option<String>,
-    pub icon: Option<String>,
-    pub color: Option<String>,
+    pub avatar: Option<String>,
     pub runtime: Option<String>,
     pub workdir: Option<String>,
     pub visibility: Option<AgentVisibility>,
@@ -84,8 +83,7 @@ pub async fn update_agent_fields(
         work_computer_id: Set(patch.work_computer_id.map(|id| id.0).or(m.work_computer_id)),
         name: Set(patch.name.unwrap_or(m.name)),
         description: Set(patch.description.or(m.description)),
-        icon: Set(patch.icon.or(m.icon)),
-        color: Set(patch.color.or(m.color)),
+        avatar: Set(patch.avatar.or(m.avatar)),
         status: Set(m.status),
         visibility: Set(
             patch

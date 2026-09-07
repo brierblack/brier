@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { App } from 'antd';
 import { Button } from '@brierb/brier-ui';
 import { listAgents } from '@/api/generated';
-import { useWorkspace } from '@/context/WorkspaceContext';
-import { useApi } from '@/hooks/useApi';
+import { useSpace } from '@/context/SpaceContext';
+import { useRequest } from '@/hooks/useRequest';
 import {
   AutomationConfigPanel,
   type TriggerType,
@@ -16,7 +16,7 @@ import {
 const NewAutomationBody = ({ wsId }: { wsId: string }) => {
   const navigate = useNavigate();
   const { message } = App.useApp();
-  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
+  const { data: agents } = useRequest(listAgents, [wsId]);
 
   const [title, setTitle] = useState('未命名自动化');
   const [triggerType, setTriggerType] = useState<TriggerType | null>(null);
@@ -99,15 +99,15 @@ const NewAutomationBody = ({ wsId }: { wsId: string }) => {
 };
 
 const NewAutomationContent = () => {
-  const { currentWsId } = useWorkspace();
-  if (!currentWsId) {
+  const { currentSpaceId } = useSpace();
+  if (!currentSpaceId) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-muted">
         请先创建工作空间
       </div>
     );
   }
-  return <NewAutomationBody wsId={currentWsId} />;
+  return <NewAutomationBody wsId={currentSpaceId} />;
 };
 
 const NewAutomation = () => {

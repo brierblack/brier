@@ -9,9 +9,10 @@ import {
   listSessions,
 } from '@/api/generated';
 import type { Agent, AgentTask, SessionMessage, TaskStatus } from '@/api/generated';
-import { useApi } from '@/hooks/useApi';
+import { useRequest } from '@/hooks/useRequest';
 import { useTaskEvents } from '@/hooks/useTaskEvents';
-import { AgentAvatar, InputBox, MessageBubble } from './shared';
+import { Avatar } from '@brierb/brier-ui';
+import { InputBox, MessageBubble } from './shared';
 import { createOutputProjector, type OutputProjector } from './outputProjector';
 import {
   buildRunContentV2,
@@ -88,19 +89,16 @@ export const SessionThread = ({
 }) => {
   const { user } = useAuth();
 
-  const { data: sessions } = useApi(() => listSessions(wsId), [wsId]);
+  const { data: sessions } = useRequest(listSessions, [wsId]);
   const session = (sessions ?? []).find((s) => s.id === sessionId);
 
-  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
+  const { data: agents } = useRequest(listAgents, [wsId]);
   const sessionAgent = useMemo(
     () => (session ? (agents ?? []).find((a) => a.id === session.agent_id) : undefined),
     [agents, session],
   );
 
-  const { data: history } = useApi(
-    () => (sessionId ? listMessages(wsId, sessionId) : Promise.resolve([])),
-    [wsId, sessionId],
-  );
+  const { data: history } = useRequest(listMessages, [wsId, sessionId]);
   const [messages, setMessages] = useState<SessionMessage[]>([]);
   useEffect(() => {
     if (history) setMessages(history);
@@ -397,7 +395,12 @@ export const SessionThread = ({
           ))}
           {loading && (
             <div className="flex items-start gap-3">
-              <AgentAvatar agent={sessionAgent} size={32} />
+              <Avatar
+                src={sessionAgent.avatar ?? undefined}
+                shape="square"
+                size={32}
+                alt={sessionAgent.name}
+              />
               <div className="flex max-w-[75%] flex-col gap-1">
                 <div className="text-[11px] font-medium">{sessionAgent.name}</div>
                 <div className="overflow-hidden rounded-2xl rounded-bl-md border border-ghost">

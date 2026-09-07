@@ -13,11 +13,11 @@ import {
   ToolOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { Page, Table, Tag } from '@brierb/brier-ui';
+import { Avatar, Page, Table, Tag } from '@brierb/brier-ui';
 import { skills as allSkills } from '../../../../data/mockData';
 import { createSession, deleteAgent, listAgents, updateAgent } from '@/api/generated';
-import { useWorkspace } from '@/context/WorkspaceContext';
-import { useApi } from '@/hooks/useApi';
+import { useSpace } from '@/context/SpaceContext';
+import { useRequest } from '@/hooks/useRequest';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { AI_RUNTIMES, MODELS, SKILL_TYPE_MAP } from '../../../../define';
 import type { Agent, Skill } from '../../../../types';
@@ -138,22 +138,6 @@ const Sparkline = ({ data }: { data: number[] }) => {
   );
 };
 
-const AgentAvatar = ({ agent, size = 32 }: { agent: Agent; size?: number }) => {
-  return (
-    <div
-      className="flex shrink-0 items-center justify-center rounded-md"
-      style={{
-        width: size,
-        height: size,
-        backgroundColor: (agent.color ?? '#90a1b9') + '1a',
-        fontSize: size * 0.5,
-      }}
-    >
-      {agent.icon ?? '🤖'}
-    </div>
-  );
-};
-
 const OverviewTab = ({
   agent,
   runtime,
@@ -183,15 +167,7 @@ const OverviewTab = ({
     <div className="flex min-w-0 flex-1 gap-8 overflow-hidden px-4 py-3">
       <div className="w-[300px] min-w-0 shrink-0 overflow-auto rounded-xl border border-ghost">
         <div className="flex flex-col items-start gap-4 border-b border-ghost p-4">
-          <div
-            className="flex size-14 shrink-0 items-center justify-center rounded-xl text-3xl"
-            style={{
-              background: `${agent.color ?? '#90a1b9'}0d`,
-              border: `1px solid ${agent.color ?? '#90a1b9'}22`,
-            }}
-          >
-            {agent.icon ?? '🤖'}
-          </div>
+          <Avatar src={agent.avatar ?? undefined} shape="square" size={56} alt={agent.name} />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold">{agent.name}</h1>
@@ -357,7 +333,7 @@ const NewChatTab = ({
     return (
       <div className="flex h-full flex-1 flex-col overflow-hidden">
         <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6">
-          <AgentAvatar agent={agent} size={48} />
+          <Avatar src={agent.avatar ?? undefined} shape="square" size={48} alt={agent.name} />
           <div className="text-center">
             <h2 className="text-lg font-bold">和 {agent.name} 开始新会话</h2>
             <p className="mt-1 text-sm text-muted">
@@ -566,11 +542,10 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
   const [model, setModel] = useState(MODELS[0]);
   const [visibility, setVisibility] = useState('');
   const [concurrency, setConcurrency] = useState(6);
-  const [tick, setTick] = useState(0);
   // Agent 详情内"新会话"：进行中的会话（提升到本层，切换 tab 不丢失；切 Agent 时重置）
   const [newChat, setNewChat] = useState<{ sessionId: string; bootPrompt: string } | null>(null);
 
-  const { data: agents } = useApi(() => listAgents(wsId), [wsId, tick]);
+  const { data: agents, run: reloadAgents } = useRequest(listAgents, [wsId]);
 
   const agent = (agents ?? []).find((a) => a.id === id);
 
@@ -595,7 +570,7 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
         ...visibilityToBackend(visibility),
       });
       message.success('已保存');
-      setTick((t) => t + 1);
+      reloadAgents(wsId);
     } catch (e) {
       message.error(e instanceof Error ? e.message : '保存失败');
     }
@@ -607,7 +582,7 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
     try {
       await updateAgent(wsId, agent.id, { workdir });
       message.success('工作目录已保存');
-      setTick((t) => t + 1);
+      reloadAgents(wsId);
     } catch (e) {
       message.error(e instanceof Error ? e.message : '保存失败');
       throw e;
@@ -698,8 +673,8 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
 };
 
 const AgentDetailContent = () => {
-  const { currentWsId } = useWorkspace();
-  if (!currentWsId) {
+  const { currentSpaceId } = useSpace();
+  if (!currentSpaceId) {
     return (
       <Page header={<span>无可用空间</span>}>
         <div className="flex h-full items-center justify-center text-sm text-muted">
@@ -708,7 +683,7 @@ const AgentDetailContent = () => {
       </Page>
     );
   }
-  return <AgentDetailBody wsId={currentWsId} />;
+  return <AgentDetailBody wsId={currentSpaceId} />;
 };
 
 export default AgentDetailContent;

@@ -6,16 +6,16 @@ import { Layout } from './Layout';
 import { Layout as SpaceLayout } from './pages/Space';
 
 const Login = lazy(() => import('./pages/Login'));
-const New = lazy(() => import('./pages/Space/New'));
+const SpaceNew = lazy(() => import('./pages/Space/New'));
 const Session = lazy(() => import('./pages/Space/Session'));
 const SessionDetail = lazy(() => import('./pages/Space/Session/Detail'));
-const Agents = lazy(() => import('./pages/Space/Agents'));
+const AgentList = lazy(() => import('./pages/Space/Agents/List'));
 const AgentDetail = lazy(() => import('./pages/Space/Agents/Detail'));
 const NewAgent = lazy(() => import('./pages/Space/Agents/New'));
 const Team = lazy(() => import('./pages/Space/Team'));
 const TeamDetail = lazy(() => import('./pages/Space/Team/Detail'));
-const AgentTasks = lazy(() => import('./pages/Space/AgentTasks'));
-const AgentTaskDetail = lazy(() => import('./pages/Space/AgentTasks/Detail'));
+const Tasks = lazy(() => import('./pages/Space/Tasks'));
+const TaskDetail = lazy(() => import('./pages/Space/Tasks/Detail'));
 const Skills = lazy(() => import('./pages/Space/Skills'));
 const SkillDetail = lazy(() => import('./pages/Space/Skills/Detail'));
 const SkillNew = lazy(() => import('./pages/Space/Skills/New'));
@@ -31,14 +31,15 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout />}>
+              <Route index element={<Navigate to="/space/session" replace />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/space/new" element={<New />} />
+              <Route path="/space/new" element={<SpaceNew />} />
               <Route path="/space" element={<SpaceLayout />}>
                 <Route path="/space/session" element={<Session />} />
                 <Route path="/space/session/:id" element={<SessionDetail />} />
-                <Route path="/space/agent-tasks" element={<AgentTasks />} />
-                <Route path="/space/agent-tasks/:id" element={<AgentTaskDetail />} />
-                <Route path="/space/agents" element={<Agents />} />
+                <Route path="/space/tasks" element={<Tasks />} />
+                <Route path="/space/tasks/:id" element={<TaskDetail />} />
+                <Route path="/space/agents" element={<AgentList />} />
                 <Route path="/space/agents/:id" element={<AgentDetail />} />
                 <Route path="/space/agents/new" element={<NewAgent />} />
                 <Route path="/space/team" element={<Team />} />

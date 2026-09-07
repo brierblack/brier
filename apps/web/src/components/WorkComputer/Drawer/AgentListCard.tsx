@@ -18,9 +18,17 @@ export const AgentListCard = memo(({ agents }: AgentListCardProps) => (
             key={agent.id}
             className="flex cursor-pointer items-center gap-3 rounded border-b border-ghost px-4 py-3 transition-colors last:border-transparent hover:bg-[#fafafa]"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#f0f0f0] text-lg">
-              {agent.icon}
-            </div>
+            {agent.avatar ? (
+              <img
+                src={agent.avatar}
+                alt={agent.name}
+                className="size-9 shrink-0 rounded-md object-cover"
+              />
+            ) : (
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-neutral-200 text-base font-medium text-neutral-600">
+                {agent.name.charAt(0).toUpperCase()}
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <div className="text-standard font-medium">{agent.name}</div>
               <div className="truncate text-xs">{agent.desc}</div>

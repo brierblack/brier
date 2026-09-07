@@ -224,6 +224,35 @@ impl MigrationTrait for AgentWorkdirMigration {
     }
 }
 
+// ---------------------------------------------------------------------------
+// m0008: agents.icon/color → agents.avatar（Agent 头像）
+// ---------------------------------------------------------------------------
+
+const AGENT_AVATAR_SQL: &str = include_str!("../migrations/m0008_agent_avatar.sql");
+
+pub struct AgentAvatarMigration;
+
+impl MigrationName for AgentAvatarMigration {
+    fn name(&self) -> &str {
+        "agent_avatar"
+    }
+}
+
+#[async_trait]
+impl MigrationTrait for AgentAvatarMigration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared(AGENT_AVATAR_SQL)
+            .await?;
+        Ok(())
+    }
+
+    async fn down(&self, _manager: &SchemaManager) -> Result<(), DbErr> {
+        Ok(())
+    }
+}
+
 pub struct Migrator;
 
 impl MigratorTrait for Migrator {
@@ -236,6 +265,7 @@ impl MigratorTrait for Migrator {
             Box::new(AgentTasksMigration),
             Box::new(AgentSessionsMigration),
             Box::new(AgentWorkdirMigration),
+            Box::new(AgentAvatarMigration),
         ]
     }
 }

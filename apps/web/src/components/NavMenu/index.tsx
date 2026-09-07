@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { App, Avatar } from 'antd';
-import { Button, Dropdown, Select, Menu, type MenuProps } from '@brierb/brier-ui';
+import { App } from 'antd';
+import { Avatar, Button, Dropdown, Select, Menu, type MenuProps } from '@brierb/brier-ui';
 
 import {
   GithubOutlined,
@@ -23,10 +23,10 @@ import { NAV_ITEMS } from '@/define';
 import { Logo, Wordmark } from '@/components/Logo';
 import { WorkSpace } from '../WorkSpace';
 import { useAuth } from '@/context/AuthContext';
-import { useWorkspace } from '@/context/WorkspaceContext';
+import { useSpace } from '@/context/SpaceContext';
 import { deleteSession, listSessions } from '@/api/generated';
 import type { Session } from '@/api/generated';
-import { useApi } from '@/hooks/useApi';
+import { useRequest } from '@/hooks/useRequest';
 
 const menuItems: MenuProps['items'] = [
   {
@@ -42,7 +42,7 @@ const menuItems: MenuProps['items'] = [
       </div>
     ),
   },
-  { key: 'agent-tasks', icon: <ScheduleOutlined />, label: 'Agent 事项', extra: <PlusOutlined /> },
+  { key: 'tasks', icon: <ScheduleOutlined />, label: 'Agent 事项', extra: <PlusOutlined /> },
   { key: 'automation', icon: <ControlOutlined />, label: '自动化' },
   { type: 'divider' },
   ...NAV_ITEMS.map((item) => ({
@@ -57,22 +57,18 @@ export const NavMenu = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, login, logout } = useAuth();
-  const { currentWsId } = useWorkspace();
+  const { currentSpaceId } = useSpace();
   const { message, modal } = App.useApp();
   const [recentExpanded, setRecentExpanded] = useState(true);
   const [olderExpanded, setOlderExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [, setShowShadow] = useState(false);
 
-  // 会话列表（当前空间；路由变化时回到列表可触发重取）
-  const [tick, setTick] = useState(0);
-  const { data: sessions } = useApi(
-    () => (currentWsId ? listSessions(currentWsId) : Promise.resolve([])),
-    [currentWsId, location.pathname, tick],
-  );
+  // 会话列表（当前空间；删除会话后手动 run() 重取）
+  const { data: sessions, run } = useRequest(listSessions, [currentSpaceId]);
 
   const handleDeleteSession = (s: Session) => {
-    if (!currentWsId) return;
+    if (!currentSpaceId) return;
     modal.confirm({
       title: `删除会话「${s.title}」`,
       content: '删除后该会话及其消息将一并移除。',
@@ -81,9 +77,9 @@ export const NavMenu = () => {
       cancelText: '取消',
       onOk: async () => {
         try {
-          await deleteSession(currentWsId, s.id);
+          await deleteSession(currentSpaceId, s.id);
           message.success('已删除');
-          setTick((t) => t + 1);
+          run(currentSpaceId);
           if (location.pathname === `/space/session/${s.id}`) navigate('/space/session');
         } catch (e) {
           message.error(e instanceof Error ? e.message : '删除失败');

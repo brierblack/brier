@@ -8,8 +8,8 @@ import {
   listComputerAgents,
   listWorkComputers,
 } from '@/api/generated';
-import type { Agent, ComputerAgent, WorkComputer } from '@/types';
-import { useApi } from '@/hooks/useApi';
+import type { ComputerAgent, WorkComputer } from '@/types';
+import { useRequest } from '@/hooks/useRequest';
 import { useWorkComputerEvents } from '@/hooks/useWorkComputerEvents';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AddComputerModal } from '../AddModal';
@@ -25,10 +25,9 @@ interface WorkComputerDrawerProps {
   onClose: () => void;
 }
 
-const DrawerBody = ({ refreshTick }: { refreshTick: number }) => {
+const DrawerBody = () => {
   const { message, modal } = App.useApp();
-  const [localTick, setLocalTick] = useState(0);
-  const { data: workComputers, loading } = useApi(listWorkComputers, [refreshTick, localTick]);
+  const { data: workComputers, loading, run } = useRequest(listWorkComputers, []);
 
   const [selectedComputerId, setSelectedComputerId] = useState<string | undefined>();
   const [token, setToken] = useState<string | undefined>(undefined);
@@ -42,10 +41,7 @@ const DrawerBody = ({ refreshTick }: { refreshTick: number }) => {
   );
 
   // 当前选中电脑上绑定的 Agent（随选中电脑变化重新拉取）
-  const { data: agents } = useApi<Agent[]>(
-    () => (selectedComputer ? listComputerAgents(selectedComputer.id) : Promise.resolve([])),
-    [selectedComputer?.id],
-  );
+  const { data: agents } = useRequest(listComputerAgents, [selectedComputer?.id]);
 
   // Agent（领域）→ 卡片展示模型（UI）映射
   const computerAgents = useMemo<ComputerAgent[]>(
@@ -54,7 +50,7 @@ const DrawerBody = ({ refreshTick }: { refreshTick: number }) => {
         id: a.id,
         name: a.name,
         desc: a.description ?? '',
-        icon: a.icon ?? '🤖',
+        avatar: a.avatar ?? null,
         status: a.status,
         runtime: a.runtime ?? '',
         lastActive: a.last_active ?? '',
@@ -92,7 +88,7 @@ const DrawerBody = ({ refreshTick }: { refreshTick: number }) => {
           await deleteWorkComputer(computer.id);
           message.success('已删除');
           if (selectedComputerId === computer.id) setSelectedComputerId(undefined);
-          setLocalTick((t) => t + 1);
+          run();
         } catch (e) {
           message.error(e instanceof Error ? e.message : '删除失败');
         } finally {
@@ -192,7 +188,7 @@ const DrawerBody = ({ refreshTick }: { refreshTick: number }) => {
 
 export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) => {
   const { message } = App.useApp();
-  const [refreshTick, setRefreshTick] = useState(0);
+  const [, setRefreshTick] = useState(0);
   const [addModalOpen, setAddModalOpen] = useState(false);
 
   // SSE 事件驱动：电脑上线/下线/删除时刷新一次列表，替代定时轮询
@@ -222,7 +218,7 @@ export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) =
         </Space>
       }
     >
-      {open && <DrawerBody refreshTick={refreshTick} />}
+      {open && <DrawerBody />}
       <AddComputerModal open={addModalOpen} onClose={() => setAddModalOpen(false)} />
     </Drawer>
   );

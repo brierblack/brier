@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { App, Steps, Form, Input, Select, Switch, type UploadProps } from 'antd';
+import { App, Steps, Form, Input, Select, Switch } from 'antd';
 import { Button } from '@brierb/brier-ui';
 import {
   ArrowLeftOutlined,
@@ -89,16 +89,6 @@ const New = () => {
     }
   };
 
-  const uploadProps: UploadProps = {
-    showUploadList: false,
-    beforeUpload: (file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => setAvatarUrl(e.target?.result as string);
-      reader.readAsDataURL(file);
-      return false;
-    },
-  };
-
   return (
     <div className="flex h-dvh flex-col bg-surface">
       {/* Header: back button (left) + centered title */}
@@ -142,7 +132,11 @@ const New = () => {
                     noStyle
                     rules={[{ required: true, message: '请上传空间头像' }]}
                   >
-                    <AvatarUpload size={32} avatarUrl={avatarUrl} {...uploadProps} />
+                    <AvatarUpload
+                      size={32}
+                      avatarUrl={avatarUrl}
+                      onChange={(dataUrl) => setAvatarUrl(dataUrl)}
+                    />
                   </Form.Item>
                   <Form.Item
                     name="name"

@@ -66,7 +66,7 @@ export interface ComputerAgent {
   id: string;
   name: string;
   desc: string;
-  icon: string;
+  avatar?: string | null;
   status: 'online' | 'offline' | 'connecting';
   runtime: string;
   lastActive: string;

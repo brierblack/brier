@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { App, Form, Input, Select, Upload, type FormInstance } from 'antd';
-import { Button } from '@brierb/brier-ui';
-
 import {
   CrownOutlined,
   EyeOutlined,
@@ -10,10 +8,10 @@ import {
   TeamOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
+import { Avatar, Button, Modal } from '@brierb/brier-ui';
 import { listAgents } from '@/api/generated';
-import { useWorkspace } from '@/context/WorkspaceContext';
-import { useApi } from '@/hooks/useApi';
-import { Modal } from '@brierb/brier-ui';
+import { useSpace } from '@/context/SpaceContext';
+import { useRequest } from '@/hooks/useRequest';
 
 interface CreateTeamModalProps {
   open: boolean;
@@ -42,18 +40,13 @@ const TeamFormBodyInner = ({
   teamName: string | undefined;
   wsId: string;
 }) => {
-  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
+  const { data: agents } = useRequest(listAgents, [wsId]);
 
   const agentOptions = (agents ?? []).map((a) => ({
     value: a.id,
     label: (
       <span className="flex items-center gap-2">
-        <span
-          className="flex size-5 items-center justify-center rounded text-xs"
-          style={{ backgroundColor: (a.color ?? '#999999') + '1a' }}
-        >
-          {a.icon ?? '🤖'}
-        </span>
+        <Avatar src={a.avatar ?? undefined} shape="square" size={24} alt={a.name} />
         {a.name}
       </span>
     ),
@@ -186,8 +179,8 @@ const TeamFormBody = ({
   setAvatarUrl: (v?: string) => void;
   teamName: string | undefined;
 }) => {
-  const { currentWsId } = useWorkspace();
-  if (!currentWsId) {
+  const { currentSpaceId } = useSpace();
+  if (!currentSpaceId) {
     return <div className="py-10 text-center text-standard">请先创建工作空间</div>;
   }
   return (
@@ -198,7 +191,7 @@ const TeamFormBody = ({
       avatarUrl={avatarUrl}
       setAvatarUrl={setAvatarUrl}
       teamName={teamName}
-      wsId={currentWsId}
+      wsId={currentSpaceId}
     />
   );
 };

@@ -54,13 +54,11 @@ export type WorkspaceId = string;
 
 export interface Agent {
   /** @nullable */
-  color?: string | null;
+  avatar?: string | null;
   created_at: string;
   creator_id: UserId;
   /** @nullable */
   description?: string | null;
-  /** @nullable */
-  icon?: string | null;
   id: AgentId;
   /** @nullable */
   last_active?: string | null;
@@ -212,11 +210,9 @@ export interface ConnectTokenResponse {
 
 export interface CreateAgentRequest {
   /** @nullable */
-  color?: string | null;
+  avatar?: string | null;
   /** @nullable */
   description?: string | null;
-  /** @nullable */
-  icon?: string | null;
   name: string;
   public_scope?: null | PublicScope;
   /** @nullable */
@@ -241,12 +237,22 @@ export interface CreateTaskRequest {
      * @nullable
      */
   command?: string | null;
+  /**
+     * 执行形态：pty（交互，可回答提问）/ pipe（非交互，默认）。
+     * @nullable
+     */
+  exec_mode?: string | null;
   priority?: null | TaskPriority;
   /**
      * 自然语言指令（AI runtime 模式：CLI 会拼成该 runtime 的执行参数）。
      * @nullable
      */
   prompt?: string | null;
+  /**
+     * 续接的 CLI 会话 ID（如 opencode session，由前端从上一轮事件解析后回传）；缺省不续接。
+     * @nullable
+     */
+  resume_session_id?: string | null;
   title: string;
 }
 
@@ -344,11 +350,9 @@ export interface SessionMessage {
  */
 export interface UpdateAgentRequest {
   /** @nullable */
-  color?: string | null;
+  avatar?: string | null;
   /** @nullable */
   description?: string | null;
-  /** @nullable */
-  icon?: string | null;
   /** @nullable */
   name?: string | null;
   public_scope?: null | PublicScope;

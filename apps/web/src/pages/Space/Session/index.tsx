@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
 import { createSession, listAgents } from '@/api/generated';
-import { useWorkspace } from '@/context/WorkspaceContext';
-import { useApi } from '@/hooks/useApi';
+import { useSpace } from '@/context/SpaceContext';
+import { useRequest } from '@/hooks/useRequest';
 import type { Agent } from '../../../types';
 import { InputBox, pickDefaultAgent } from './shared';
 
@@ -15,7 +15,7 @@ const SUGGESTIONS = [
 ];
 
 const NewSessionBoard = ({ wsId }: { wsId: string }) => {
-  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
+  const { data: agents } = useRequest(listAgents, [wsId]);
   const navigate = useNavigate();
   const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(undefined);
   const [input, setInput] = useState('');
@@ -92,15 +92,15 @@ const NewSessionBoard = ({ wsId }: { wsId: string }) => {
 };
 
 const NewSessionContent = () => {
-  const { currentWsId } = useWorkspace();
-  if (!currentWsId) {
+  const { currentSpaceId } = useSpace();
+  if (!currentSpaceId) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-muted">
         请先创建工作空间
       </div>
     );
   }
-  return <NewSessionBoard wsId={currentWsId} />;
+  return <NewSessionBoard wsId={currentSpaceId} />;
 };
 
 const NewSession = () => {

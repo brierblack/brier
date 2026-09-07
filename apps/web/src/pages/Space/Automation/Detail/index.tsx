@@ -12,8 +12,8 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { listAgents } from '@/api/generated';
-import { useWorkspace } from '@/context/WorkspaceContext';
-import { useApi } from '@/hooks/useApi';
+import { useSpace } from '@/context/SpaceContext';
+import { useRequest } from '@/hooks/useRequest';
 import {
   AutomationConfigPanel,
   type TriggerType,
@@ -289,7 +289,7 @@ const BarChart = ({ data }: { data: DailyStat[] }) => {
 const ConfigTabBody = ({ automation, wsId }: { automation: AutomationDetail; wsId: string }) => {
   const navigate = useNavigate();
   const { message } = App.useApp();
-  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
+  const { data: agents } = useRequest(listAgents, [wsId]);
   const [title, setTitle] = useState(automation.title);
   const [triggerType, setTriggerType] = useState<TriggerType>(automation.triggerType);
   const [timerConfig, setTimerConfig] = useState<TimerConfig>(automation.timerConfig);
@@ -334,11 +334,11 @@ const ConfigTabBody = ({ automation, wsId }: { automation: AutomationDetail; wsI
 };
 
 const ConfigTab = ({ automation }: { automation: AutomationDetail }) => {
-  const { currentWsId } = useWorkspace();
-  if (!currentWsId) {
+  const { currentSpaceId } = useSpace();
+  if (!currentSpaceId) {
     return <div className="py-10 text-center text-sm text-muted">请先创建工作空间</div>;
   }
-  return <ConfigTabBody automation={automation} wsId={currentWsId} />;
+  return <ConfigTabBody automation={automation} wsId={currentSpaceId} />;
 };
 
 const ExecutionRecordsTab = () => {

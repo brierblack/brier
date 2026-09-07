@@ -16,9 +16,8 @@ import {
 } from '@ant-design/icons';
 import { Page, Tag } from '@brierb/brier-ui';
 import { getTeam } from '@/api/generated';
-import { useWorkspace } from '@/context/WorkspaceContext';
-import { useApi } from '@/hooks/useApi';
-import type { AgentTeam } from '../../../../types';
+import { useSpace } from '@/context/SpaceContext';
+import { useRequest } from '@/hooks/useRequest';
 
 interface MemberDetail {
   id: number;
@@ -227,10 +226,7 @@ const TeamDetailBody = ({ wsId }: { wsId: string }) => {
   const [activeTab, setActiveTab] = useState('members');
   const [sharing, setSharing] = useState('space');
 
-  const { data: team } = useApi<AgentTeam | undefined>(
-    () => (id ? getTeam(wsId, id) : Promise.resolve(undefined)),
-    [wsId, id],
-  );
+  const { data: team } = useRequest(getTeam, [wsId, id]);
 
   if (!id || !team) {
     return (
@@ -318,8 +314,8 @@ const TeamDetailBody = ({ wsId }: { wsId: string }) => {
 
 const TeamDetailContent = () => {
   const navigate = useNavigate();
-  const { currentWsId } = useWorkspace();
-  if (!currentWsId) {
+  const { currentSpaceId } = useSpace();
+  if (!currentSpaceId) {
     return (
       <Page header={<span className="">团队未找到</span>}>
         <div className="flex h-full items-center justify-center">
@@ -331,7 +327,7 @@ const TeamDetailContent = () => {
       </Page>
     );
   }
-  return <TeamDetailBody wsId={currentWsId} />;
+  return <TeamDetailBody wsId={currentSpaceId} />;
 };
 
 const TeamDetail = () => {

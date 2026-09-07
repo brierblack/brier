@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Button, Page } from '@brierb/brier-ui';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useWorkspace } from '@/context/WorkspaceContext';
+import { useSpace } from '@/context/SpaceContext';
 import { listAgents, listSessions } from '@/api/generated';
-import { useApi } from '@/hooks/useApi';
+import { useRequest } from '@/hooks/useRequest';
 import { SessionThread } from '../thread';
 
 const SessionDetailBody = ({ wsId }: { wsId: string }) => {
@@ -12,10 +11,10 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { data: sessions } = useApi(() => listSessions(wsId), [wsId]);
+  const { data: sessions } = useRequest(listSessions, [wsId]);
   const session = (sessions ?? []).find((s) => s.id === id);
 
-  const { data: agents } = useApi(() => listAgents(wsId), [wsId]);
+  const { data: agents } = useRequest(listAgents, [wsId]);
   // 会话绑定 Agent（会话创建时选定，会话内不切换）
   const sessionAgent = useMemo(
     () => (session ? (agents ?? []).find((a) => a.id === session.agent_id) : undefined),
@@ -41,21 +40,7 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
   const title = session.title || '新会话';
 
   return (
-    <Page
-      header={
-        <div className="flex items-center gap-3 py-2.5">
-          <Button bordered={false} onClick={() => navigate('/space/session')}>
-            <ArrowLeftOutlined className="shrink-0 cursor-pointer text-standard hover:text-brand" />
-          </Button>
-          <div className="min-w-0 flex-1">
-            <h1 className="m-0 truncate text-lg font-bold">{title}</h1>
-            <p className="mt-0.5 text-xs text-muted">
-              {sessionAgent ? `与 ${sessionAgent.name} 的会话` : '会话'}
-            </p>
-          </div>
-        </div>
-      }
-    >
+    <Page title={title}>
       <SessionThread
         key={session.id}
         wsId={wsId}
@@ -67,8 +52,8 @@ const SessionDetailBody = ({ wsId }: { wsId: string }) => {
 };
 
 const SessionDetailContent = () => {
-  const { currentWsId } = useWorkspace();
-  if (!currentWsId) {
+  const { currentSpaceId } = useSpace();
+  if (!currentSpaceId) {
     return (
       <Page header={<span>无可用空间</span>}>
         <div className="flex h-full items-center justify-center text-sm text-muted">
@@ -77,7 +62,7 @@ const SessionDetailContent = () => {
       </Page>
     );
   }
-  return <SessionDetailBody wsId={currentWsId} />;
+  return <SessionDetailBody wsId={currentSpaceId} />;
 };
 
 const SessionDetail = () => {

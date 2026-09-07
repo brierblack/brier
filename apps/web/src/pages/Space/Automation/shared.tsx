@@ -14,7 +14,7 @@ import {
   CheckOutlined,
 } from '@ant-design/icons';
 import type { Agent } from '../../../types';
-import { Dropdown } from '@brierb/brier-ui';
+import { Avatar, Dropdown } from '@brierb/brier-ui';
 
 export type TriggerType = 'timer' | 'github_push' | 'github_pullrequest' | 'github_comments';
 export type ActionType = 'invoke_agent' | 'create_agent_task';
@@ -533,7 +533,7 @@ export const InstructionEditor = ({
             value: a.id,
             label: (
               <span className="flex items-center gap-2">
-                <span>{a.icon ?? a.name.charAt(0).toUpperCase()}</span>
+                <Avatar src={a.avatar ?? undefined} shape="square" size={24} alt={a.name} />
                 <span>{a.name}</span>
               </span>
             ),

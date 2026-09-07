@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Avatar, Input } from 'antd';
-import { Button, Dropdown } from '@brierb/brier-ui';
+import { Input } from 'antd';
+import { Avatar, Button, Dropdown } from '@brierb/brier-ui';
 import { ArrowUpOutlined, DownOutlined, CheckOutlined } from '@ant-design/icons';
 import { useAuth } from '@/context/AuthContext';
 import { getTask } from '@/api/generated';
@@ -109,23 +109,6 @@ const FullToolOutputs = ({ wsId, taskId }: { wsId?: string; taskId?: string | nu
             ))}
         </div>
       )}
-    </div>
-  );
-};
-
-export const AgentAvatar = ({ agent, size = 32 }: { agent: Agent; size?: number }) => {
-  const color = agent.color ?? '#666666';
-  return (
-    <div
-      className="flex shrink-0 items-center justify-center rounded-md"
-      style={{
-        width: size,
-        height: size,
-        backgroundColor: color + '1a',
-        fontSize: size * 0.5,
-      }}
-    >
-      {agent.icon ?? agent.name.charAt(0).toUpperCase()}
     </div>
   );
 };
@@ -287,7 +270,7 @@ export const MessageBubble = ({
     const summaryLong = run.summary.length > 1600;
     return (
       <div className="flex items-start gap-3">
-        <AgentAvatar agent={agent} size={32} />
+        <Avatar src={agent.avatar ?? undefined} shape="square" size={32} alt={agent.name} />
         <div className="flex max-w-[85%] flex-col gap-1">
           <div className="text-[11px] font-medium">{agent.name}</div>
           <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-2.5">
@@ -332,7 +315,7 @@ export const MessageBubble = ({
 
   return (
     <div className="flex items-start gap-3">
-      <AgentAvatar agent={agent} size={32} />
+      <Avatar src={agent.avatar ?? undefined} shape="square" size={32} alt={agent.name} />
       <div className="flex max-w-[75%] flex-col gap-1">
         <div className="text-[11px] font-medium">{agent.name}</div>
         <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-2.5">
@@ -346,7 +329,7 @@ export const MessageBubble = ({
 export const TypingIndicator = ({ agent }: { agent: Agent }) => {
   return (
     <div className="flex items-start gap-3">
-      <AgentAvatar agent={agent} size={32} />
+      <Avatar src={agent.avatar ?? undefined} shape="square" size={32} alt={agent.name} />
       <div className="flex flex-col gap-1">
         <div className="text-[11px] font-medium">{agent.name}</div>
         <div className="rounded-2xl rounded-bl-md border border-ghost px-4 py-3">
@@ -380,7 +363,7 @@ export const AgentSelector = ({
           key: String(a.id),
           label: (
             <div className="flex items-center gap-2.5">
-              <AgentAvatar agent={a} size={20} />
+              <Avatar src={a.avatar ?? undefined} shape="square" size={20} alt={a.name} />
               <span className="text-standard font-medium">{a.name}</span>
               {a.id === agent.id && <CheckOutlined className="ml-auto text-xs text-brand" />}
             </div>
@@ -393,7 +376,7 @@ export const AgentSelector = ({
       }}
     >
       <div className="flex cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1 transition-colors">
-        <AgentAvatar agent={agent} size={20} />
+        <Avatar src={agent.avatar ?? undefined} shape="square" size={20} alt={agent.name} />
         <span className="text-xs font-medium">{agent.name}</span>
         <DownOutlined className="text-[9px]" />
       </div>

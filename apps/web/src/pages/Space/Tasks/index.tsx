@@ -11,9 +11,9 @@ import {
 } from '@ant-design/icons';
 import { createTask, listAgents, listTasks } from '@/api/generated';
 import type { Agent, TaskPriority, TaskStatus } from '@/api/generated';
-import { useApi } from '@/hooks/useApi';
+import { useRequest } from '@/hooks/useRequest';
 import { useTaskEvents } from '@/hooks/useTaskEvents';
-import { useWorkspace } from '@/context/WorkspaceContext';
+import { useSpace } from '@/context/SpaceContext';
 import { RuntimeBadge } from '../../../components/RuntimeIcon';
 import { formatTime, PRIORITY_META, SOURCE_LABEL, STATUS_META } from './data';
 
@@ -38,7 +38,7 @@ const NewTaskModal = ({
   onCreated: (taskId: string) => void;
 }) => {
   const { message } = App.useApp();
-  const { currentWsId } = useWorkspace();
+  const { currentSpaceId } = useSpace();
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
 
@@ -49,12 +49,12 @@ const NewTaskModal = ({
   );
 
   const handleOk = async () => {
-    if (!currentWsId) return;
+    if (!currentSpaceId) return;
     try {
       const values = await form.validateFields();
       setSubmitting(true);
       const prompt = (values.prompt as string).trim();
-      const task = await createTask(currentWsId, {
+      const task = await createTask(currentSpaceId, {
         agent_id: values.agentId,
         title: prompt.slice(0, 40),
         prompt,
@@ -129,24 +129,17 @@ const NewTaskModal = ({
 const AgentTasks = () => {
   const navigate = useNavigate();
   const { message } = App.useApp();
-  const { currentWsId } = useWorkspace();
+  const { currentSpaceId } = useSpace();
   const [statusFilter, setStatusFilter] = useState<TaskStatus | 'all'>('all');
   const [search, setSearch] = useState('');
-  const [tick, setTick] = useState(0);
   const [newOpen, setNewOpen] = useState(false);
 
-  const { data: tasks } = useApi(
-    () => (currentWsId ? listTasks(currentWsId) : Promise.resolve([])),
-    [currentWsId, tick],
-  );
-  const { data: agents } = useApi(
-    () => (currentWsId ? listAgents(currentWsId) : Promise.resolve([])),
-    [currentWsId],
-  );
+  const { data: tasks, run: reloadTasks } = useRequest(listTasks, [currentSpaceId]);
+  const { data: agents } = useRequest(listAgents, [currentSpaceId]);
 
   // 任务状态事件驱动刷新（其他端创建/完成时自动更新）；输出事件不触发列表刷新
-  useTaskEvents(currentWsId !== undefined, currentWsId, (e) => {
-    if (e.type === 'task_updated') setTick((t) => t + 1);
+  useTaskEvents(currentSpaceId !== undefined, currentSpaceId, (e) => {
+    if (e.type === 'task_updated') reloadTasks(currentSpaceId);
   });
 
   const agentMap = useMemo(() => new Map((agents ?? []).map((a) => [a.id, a])), [agents]);
@@ -176,7 +169,7 @@ const AgentTasks = () => {
   }, [tasks, statusFilter, search]);
 
   const handleNew = () => {
-    if (!currentWsId) {
+    if (!currentSpaceId) {
       message.warning('请先创建工作空间');
       return;
     }
@@ -241,7 +234,7 @@ const AgentTasks = () => {
             return (
               <div
                 key={task.id}
-                onClick={() => navigate(`/space/agent-tasks/${task.id}`)}
+                onClick={() => navigate(`/space/tasks/${task.id}`)}
                 className="flex cursor-pointer items-start gap-3 rounded-xl border border-ghost bg-white p-4 transition-shadow hover:shadow-md"
               >
                 <div
@@ -303,8 +296,8 @@ const AgentTasks = () => {
         onClose={() => setNewOpen(false)}
         agents={agents ?? []}
         onCreated={(taskId) => {
-          setTick((t) => t + 1);
-          navigate(`/space/agent-tasks/${taskId}`);
+          reloadTasks(currentSpaceId);
+          navigate(`/space/tasks/${taskId}`);
         }}
       />
     </Page>

@@ -1,4 +1,5 @@
 export { Button, type ButtonProps } from './components/Button';
+export { Avatar, type AvatarProps } from './components/Avatar';
 export { Card, type CardProps } from './components/Card';
 export { Drawer, type DrawerProps } from './components/Drawer';
 export { Dropdown, type DropdownProps } from './components/Dropdown';

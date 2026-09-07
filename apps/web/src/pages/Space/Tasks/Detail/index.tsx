@@ -11,9 +11,9 @@ import {
 } from '@ant-design/icons';
 import { cancelTask, getTask, listAgents } from '@/api/generated';
 import type { AgentTask } from '@/api/generated';
-import { useApi } from '@/hooks/useApi';
+import { useRequest } from '@/hooks/useRequest';
 import { useTaskEvents } from '@/hooks/useTaskEvents';
-import { useWorkspace } from '@/context/WorkspaceContext';
+import { useSpace } from '@/context/SpaceContext';
 import { RuntimeBadge } from '../../../../components/RuntimeIcon';
 import { formatTime, isActiveStatus, PRIORITY_META, SOURCE_LABEL, STATUS_META } from '../data';
 
@@ -30,18 +30,11 @@ const AgentTaskDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { message, modal } = App.useApp();
-  const { currentWsId } = useWorkspace();
-  const [refresh, setRefresh] = useState(0);
+  const { currentSpaceId } = useSpace();
   const outputRef = useRef<HTMLPreElement>(null);
 
   // 快照：初载与终态校准走一次全量 GET；执行中的增量由 SSE 推送实时追加
-  const { data: fetched } = useApi(
-    () =>
-      currentWsId && id
-        ? getTask(currentWsId, id)
-        : Promise.reject(new Error('workspace 或 task 缺失')),
-    [currentWsId, id, refresh],
-  );
+  const { data: fetched, run: reloadTask } = useRequest(getTask, [currentSpaceId, id]);
   const [task, setTask] = useState<AgentTask | undefined>(undefined);
   useEffect(() => {
     if (fetched) setTask(fetched);
@@ -53,10 +46,7 @@ const AgentTaskDetail = () => {
     outputLenRef.current = task?.output.length ?? 0;
   }, [task]);
 
-  const { data: agents } = useApi(
-    () => (currentWsId ? listAgents(currentWsId) : Promise.resolve([])),
-    [currentWsId],
-  );
+  const { data: agents } = useRequest(listAgents, [currentSpaceId]);
   const agent = useMemo(
     () => (task ? (agents ?? []).find((a) => a.id === task.agent_id) : undefined),
     [agents, task],
@@ -65,7 +55,7 @@ const AgentTaskDetail = () => {
   const active = !!task && isActiveStatus(task.status);
 
   // SSE 实时订阅：task_output 增量追加；task_updated 终态触发一次全量校准
-  useTaskEvents(currentWsId !== undefined && active, currentWsId, (e) => {
+  useTaskEvents(currentSpaceId !== undefined && active, currentSpaceId, (e) => {
     if (e.task_id !== id) return;
     if (e.type === 'task_output') {
       if (e.offset === outputLenRef.current) {
@@ -73,12 +63,12 @@ const AgentTaskDetail = () => {
         setTask((prev) => (prev ? { ...prev, output: prev.output + e.data } : prev));
       } else if (e.offset > outputLenRef.current) {
         // 中间缺块（断线重连丢帧等）：触发一次全量校准
-        setRefresh((r) => r + 1);
+        reloadTask(currentSpaceId, id);
       }
       // offset < 已渲染长度：快照已包含该块，跳过避免重复
     } else if (!isActiveStatus(e.status)) {
       // 终态：拉一次权威全量（含 exit_code / error / 完整 output）
-      setRefresh((r) => r + 1);
+      reloadTask(currentSpaceId, id);
     }
   });
 
@@ -95,7 +85,7 @@ const AgentTaskDetail = () => {
         <div className="flex h-full items-center justify-center">
           <div className="text-center">
             <p className="mb-3 text-standard">未找到该事项或加载中</p>
-            <Button onClick={() => navigate('/space/agent-tasks')}>返回列表</Button>
+            <Button onClick={() => navigate('/space/tasks')}>返回列表</Button>
           </div>
         </div>
       </Page>
@@ -106,7 +96,7 @@ const AgentTaskDetail = () => {
   const priority = PRIORITY_META[task.priority];
 
   const handleCancel = () => {
-    if (!currentWsId) return;
+    if (!currentSpaceId) return;
     modal.confirm({
       title: '取消任务',
       content: '确定取消该任务吗？正在执行的进程会被终止。',
@@ -115,9 +105,9 @@ const AgentTaskDetail = () => {
       cancelText: '再想想',
       onOk: async () => {
         try {
-          await cancelTask(currentWsId, task.id);
+          await cancelTask(currentSpaceId, task.id);
           message.success('任务已取消');
-          setRefresh((r) => r + 1);
+          reloadTask(currentSpaceId, id);
         } catch (e) {
           message.error(e instanceof Error ? e.message : '取消失败');
         }
@@ -129,7 +119,7 @@ const AgentTaskDetail = () => {
     <Page
       header={
         <div className="flex items-center gap-3 py-2.5">
-          <Button bordered={false} onClick={() => navigate('/space/agent-tasks')}>
+          <Button bordered={false} onClick={() => navigate('/space/tasks')}>
             <ArrowLeftOutlined className="shrink-0 cursor-pointer text-standard hover:text-brand" />
           </Button>
           <div className="min-w-0 flex-1">

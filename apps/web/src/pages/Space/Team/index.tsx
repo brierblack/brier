@@ -12,8 +12,8 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { CreateTeamModal } from './CreateModal';
 import { listTeams } from '@/api/generated';
-import { useWorkspace } from '@/context/WorkspaceContext';
-import { useApi } from '@/hooks/useApi';
+import { useSpace } from '@/context/SpaceContext';
+import { useRequest } from '@/hooks/useRequest';
 import { MODE_MAP } from '../../../define';
 import type { AgentTeam } from '../../../types';
 
@@ -34,7 +34,7 @@ const TeamsTable = ({ wsId }: { wsId: string }) => {
   const [search, setSearch] = useState('');
   const [activitySort, setActivitySort] = useState('recent');
 
-  const { data: teams } = useApi(() => listTeams(wsId), [wsId]);
+  const { data: teams } = useRequest(listTeams, [wsId]);
 
   const filteredTeams = useMemo(() => {
     let result = teams ?? [];
@@ -174,8 +174,8 @@ const TeamsTable = ({ wsId }: { wsId: string }) => {
 };
 
 const TeamContent = () => {
-  const { currentWsId } = useWorkspace();
-  if (!currentWsId) {
+  const { currentSpaceId } = useSpace();
+  if (!currentSpaceId) {
     return (
       <Page title="Agent 团队" subtitle="编排多 Agent 协作，实现复杂工作流">
         <div className="flex h-full items-center justify-center text-standard">
@@ -184,7 +184,7 @@ const TeamContent = () => {
       </Page>
     );
   }
-  return <TeamsTable wsId={currentWsId} />;
+  return <TeamsTable wsId={currentSpaceId} />;
 };
 
 const Team = () => {

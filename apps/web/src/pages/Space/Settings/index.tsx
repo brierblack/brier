@@ -13,7 +13,7 @@ import { Page, Tag } from '@brierb/brier-ui';
 import { skills } from '../../../data/mockData';
 import { SKILL_TYPE_MAP } from '../../../define';
 import { getWorkspace } from '@/api/generated';
-import { useWorkspace } from '@/context/WorkspaceContext';
+import { useSpace } from '@/context/SpaceContext';
 
 const SETTINGS_NAV = [
   { key: 'basic', label: '基础信息', icon: <UserOutlined /> },
@@ -40,7 +40,7 @@ const Settings = () => {
   const [activeKey, setActiveKey] = useState('basic');
   const [form] = Form.useForm();
   const [avatarUrl, setAvatarUrl] = useState('');
-  const { currentWsId } = useWorkspace();
+  const { currentSpaceId } = useSpace();
   const [publicSpace, setPublicSpace] = useState(false);
   const [skillSearch, setSkillSearch] = useState('');
   const [enabledSkills, setEnabledSkills] = useState<Record<string, boolean>>(
@@ -59,9 +59,9 @@ const Settings = () => {
 
   // 加载当前选中的空间（与顶部工作空间切换器联动），回填表单
   useEffect(() => {
-    if (!currentWsId) return;
+    if (!currentSpaceId) return;
     let cancelled = false;
-    getWorkspace(currentWsId)
+    getWorkspace(currentSpaceId)
       .then((detail) => {
         if (cancelled) return;
         setAvatarUrl(detail.avatar ?? '');
@@ -78,7 +78,7 @@ const Settings = () => {
     return () => {
       cancelled = true;
     };
-  }, [currentWsId]);
+  }, [currentSpaceId]);
 
   return (
     <Page
