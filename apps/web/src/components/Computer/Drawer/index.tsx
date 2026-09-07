@@ -186,7 +186,7 @@ const DrawerBody = () => {
   );
 };
 
-export const WorkComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) => {
+export const ComputerDrawer = ({ open, onClose }: WorkComputerDrawerProps) => {
   const { message } = App.useApp();
   const [, setRefreshTick] = useState(0);
   const [addModalOpen, setAddModalOpen] = useState(false);

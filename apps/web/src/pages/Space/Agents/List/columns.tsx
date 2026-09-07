@@ -39,7 +39,7 @@ export const getColumns: (props: AgentColumnsProps) => ColumnsType<Agent> = (pro
           className="flex cursor-pointer items-center gap-2.5"
           onClick={() => navigate(`/space/agents/${record.id}`)}
         >
-          <Avatar src={record.avatar ?? undefined} shape="square" size={36} alt={record.name} />
+          <Avatar src={record.avatar} shape="square" size={36} alt={record.name} />
           <div>
             <div className="font-medium transition-colors hover:text-brand">{record.name}</div>
           </div>

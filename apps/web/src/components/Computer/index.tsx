@@ -1,2 +1,2 @@
-export { WorkComputerDrawer } from './Drawer';
+export { ComputerDrawer } from './Drawer';
 export { AddComputerModal } from './AddModal';

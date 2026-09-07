@@ -6,7 +6,7 @@ import { Button, Page, Select, Table } from '@brierb/brier-ui';
 import { deleteAgent, listAgents, listWorkComputers, type Agent } from '@/api/generated';
 import { useRequest } from '@/hooks/useRequest';
 import { useSpace } from '@/context/SpaceContext';
-import { WorkComputerDrawer } from '@/components/WorkComputer';
+import { ComputerDrawer } from '@/components/Computer';
 import { getColumns } from './columns';
 
 const List = () => {
@@ -105,7 +105,7 @@ const List = () => {
           pagination={false}
         />
       </div>
-      <WorkComputerDrawer open={computerDrawerOpen} onClose={() => setComputerDrawerOpen(false)} />
+      <ComputerDrawer open={computerDrawerOpen} onClose={() => setComputerDrawerOpen(false)} />
     </Page>
   );
 };
