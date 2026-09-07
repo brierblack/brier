@@ -1,11 +1,13 @@
 import { memo, useState } from 'react';
-import { Upload } from 'antd';
+import { Spin, Upload } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { compressImage } from './utils';
 
 interface AvatarUploadProps {
-  avatarUrl?: string;
+  /** 受控值：当前头像 dataURL（配合 Form.Item name 使用时由表单注入） */
+  value?: string;
   size?: number;
+  /** 压缩完成后回调（写入表单字段 / 外部受控状态） */
   onChange?: (dataUrl: string) => void;
   accept?: string;
   rounded?: 'sm' | 'md' | 'full';
@@ -20,14 +22,14 @@ const ROUNDED_CLASS: Record<NonNullable<AvatarUploadProps['rounded']>, string> =
 
 export const AvatarUpload = memo(
   ({
-    avatarUrl,
+    value,
     size = 80,
     onChange,
     accept = 'image/*',
     rounded = 'md',
     label,
   }: AvatarUploadProps) => {
-    const [, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     return (
       <Upload
@@ -47,23 +49,25 @@ export const AvatarUpload = memo(
         }}
         className="flex items-center"
       >
-        <div
-          style={{ width: size, height: size }}
-          className={`relative flex cursor-pointer items-center justify-center overflow-hidden border border-dashed border-ghost transition-colors hover:border-brand ${ROUNDED_CLASS[rounded]}`}
-        >
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt="avatar"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          ) : (
-            <>
-              <PlusOutlined className="text-lg" />
-              {label && <span className="mt-1 text-xs">{label}</span>}
-            </>
-          )}
-        </div>
+        <Spin spinning={loading} size="small">
+          <div
+            style={{ width: size, height: size }}
+            className={`relative flex cursor-pointer items-center justify-center overflow-hidden border border-dashed border-ghost transition-colors hover:border-brand ${ROUNDED_CLASS[rounded]}`}
+          >
+            {value ? (
+              <img
+                src={value}
+                alt="avatar"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <>
+                <PlusOutlined className="text-lg" />
+                {label && <span className="mt-1 text-xs">{label}</span>}
+              </>
+            )}
+          </div>
+        </Spin>
       </Upload>
     );
   },

@@ -112,7 +112,6 @@ const NewAgentContent = () => {
   const [visibility, setVisibility] = useState<string>('personal');
   const [extensions, setExtensions] = useState<MockExtension[]>(DEFAULT_EXTENSIONS);
   const [extSearch, setExtSearch] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const { data: workComputers } = useRequest(listWorkComputers, []);
@@ -148,7 +147,7 @@ const NewAgentContent = () => {
       await createAgent(currentSpaceId, {
         name: values.name,
         description: values.desc,
-        avatar: avatarUrl || null,
+        avatar: values.avatar || null,
         visibility: scope.visibility,
         public_scope: scope.public_scope,
         runtime: values.runtime,
@@ -229,14 +228,8 @@ const NewAgentContent = () => {
         {/* 基本信息 */}
         <SectionCard title="基本信息">
           <div className="flex gap-5">
-            <Form.Item label="头像" className="!mb-0 shrink-0">
-              <AvatarUpload
-                avatarUrl={avatarUrl}
-                size={80}
-                rounded="full"
-                label="上传头像"
-                onChange={(dataUrl) => setAvatarUrl(dataUrl)}
-              />
+            <Form.Item name="avatar" label="头像" className="!mb-0 shrink-0">
+              <AvatarUpload size={80} rounded="full" label="上传头像" />
             </Form.Item>
 
             <div className="flex-1">

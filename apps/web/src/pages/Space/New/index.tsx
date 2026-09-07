@@ -29,17 +29,11 @@ const INSTRUCTION_TEMPLATE = `# 空间指令
 - 遇到阻塞及时反馈
 - 尊重他人的代码和文档`;
 
-const normFile = (e: { fileList?: unknown[] } | unknown[]) => {
-  if (Array.isArray(e)) return e;
-  return (e as { fileList?: unknown[] })?.fileList;
-};
-
 const New = () => {
   const navigate = useNavigate();
   const { message } = App.useApp();
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
   const [repos, setRepos] = useState<RepoInfo[]>([]);
 
@@ -72,7 +66,7 @@ const New = () => {
         name: values.name,
         slug: values.identifier,
         description: values.description ?? null,
-        avatar: avatarUrl || null,
+        avatar: values.avatar ?? null,
         instructions: values.instructions ?? null,
         repositories: values.repositories ?? [],
         auto_pr_review: values.autoPrReview ?? false,
@@ -127,16 +121,10 @@ const New = () => {
                 <div className="flex items-center gap-2">
                   <Form.Item
                     name="avatar"
-                    valuePropName="fileList"
-                    getValueFromEvent={normFile}
                     noStyle
                     rules={[{ required: true, message: '请上传空间头像' }]}
                   >
-                    <AvatarUpload
-                      size={32}
-                      avatarUrl={avatarUrl}
-                      onChange={(dataUrl) => setAvatarUrl(dataUrl)}
-                    />
+                    <AvatarUpload size={32} />
                   </Form.Item>
                   <Form.Item
                     name="name"
