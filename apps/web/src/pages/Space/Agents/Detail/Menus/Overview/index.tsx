@@ -52,7 +52,7 @@ export const Overview = memo(
             <div className="mb-2 text-standard font-bold">属性</div>
             <div>
               <PropertyRow label="工作电脑">
-                <Button bordered={false}>{agent.work_computer_id ?? '—'}</Button>
+                <Button bordered={false}>{agent.work_computer_name ?? '—'}</Button>
               </PropertyRow>
               <PropertyRow label="运行时">
                 <Select

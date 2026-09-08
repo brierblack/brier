@@ -25,6 +25,8 @@ pub struct AgentUpdate {
     pub visibility: Option<AgentVisibility>,
     pub public_scope: Option<PublicScope>,
     pub work_computer_id: Option<WorkComputerId>,
+    /// 绑定/换绑时写入的电脑名（仅当 work_computer_id 为 Some 时生效）。
+    pub work_computer_name: Option<String>,
 }
 
 // ---- Agent ----
@@ -81,6 +83,12 @@ pub async fn update_agent_fields(
         workspace_id: Set(m.workspace_id),
         creator_id: Set(m.creator_id),
         work_computer_id: Set(patch.work_computer_id.map(|id| id.0).or(m.work_computer_id)),
+        // 冗余的电脑名：绑定/换绑时随 id 一起写入（路由层保证已查出最新名字），未绑定时保留原值
+        work_computer_name: Set(if patch.work_computer_id.is_some() {
+            patch.work_computer_name.or(m.work_computer_name)
+        } else {
+            m.work_computer_name
+        }),
         name: Set(patch.name.unwrap_or(m.name)),
         description: Set(patch.description.or(m.description)),
         avatar: Set(patch.avatar.or(m.avatar)),
@@ -321,11 +329,21 @@ pub async fn mark_work_computer_offline(
     Ok(())
 }
 
-/// 删除工作电脑（关联 agents.work_computer_id 由 FK ON DELETE SET NULL 自动清空）。
+/// 删除工作电脑（关联 agents.work_computer_id 由 FK ON DELETE SET NULL 自动清空，
+/// 冗余的 work_computer_name 在此同步置空，避免残留已删除电脑的名字）。
 pub async fn delete_work_computer(
     db: &DatabaseConnection,
     computer_id: WorkComputerId,
 ) -> Result<()> {
+    agent::Entity::update_many()
+        .set(agent::ActiveModel {
+            work_computer_name: Set(None),
+            ..Default::default()
+        })
+        .filter(agent::Column::WorkComputerId.eq(computer_id.0))
+        .exec(db)
+        .await
+        .map_err(DbErrExt::to_brier)?;
     work_computer::Entity::delete_by_id(computer_id.0)
         .exec(db)
         .await

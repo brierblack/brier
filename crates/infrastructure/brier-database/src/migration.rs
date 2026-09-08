@@ -253,6 +253,36 @@ impl MigrationTrait for AgentAvatarMigration {
     }
 }
 
+// ---------------------------------------------------------------------------
+// m0009: agents.work_computer_name（工作电脑名冗余，绑定时写入）
+// ---------------------------------------------------------------------------
+
+const AGENT_WORK_COMPUTER_NAME_SQL: &str =
+    include_str!("../migrations/m0009_agent_work_computer_name.sql");
+
+pub struct AgentWorkComputerNameMigration;
+
+impl MigrationName for AgentWorkComputerNameMigration {
+    fn name(&self) -> &str {
+        "agent_work_computer_name"
+    }
+}
+
+#[async_trait]
+impl MigrationTrait for AgentWorkComputerNameMigration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared(AGENT_WORK_COMPUTER_NAME_SQL)
+            .await?;
+        Ok(())
+    }
+
+    async fn down(&self, _manager: &SchemaManager) -> Result<(), DbErr> {
+        Ok(())
+    }
+}
+
 pub struct Migrator;
 
 impl MigratorTrait for Migrator {
@@ -266,6 +296,7 @@ impl MigratorTrait for Migrator {
             Box::new(AgentSessionsMigration),
             Box::new(AgentWorkdirMigration),
             Box::new(AgentAvatarMigration),
+            Box::new(AgentWorkComputerNameMigration),
         ]
     }
 }

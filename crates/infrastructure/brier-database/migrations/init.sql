@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS agents (
     workspace_id     UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
     creator_id       UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     work_computer_id UUID REFERENCES work_computers(id) ON DELETE SET NULL,
+    work_computer_name TEXT,
     name             TEXT NOT NULL,
     description      TEXT,
     avatar           TEXT,

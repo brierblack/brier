@@ -94,11 +94,31 @@ pub(crate) async fn create_agent(
     let user = current_user(&state, &headers).await?;
     check_workspace_access(&state, &workspace_id, &user.id).await?;
     let now = Utc::now();
+
+    // 绑定电脑时校验目标电脑存在且属于当前用户，并冗余电脑名
+    let (computer_id, computer_name) = match req.work_computer_id.as_deref() {
+        None => (None, None),
+        Some(s) => {
+            let cid = s
+                .parse()
+                .map(WorkComputerId)
+                .map_err(|_| ApiError(BrierError::Validation("invalid work_computer_id".into())))?;
+            let wc = brier_agent::repository::get_work_computer(&state.db, cid)
+                .await?
+                .ok_or_else(|| ApiError(BrierError::NotFound("work computer not found".into())))?;
+            if wc.user_id != user.id {
+                return Err(ApiError(BrierError::NotFound("work computer not found".into())));
+            }
+            (Some(cid), Some(wc.name))
+        }
+    };
+
     let agent = Agent {
         id: AgentId::new(),
         workspace_id,
         creator_id: user.id,
-        work_computer_id: req.work_computer_id.and_then(|s| s.parse().ok()).map(brier_type::id::WorkComputerId),
+        work_computer_id: computer_id,
+        work_computer_name: computer_name,
         name: req.name,
         description: req.description,
         avatar: req.avatar,
@@ -188,21 +208,23 @@ pub(crate) async fn update_agent(
     let user = current_user(&state, &headers).await?;
     check_workspace_access(&state, &workspace_id, &user.id).await?;
 
-    // 换绑电脑时校验目标电脑存在且属于当前用户
-    let computer_id = req
-        .work_computer_id
-        .as_deref()
-        .map(|s| s.parse().map(WorkComputerId))
-        .transpose()
-        .map_err(|_| ApiError(BrierError::Validation("invalid work_computer_id".into())))?;
-    if let Some(cid) = computer_id {
-        let wc = brier_agent::repository::get_work_computer(&state.db, cid)
-            .await?
-            .ok_or_else(|| ApiError(BrierError::NotFound("work computer not found".into())))?;
-        if wc.user_id != user.id {
-            return Err(ApiError(BrierError::NotFound("work computer not found".into())));
+    // 换绑电脑时校验目标电脑存在且属于当前用户，同时取电脑名冗余写入
+    let (computer_id, computer_name) = match req.work_computer_id.as_deref() {
+        None => (None, None),
+        Some(s) => {
+            let cid = s
+                .parse()
+                .map(WorkComputerId)
+                .map_err(|_| ApiError(BrierError::Validation("invalid work_computer_id".into())))?;
+            let wc = brier_agent::repository::get_work_computer(&state.db, cid)
+                .await?
+                .ok_or_else(|| ApiError(BrierError::NotFound("work computer not found".into())))?;
+            if wc.user_id != user.id {
+                return Err(ApiError(BrierError::NotFound("work computer not found".into())));
+            }
+            (Some(cid), Some(wc.name))
         }
-    }
+    };
 
     let updated = brier_agent::repository::update_agent_fields(
         &state.db,
@@ -216,6 +238,7 @@ pub(crate) async fn update_agent(
             visibility: req.visibility,
             public_scope: req.public_scope,
             work_computer_id: computer_id,
+            work_computer_name: computer_name,
         },
         Utc::now(),
     )

@@ -8,6 +8,7 @@ pub struct Model {
     pub workspace_id: Uuid,
     pub creator_id: Uuid,
     pub work_computer_id: Option<Uuid>,
+    pub work_computer_name: Option<String>,
     pub name: String,
     pub description: Option<String>,
     pub avatar: Option<String>,

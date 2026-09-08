@@ -71,6 +71,11 @@ export interface Agent {
   visibility: AgentVisibility;
   work_computer_id?: null | WorkComputerId;
   /**
+     * 绑定的工作电脑名（冗余字段，绑定/换绑时随 id 一起写入，便于详情页展示）。
+     * @nullable
+     */
+  work_computer_name?: string | null;
+  /**
      * Agent 任务执行的工作目录（daemon 在该目录 spawn runtime），空则继承 daemon 目录。
      * @nullable
      */

@@ -10,6 +10,8 @@ pub struct Agent {
     pub workspace_id: WorkspaceId,
     pub creator_id: UserId,
     pub work_computer_id: Option<WorkComputerId>,
+    /// 绑定的工作电脑名（冗余字段，绑定/换绑时随 id 一起写入，便于详情页展示）。
+    pub work_computer_name: Option<String>,
     pub name: String,
     pub description: Option<String>,
     pub avatar: Option<String>,
