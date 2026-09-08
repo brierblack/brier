@@ -298,12 +298,12 @@ const OverviewTab = ({
  *  切换 tab 再回来不丢上下文，且历史已有回复时不会重复下发首条。 */
 const NewChatTab = ({
   agent,
-  wsId,
+  currentSpaceId,
   chat,
   onStart,
 }: {
   agent: Agent;
-  wsId: string;
+  currentSpaceId: string;
   /** 进行中的会话（null = 未开始，展示"新会话"首屏） */
   chat: { sessionId: string; bootPrompt: string } | null;
   onStart: (c: { sessionId: string; bootPrompt: string }) => void;
@@ -318,7 +318,7 @@ const NewChatTab = ({
     if (!text || submitting) return;
     setSubmitting(true);
     try {
-      const session = await createSession(wsId, {
+      const session = await createSession(currentSpaceId, {
         agent_id: agent.id,
         first_message: text,
       });
@@ -360,7 +360,7 @@ const NewChatTab = ({
   return (
     <SessionThread
       key={chat.sessionId}
-      wsId={wsId}
+      wsId={currentSpaceId}
       sessionId={chat.sessionId}
       autoRun={{ prompt: chat.bootPrompt }}
     />
@@ -533,9 +533,10 @@ const WorkDirTab = ({
   );
 };
 
-const AgentDetailBody = ({ wsId }: { wsId: string }) => {
-  const { id } = useParams();
+const Detail = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const { currentSpaceId } = useSpace();
   const { message, modal } = App.useApp();
   const [activeKey, setActiveKey] = useState('overview');
   const [runtime, setRuntime] = useState<string | undefined>(undefined);
@@ -545,7 +546,7 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
   // Agent 详情内"新会话"：进行中的会话（提升到本层，切换 tab 不丢失；切 Agent 时重置）
   const [newChat, setNewChat] = useState<{ sessionId: string; bootPrompt: string } | null>(null);
 
-  const { data: agents, run: reloadAgents } = useRequest(listAgents, [wsId]);
+  const { data: agents, run: reloadAgents } = useRequest(listAgents, [currentSpaceId]);
 
   const agent = (agents ?? []).find((a) => a.id === id);
 
@@ -565,12 +566,12 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
   const handleSaveConfig = async () => {
     if (!agent) return;
     try {
-      await updateAgent(wsId, agent.id, {
+      await updateAgent(currentSpaceId, agent.id, {
         runtime: runtime || null,
         ...visibilityToBackend(visibility),
       });
       message.success('已保存');
-      reloadAgents(wsId);
+      reloadAgents(currentSpaceId);
     } catch (e) {
       message.error(e instanceof Error ? e.message : '保存失败');
     }
@@ -580,9 +581,9 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
   const handleSaveWorkdir = async (workdir: string) => {
     if (!agent) return;
     try {
-      await updateAgent(wsId, agent.id, { workdir });
+      await updateAgent(currentSpaceId, agent.id, { workdir });
       message.success('工作目录已保存');
-      reloadAgents(wsId);
+      reloadAgents(currentSpaceId);
     } catch (e) {
       message.error(e instanceof Error ? e.message : '保存失败');
       throw e;
@@ -600,7 +601,7 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
       cancelText: '取消',
       onOk: async () => {
         try {
-          await deleteAgent(wsId, agent.id);
+          await deleteAgent(currentSpaceId, agent.id);
           message.success('已删除');
           navigate('/space/agents');
         } catch (e) {
@@ -661,7 +662,12 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
           />
         )}
         {activeKey === 'new-chat' && (
-          <NewChatTab agent={agent} wsId={wsId} chat={newChat} onStart={(c) => setNewChat(c)} />
+          <NewChatTab
+            agent={agent}
+            currentSpaceId={currentSpaceId}
+            chat={newChat}
+            onStart={(c) => setNewChat(c)}
+          />
         )}
         {activeKey === 'conversations' && <ConversationsTab />}
         {activeKey === 'skills' && <SkillsTab />}
@@ -672,18 +678,4 @@ const AgentDetailBody = ({ wsId }: { wsId: string }) => {
   );
 };
 
-const AgentDetailContent = () => {
-  const { currentSpaceId } = useSpace();
-  if (!currentSpaceId) {
-    return (
-      <Page header={<span>无可用空间</span>}>
-        <div className="flex h-full items-center justify-center text-sm text-muted">
-          请先创建工作空间
-        </div>
-      </Page>
-    );
-  }
-  return <AgentDetailBody wsId={currentSpaceId} />;
-};
-
-export default AgentDetailContent;
+export default Detail;
