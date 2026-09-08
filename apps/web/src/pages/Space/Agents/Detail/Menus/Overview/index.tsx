@@ -101,7 +101,7 @@ export const Overview = memo(
       });
     };
     return (
-      <div className="flex flex-1 gap-8 overflow-hidden px-4 py-3">
+      <div className="flex h-full flex-1 gap-8 overflow-hidden px-4 py-3">
         <div className="w-75 shrink-0 overflow-auto rounded-xl border border-ghost">
           <div className="flex flex-col items-start gap-2 border-b border-ghost p-4">
             <Avatar src={agent.avatar} shape="square" size={56} />
