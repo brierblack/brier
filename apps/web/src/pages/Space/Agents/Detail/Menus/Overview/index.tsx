@@ -170,7 +170,7 @@ export const Overview = memo(
                 <Select
                   value={concurrency.value}
                   onChange={concurrency.change}
-                  options={Array.from({ length: 20 }, (_, i) => ({
+                  options={Array.from({ length: 10 }, (_, i) => ({
                     value: i + 1,
                     label: String(i + 1),
                   }))}
