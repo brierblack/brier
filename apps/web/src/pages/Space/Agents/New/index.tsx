@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react';
-import { useRequest } from '@/hooks/useRequest';
 import { useNavigate } from 'react-router-dom';
 import { App, Form, Input, Select, Space } from 'antd';
-import { Button } from '@brierb/brier-ui';
 import {
   CheckOutlined,
   DesktopOutlined,
@@ -15,13 +13,14 @@ import {
   AppstoreOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
-import { Page } from '@brierb/brier-ui';
+import { Button, Page } from '@brierb/brier-ui';
 import { createAgent, listWorkComputers } from '@/api/generated';
 import type { AgentVisibility, PublicScope } from '@/api/generated';
-import { AvatarUpload } from '@/components/AvatarUpload';
 import { useSpace } from '@/context/SpaceContext';
-import { RuntimeBadge } from '../../../../components/RuntimeIcon';
-import { AI_RUNTIMES, MODELS } from '../../../../define';
+import { useRequest } from '@/hooks/useRequest';
+import { AvatarUpload } from '@/components/AvatarUpload';
+import { RuntimeBadge } from '@/components/RuntimeIcon';
+import { AI_RUNTIMES, MODELS } from '@/define';
 
 // 前端可见性选项 → 后端 AgentVisibility / PublicScope
 const VISIBILITY_TO_SCOPE: Record<

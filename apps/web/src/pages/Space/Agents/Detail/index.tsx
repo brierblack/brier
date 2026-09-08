@@ -165,7 +165,7 @@ const OverviewTab = ({
 }) => {
   return (
     <div className="flex min-w-0 flex-1 gap-8 overflow-hidden px-4 py-3">
-      <div className="w-[300px] min-w-0 shrink-0 overflow-auto rounded-xl border border-ghost">
+      <div className="w-75 min-w-0 shrink-0 overflow-auto rounded-xl border border-ghost">
         <div className="flex flex-col items-start gap-4 border-b border-ghost p-4">
           <Avatar src={agent.avatar ?? undefined} shape="square" size={56} alt={agent.name} />
           <div className="min-w-0 flex-1">
