@@ -38,6 +38,8 @@ pub struct UpdateAgentRequest {
     pub runtime: Option<String>,
     /// 显式模型名；null = 清空（由 runtime 决定），缺省 = 保持不变。
     pub model: Option<Option<String>>,
+    /// 并发数；缺省 = 保持不变（创建默认 3，创建接口不暴露该字段）。
+    pub concurrency: Option<i32>,
     /// 任务执行工作目录（daemon 在该目录 spawn runtime）。
     pub workdir: Option<String>,
     pub work_computer_id: Option<String>,
@@ -241,6 +243,7 @@ pub(crate) async fn update_agent(
             avatar: req.avatar,
             runtime: req.runtime,
             model: req.model,
+            concurrency: req.concurrency,
             workdir: req.workdir,
             visibility: req.visibility,
             public_scope: req.public_scope,

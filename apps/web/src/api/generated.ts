@@ -368,6 +368,11 @@ export interface SessionMessage {
 export interface UpdateAgentRequest {
   /** @nullable */
   avatar?: string | null;
+  /**
+     * 并发数；缺省 = 保持不变（创建默认 3，创建接口不暴露该字段）。
+     * @nullable
+     */
+  concurrency?: number | null;
   /** @nullable */
   description?: string | null;
   /**

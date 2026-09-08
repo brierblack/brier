@@ -80,6 +80,16 @@ export const Overview = memo(
       },
     );
 
+    /** 并发：切换即保存（创建时默认 3，无创建入口） */
+    const concurrency = useImmediateSave<number>(agent.concurrency, async (next) => {
+      try {
+        await updateAgent(currentSpaceId, agent.id, { concurrency: next });
+        message.success(`并发已设为 ${next}`);
+      } catch (e) {
+        failTip(e);
+      }
+    });
+
     /** 删除 Agent：确认后调 DELETE，成功后返回列表 */
     const handleDelete = () => {
       if (!agent) return;
@@ -157,7 +167,15 @@ export const Overview = memo(
                 )}
               </PropertyRow>
               <PropertyRow label="并发">
-                <span className="tabular-nums">{agent.concurrency}</span>
+                <Select
+                  value={concurrency.value}
+                  onChange={concurrency.change}
+                  options={Array.from({ length: 20 }, (_, i) => ({
+                    value: i + 1,
+                    label: String(i + 1),
+                  }))}
+                  button={{ bordered: false }}
+                />
               </PropertyRow>
             </div>
           </div>

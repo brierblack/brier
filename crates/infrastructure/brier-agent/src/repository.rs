@@ -23,6 +23,8 @@ pub struct AgentUpdate {
     pub runtime: Option<String>,
     /// 显式模型名；Some(None) = 清空（由 runtime 决定），None = 保持不变。
     pub model: Option<Option<String>>,
+    /// 并发数；None = 保持不变。
+    pub concurrency: Option<i32>,
     pub workdir: Option<String>,
     pub visibility: Option<AgentVisibility>,
     pub public_scope: Option<PublicScope>,
@@ -107,7 +109,7 @@ pub async fn update_agent_fields(
             Some(next) => next.clone(),
             None => m.model,
         }),
-        concurrency: Set(m.concurrency),
+        concurrency: Set(patch.concurrency.unwrap_or(m.concurrency)),
         workdir: Set(patch.workdir.or(m.workdir)),
         last_active: Set(m.last_active),
         created_at: Set(m.created_at),
