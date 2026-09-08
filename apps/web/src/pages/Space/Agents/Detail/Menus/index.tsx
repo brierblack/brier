@@ -1,7 +1,7 @@
 import { memo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Menu } from '@brierb/brier-ui';
-import { listAgents } from '@/api/generated';
+import { getAgent } from '@/api/generated';
 import { useRequest } from '@/hooks/useRequest';
 import { useSpace } from '@/context/SpaceContext';
 import { MENU_ITEMS } from './config';
@@ -17,9 +17,11 @@ export const Menus = memo(() => {
   const { currentSpaceId } = useSpace();
   const [activeKey, setActiveKey] = useState('overview');
 
-  const { data: agents } = useRequest(listAgents, [currentSpaceId]);
+  const { data: agent, error } = useRequest(getAgent, [currentSpaceId, id]);
 
-  const agent = (agents ?? []).find((a) => a.id === id);
+  if (error) {
+    return 'Agent 不存在或已被删除';
+  }
 
   if (!agent) {
     return '读取 Agent 配置中';
