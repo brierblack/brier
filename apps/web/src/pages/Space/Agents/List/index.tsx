@@ -26,30 +26,33 @@ const List = () => {
   }, []);
 
   /** 删除 Agent：确认后调 DELETE 并从列表移除 */
-  const handleDelete = (agent: Agent) => {
-    modal.confirm({
-      title: `删除 Agent「${agent.name}」`,
-      content: '删除后该 Agent 将从空间移除，无法再被指派或下发任务。确定删除吗？',
-      okText: '删除',
-      okButtonProps: { danger: true },
-      cancelText: '取消',
-      onOk: async () => {
-        try {
-          await deleteAgent(currentSpaceId, agent.id);
-          message.success('已删除');
-          runAgents(currentSpaceId);
-        } catch (e) {
-          message.error(e instanceof Error ? e.message : '删除失败');
-        }
-      },
-    });
-  };
+  const handleDelete = useCallback(
+    (agent: Agent) => {
+      modal.confirm({
+        title: `删除 Agent「${agent.name}」`,
+        content: '删除后该 Agent 将从空间移除，无法再被指派或下发任务。确定删除吗？',
+        okText: '删除',
+        okButtonProps: { danger: true },
+        cancelText: '取消',
+        onOk: async () => {
+          try {
+            await deleteAgent(currentSpaceId, agent.id);
+            message.success('已删除');
+            runAgents(currentSpaceId);
+          } catch (e) {
+            message.error(e instanceof Error ? e.message : '删除失败');
+          }
+        },
+      });
+    },
+    [currentSpaceId, message, runAgents],
+  );
 
   const columns = useMemo(() => getColumns({ navigate, handleDelete }), [handleDelete]);
   const rowKey = useMemo(() => (row: Agent) => row.id, []);
   const onRow = useMemo(
     () => (row: Agent) => ({ onClick: () => navigate(`/space/agents/${row.id}`) }),
-    [],
+    [navigate],
   );
 
   const filteredAgents = useMemo(
@@ -84,7 +87,7 @@ const List = () => {
           <Input
             placeholder="搜索 Agent 名称..."
             prefix={<SearchOutlined />}
-            className="w-[320px]!"
+            className="w-xs!"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
           />
