@@ -4,7 +4,7 @@ import { Menu } from '@brierb/brier-ui';
 import { Logo, Word } from '@/components/Logo';
 import { SpaceSelect } from '@/components/SpaceSelect';
 import { UserSetting } from '@/components/UserSetting';
-import { NAV_ITEMS } from './nav';
+import { NAV_ITEMS } from './config';
 import { SessionList } from './SessionList';
 
 export const NavMenu = memo(() => {

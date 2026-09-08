@@ -51,7 +51,9 @@ const List = () => {
   const columns = useMemo(() => getColumns({ navigate, handleDelete }), [handleDelete]);
   const rowKey = useMemo(() => (row: Agent) => row.id, []);
   const onRow = useMemo(
-    () => (row: Agent) => ({ onClick: () => navigate(`/space/agents/${row.id}`) }),
+    () => (row: Agent) => ({
+      onClick: () => navigate(`/space/agents/${row.id}?agentName=${row.name}`),
+    }),
     [navigate],
   );
 
