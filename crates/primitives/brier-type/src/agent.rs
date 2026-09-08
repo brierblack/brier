@@ -19,6 +19,8 @@ pub struct Agent {
     pub visibility: AgentVisibility,
     pub public_scope: Option<PublicScope>,
     pub runtime: Option<String>,
+    /// 显式指定的模型名；空（NULL）表示不指定、由 runtime 自己决定。
+    pub model: Option<String>,
     /// Agent 任务执行的工作目录（daemon 在该目录 spawn runtime），空则继承 daemon 目录。
     pub workdir: Option<String>,
     pub last_active: Option<DateTime<Utc>>,

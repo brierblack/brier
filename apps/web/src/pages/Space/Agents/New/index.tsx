@@ -13,14 +13,14 @@ import {
   AppstoreOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
-import { Button, Page } from '@brierb/brier-ui';
+import { Button, Page, Select as ButtonSelect } from '@brierb/brier-ui';
 import { createAgent, listWorkComputers } from '@/api/generated';
 import type { AgentVisibility, PublicScope } from '@/api/generated';
 import { useSpace } from '@/context/SpaceContext';
 import { useRequest } from '@/hooks/useRequest';
 import { AvatarUpload } from '@/components/AvatarUpload';
 import { RuntimeBadge } from '@/components/RuntimeIcon';
-import { AI_RUNTIMES, MODELS } from '@/define';
+import { AI_RUNTIMES, MODEL_OPTIONS } from '@/define';
 
 // 前端可见性选项 → 后端 AgentVisibility / PublicScope
 const VISIBILITY_TO_SCOPE: Record<
@@ -150,6 +150,7 @@ const NewAgentContent = () => {
         visibility: scope.visibility,
         public_scope: scope.public_scope,
         runtime: values.runtime,
+        model: values.model ?? null,
         work_computer_id: values.workComputer ?? null,
       });
       message.success('Agent 创建成功');
@@ -186,7 +187,12 @@ const NewAgentContent = () => {
         </Space>
       }
     >
-      <Form form={form} layout="vertical" className="!mx-auto max-w-[720px] !p-5">
+      <Form
+        form={form}
+        layout="vertical"
+        className="!mx-auto max-w-[720px] !p-5"
+        initialValues={{ model: null }}
+      >
         {/* 运行环境 */}
         <SectionCard title="运行环境">
           <Form.Item
@@ -246,13 +252,8 @@ const NewAgentContent = () => {
 
               <Form.Item label="模型">
                 <Form.Item name="model" noStyle>
-                  <Select
-                    placeholder="不指定则由 runtime 自己决定"
-                    allowClear
-                    options={MODELS.map((m) => ({ label: m, value: m }))}
-                  />
+                  <ButtonSelect button={{}} options={MODEL_OPTIONS} />
                 </Form.Item>
-                <div className="mt-1 text-xs">不指定则由 runtime 自己决定</div>
               </Form.Item>
             </div>
           </div>

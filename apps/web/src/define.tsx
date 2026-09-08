@@ -33,6 +33,14 @@ export const PAGE_TITLES: Record<PageKey, { title: string; subtitle: string }> =
 
 export const MODELS = ['GPT-4o', 'GPT-4o mini', 'Claude 3.5 Sonnet', 'DeepSeek V3', 'Qwen Max'];
 /**
+ * Agent 模型下拉选项：null（首项）表示不显式指定，由 runtime 自己决定；
+ * 其余为候选模型目录，暂不支持手动输入自定义模型名。
+ */
+export const MODEL_OPTIONS: { label: string; value: string | null }[] = [
+  { label: '由 runtime 自己决定', value: null },
+  ...MODELS.map((m) => ({ label: m, value: m })),
+];
+/**
  * 支持的 AI Runtime 注册表（与 brier-cli `RUNTIME_REGISTRY` 保持一致）。
  * 新建 Agent 时若电脑未上报 runtimes，用它作为兜底选项。
  */

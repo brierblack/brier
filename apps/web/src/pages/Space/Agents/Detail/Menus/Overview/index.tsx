@@ -1,10 +1,10 @@
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { App, InputNumber } from 'antd';
 import { Avatar, Button, Select } from '@brierb/brier-ui';
 import { SPARKLINE_DATA, VISIBILITY_OPTIONS } from '../config';
-import { deleteAgent, type Agent } from '@/api/generated';
+import { deleteAgent, updateAgent, type Agent } from '@/api/generated';
 import { RuntimeBadge } from '@/components/RuntimeIcon';
-import { AI_RUNTIMES, MODELS } from '@/define';
+import { AI_RUNTIMES, MODEL_OPTIONS } from '@/define';
 import { StatusBadge } from '@/components/StatusBadge';
 import { PropertyRow } from './PropertyRow';
 import { Sparkline } from './Sparkline';
@@ -14,6 +14,26 @@ export const Overview = memo(
   ({ agent, currentSpaceId }: { agent: Agent; currentSpaceId: string }) => {
     const navigate = useNavigate();
     const { modal, message } = App.useApp();
+
+    /** 模型：本地受控 + 跟随真实字段；null = 由 runtime 自己决定 */
+    const [model, setModel] = useState<string | null>(agent.model ?? null);
+    useEffect(() => {
+      setModel(agent.model ?? null);
+    }, [agent.model]);
+
+    /** 选择模型即保存；清空（null）表示不指定、由 runtime 决定 */
+    const handleModelChange = async (value?: string | null) => {
+      const next = value ?? null;
+      const prev = model;
+      setModel(next);
+      try {
+        await updateAgent(currentSpaceId, agent.id, { model: next });
+        message.success(next ? `已设为 ${next}` : '已改为由 runtime 自己决定');
+      } catch (e) {
+        setModel(prev);
+        message.error(e instanceof Error ? e.message : '保存失败');
+      }
+    };
     /** 删除 Agent：确认后调 DELETE，成功后返回列表 */
     const handleDelete = () => {
       if (!agent) return;
@@ -67,10 +87,10 @@ export const Overview = memo(
               </PropertyRow>
               <PropertyRow label="模型">
                 <Select
-                  options={MODELS.map((m) => ({ value: m, label: m }))}
-                  button={{
-                    bordered: false,
-                  }}
+                  value={model}
+                  onChange={handleModelChange}
+                  options={MODEL_OPTIONS}
+                  button={{ bordered: false }}
                 />
               </PropertyRow>
               <PropertyRow label="可见性">

@@ -283,6 +283,35 @@ impl MigrationTrait for AgentWorkComputerNameMigration {
     }
 }
 
+// ---------------------------------------------------------------------------
+// m0010: agents.model（显式指定的模型名，NULL=由 runtime 自己决定）
+// ---------------------------------------------------------------------------
+
+const AGENT_MODEL_SQL: &str = include_str!("../migrations/m0010_agent_model.sql");
+
+pub struct AgentModelMigration;
+
+impl MigrationName for AgentModelMigration {
+    fn name(&self) -> &str {
+        "agent_model"
+    }
+}
+
+#[async_trait]
+impl MigrationTrait for AgentModelMigration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared(AGENT_MODEL_SQL)
+            .await?;
+        Ok(())
+    }
+
+    async fn down(&self, _manager: &SchemaManager) -> Result<(), DbErr> {
+        Ok(())
+    }
+}
+
 pub struct Migrator;
 
 impl MigratorTrait for Migrator {
@@ -297,6 +326,7 @@ impl MigratorTrait for Migrator {
             Box::new(AgentWorkdirMigration),
             Box::new(AgentAvatarMigration),
             Box::new(AgentWorkComputerNameMigration),
+            Box::new(AgentModelMigration),
         ]
     }
 }

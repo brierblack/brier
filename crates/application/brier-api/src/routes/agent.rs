@@ -22,10 +22,12 @@ pub struct CreateAgentRequest {
     pub visibility: Option<AgentVisibility>,
     pub public_scope: Option<PublicScope>,
     pub runtime: Option<String>,
+    /// 显式模型名；缺省/null = 不指定，由 runtime 自己决定。
+    pub model: Option<String>,
     pub work_computer_id: Option<String>,
 }
 
-/// Agent 字段级更新（缺省字段保持不变）。
+/// Agent 字段级更新（缺省字段保持不变；model 传 null 表示清空为"由 runtime 决定"）。
 #[derive(Deserialize, utoipa::ToSchema)]
 pub struct UpdateAgentRequest {
     pub name: Option<String>,
@@ -34,6 +36,8 @@ pub struct UpdateAgentRequest {
     pub visibility: Option<AgentVisibility>,
     pub public_scope: Option<PublicScope>,
     pub runtime: Option<String>,
+    /// 显式模型名；null = 清空（由 runtime 决定），缺省 = 保持不变。
+    pub model: Option<Option<String>>,
     /// 任务执行工作目录（daemon 在该目录 spawn runtime）。
     pub workdir: Option<String>,
     pub work_computer_id: Option<String>,
@@ -126,6 +130,7 @@ pub(crate) async fn create_agent(
         visibility: req.visibility.unwrap_or(AgentVisibility::Private),
         public_scope: req.public_scope,
         runtime: req.runtime,
+        model: req.model,
         workdir: None,
         last_active: None,
         created_at: now,
@@ -234,6 +239,7 @@ pub(crate) async fn update_agent(
             description: req.description,
             avatar: req.avatar,
             runtime: req.runtime,
+            model: req.model,
             workdir: req.workdir,
             visibility: req.visibility,
             public_scope: req.public_scope,

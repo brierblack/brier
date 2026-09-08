@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS agents (
     visibility       TEXT NOT NULL CHECK (visibility IN ('private', 'public')),
     public_scope     TEXT CHECK (public_scope IN ('all', 'joined_spaces', 'specified_spaces')),
     runtime          TEXT,
+    model            TEXT,
     workdir          TEXT,
     last_active      TIMESTAMPTZ,
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),

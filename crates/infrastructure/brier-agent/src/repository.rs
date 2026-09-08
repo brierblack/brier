@@ -21,6 +21,8 @@ pub struct AgentUpdate {
     pub description: Option<String>,
     pub avatar: Option<String>,
     pub runtime: Option<String>,
+    /// 显式模型名；Some(None) = 清空（由 runtime 决定），None = 保持不变。
+    pub model: Option<Option<String>>,
     pub workdir: Option<String>,
     pub visibility: Option<AgentVisibility>,
     pub public_scope: Option<PublicScope>,
@@ -101,6 +103,10 @@ pub async fn update_agent_fields(
         ),
         public_scope: Set(patch.public_scope.map(|s| enum_to_string(&s)).or(m.public_scope)),
         runtime: Set(patch.runtime.or(m.runtime)),
+        model: Set(match &patch.model {
+            Some(next) => next.clone(),
+            None => m.model,
+        }),
         workdir: Set(patch.workdir.or(m.workdir)),
         last_active: Set(m.last_active),
         created_at: Set(m.created_at),

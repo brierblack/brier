@@ -101,6 +101,7 @@ impl TryFrom<agent::Model> for Agent {
                 .map(|s| parse_enum(s, "PublicScope"))
                 .transpose()?,
             runtime: m.runtime,
+            model: m.model,
             workdir: m.workdir,
             last_active: m.last_active,
             created_at: m.created_at,
@@ -124,6 +125,7 @@ impl From<Agent> for agent::ActiveModel {
             visibility: sea_orm::Set(enum_to_string(&a.visibility)),
             public_scope: sea_orm::Set(a.public_scope.map(|s| enum_to_string(&s))),
             runtime: sea_orm::Set(a.runtime),
+            model: sea_orm::Set(a.model),
             workdir: sea_orm::Set(a.workdir),
             last_active: sea_orm::Set(a.last_active),
             created_at: sea_orm::Set(a.created_at),

@@ -62,6 +62,11 @@ export interface Agent {
   id: AgentId;
   /** @nullable */
   last_active?: string | null;
+  /**
+     * 显式指定的模型名；空（NULL）表示不指定、由 runtime 自己决定。
+     * @nullable
+     */
+  model?: string | null;
   name: string;
   public_scope?: null | PublicScope;
   /** @nullable */
@@ -218,6 +223,11 @@ export interface CreateAgentRequest {
   avatar?: string | null;
   /** @nullable */
   description?: string | null;
+  /**
+     * 显式模型名；缺省/null = 不指定，由 runtime 自己决定。
+     * @nullable
+     */
+  model?: string | null;
   name: string;
   public_scope?: null | PublicScope;
   /** @nullable */
@@ -351,13 +361,18 @@ export interface SessionMessage {
 }
 
 /**
- * Agent 字段级更新（缺省字段保持不变）。
+ * Agent 字段级更新（缺省字段保持不变；model 传 null 表示清空为"由 runtime 决定"）。
  */
 export interface UpdateAgentRequest {
   /** @nullable */
   avatar?: string | null;
   /** @nullable */
   description?: string | null;
+  /**
+     * 显式模型名；null = 清空（由 runtime 决定），缺省 = 保持不变。
+     * @nullable
+     */
+  model?: string | null;
   /** @nullable */
   name?: string | null;
   public_scope?: null | PublicScope;
