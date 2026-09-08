@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS agents (
     public_scope     TEXT CHECK (public_scope IN ('all', 'joined_spaces', 'specified_spaces')),
     runtime          TEXT,
     model            TEXT,
+    concurrency      INTEGER NOT NULL DEFAULT 3,
     workdir          TEXT,
     last_active      TIMESTAMPTZ,
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),

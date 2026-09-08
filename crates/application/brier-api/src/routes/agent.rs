@@ -131,6 +131,7 @@ pub(crate) async fn create_agent(
         public_scope: req.public_scope,
         runtime: req.runtime,
         model: req.model,
+        concurrency: 3,
         workdir: None,
         last_active: None,
         created_at: now,

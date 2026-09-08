@@ -17,6 +17,7 @@ pub struct Model {
     pub public_scope: Option<String>,
     pub runtime: Option<String>,
     pub model: Option<String>,
+    pub concurrency: i32,
     pub workdir: Option<String>,
     pub last_active: Option<DateTimeUtc>,
     pub created_at: DateTimeUtc,

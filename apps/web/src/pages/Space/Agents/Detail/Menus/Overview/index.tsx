@@ -1,39 +1,85 @@
-import { memo, useEffect, useState } from 'react';
-import { App, InputNumber } from 'antd';
+import { memo } from 'react';
+import { App } from 'antd';
 import { Avatar, Button, Select } from '@brierb/brier-ui';
 import { SPARKLINE_DATA, VISIBILITY_OPTIONS } from '../config';
-import { deleteAgent, updateAgent, type Agent } from '@/api/generated';
+import { deleteAgent, updateAgent, type Agent, type UpdateAgentRequest } from '@/api/generated';
 import { RuntimeBadge } from '@/components/RuntimeIcon';
 import { AI_RUNTIMES, MODEL_OPTIONS } from '@/define';
+import { useImmediateSave } from '@/hooks/useImmediateSave';
 import { StatusBadge } from '@/components/StatusBadge';
 import { PropertyRow } from './PropertyRow';
 import { Sparkline } from './Sparkline';
 import { useNavigate } from 'react-router-dom';
+
+type VisibilityKey = (typeof VISIBILITY_OPTIONS)[number]['value'];
+
+/** agent.visibility + public_scope → 详情档位组合值（public + 历史空 scope 兜底 all） */
+const toVisibilityKey = (agent: Agent): VisibilityKey =>
+  agent.visibility === 'public'
+    ? agent.public_scope === 'joined_spaces'
+      ? 'public-joined'
+      : 'public-all'
+    : 'private';
+
+/** 详情档位组合值 → updateAgent patch 字段 */
+const fromVisibilityKey = (
+  key: VisibilityKey,
+): Pick<UpdateAgentRequest, 'visibility' | 'public_scope'> =>
+  key === 'private'
+    ? { visibility: 'private' }
+    : {
+        visibility: 'public',
+        public_scope: key === 'public-joined' ? 'joined_spaces' : 'all',
+      };
 
 export const Overview = memo(
   ({ agent, currentSpaceId }: { agent: Agent; currentSpaceId: string }) => {
     const navigate = useNavigate();
     const { modal, message } = App.useApp();
 
-    /** 模型：本地受控 + 跟随真实字段；null = 由 runtime 自己决定 */
-    const [model, setModel] = useState<string | null>(agent.model ?? null);
-    useEffect(() => {
-      setModel(agent.model ?? null);
-    }, [agent.model]);
+    /** 属性行"切换即保存"：值来自 agent 接口，变更即 patch，乐观更新失败自动回滚 */
+    const failTip = (e: unknown) => {
+      message.error(e instanceof Error ? e.message : '保存失败');
+      throw e;
+    };
 
-    /** 选择模型即保存；清空（null）表示不指定、由 runtime 决定 */
-    const handleModelChange = async (value?: string | null) => {
-      const next = value ?? null;
-      const prev = model;
-      setModel(next);
+    /** 运行时：null = 未指定（无清空入口），切换即保存 */
+    const runtime = useImmediateSave<string | null>(agent.runtime ?? null, async (next) => {
+      if (!next) return;
+      try {
+        await updateAgent(currentSpaceId, agent.id, { runtime: next });
+        message.success(`运行时已切换为 ${next}`);
+      } catch (e) {
+        failTip(e);
+      }
+    });
+
+    /** 模型：null = 由 runtime 自己决定，切换即保存 */
+    const model = useImmediateSave<string | null>(agent.model ?? null, async (next) => {
       try {
         await updateAgent(currentSpaceId, agent.id, { model: next });
         message.success(next ? `已设为 ${next}` : '已改为由 runtime 自己决定');
       } catch (e) {
-        setModel(prev);
-        message.error(e instanceof Error ? e.message : '保存失败');
+        failTip(e);
       }
-    };
+    });
+
+    /** 可见性：specified 无选空间入口，仅在该状态时只读展示 */
+    const specifiedVisibility =
+      agent.visibility === 'public' && agent.public_scope === 'specified_spaces';
+    const visibility = useImmediateSave<VisibilityKey | null>(
+      specifiedVisibility ? null : toVisibilityKey(agent),
+      async (next) => {
+        if (!next) return;
+        try {
+          await updateAgent(currentSpaceId, agent.id, fromVisibilityKey(next));
+          message.success('可见性已更新');
+        } catch (e) {
+          failTip(e);
+        }
+      },
+    );
+
     /** 删除 Agent：确认后调 DELETE，成功后返回列表 */
     const handleDelete = () => {
       if (!agent) return;
@@ -76,6 +122,9 @@ export const Overview = memo(
               </PropertyRow>
               <PropertyRow label="运行时">
                 <Select
+                  value={runtime.value}
+                  onChange={runtime.change}
+                  placeholder="未指定"
                   options={AI_RUNTIMES.map((r) => ({
                     value: r,
                     label: <RuntimeBadge name={r} size={12} />,
@@ -87,22 +136,28 @@ export const Overview = memo(
               </PropertyRow>
               <PropertyRow label="模型">
                 <Select
-                  value={model}
-                  onChange={handleModelChange}
+                  value={model.value}
+                  onChange={model.change}
                   options={MODEL_OPTIONS}
                   button={{ bordered: false }}
                 />
               </PropertyRow>
               <PropertyRow label="可见性">
-                <Select
-                  options={VISIBILITY_OPTIONS}
-                  button={{
-                    bordered: false,
-                  }}
-                />
+                {specifiedVisibility ? (
+                  <Button bordered={false}>公开 · 指定空间</Button>
+                ) : (
+                  <Select
+                    value={visibility.value}
+                    onChange={visibility.change}
+                    options={VISIBILITY_OPTIONS}
+                    button={{
+                      bordered: false,
+                    }}
+                  />
+                )}
               </PropertyRow>
               <PropertyRow label="并发">
-                <InputNumber min={1} max={20} size="small" className="w-20" />
+                <span className="tabular-nums">{agent.concurrency}</span>
               </PropertyRow>
             </div>
           </div>

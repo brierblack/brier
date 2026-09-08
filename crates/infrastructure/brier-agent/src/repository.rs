@@ -107,6 +107,7 @@ pub async fn update_agent_fields(
             Some(next) => next.clone(),
             None => m.model,
         }),
+        concurrency: Set(m.concurrency),
         workdir: Set(patch.workdir.or(m.workdir)),
         last_active: Set(m.last_active),
         created_at: Set(m.created_at),

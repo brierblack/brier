@@ -312,6 +312,35 @@ impl MigrationTrait for AgentModelMigration {
     }
 }
 
+// ---------------------------------------------------------------------------
+// m0011: agents.concurrency（并发数，创建默认 3，无前端入口）
+// ---------------------------------------------------------------------------
+
+const AGENT_CONCURRENCY_SQL: &str = include_str!("../migrations/m0011_agent_concurrency.sql");
+
+pub struct AgentConcurrencyMigration;
+
+impl MigrationName for AgentConcurrencyMigration {
+    fn name(&self) -> &str {
+        "agent_concurrency"
+    }
+}
+
+#[async_trait]
+impl MigrationTrait for AgentConcurrencyMigration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared(AGENT_CONCURRENCY_SQL)
+            .await?;
+        Ok(())
+    }
+
+    async fn down(&self, _manager: &SchemaManager) -> Result<(), DbErr> {
+        Ok(())
+    }
+}
+
 pub struct Migrator;
 
 impl MigratorTrait for Migrator {
@@ -327,6 +356,7 @@ impl MigratorTrait for Migrator {
             Box::new(AgentAvatarMigration),
             Box::new(AgentWorkComputerNameMigration),
             Box::new(AgentModelMigration),
+            Box::new(AgentConcurrencyMigration),
         ]
     }
 }

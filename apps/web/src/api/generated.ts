@@ -55,6 +55,8 @@ export type WorkspaceId = string;
 export interface Agent {
   /** @nullable */
   avatar?: string | null;
+  /** 并发数（创建时默认 3，当前无修改入口；存档/展示语义）。 */
+  concurrency: number;
   created_at: string;
   creator_id: UserId;
   /** @nullable */
