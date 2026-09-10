@@ -1,5 +1,5 @@
 use brier_error::Result;
-use brier_type::enums::{AgentVisibility, PublicScope};
+use brier_type::enums::AgentVisibility;
 use brier_type::id::*;
 use brier_type::{Agent, AgentTask, AgentTeam, Session, SessionMessage, WorkComputer};
 use chrono::{DateTime, Utc};
@@ -27,7 +27,6 @@ pub struct AgentUpdate {
     pub concurrency: Option<i32>,
     pub workdir: Option<String>,
     pub visibility: Option<AgentVisibility>,
-    pub public_scope: Option<PublicScope>,
     pub work_computer_id: Option<WorkComputerId>,
     /// 绑定/换绑时写入的电脑名（仅当 work_computer_id 为 Some 时生效）。
     pub work_computer_name: Option<String>,
@@ -103,7 +102,6 @@ pub async fn update_agent_fields(
                 .map(|v| enum_to_string(&v))
                 .unwrap_or(m.visibility),
         ),
-        public_scope: Set(patch.public_scope.map(|s| enum_to_string(&s)).or(m.public_scope)),
         runtime: Set(patch.runtime.or(m.runtime)),
         model: Set(match &patch.model {
             Some(next) => next.clone(),

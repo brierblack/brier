@@ -14,7 +14,6 @@ pub struct Model {
     pub avatar: Option<String>,
     pub status: String,
     pub visibility: String,
-    pub public_scope: Option<String>,
     pub runtime: Option<String>,
     pub model: Option<String>,
     pub concurrency: i32,

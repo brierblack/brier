@@ -3,11 +3,11 @@ use axum::http::HeaderMap;
 use axum::routing::get;
 use axum::{Json, Router};
 use chrono::Utc;
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 
 use brier_error::BrierError;
 use brier_type::agent::Agent;
-use brier_type::enums::{AgentVisibility, PublicScope};
+use brier_type::enums::AgentVisibility;
 use brier_type::id::{AgentId, WorkComputerId, WorkspaceId};
 
 use crate::error::ApiError;
@@ -20,11 +20,19 @@ pub struct CreateAgentRequest {
     pub description: Option<String>,
     pub avatar: Option<String>,
     pub visibility: Option<AgentVisibility>,
-    pub public_scope: Option<PublicScope>,
     pub runtime: Option<String>,
     /// 显式模型名；缺省/null = 不指定，由 runtime 自己决定。
     pub model: Option<String>,
     pub work_computer_id: Option<String>,
+}
+
+/// 区分 JSON `null`（→ `Some(None)`，清空）和字段缺失（→ `None`，保持不变）。
+fn deserialize_double_option<'de, D, T>(deserializer: D) -> Result<Option<Option<T>>, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    Deserialize::deserialize(deserializer).map(Some)
 }
 
 /// Agent 字段级更新（缺省字段保持不变；model 传 null 表示清空为"由 runtime 决定"）。
@@ -34,9 +42,9 @@ pub struct UpdateAgentRequest {
     pub description: Option<String>,
     pub avatar: Option<String>,
     pub visibility: Option<AgentVisibility>,
-    pub public_scope: Option<PublicScope>,
     pub runtime: Option<String>,
     /// 显式模型名；null = 清空（由 runtime 决定），缺省 = 保持不变。
+    #[serde(default, deserialize_with = "deserialize_double_option")]
     pub model: Option<Option<String>>,
     /// 并发数；缺省 = 保持不变（创建默认 3，创建接口不暴露该字段）。
     pub concurrency: Option<i32>,
@@ -130,7 +138,6 @@ pub(crate) async fn create_agent(
         avatar: req.avatar,
         status: brier_type::enums::AgentStatus::Offline,
         visibility: req.visibility.unwrap_or(AgentVisibility::Private),
-        public_scope: req.public_scope,
         runtime: req.runtime,
         model: req.model,
         concurrency: 3,
@@ -246,7 +253,6 @@ pub(crate) async fn update_agent(
             concurrency: req.concurrency,
             workdir: req.workdir,
             visibility: req.visibility,
-            public_scope: req.public_scope,
             work_computer_id: computer_id,
             work_computer_name: computer_name,
         },

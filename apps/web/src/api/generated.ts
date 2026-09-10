@@ -16,15 +16,6 @@ export type UserId = string;
  */
 export type AgentId = string;
 
-export type PublicScope = typeof PublicScope[keyof typeof PublicScope];
-
-
-export const PublicScope = {
-  all: 'all',
-  joined_spaces: 'joined_spaces',
-  specified_spaces: 'specified_spaces',
-} as const;
-
 export type AgentStatus = typeof AgentStatus[keyof typeof AgentStatus];
 
 
@@ -39,7 +30,9 @@ export type AgentVisibility = typeof AgentVisibility[keyof typeof AgentVisibilit
 
 export const AgentVisibility = {
   private: 'private',
-  public: 'public',
+  public_all: 'public_all',
+  public_joined_spaces: 'public_joined_spaces',
+  public_specified_spaces: 'public_specified_spaces',
 } as const;
 
 /**
@@ -70,7 +63,6 @@ export interface Agent {
      */
   model?: string | null;
   name: string;
-  public_scope?: null | PublicScope;
   /** @nullable */
   runtime?: string | null;
   status: AgentStatus;
@@ -231,7 +223,6 @@ export interface CreateAgentRequest {
      */
   model?: string | null;
   name: string;
-  public_scope?: null | PublicScope;
   /** @nullable */
   runtime?: string | null;
   visibility?: null | AgentVisibility;
@@ -382,7 +373,6 @@ export interface UpdateAgentRequest {
   model?: string | null;
   /** @nullable */
   name?: string | null;
-  public_scope?: null | PublicScope;
   /** @nullable */
   runtime?: string | null;
   visibility?: null | AgentVisibility;

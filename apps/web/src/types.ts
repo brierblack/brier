@@ -12,7 +12,6 @@ export type {
   UserId,
   AgentStatus,
   AgentVisibility,
-  PublicScope,
   TeamMode,
   TeamStatus,
   WorkComputerType,

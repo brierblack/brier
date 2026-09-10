@@ -10,7 +10,7 @@ import {
   StarOutlined,
 } from '@ant-design/icons';
 import { Avatar, Button, Dropdown, type MenuProps } from '@brierb/brier-ui';
-import type { Agent, AgentStatus, AgentVisibility, PublicScope } from '@/api/generated';
+import type { Agent, AgentStatus, AgentVisibility } from '@/api/generated';
 import { StatusBadge } from '@/components/StatusBadge';
 import { RuntimeBadge } from '@/components/RuntimeIcon';
 
@@ -54,25 +54,18 @@ export const getColumns: (props: AgentColumnsProps) => ColumnsType<Agent> = (pro
     {
       title: '可见性',
       dataIndex: 'visibility',
-      render: (text: AgentVisibility, record: Agent) => {
-        if (text === 'private') {
-          return (
-            <span className="flex items-center gap-1 text-xs font-medium">
-              <LockOutlined />
-              仅个人可用
-            </span>
-          );
-        }
-        const scopeConfig: Record<PublicScope, string> = {
-          all: '所有人',
-          joined_spaces: '我加入的所有空间',
-          specified_spaces: '指定空间',
+      render: (text: AgentVisibility) => {
+        const config: Record<AgentVisibility, { icon: React.ReactNode; label: string }> = {
+          private: { icon: <LockOutlined />, label: '仅个人可用' },
+          public_all: { icon: <GlobalOutlined />, label: '公开 · 所有人' },
+          public_joined_spaces: { icon: <GlobalOutlined />, label: '公开 · 我加入的所有空间' },
+          public_specified_spaces: { icon: <GlobalOutlined />, label: '公开 · 指定空间' },
         };
-        const scope = record.public_scope || 'all';
+        const c = config[text] ?? config.private;
         return (
           <span className="flex items-center gap-1 text-xs font-medium">
-            <GlobalOutlined />
-            公开 · {scopeConfig[scope]}
+            {c.icon}
+            {c.label}
           </span>
         );
       },

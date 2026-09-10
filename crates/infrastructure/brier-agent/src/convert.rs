@@ -95,11 +95,6 @@ impl TryFrom<agent::Model> for Agent {
             avatar: m.avatar,
             status: parse_enum(&m.status, "AgentStatus")?,
             visibility: parse_enum(&m.visibility, "AgentVisibility")?,
-            public_scope: m
-                .public_scope
-                .as_deref()
-                .map(|s| parse_enum(s, "PublicScope"))
-                .transpose()?,
             runtime: m.runtime,
             model: m.model,
             concurrency: m.concurrency,
@@ -124,7 +119,6 @@ impl From<Agent> for agent::ActiveModel {
             avatar: sea_orm::Set(a.avatar),
             status: sea_orm::Set(enum_to_string(&a.status)),
             visibility: sea_orm::Set(enum_to_string(&a.visibility)),
-            public_scope: sea_orm::Set(a.public_scope.map(|s| enum_to_string(&s))),
             runtime: sea_orm::Set(a.runtime),
             model: sea_orm::Set(a.model),
             concurrency: sea_orm::Set(a.concurrency),

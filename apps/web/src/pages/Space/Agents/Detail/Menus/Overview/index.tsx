@@ -1,98 +1,37 @@
 import { memo } from 'react';
 import { App } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import { Avatar, Button, Select } from '@brierb/brier-ui';
-import { SPARKLINE_DATA, VISIBILITY_OPTIONS } from '../config';
-import { deleteAgent, updateAgent, type Agent, type UpdateAgentRequest } from '@/api/generated';
+import { deleteAgent, updateAgent, type Agent } from '@/api/generated';
 import { RuntimeBadge } from '@/components/RuntimeIcon';
 import { AI_RUNTIMES, MODEL_OPTIONS } from '@/define';
-import { useImmediateSave } from '@/hooks/useImmediateSave';
+import { useProxy } from '@/hooks/useProxy';
 import { StatusBadge } from '@/components/StatusBadge';
 import { PropertyRow } from './PropertyRow';
 import { Sparkline } from './Sparkline';
-import { useNavigate } from 'react-router-dom';
+import { SPARKLINE_DATA, VISIBILITY_OPTIONS } from '../config';
 
-type VisibilityKey = (typeof VISIBILITY_OPTIONS)[number]['value'];
-
-/** agent.visibility + public_scope → 详情档位组合值（public + 历史空 scope 兜底 all） */
-const toVisibilityKey = (agent: Agent): VisibilityKey =>
-  agent.visibility === 'public'
-    ? agent.public_scope === 'joined_spaces'
-      ? 'public-joined'
-      : 'public-all'
-    : 'private';
-
-/** 详情档位组合值 → updateAgent patch 字段 */
-const fromVisibilityKey = (
-  key: VisibilityKey,
-): Pick<UpdateAgentRequest, 'visibility' | 'public_scope'> =>
-  key === 'private'
-    ? { visibility: 'private' }
-    : {
-        visibility: 'public',
-        public_scope: key === 'public-joined' ? 'joined_spaces' : 'all',
-      };
+const DEFAULT_CONCURRENT_OPTIONS = Array.from({ length: 10 }, (_, i) => ({
+  value: i + 1,
+  label: String(i + 1),
+}));
 
 export const Overview = memo(
   ({ agent, currentSpaceId }: { agent: Agent; currentSpaceId: string }) => {
     const navigate = useNavigate();
     const { modal, message } = App.useApp();
 
-    /** 属性行"切换即保存"：值来自 agent 接口，变更即 patch，乐观更新失败自动回滚 */
-    const failTip = (e: unknown) => {
-      message.error(e instanceof Error ? e.message : '保存失败');
-      throw e;
-    };
-
-    /** 运行时：null = 未指定（无清空入口），切换即保存 */
-    const runtime = useImmediateSave<string | null>(agent.runtime ?? null, async (next) => {
-      if (!next) return;
+    const [getAgentProps, setAgentProps] = useProxy(agent, async (key, value) => {
       try {
-        await updateAgent(currentSpaceId, agent.id, { runtime: next });
-        message.success(`运行时已切换为 ${next}`);
+        await updateAgent(currentSpaceId, agent.id, { [key]: value });
+        message.success(`修改成功`);
       } catch (e) {
-        failTip(e);
-      }
-    });
-
-    /** 模型：null = 由 runtime 自己决定，切换即保存 */
-    const model = useImmediateSave<string | null>(agent.model ?? null, async (next) => {
-      try {
-        await updateAgent(currentSpaceId, agent.id, { model: next });
-        message.success(next ? `已设为 ${next}` : '已改为由 runtime 自己决定');
-      } catch (e) {
-        failTip(e);
-      }
-    });
-
-    /** 可见性：specified 无选空间入口，仅在该状态时只读展示 */
-    const specifiedVisibility =
-      agent.visibility === 'public' && agent.public_scope === 'specified_spaces';
-    const visibility = useImmediateSave<VisibilityKey | null>(
-      specifiedVisibility ? null : toVisibilityKey(agent),
-      async (next) => {
-        if (!next) return;
-        try {
-          await updateAgent(currentSpaceId, agent.id, fromVisibilityKey(next));
-          message.success('可见性已更新');
-        } catch (e) {
-          failTip(e);
-        }
-      },
-    );
-
-    /** 并发：切换即保存（创建时默认 3，无创建入口） */
-    const concurrency = useImmediateSave<number>(agent.concurrency, async (next) => {
-      try {
-        await updateAgent(currentSpaceId, agent.id, { concurrency: next });
-        message.success(`并发已设为 ${next}`);
-      } catch (e) {
-        failTip(e);
+        message.error(e instanceof Error ? e.message : '保存失败');
       }
     });
 
     /** 删除 Agent：确认后调 DELETE，成功后返回列表 */
     const handleDelete = () => {
-      if (!agent) return;
       modal.confirm({
         title: `删除 Agent「${agent.name}」`,
         content: '删除后该 Agent 将从空间移除，无法再被指派或下发任务。确定删除吗？',
@@ -124,56 +63,46 @@ export const Overview = memo(
             </div>
           </div>
 
-          <div className="border-b border-ghost px-4 py-3">
+          <div className="border-b border-ghost py-3 pr-2 pl-4">
             <div className="mb-2 text-standard font-bold">属性</div>
             <div>
               <PropertyRow label="工作电脑">
-                <Button bordered={false}>{agent.work_computer_name ?? '—'}</Button>
+                <Button bordered={false}>{agent.work_computer_name ?? '未指定'}</Button>
               </PropertyRow>
               <PropertyRow label="运行时">
                 <Select
-                  value={runtime.value}
-                  onChange={runtime.change}
+                  value={getAgentProps('runtime')}
+                  onChange={setAgentProps('runtime')}
                   placeholder="未指定"
                   options={AI_RUNTIMES.map((r) => ({
                     value: r,
                     label: <RuntimeBadge name={r} size={12} />,
                   }))}
-                  button={{
-                    bordered: false,
-                  }}
+                  button={{ bordered: false }}
                 />
               </PropertyRow>
               <PropertyRow label="模型">
                 <Select
-                  value={model.value}
-                  onChange={model.change}
+                  placeholder="未指定"
+                  value={getAgentProps('model')}
+                  onChange={setAgentProps('model')}
                   options={MODEL_OPTIONS}
                   button={{ bordered: false }}
                 />
               </PropertyRow>
               <PropertyRow label="可见性">
-                {specifiedVisibility ? (
-                  <Button bordered={false}>公开 · 指定空间</Button>
-                ) : (
-                  <Select
-                    value={visibility.value}
-                    onChange={visibility.change}
-                    options={VISIBILITY_OPTIONS}
-                    button={{
-                      bordered: false,
-                    }}
-                  />
-                )}
+                <Select
+                  value={getAgentProps('visibility')}
+                  onChange={setAgentProps('visibility')}
+                  options={VISIBILITY_OPTIONS}
+                  button={{ bordered: false }}
+                />
               </PropertyRow>
               <PropertyRow label="并发">
                 <Select
-                  value={concurrency.value}
-                  onChange={concurrency.change}
-                  options={Array.from({ length: 10 }, (_, i) => ({
-                    value: i + 1,
-                    label: String(i + 1),
-                  }))}
+                  value={getAgentProps('concurrency')}
+                  onChange={setAgentProps('concurrency')}
+                  options={DEFAULT_CONCURRENT_OPTIONS}
                   button={{ bordered: false }}
                 />
               </PropertyRow>

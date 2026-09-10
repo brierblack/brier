@@ -341,6 +341,36 @@ impl MigrationTrait for AgentConcurrencyMigration {
     }
 }
 
+// ---------------------------------------------------------------------------
+// m0012: agents.visibility + public_scope → 单一 visibility 枚举
+// ---------------------------------------------------------------------------
+
+const AGENT_VISIBILITY_MERGE_SQL: &str =
+    include_str!("../migrations/m0012_agent_visibility_merge.sql");
+
+pub struct AgentVisibilityMergeMigration;
+
+impl MigrationName for AgentVisibilityMergeMigration {
+    fn name(&self) -> &str {
+        "agent_visibility_merge"
+    }
+}
+
+#[async_trait]
+impl MigrationTrait for AgentVisibilityMergeMigration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .get_connection()
+            .execute_unprepared(AGENT_VISIBILITY_MERGE_SQL)
+            .await?;
+        Ok(())
+    }
+
+    async fn down(&self, _manager: &SchemaManager) -> Result<(), DbErr> {
+        Ok(())
+    }
+}
+
 pub struct Migrator;
 
 impl MigratorTrait for Migrator {
@@ -357,6 +387,7 @@ impl MigratorTrait for Migrator {
             Box::new(AgentWorkComputerNameMigration),
             Box::new(AgentModelMigration),
             Box::new(AgentConcurrencyMigration),
+            Box::new(AgentVisibilityMergeMigration),
         ]
     }
 }

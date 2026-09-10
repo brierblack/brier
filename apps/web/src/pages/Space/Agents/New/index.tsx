@@ -15,23 +15,12 @@ import {
 } from '@ant-design/icons';
 import { Button, Page, Select as ButtonSelect } from '@brierb/brier-ui';
 import { createAgent, listWorkComputers } from '@/api/generated';
-import type { AgentVisibility, PublicScope } from '@/api/generated';
+import type { AgentVisibility } from '@/api/generated';
 import { useSpace } from '@/context/SpaceContext';
 import { useRequest } from '@/hooks/useRequest';
 import { AvatarUpload } from '@/components/AvatarUpload';
 import { RuntimeBadge } from '@/components/RuntimeIcon';
 import { AI_RUNTIMES, MODEL_OPTIONS } from '@/define';
-
-// 前端可见性选项 → 后端 AgentVisibility / PublicScope
-const VISIBILITY_TO_SCOPE: Record<
-  string,
-  { visibility: AgentVisibility; public_scope?: PublicScope }
-> = {
-  personal: { visibility: 'private' },
-  everyone: { visibility: 'public', public_scope: 'all' },
-  joined_spaces: { visibility: 'public', public_scope: 'joined_spaces' },
-  specified_spaces: { visibility: 'public', public_scope: 'specified_spaces' },
-};
 
 interface MockExtension {
   id: string;
@@ -60,25 +49,27 @@ const DEFAULT_EXTENSIONS: MockExtension[] = [
 const VISIBILITY_GROUPS = [
   {
     label: '私有',
-    options: [{ value: 'personal', icon: <LockOutlined />, label: '个人', desc: '仅自己可用' }],
+    options: [
+      { value: 'private' as const, icon: <LockOutlined />, label: '个人', desc: '仅自己可用' },
+    ],
   },
   {
     label: '公开',
     options: [
       {
-        value: 'everyone',
+        value: 'public_all' as const,
         icon: <GlobalOutlined />,
         label: '所有人（仅白名单）',
         desc: '任何用户可指派/对话',
       },
       {
-        value: 'joined_spaces',
+        value: 'public_joined_spaces' as const,
         icon: <TeamOutlined />,
         label: '我加入的所有空间',
         desc: '我所在空间的成员可用（加入新空间自动生效）',
       },
       {
-        value: 'specified_spaces',
+        value: 'public_specified_spaces' as const,
         icon: <BankOutlined />,
         label: '指定空间',
         desc: '仅选定空间的成员可用',
@@ -108,7 +99,7 @@ const NewAgentContent = () => {
   const { currentSpaceId } = useSpace();
   const [form] = Form.useForm();
   const [selectedComputerId, setSelectedComputerId] = useState<string | undefined>(undefined);
-  const [visibility, setVisibility] = useState<string>('personal');
+  const [visibility, setVisibility] = useState<AgentVisibility>('private');
   const [extensions, setExtensions] = useState<MockExtension[]>(DEFAULT_EXTENSIONS);
   const [extSearch, setExtSearch] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -141,14 +132,12 @@ const NewAgentContent = () => {
     }
     try {
       const values = await form.validateFields();
-      const scope = VISIBILITY_TO_SCOPE[visibility] ?? { visibility: 'private' as const };
       setSubmitting(true);
       await createAgent(currentSpaceId, {
         name: values.name,
         description: values.desc,
         avatar: values.avatar || null,
-        visibility: scope.visibility,
-        public_scope: scope.public_scope,
+        visibility,
         runtime: values.runtime,
         model: values.model ?? null,
         work_computer_id: values.workComputer ?? null,

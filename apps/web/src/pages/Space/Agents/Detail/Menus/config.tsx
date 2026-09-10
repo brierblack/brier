@@ -30,16 +30,17 @@ export const MENU_ITEMS: MenuProps['items'] = [
 ];
 
 /**
- * Agent 详情"可见性"可编辑档位（组合值；public-specified 无选空间入口，
+ * Agent 详情"可见性"可编辑档位（public_specified_spaces 无选空间入口，
  * 若 agent 恰为该状态，在 Overview 里只读展示"公开 · 指定空间"）。
  */
 export const VISIBILITY_OPTIONS: {
-  value: 'private' | 'public-all' | 'public-joined';
+  value: 'private' | 'public_all' | 'public_joined_spaces' | 'public_specified_spaces';
   label: string;
 }[] = [
   { value: 'private', label: '私有 · 仅个人可用' },
-  { value: 'public-all', label: '公开 · 所有人' },
-  { value: 'public-joined', label: '公开 · 我加入的所有空间' },
+  { value: 'public_all', label: '公开 · 所有人' },
+  { value: 'public_joined_spaces', label: '公开 · 我加入的所有空间' },
+  { value: 'public_specified_spaces', label: '公开 · 指定空间' },
 ];
 
 export const SPARKLINE_DATA = [
